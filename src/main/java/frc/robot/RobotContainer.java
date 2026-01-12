@@ -2,6 +2,7 @@ package frc.robot;
 
 import static frc.robot.Constants.Controllers.*;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -46,6 +47,6 @@ public class RobotContainer {
 
     /** Select the command to run in autonomous mode. */
     public Command getAutonomousCommand() {
-        return Commands.none();
+        return AutoBuilder.buildAuto("Example");
     }
 }
