@@ -23,8 +23,7 @@ public final class ObjectDetectionFactory {
     }
 
     private static ObjectDetectionSubsystem initializeSim(SwerveSubsystem swerve) {
-        return new ObjectDetectionSubsystem(
-                new ObjectDetectionIOSim(Simulation.getInstance()::getPose), Simulation.getInstance()::getPose);
+        return new ObjectDetectionSubsystem(new ObjectDetectionIOReal(), Simulation.getInstance()::getPose);
     }
 
     private static ObjectDetectionSubsystem initializeReplay(SwerveSubsystem swerve) {
