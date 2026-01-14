@@ -4,11 +4,8 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.*;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
-import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -19,7 +16,6 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -27,8 +23,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -43,73 +37,28 @@ import frc.robot.util.Simulation;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
-import org.ironmaple.simulation.drivesims.COTS;
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
-import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.VisionConsumer {
 
-    public static final double ODOMETRY_FREQUENCY =
-            new CANBus(DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
-    public static final double DRIVE_BASE_RADIUS = Math.max(
-            Math.max(
-                    Math.hypot(FrontLeft.LocationX, FrontLeft.LocationY),
-                    Math.hypot(FrontRight.LocationX, FrontRight.LocationY)),
-            Math.max(
-                    Math.hypot(BackLeft.LocationX, BackLeft.LocationY),
-                    Math.hypot(BackRight.LocationX, BackRight.LocationY)));
-
-    // PathPlanner Config Constants.
-    private static final double ROBOT_MASS_KG = Units.lbsToKilograms(115.0);
-    private static final double ROBOT_MOI = 6.883;
-    private static final double WHEEL_COF = 1.2;
-    private static final RobotConfig PP_CONFIG = new RobotConfig(
-            ROBOT_MASS_KG,
-            ROBOT_MOI,
-            new ModuleConfig(
-                    FrontLeft.WheelRadius,
-                    kSpeedAt12Volts.in(MetersPerSecond),
-                    WHEEL_COF,
-                    DCMotor.getKrakenX60Foc(1).withReduction(FrontLeft.DriveMotorGearRatio),
-                    FrontLeft.SlipCurrent,
-                    1),
-            getModuleTranslations());
-
-    public static final DriveTrainSimulationConfig mapleSimConfig = DriveTrainSimulationConfig.Default()
-            .withRobotMass(Kilograms.of(ROBOT_MASS_KG))
-            .withCustomModuleTranslations(getModuleTranslations())
-            .withGyro(COTS.ofPigeon2())
-            .withSwerveModule(new SwerveModuleSimulationConfig(
-                    DCMotor.getKrakenX60Foc(1),
-                    // Must be a Falcon motor for this version of MapleSim.
-                    // MapleMotorSim should implement DCMotorSim in upcoming versions.
-                    DCMotor.getFalcon500Foc(1),
-                    FrontLeft.DriveMotorGearRatio,
-                    FrontLeft.SteerMotorGearRatio,
-                    Volts.of(FrontLeft.DriveFrictionVoltage),
-                    Volts.of(FrontLeft.SteerFrictionVoltage),
-                    Meters.of(FrontLeft.WheelRadius),
-                    KilogramSquareMeters.of(FrontLeft.SteerInertia),
-                    WHEEL_COF));
-
+    // Locks & Alerts.
     public static final Lock odometryLock = new ReentrantLock();
+    private final Alert gyroDisconnectedAlert;
+
+    // Hardware Interfaces.
     private final GyroIO gyroIO;
-    private final GyroInputsAutoLogged gyroInputs = new GyroInputsAutoLogged();
+    private final GyroInputsAutoLogged gyroInputs;
     private final Module[] modules = new Module[4];
-    private final SysIdRoutine sysId;
-    private final Alert gyroDisconnectedAlert =
-            new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
 
-    private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
+    // Odometry & Kinematics.
     private Rotation2d rawGyroRotation = new Rotation2d();
-    private final SwerveModulePosition[] lastModulePositions = new SwerveModulePosition[] {
-        new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()
-    };
-    private final SwerveDrivePoseEstimator poseEstimator =
-            new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+    private final SwerveDriveKinematics kinematics;
+    private final SwerveModulePosition[] lastModulePositions;
+    private final SwerveDrivePoseEstimator poseEstimator;
 
+    // Utilities & Callbacks.
+    private final SysIdRoutine sysId;
     private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
     public SwerveSubsystem(
@@ -121,27 +70,39 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
             Consumer<Pose2d> resetSimulationPoseCallBack) {
         this.gyroIO = gyroIO;
         this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
+
+        // Initialize Modules.
         modules[0] = new Module(flModuleIO, 0, FrontLeft);
         modules[1] = new Module(frModuleIO, 1, FrontRight);
         modules[2] = new Module(blModuleIO, 2, BackLeft);
         modules[3] = new Module(brModuleIO, 3, BackRight);
 
+        // Initialize dependent fields.
+        this.gyroInputs = new GyroInputsAutoLogged();
+        this.kinematics = new SwerveDriveKinematics(getModuleTranslations());
+        this.lastModulePositions = new SwerveModulePosition[] {
+            new SwerveModulePosition(), new SwerveModulePosition(),
+            new SwerveModulePosition(), new SwerveModulePosition()
+        };
+        this.poseEstimator =
+                new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+        this.gyroDisconnectedAlert = new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
+
+        // Simulation & HAL Reporting.
         Simulation.getInstance();
         HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
 
-        // Start Odometry Thread.
-        PhoenixOdometryThread.getInstance().start();
-
-        // Configure AutoBuilder for PathPlanner.
+        // PathPlanner Configuration.
         AutoBuilder.configure(
                 this::getPose,
                 this::setPose,
                 this::getChassisSpeeds,
                 this::runVelocity,
                 new PPHolonomicDriveController(new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
-                PP_CONFIG,
+                PATHPLANNER_CONFIG,
                 () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
                 this);
+
         Pathfinding.setPathfinder(new LocalADStarAK());
         PathPlannerLogging.setLogActivePathCallback((activePath) -> {
             Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
@@ -154,39 +115,40 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
         sysId = new SysIdRoutine(
                 new SysIdRoutine.Config(
                         null, null, null, (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
-                new SysIdRoutine.Mechanism((voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+                new SysIdRoutine.Mechanism(voltage -> runCharacterization(voltage.in(Volts)), null, this));
+
+        // Start Odometry Thread.
+        PhoenixOdometryThread.getInstance().start();
     }
 
     @Override
     public void periodic() {
         odometryLock.lock(); // Prevents odometry updates while reading data.
-        gyroIO.updateInputs(gyroInputs);
-        Logger.processInputs("Drive/Gyro", gyroInputs);
-        for (var module : modules) {
-            module.periodic();
+
+        try {
+            gyroIO.updateInputs(gyroInputs);
+            Logger.processInputs("Drive/Gyro", gyroInputs);
+            for (var module : modules) module.periodic();
+        } finally {
+            odometryLock.unlock();
         }
-        odometryLock.unlock();
 
         // Stop moving when disabled.
         if (DriverStation.isDisabled()) {
-            for (var module : modules) {
-                module.stop();
-            }
-        }
+            for (var module : modules) module.stop();
 
-        // Log empty setpoint states when disabled.
-        if (DriverStation.isDisabled()) {
+            // Log empty setpoint states when disabled.
             Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
             Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
         }
 
         // Update odometry.
-        double[] sampleTimestamps = modules[0].getOdometryTimestamps();
-        int sampleCount = sampleTimestamps.length;
-        for (int i = 0; i < sampleCount; i++) {
+        double[] timestamps = modules[0].getOdometryTimestamps();
+        for (int i = 0; i < timestamps.length; i++) {
             // Read wheel positions and deltas from each module.
             SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
             SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
+
             for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
                 modulePositions[moduleIndex] = modules[moduleIndex].getOdometryPositions()[i];
                 moduleDeltas[moduleIndex] = new SwerveModulePosition(
@@ -206,7 +168,7 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
             }
 
             // Apply update.
-            poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+            poseEstimator.updateWithTime(timestamps[i], rawGyroRotation, modulePositions);
         }
 
         // Update gyro alert.
@@ -351,15 +313,5 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
     /** Returns the maximum angular speed in radians per second. */
     public double getMaxAngularSpeedRadPerSec() {
         return getMaxLinearSpeedMetersPerSec() / DRIVE_BASE_RADIUS;
-    }
-
-    /** Returns an array of module translations. */
-    public static Translation2d[] getModuleTranslations() {
-        return new Translation2d[] {
-            new Translation2d(FrontLeft.LocationX, FrontLeft.LocationY),
-            new Translation2d(FrontRight.LocationX, FrontRight.LocationY),
-            new Translation2d(BackLeft.LocationX, BackLeft.LocationY),
-            new Translation2d(BackRight.LocationX, BackRight.LocationY)
-        };
     }
 }

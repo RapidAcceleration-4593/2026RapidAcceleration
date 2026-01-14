@@ -4,17 +4,53 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.*;
-import com.ctre.phoenix6.hardware.*;
 import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.RobotConfig;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
+import org.ironmaple.simulation.drivesims.COTS;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 
 public final class SwerveConstants {
 
+    // Robot Physical Properties.
+    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(115.0);
+    public static final double ROBOT_MOI = 6.883;
+    public static final double WHEEL_COF = 1.2;
+
+    /** Current at which the wheels start to slip. */
+    private static final Current kSlipCurrent = Amps.of(120.0);
+
+    /** Theoretical Free Speed at 12V. */
+    public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.5);
+
+    /** CANBus/CANivore that all modules are connected to. */
+    private static final CANBus kCANBus = new CANBus("drivebase", "./logs/example.hoot");
+
+    /** Configs for the Pigeon 2; leave null to skip applying Pigeon 2 configs. */
+    private static final Pigeon2Configuration pigeonConfigs = null;
+
+    private static final int kPigeonId = 5;
+
+    // Gear Ratios, Geometry, & Inversions.
+    private static final double kDriveGearRatio = 5.36;
+    private static final double kSteerGearRatio = 18.75;
+
+    /** How much the drive motor unintentionally turns when you rotate steering (azimuth). */
+    private static final double kCoupleRatio = 0.0; // Unknown
+
+    private static final Distance kWheelRadius = Inches.of(2.0);
+
+    private static final boolean kInvertLeftSide = false;
+    private static final boolean kInvertRightSide = true;
+
+    // Closed Loop Configuration.
     private static final Slot0Configs steerGains = new Slot0Configs()
             .withKP(100)
             .withKI(0.0)
@@ -34,9 +70,6 @@ public final class SwerveConstants {
     private static final SteerMotorArrangement kSteerMotorType = SteerMotorArrangement.TalonFX_Integrated;
     private static final SteerFeedbackType kSteerFeedbackType = SteerFeedbackType.FusedCANcoder;
 
-    /** Current at which the wheels start to slip. */
-    private static final Current kSlipCurrent = Amps.of(120.0);
-
     private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration();
     private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
@@ -46,35 +79,14 @@ public final class SwerveConstants {
 
     private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
 
-    /** Configs for the Pigeon 2; leave null to skip applying Pigeon 2 configs. */
-    private static final Pigeon2Configuration pigeonConfigs = null;
-
-    /** CANBus/CANivore that all modules are connected to. */
-    public static final CANBus kCANBus = new CANBus("drivebase", "./logs/example.hoot");
-
-    /** Theoretical Free Speed at 12V. */
-    public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.5);
-
-    /** How much the drive motor unintentionally turns when you rotate steering (azimuth). */
-    private static final double kCoupleRatio = 0.0; // Unknown
-
-    private static final double kDriveGearRatio = 5.36;
-    private static final double kSteerGearRatio = 18.75;
-    private static final Distance kWheelRadius = Inches.of(2.0);
-
-    private static final boolean kInvertLeftSide = false;
-    private static final boolean kInvertRightSide = true;
-
-    private static final int kPigeonId = 5;
-
-    /** Used only for simulation. */
+    // Simulation Parameters.
     private static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.05);
-
     private static final MomentOfInertia kDriveInertia = KilogramSquareMeters.of(0.025);
 
     private static final Voltage kSteerFrictionVoltage = Volts.of(0.2);
     private static final Voltage kDriveFrictionVoltage = Volts.of(0.2);
 
+    // Drivetrain & Module Constants.
     public static final SwerveDrivetrainConstants DrivetrainConstants = new SwerveDrivetrainConstants()
             .withCANBusName(kCANBus.getName())
             .withPigeon2Id(kPigeonId)
@@ -104,7 +116,8 @@ public final class SwerveConstants {
                     .withSteerFrictionVoltage(kSteerFrictionVoltage)
                     .withDriveFrictionVoltage(kDriveFrictionVoltage);
 
-    // Front Left Module
+    // Module IDs, Offsets, & Locations.
+    // Front Left Module.
     private static final int kFrontLeftDriveMotorId = 6;
     private static final int kFrontLeftSteerMotorId = 7;
     private static final int kFrontLeftEncoderId = 1;
@@ -115,7 +128,7 @@ public final class SwerveConstants {
     private static final Distance kFrontLeftXPos = Inches.of(10.0);
     private static final Distance kFrontLeftYPos = Inches.of(10.0);
 
-    // Front Right Module
+    // Front Right Module.
     private static final int kFrontRightDriveMotorId = 8;
     private static final int kFrontRightSteerMotorId = 9;
     private static final int kFrontRightEncoderId = 2;
@@ -126,7 +139,7 @@ public final class SwerveConstants {
     private static final Distance kFrontRightXPos = Inches.of(10.0);
     private static final Distance kFrontRightYPos = Inches.of(-10.0);
 
-    // Back Left Module
+    // Back Left Module.
     private static final int kBackLeftDriveMotorId = 10;
     private static final int kBackLeftSteerMotorId = 11;
     private static final int kBackLeftEncoderId = 3;
@@ -137,7 +150,7 @@ public final class SwerveConstants {
     private static final Distance kBackLeftXPos = Inches.of(-10.0);
     private static final Distance kBackLeftYPos = Inches.of(10.0);
 
-    // Back Right Module
+    // Back Right Module.
     private static final int kBackRightDriveMotorId = 12;
     private static final int kBackRightSteerMotorId = 13;
     private static final int kBackRightEncoderId = 4;
@@ -148,6 +161,7 @@ public final class SwerveConstants {
     private static final Distance kBackRightXPos = Inches.of(-10.0);
     private static final Distance kBackRightYPos = Inches.of(-10.0);
 
+    // Module Constants.
     public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
             FrontLeft = ConstantCreator.createModuleConstants(
                     kFrontLeftSteerMotorId,
@@ -193,70 +207,55 @@ public final class SwerveConstants {
                     kBackRightSteerMotorInverted,
                     kBackRightEncoderInverted);
 
-    /** Swerve Drive class utilizing CTR Electronics' Phoenix 6 API with the selected device types. */
-    public static class TunerSwerveDrivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> {
-        /**
-         * Constructs a CTRE SwerveDrivetrain using the specified constants.
-         *
-         * <p>This constructs the underlying hardware devices, so users should not construct the devices themselves. If
-         * they need the devices, they can access them through getters in the classes.
-         *
-         * @param drivetrainConstants Drivetrain-wide constants for the swerve drive
-         * @param modules Constants for each specific module
-         */
-        public TunerSwerveDrivetrain(
-                SwerveDrivetrainConstants drivetrainConstants, SwerveModuleConstants<?, ?, ?>... modules) {
-            super(TalonFX::new, TalonFX::new, CANcoder::new, drivetrainConstants, modules);
-        }
+    // Derived Values & Helpers
+    public static final double ODOMETRY_FREQUENCY =
+            new CANBus(DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
 
-        /**
-         * Constructs a CTRE SwerveDrivetrain using the specified constants.
-         *
-         * <p>This constructs the underlying hardware devices, so users should not construct the devices themselves. If
-         * they need the devices, they can access them through getters in the classes.
-         *
-         * @param drivetrainConstants Drivetrain-wide constants for the swerve drive
-         * @param odometryUpdateFrequency The frequency to run the odometry loop. If unspecified or set to 0 Hz, this is
-         *     250 Hz on CAN FD, and 100 Hz on CAN 2.0.
-         * @param modules Constants for each specific module
-         */
-        public TunerSwerveDrivetrain(
-                SwerveDrivetrainConstants drivetrainConstants,
-                double odometryUpdateFrequency,
-                SwerveModuleConstants<?, ?, ?>... modules) {
-            super(TalonFX::new, TalonFX::new, CANcoder::new, drivetrainConstants, odometryUpdateFrequency, modules);
-        }
+    public static final double DRIVE_BASE_RADIUS = Math.max(
+            Math.max(
+                    Math.hypot(FrontLeft.LocationX, FrontLeft.LocationY),
+                    Math.hypot(FrontRight.LocationX, FrontRight.LocationY)),
+            Math.max(
+                    Math.hypot(BackLeft.LocationX, BackLeft.LocationY),
+                    Math.hypot(BackRight.LocationX, BackRight.LocationY)));
 
-        /**
-         * Constructs a CTRE SwerveDrivetrain using the specified constants.
-         *
-         * <p>This constructs the underlying hardware devices, so users should not construct the devices themselves. If
-         * they need the devices, they can access them through getters in the classes.
-         *
-         * @param drivetrainConstants Drivetrain-wide constants for the swerve drive
-         * @param odometryUpdateFrequency The frequency to run the odometry loop. If unspecified or set to 0 Hz, this is
-         *     250 Hz on CAN FD, and 100 Hz on CAN 2.0.
-         * @param odometryStandardDeviation The standard deviation for odometry calculation in the form [x, y, theta]ᵀ,
-         *     with units in meters and radians
-         * @param visionStandardDeviation The standard deviation for vision calculation in the form [x, y, theta]ᵀ, with
-         *     units in meters and radians
-         * @param modules Constants for each specific module
-         */
-        public TunerSwerveDrivetrain(
-                SwerveDrivetrainConstants drivetrainConstants,
-                double odometryUpdateFrequency,
-                Matrix<N3, N1> odometryStandardDeviation,
-                Matrix<N3, N1> visionStandardDeviation,
-                SwerveModuleConstants<?, ?, ?>... modules) {
-            super(
-                    TalonFX::new,
-                    TalonFX::new,
-                    CANcoder::new,
-                    drivetrainConstants,
-                    odometryUpdateFrequency,
-                    odometryStandardDeviation,
-                    visionStandardDeviation,
-                    modules);
-        }
+    /** Returns an array of module translations. */
+    public static Translation2d[] getModuleTranslations() {
+        return new Translation2d[] {
+            new Translation2d(FrontLeft.LocationX, FrontLeft.LocationY),
+            new Translation2d(FrontRight.LocationX, FrontRight.LocationY),
+            new Translation2d(BackLeft.LocationX, BackLeft.LocationY),
+            new Translation2d(BackRight.LocationX, BackRight.LocationY)
+        };
     }
+
+    // PathPlanner & Simulation Configurations.
+    public static final RobotConfig PATHPLANNER_CONFIG = new RobotConfig(
+            ROBOT_MASS_KG,
+            ROBOT_MOI,
+            new ModuleConfig(
+                    kWheelRadius,
+                    kSpeedAt12Volts,
+                    WHEEL_COF,
+                    DCMotor.getKrakenX60Foc(1).withReduction(FrontLeft.DriveMotorGearRatio),
+                    kSlipCurrent,
+                    1),
+            getModuleTranslations());
+
+    public static final DriveTrainSimulationConfig MAPLESIM_CONFIG = DriveTrainSimulationConfig.Default()
+            .withRobotMass(Kilograms.of(ROBOT_MASS_KG))
+            .withCustomModuleTranslations(getModuleTranslations())
+            .withGyro(COTS.ofPigeon2())
+            .withSwerveModule(new SwerveModuleSimulationConfig(
+                    DCMotor.getKrakenX60Foc(1),
+                    // Must be a Falcon motor for this version of MapleSim.
+                    // MapleMotorSim should implement DCMotorSim in upcoming versions.
+                    DCMotor.getFalcon500Foc(1),
+                    kDriveGearRatio,
+                    kSteerGearRatio,
+                    kDriveFrictionVoltage,
+                    kSteerFrictionVoltage,
+                    kWheelRadius,
+                    KilogramSquareMeters.of(FrontLeft.SteerInertia),
+                    WHEEL_COF));
 }

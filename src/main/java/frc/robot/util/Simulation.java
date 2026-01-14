@@ -1,10 +1,10 @@
 package frc.robot.util;
 
 import static frc.robot.Constants.*;
+import static frc.robot.subsystems.swerve.SwerveConstants.MAPLESIM_CONFIG;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.subsystems.swerve.SwerveSubsystem;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
@@ -20,7 +20,7 @@ public final class Simulation {
 
     private Simulation() {
         initialPose = new Pose2d(3, 3, new Rotation2d());
-        simulation = new SwerveDriveSimulation(SwerveSubsystem.mapleSimConfig, initialPose);
+        simulation = new SwerveDriveSimulation(MAPLESIM_CONFIG, initialPose);
         arena.addDriveTrainSimulation(simulation);
     }
 
@@ -32,12 +32,12 @@ public final class Simulation {
         return instance;
     }
 
-    public Pose2d getPose() {
-        return simulation.getSimulatedDriveTrainPose();
-    }
-
     public void setPose(Pose2d pose) {
         simulation.setSimulationWorldPose(pose);
+    }
+
+    public Pose2d getPose() {
+        return simulation.getSimulatedDriveTrainPose();
     }
 
     public void resetField() {
