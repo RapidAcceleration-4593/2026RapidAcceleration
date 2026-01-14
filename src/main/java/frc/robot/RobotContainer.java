@@ -2,7 +2,6 @@ package frc.robot;
 
 import static frc.robot.Constants.Controllers.*;
 
-import frc.robot.factory.*;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -10,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.commands.turret.RotateTurretCommand;
+import frc.robot.factory.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
@@ -31,7 +31,7 @@ public class RobotContainer {
         swerve = SwerveFactory.initialize();
         apriltag = AprilTagFactory.initialize(swerve);
         objectDetection = ObjectDetectionFactory.initialize(swerve);
-		turret = TurretFactory.initialize(swerve);
+        turret = TurretFactory.initialize(swerve);
 
         registerCommands();
         configureBindings();
@@ -43,8 +43,8 @@ public class RobotContainer {
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
 
-		operatorController.x().whileTrue(new RotateTurretCommand(turret, -0.25));
-		operatorController.b().whileTrue(new RotateTurretCommand(turret, 0.25));
+        operatorController.x().whileTrue(new RotateTurretCommand(turret, -0.25));
+        operatorController.b().whileTrue(new RotateTurretCommand(turret, 0.25));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */

@@ -1,8 +1,7 @@
 package frc.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.turret.TurretConstants.TurretControlConstants.*;
-import static frc.robot.subsystems.turret.TurretConstants.TurretMechanismConstants.*;
+import static frc.robot.subsystems.turret.TurretConstants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -22,10 +21,10 @@ public class TurretSubsystem extends SubsystemBase {
         this.io = io;
         this.inputs = new TurretInputsAutoLogged();
         this.robotPoseSupplier = robotPoseSupplier;
-        this.pidController = turretPID;
+        this.pidController = kTurretPID;
 
-        pidController.enableContinuousInput(minimumAngle.in(Degrees), maximumAngle.in(Degrees));
-        pidController.setTolerance(maximumTolerance.in(Degrees));
+        pidController.enableContinuousInput(kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees));
+        pidController.setTolerance(kMaximumTolerance.in(Degrees));
     }
 
     @Override
@@ -59,6 +58,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     private double calculateDesiredAngle() {
         Pose2d robotPose = robotPoseSupplier.get();
+        Pose2d targetPose = kTargetPose;
 
         double dx = targetPose.getX() - robotPose.getX();
         double dy = targetPose.getY() - robotPose.getY();
@@ -71,8 +71,8 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     private double wrapToSafeRange(double currentAngle, double desiredAngle) {
-        double min = minimumAngle.in(Degrees);
-        double max = maximumAngle.in(Degrees);
+        double min = kMinimumAngle.in(Degrees);
+        double max = kMaximumAngle.in(Degrees);
 
         // Choose the shortest path according to error.
         double error = MathUtil.inputModulus(desiredAngle - currentAngle, min - max, max - min);

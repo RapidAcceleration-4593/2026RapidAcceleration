@@ -12,27 +12,24 @@ import edu.wpi.first.wpilibj.Encoder;
 
 public final class TurretConstants {
 
-    public static final class TurretHardwareConstants {
-        public static final SparkMax turretMotor = new SparkMax(0, MotorType.kBrushless);
-        public static final Encoder turretEncoder = new Encoder(0, 0);
-    }
+    // Hardware Constants.
+    public static final SparkMax kTurretMotor = new SparkMax(0, MotorType.kBrushless);
+    public static final Encoder kTurretEncoder = new Encoder(0, 0);
 
-    public static final class TurretMechanismConstants {
-        public static final int driveGear = 0; // # of Teeth on smaller drive gear.
-        public static final int ringGear = 0; // # of Teeth on larger ring gear.
-        public static final int pulsesPerRotation = 0; // Encoder counts for one drive gear rotation.
+    // Mechanism Constants.
+    public static final int kDriveGear = 0; // # of Teeth on smaller drive gear.
+    public static final int kRingGear = 0; // # of Teeth on larger ring gear.
+    public static final int kPulsesPerRotation = 0; // Encoder counts for one drive gear rotation.
 
-        public static final double degreesPerPulse = (360.0 * driveGear) / (ringGear * pulsesPerRotation);
+    public static final double kDegreesPerPulse = (360.0 * kDriveGear) / (kRingGear * kPulsesPerRotation);
 
-        public static final Angle initialAngle = Degrees.of(0.0);
-        public static final Angle minimumAngle = Degrees.of(-160.0);
-        public static final Angle maximumAngle = Degrees.of(160.0);
-    }
+    public static final Angle kInitialAngle = Degrees.of(0.0);
+    public static final Angle kMinimumAngle = Degrees.of(-160.0);
+    public static final Angle kMaximumAngle = Degrees.of(160.0);
 
-    public static final class TurretControlConstants {
-        public static final PIDController turretPID = new PIDController(0.0, 0.0, 0.0);
-        public static final Angle maximumTolerance = Degrees.of(0.0);
+    // Control Constants.
+    public static final PIDController kTurretPID = new PIDController(0.0, 0.0, 0.0);
+    public static final Angle kMaximumTolerance = Degrees.of(0.0);
 
-        public static final Pose2d targetPose = new Pose2d(0.0, 0.0, new Rotation2d());
-    }
+    public static final Pose2d kTargetPose = new Pose2d(0.0, 0.0, new Rotation2d());
 }

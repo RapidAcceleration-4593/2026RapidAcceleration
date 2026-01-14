@@ -1,6 +1,6 @@
 package frc.robot.factory;
 
-import static frc.robot.Constants.currentMode;
+import static frc.robot.Constants.*;
 
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.*;
@@ -11,7 +11,7 @@ public final class TurretFactory {
     private TurretFactory() {}
 
     public static TurretSubsystem initialize(SwerveSubsystem swerve) {
-        return switch (currentMode) {
+        return switch (kCurrentMode) {
             case REAL -> initializeReal(swerve);
             case SIM -> initializeSim(swerve);
             case REPLAY -> initializeReplay(swerve);

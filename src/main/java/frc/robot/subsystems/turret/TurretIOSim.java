@@ -1,20 +1,19 @@
 package frc.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.turret.TurretConstants.TurretHardwareConstants.*;
-import static frc.robot.subsystems.turret.TurretConstants.TurretMechanismConstants.*;
+import static frc.robot.subsystems.turret.TurretConstants.*;
 
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.Encoder;
 
 public class TurretIOSim implements TurretIO {
 
-    private final SparkMax motor = turretMotor;
-    private final Encoder encoder = turretEncoder;
+    private final SparkMax motor = kTurretMotor;
+    private final Encoder encoder = kTurretEncoder;
 
     public TurretIOSim() {
         // Converts pulses to meaningful units of degrees.
-        encoder.setDistancePerPulse(degreesPerPulse);
+        encoder.setDistancePerPulse(kDegreesPerPulse);
     }
 
     @Override
