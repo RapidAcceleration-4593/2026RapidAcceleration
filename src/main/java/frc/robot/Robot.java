@@ -1,10 +1,13 @@
 package frc.robot;
 
+import static frc.robot.Constants.*;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.PowerSim;
+import frc.robot.util.Simulation;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -82,7 +85,11 @@ public class Robot extends LoggedRobot {
 
     /** This function is called once when the robot is disabled. */
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        if (currentMode == Mode.SIM) {
+            Simulation.getInstance().resetField();
+        }
+    }
 
     /** This function is called periodically when the robot is disabled. */
     @Override
@@ -136,6 +143,7 @@ public class Robot extends LoggedRobot {
     /** This function is called periodically when in simulaiton. */
     @Override
     public void simulationPeriodic() {
+        Simulation.getInstance().periodic();
         PowerSim.simulationPeriodic();
     }
 }
