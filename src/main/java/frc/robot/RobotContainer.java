@@ -2,13 +2,23 @@ package frc.robot;
 
 import static frc.robot.Constants.Controllers.*;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.swerve.SwerveCommands;
+import frc.robot.factory.*;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
+import frc.robot.subsystems.vision.objectdetection.ObjectDetectionSubsystem;
 
 public class RobotContainer {
 
     // Subsystem(s)
+    public final SwerveSubsystem swerve;
+    public final AprilTagSubsystem apriltag;
+    public final ObjectDetectionSubsystem objectDetection;
     // Initialize IntakeSubsystem.
 
     // Controller(s)
@@ -16,14 +26,28 @@ public class RobotContainer {
     private final CommandXboxController operatorController = new CommandXboxController(operatorControllerPort);
 
     public RobotContainer() {
+        swerve = SwerveFactory.initialize();
+        apriltag = AprilTagFactory.initialize(swerve);
+        objectDetection = ObjectDetectionFactory.initialize(swerve);
+
         registerCommands();
         configureBindings();
     }
 
-    private void configureBindings() {}
-    private void registerCommands() {}
+    private void configureBindings() {
+        swerve.setDefaultCommand(SwerveCommands.joystickDrive(
+                swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
 
+        driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
+    }
+
+    /** Register NamedCommands to be used in PathPlanner for autonomous. */
+    private void registerCommands() {
+        NamedCommands.registerCommand("ExampleCommand", Commands.none());
+    }
+
+    /** Select the command to run in autonomous mode. */
     public Command getAutonomousCommand() {
-        return Commands.none();
+        return AutoBuilder.buildAuto("Example");
     }
 }
