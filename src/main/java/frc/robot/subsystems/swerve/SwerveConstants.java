@@ -29,15 +29,17 @@ public final class SwerveConstants {
 
     /** Theoretical Maximum Speed at 12V. */
     public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(4.5);
-	public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(5.0);
-	public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(540.0);
-	public static final AngularAcceleration kAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
+
+    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(5.0);
+    public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(540.0);
+    public static final AngularAcceleration kAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
 
     /** CANBus/CANivore that all modules are connected to. */
     private static final CANBus kCANBus = new CANBus("drivebase", "./logs/example.hoot");
 
     /** Configs for the Pigeon 2; leave null to skip applying Pigeon 2 configs. */
     private static final Pigeon2Configuration kPigeonConfigs = null;
+
     private static final int kPigeonID = 5;
 
     // Gear Ratios, Geometry, & Inversions.

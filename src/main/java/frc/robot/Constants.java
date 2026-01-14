@@ -1,8 +1,8 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotBase;
 
 public final class Constants {
 
@@ -13,7 +13,7 @@ public final class Constants {
     }
 
     public static final Mode kCurrentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
-	public static final Alliance kAlliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+    public static final Alliance kAlliance = DriverStation.getAlliance().orElse(Alliance.Blue);
 
     public static final class Controllers {
         public static final int kDriverControllerPort = 0;

@@ -1,7 +1,7 @@
 package frc.robot;
 
-import static frc.robot.Constants.*;
 import static frc.robot.BuildConstants.*;
+import static frc.robot.Constants.*;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
