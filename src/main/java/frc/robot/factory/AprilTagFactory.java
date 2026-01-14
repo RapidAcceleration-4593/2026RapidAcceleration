@@ -1,6 +1,6 @@
 package frc.robot.factory;
 
-import static frc.robot.Constants.currentMode;
+import static frc.robot.Constants.*;
 import static frc.robot.subsystems.vision.apriltag.AprilTagConstants.cameras;
 
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -13,7 +13,7 @@ public final class AprilTagFactory {
     private AprilTagFactory() {}
 
     public static AprilTagSubsystem initialize(SwerveSubsystem swerve) {
-        return switch (currentMode) {
+        return switch (kCurrentMode) {
             case REAL -> initializeReal(swerve);
             case SIM -> initializeSim(swerve);
             case REPLAY -> initializeReplay(swerve);
