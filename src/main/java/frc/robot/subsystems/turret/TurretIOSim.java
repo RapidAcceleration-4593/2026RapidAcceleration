@@ -1,39 +1,34 @@
 package frc.robot.subsystems.turret;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static frc.robot.subsystems.swerve.SwerveConstants.kRobotMOI;
 import static frc.robot.subsystems.turret.TurretConstants.*;
 
-import com.revrobotics.spark.SparkMax;
-import edu.wpi.first.wpilibj.Encoder;
+import com.revrobotics.sim.SparkMaxSim;
 
-public class TurretIOSim implements TurretIO {
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
-    private final SparkMax motor = kTurretMotor;
-    private final Encoder encoder = kTurretEncoder;
+public class TurretIOSim extends TurretIOReal {
 
-    public TurretIOSim() {
-        // Converts pulses to meaningful units of degrees.
-        encoder.setDistancePerPulse(kDegreesPerPulse);
-    }
-
+    private DCMotor gearbox = DCMotor.getNEO(1);
+	private SparkMaxSim motorSim = new SparkMaxSim(kTurretMotor, gearbox);
+    private SingleJointedArmSim turretSim = new SingleJointedArmSim(LinearSystemId.createSingleJointedArmSystem(gearbox, kRobotMOI.in(KilogramSquareMeters), ));
+	private EncoderSim encoderSim = new EncoderSim(kTurretEncoder);
+		
     @Override
     public void updateInputs(TurretInputs inputs) {
-        inputs.angle = Degrees.of(encoder.getDistance());
-        inputs.angularVelocity = DegreesPerSecond.of(encoder.getRate());
+        updateSimulation();
+        super.updateInputs(inputs);
     }
 
-    @Override
-    public void setMotorSpeed(double speed) {
-        motor.set(speed);
-    }
+    private void updateSimulation() {
+	}
 
-    @Override
-    public void resetEncoder() {
-        encoder.reset();
-    }
-
-    @Override
-    public void stopMotor() {
-        motor.stopMotor();
+    private double calculateGearing() {
+        return kGearboxRatio * kRingGear / kDriveGear;
     }
 }

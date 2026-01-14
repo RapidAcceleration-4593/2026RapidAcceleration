@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.wpilibj.Encoder;
 
 public final class TurretConstants {
@@ -17,11 +18,15 @@ public final class TurretConstants {
     public static final Encoder kTurretEncoder = new Encoder(0, 0);
 
     // Mechanism Constants.
-    public static final int kDriveGear = 0; // # of Teeth on smaller drive gear.
-    public static final int kRingGear = 0; // # of Teeth on larger ring gear.
-    public static final int kPulsesPerRotation = 0; // Encoder counts for one drive gear rotation.
+    public static final double kGearboxRatio = 1; // Gear ratio between motor and drive gear.
+    public static final int kDriveGear = 12; // # of Teeth on smaller drive gear.
+    public static final int kRingGear = 80; // # of Teeth on larger ring gear.
+    public static final double kMotorTurretGearing = kGearboxRatio * kRingGear / kDriveGear; // Gear ratio between motor and turret.
 
+    public static final int kPulsesPerRotation = 8192; // Encoder counts for one drive gear rotation.
     public static final double kDegreesPerPulse = (360.0 * kDriveGear) / (kRingGear * kPulsesPerRotation);
+
+    public static final MomentOfInertia kMomentOfInertia = KilogramSquareMeters.of(0.0030);
 
     public static final Angle kInitialAngle = Degrees.of(0.0);
     public static final Angle kMinimumAngle = Degrees.of(-160.0);
