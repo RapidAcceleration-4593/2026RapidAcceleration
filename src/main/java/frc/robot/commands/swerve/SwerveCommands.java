@@ -1,5 +1,7 @@
 package frc.robot.commands.swerve;
 
+import static frc.robot.subsystems.swerve.SwerveConstants.*;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -234,8 +236,7 @@ public class SwerveCommands {
                                     for (int i = 0; i < 4; i++) {
                                         wheelDelta += Math.abs(positions[i] - state.positions[i]) / 4.0;
                                     }
-                                    double wheelRadius =
-                                            (state.gyroDelta * SwerveSubsystem.DRIVE_BASE_RADIUS) / wheelDelta;
+                                    double wheelRadius = (state.gyroDelta * DRIVE_BASE_RADIUS) / wheelDelta;
 
                                     NumberFormat formatter = new DecimalFormat("#0.000");
                                     System.out.println("********** Wheel Radius Characterization Results **********");
