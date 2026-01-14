@@ -29,7 +29,7 @@ public class AprilTagIOPhotonVisionSim extends AprilTagIOPhotonVision {
         // Initialize Vision Simulation.
         if (visionSim == null) {
             visionSim = new VisionSystemSim("main");
-            visionSim.addAprilTags(fieldLayout);
+            visionSim.addAprilTags(kFieldLayout);
         }
 
         // Add Simulation Camera.

@@ -24,8 +24,8 @@ public class RobotContainer {
     public final TurretSubsystem turret;
 
     // Controller(s)
-    private final CommandXboxController driverController = new CommandXboxController(driverControllerPort);
-    private final CommandXboxController operatorController = new CommandXboxController(operatorControllerPort);
+    private final CommandXboxController driverController = new CommandXboxController(kDriverControllerPort);
+    private final CommandXboxController operatorController = new CommandXboxController(kOperatorControllerPort);
 
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
