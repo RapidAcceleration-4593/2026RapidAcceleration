@@ -1,7 +1,7 @@
 package frc.robot.subsystems.swerve;
 
 import static frc.robot.Constants.*;
-import static frc.robot.subsystems.swerve.SwerveConstants.DrivetrainConstants;
+import static frc.robot.subsystems.swerve.SwerveConstants.*;
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -132,8 +132,7 @@ public abstract class ModuleIOTalonFX implements ModuleIO {
         turnCurrent = turnTalon.getStatorCurrent();
 
         // Configure periodic frames.
-        BaseStatusSignal.setUpdateFrequencyForAll(
-                SwerveSubsystem.ODOMETRY_FREQUENCY, turnAbsolutePosition, drivePosition);
+        BaseStatusSignal.setUpdateFrequencyForAll(ODOMETRY_FREQUENCY, turnAbsolutePosition, drivePosition);
         BaseStatusSignal.setUpdateFrequencyForAll(
                 50.0, driveVelocity, driveAppliedVolts, driveCurrent, turnVelocity, turnAppliedVolts, turnCurrent);
         ParentDevice.optimizeBusUtilizationForAll(driveTalon, turnTalon);
