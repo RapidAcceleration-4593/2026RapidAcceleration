@@ -20,23 +20,27 @@ import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 public final class SwerveConstants {
 
     // Robot Physical Properties.
-    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(115.0);
-    public static final double ROBOT_MOI = 6.883;
-    public static final double WHEEL_COF = 1.2;
+    public static final double kRobotMass = Units.lbsToKilograms(115.0);
+    public static final double kRobotMOI = 6.883;
+    public static final double kWheelCOF = 1.2;
 
     /** Current at which the wheels start to slip. */
     private static final Current kSlipCurrent = Amps.of(120.0);
 
-    /** Theoretical Free Speed at 12V. */
-    public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.5);
+    /** Theoretical Maximum Speed at 12V. */
+    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(4.5);
+
+    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(5.0);
+    public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(540.0);
+    public static final AngularAcceleration kAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
 
     /** CANBus/CANivore that all modules are connected to. */
     private static final CANBus kCANBus = new CANBus("drivebase", "./logs/example.hoot");
 
     /** Configs for the Pigeon 2; leave null to skip applying Pigeon 2 configs. */
-    private static final Pigeon2Configuration pigeonConfigs = null;
+    private static final Pigeon2Configuration kPigeonConfigs = null;
 
-    private static final int kPigeonId = 5;
+    private static final int kPigeonID = 5;
 
     // Gear Ratios, Geometry, & Inversions.
     private static final double kDriveGearRatio = 5.36;
@@ -51,7 +55,7 @@ public final class SwerveConstants {
     private static final boolean kInvertRightSide = true;
 
     // Closed Loop Configuration.
-    private static final Slot0Configs steerGains = new Slot0Configs()
+    private static final Slot0Configs kSteerGains = new Slot0Configs()
             .withKP(100)
             .withKI(0.0)
             .withKD(0.5)
@@ -60,7 +64,7 @@ public final class SwerveConstants {
             .withKA(0.0)
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
-    private static final Slot0Configs driveGains =
+    private static final Slot0Configs kDriveGains =
             new Slot0Configs().withKP(0.1).withKI(0.0).withKD(0.0).withKS(0.0).withKV(0.124);
 
     private static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
@@ -70,14 +74,14 @@ public final class SwerveConstants {
     private static final SteerMotorArrangement kSteerMotorType = SteerMotorArrangement.TalonFX_Integrated;
     private static final SteerFeedbackType kSteerFeedbackType = SteerFeedbackType.FusedCANcoder;
 
-    private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration();
-    private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
+    private static final TalonFXConfiguration kDriveInitialConfigs = new TalonFXConfiguration();
+    private static final TalonFXConfiguration kSteerInitialConfigs = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                     // Help avoid brownouts without impacting performance.
                     .withStatorCurrentLimit(Amps.of(60))
                     .withStatorCurrentLimitEnable(true));
 
-    private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
+    private static final CANcoderConfiguration kEncoderInitialConfigs = new CANcoderConfiguration();
 
     // Simulation Parameters.
     private static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.05);
@@ -89,8 +93,8 @@ public final class SwerveConstants {
     // Drivetrain & Module Constants.
     public static final SwerveDrivetrainConstants DrivetrainConstants = new SwerveDrivetrainConstants()
             .withCANBusName(kCANBus.getName())
-            .withPigeon2Id(kPigeonId)
-            .withPigeon2Configs(pigeonConfigs);
+            .withPigeon2Id(kPigeonID)
+            .withPigeon2Configs(kPigeonConfigs);
 
     private static final SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
             ConstantCreator = new SwerveModuleConstantsFactory<
@@ -99,18 +103,18 @@ public final class SwerveConstants {
                     .withSteerMotorGearRatio(kSteerGearRatio)
                     .withCouplingGearRatio(kCoupleRatio)
                     .withWheelRadius(kWheelRadius)
-                    .withSteerMotorGains(steerGains)
-                    .withDriveMotorGains(driveGains)
+                    .withSteerMotorGains(kSteerGains)
+                    .withDriveMotorGains(kDriveGains)
                     .withSteerMotorClosedLoopOutput(kSteerClosedLoopOutput)
                     .withDriveMotorClosedLoopOutput(kDriveClosedLoopOutput)
                     .withSlipCurrent(kSlipCurrent)
-                    .withSpeedAt12Volts(kSpeedAt12Volts)
+                    .withSpeedAt12Volts(kLinearVelocity)
                     .withDriveMotorType(kDriveMotorType)
                     .withSteerMotorType(kSteerMotorType)
                     .withFeedbackSource(kSteerFeedbackType)
-                    .withDriveMotorInitialConfigs(driveInitialConfigs)
-                    .withSteerMotorInitialConfigs(steerInitialConfigs)
-                    .withEncoderInitialConfigs(encoderInitialConfigs)
+                    .withDriveMotorInitialConfigs(kDriveInitialConfigs)
+                    .withSteerMotorInitialConfigs(kSteerInitialConfigs)
+                    .withEncoderInitialConfigs(kEncoderInitialConfigs)
                     .withSteerInertia(kSteerInertia)
                     .withDriveInertia(kDriveInertia)
                     .withSteerFrictionVoltage(kSteerFrictionVoltage)
@@ -231,19 +235,19 @@ public final class SwerveConstants {
 
     // PathPlanner & Simulation Configurations.
     public static final RobotConfig PATHPLANNER_CONFIG = new RobotConfig(
-            ROBOT_MASS_KG,
-            ROBOT_MOI,
+            kRobotMass,
+            kRobotMOI,
             new ModuleConfig(
                     kWheelRadius,
-                    kSpeedAt12Volts,
-                    WHEEL_COF,
-                    DCMotor.getKrakenX60Foc(1).withReduction(FrontLeft.DriveMotorGearRatio),
+                    kLinearVelocity,
+                    kWheelCOF,
+                    DCMotor.getKrakenX60Foc(1).withReduction(kDriveGearRatio),
                     kSlipCurrent,
                     1),
             getModuleTranslations());
 
     public static final DriveTrainSimulationConfig MAPLESIM_CONFIG = DriveTrainSimulationConfig.Default()
-            .withRobotMass(Kilograms.of(ROBOT_MASS_KG))
+            .withRobotMass(Kilograms.of(kRobotMass))
             .withCustomModuleTranslations(getModuleTranslations())
             .withGyro(COTS.ofPigeon2())
             .withSwerveModule(new SwerveModuleSimulationConfig(
@@ -256,6 +260,6 @@ public final class SwerveConstants {
                     kDriveFrictionVoltage,
                     kSteerFrictionVoltage,
                     kWheelRadius,
-                    KilogramSquareMeters.of(FrontLeft.SteerInertia),
-                    WHEEL_COF));
+                    kSteerInertia,
+                    kWheelCOF));
 }
