@@ -1,13 +1,20 @@
 package frc.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.*;
 import static frc.robot.subsystems.turret.TurretConstants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Mode;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class TurretSubsystem extends SubsystemBase {
 
@@ -21,9 +28,8 @@ public class TurretSubsystem extends SubsystemBase {
         this.io = io;
         this.inputs = new TurretInputsAutoLogged();
         this.robotPoseSupplier = robotPoseSupplier;
-        this.pidController = kTurretPID;
 
-        pidController.enableContinuousInput(kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees));
+        this.pidController = new PIDController(kTurretP, kTurretI, kTurretD);
         pidController.setTolerance(kMaximumTolerance.in(Degrees));
     }
 
@@ -36,8 +42,16 @@ public class TurretSubsystem extends SubsystemBase {
         double safeSetpoint = wrapToSafeRange(currentAngle, desiredAngle);
 
         double output = pidController.calculate(currentAngle, safeSetpoint);
+        Logger.recordOutput("Turret/Setpoint", safeSetpoint); // Switch to inputs.angle.
 
         setMotorSpeed(output);
+
+        if (kCurrentMode == Mode.SIM) {
+            Rotation3d turretRotation = new Rotation3d(0.0, 0.0, Units.degreesToRadians(safeSetpoint));
+            Pose3d turretPose = new Pose3d(0.0, 0.0, 0.0, turretRotation);
+
+            Logger.recordOutput("Turret/Pose", turretPose);
+        }
     }
 
     public void setMotorSpeed(double speed) {
@@ -58,7 +72,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     private double calculateDesiredAngle() {
         Pose2d robotPose = robotPoseSupplier.get();
-        Pose2d targetPose = kTargetPose;
+        Pose2d targetPose = kAlliance == Alliance.Blue ? kBlueHubPose : kRedHubPose;
 
         double dx = targetPose.getX() - robotPose.getX();
         double dy = targetPose.getY() - robotPose.getY();
