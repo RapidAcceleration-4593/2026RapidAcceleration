@@ -48,8 +48,7 @@ public final class Simulation {
     public void periodic() {
         arena.simulationPeriodic();
         Logger.recordOutput("FieldSimulation/RobotPosition", getPose());
-        Logger.recordOutput("FieldSimulation/Coral", arena.getGamePiecesArrayByType("Coral"));
-        Logger.recordOutput("FieldSimulation/Algae", arena.getGamePiecesArrayByType("Algae"));
+        Logger.recordOutput("FieldSimulation/Fuel", arena.getGamePiecesArrayByType("Fuel"));
     }
 
     public SwerveDriveSimulation raw() {
