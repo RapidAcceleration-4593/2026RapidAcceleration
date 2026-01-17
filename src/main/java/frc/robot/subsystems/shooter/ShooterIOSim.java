@@ -1,33 +1,62 @@
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
-import com.revrobotics.sim.SparkMaxSim;
-import com.revrobotics.spark.SparkMax;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class ShooterIOSim implements ShooterIO {
 
-    private final SparkMax motor = kShooterMotor;
+    private final FlywheelSim flywheel;
+    private final PIDController pid;
 
-    private final SparkMaxSim motorSim;
-    private final DCMotor gearbox;
+    private double targetRPM;
+    private double appliedVolts;
 
     public ShooterIOSim() {
-        gearbox = DCMotor.getNEO(1);
-        motorSim = new SparkMaxSim(kShooterMotor, gearbox);
+        flywheel = new FlywheelSim(
+                LinearSystemId.createFlywheelSystem(
+                        DCMotor.getNEO(1), kShooterMOI.in(KilogramSquareMeters), kShooterGearRatio),
+                DCMotor.getNEO(1));
+
+        pid = new PIDController(kP, kI, kD);
+        pid.setTolerance(kVelocityToleranceRPM.in(RPM));
     }
 
     @Override
-    public void updateInputs(ShooterInputs inputs) {}
+    public void updateInputs(ShooterInputs inputs) {
+        flywheel.update(kD);
 
-    @Override
-    public void setMotorSpeed(double speed) {
-        motor.set(speed);
+        inputs.velocityRPM = flywheel.getAngularVelocityRPM();
+        inputs.appliedVolts = appliedVolts;
+        inputs.targetRPM = targetRPM;
     }
 
     @Override
-    public void stopMotor() {
-        motor.stopMotor();
+    public void setTargetVelocity(double rpm) {
+        targetRPM = rpm;
+        appliedVolts = pid.calculate(targetRPM);
+
+        setVelocity(appliedVolts);
+    }
+
+    @Override
+    public void stop() {
+        targetRPM = 0.0;
+        appliedVolts = 0.0;
+        flywheel.setInputVoltage(0.0);
+    }
+
+    /** Sets the target velocity in RPM. */
+    public void setVelocity(double voltage) {
+        flywheel.setInputVoltage(voltage);
+    }
+
+    /** Returns current velocity in RPM. */
+    public double getVelocity() {
+        return flywheel.getAngularVelocityRPM();
     }
 }

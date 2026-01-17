@@ -1,7 +1,6 @@
 package frc.robot;
 
 import static frc.robot.Constants.Controllers.*;
-import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -44,7 +43,7 @@ public class RobotContainer {
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
 
-        operatorController.rightTrigger(0.5).whileTrue(new RunShooterCommand(shooter, kShooterSpeed));
+        operatorController.rightTrigger(0.5).whileTrue(new RunShooterCommand(shooter));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */
