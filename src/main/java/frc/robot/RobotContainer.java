@@ -7,8 +7,10 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.intake.*;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import frc.robot.subsystems.vision.objectdetection.ObjectDetectionSubsystem;
@@ -19,7 +21,7 @@ public class RobotContainer {
     public final SwerveSubsystem swerve;
     public final AprilTagSubsystem apriltag;
     public final ObjectDetectionSubsystem objectDetection;
-    // Initialize IntakeSubsystem.
+    public final IntakeSubsystem intake;
 
     // Controller(s)
     private final CommandXboxController driverController = new CommandXboxController(kDriverControllerPort);
@@ -29,6 +31,7 @@ public class RobotContainer {
         swerve = SwerveFactory.initialize();
         apriltag = AprilTagFactory.initialize(swerve);
         objectDetection = ObjectDetectionFactory.initialize(swerve);
+        intake = IntakeFactory.initialize();
 
         registerCommands();
         configureBindings();
@@ -39,6 +42,10 @@ public class RobotContainer {
                 swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
+
+        operatorController.a().whileTrue(new RetractIntakeCommand(intake));
+        operatorController.y().whileTrue(new DeployIntakeCommand(intake));
+        operatorController.x().whileTrue(new RunIntakeCommand(intake));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */
