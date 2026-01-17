@@ -28,9 +28,9 @@ public class ShooterIOSim implements ShooterIO {
 
     @Override
     public void updateInputs(ShooterInputs inputs) {
-        flywheel.update(kD);
+        flywheel.update(0.02);
 
-        inputs.velocityRPM = flywheel.getAngularVelocityRPM();
+        inputs.velocityRPM = getVelocity();
         inputs.appliedVolts = appliedVolts;
         inputs.targetRPM = targetRPM;
     }
@@ -47,16 +47,21 @@ public class ShooterIOSim implements ShooterIO {
     public void stop() {
         targetRPM = 0.0;
         appliedVolts = 0.0;
-        flywheel.setInputVoltage(0.0);
+        setVelocity(0.0);;
     }
 
-    /** Sets the target velocity in RPM. */
+    @Override
     public void setVelocity(double voltage) {
         flywheel.setInputVoltage(voltage);
     }
 
-    /** Returns current velocity in RPM. */
+    @Override
     public double getVelocity() {
         return flywheel.getAngularVelocityRPM();
+    }
+
+    @Override
+    public boolean atSpeed() {
+        return pid.atSetpoint();
     }
 }

@@ -19,4 +19,17 @@ public interface ShooterIO {
 
     /** Stops the shooter motor immediately. */
     public default void stop() {}
+
+    /** Sets velocity of the shooter motor in volts. */
+    public default void setVelocity(double voltage) {}
+
+    /** Returns the current shooter velocity in RPM. */
+    public default double getVelocity() {
+        return 0.0;
+    }
+
+    /** Returns true if the shooter is at speed. */
+    public default boolean atSpeed() {
+        return false;
+    }
 }

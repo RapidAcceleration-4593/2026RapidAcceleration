@@ -38,7 +38,7 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void updateInputs(ShooterInputs inputs) {
-        inputs.velocityRPM = encoder.getVelocity();
+        inputs.velocityRPM = getVelocity();
         inputs.targetRPM = targetRPM;
         inputs.appliedVolts = appliedVolts;
     }
@@ -58,13 +58,18 @@ public class ShooterIOReal implements ShooterIO {
         motor.stopMotor();
     }
 
-    /** Sets the target velocity in RPM. */
+    @Override
     public void setVelocity(double voltage) {
         motor.setVoltage(voltage);
     }
 
-    /** Returns current velocity in RPM. */
+    @Override
     public double getVelocity() {
         return encoder.getVelocity();
+    }
+
+    @Override
+    public boolean atSpeed() {
+        return pid.atSetpoint();
     }
 }
