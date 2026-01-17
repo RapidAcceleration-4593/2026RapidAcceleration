@@ -1,6 +1,6 @@
 package frc.robot.subsystems.vision.apriltag;
 
-import static frc.robot.subsystems.vision.apriltag.AprilTagConstants.fieldLayout;
+import static frc.robot.subsystems.vision.apriltag.AprilTagConstants.*;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -71,7 +71,7 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
                 var target = result.targets.get(0);
 
                 // Calculate Robot Pose.
-                var tagPose = fieldLayout.getTagPose(target.fiducialId);
+                var tagPose = kFieldLayout.getTagPose(target.fiducialId);
                 if (tagPose.isPresent()) {
                     Transform3d fieldToTarget = new Transform3d(
                             tagPose.get().getTranslation(), tagPose.get().getRotation());

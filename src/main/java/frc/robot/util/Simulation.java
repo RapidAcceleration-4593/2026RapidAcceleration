@@ -25,7 +25,7 @@ public final class Simulation {
     }
 
     public static Simulation getInstance() {
-        if (currentMode != Mode.SIM) return null;
+        if (kCurrentMode != Mode.SIM) return null;
         if (instance == null) {
             instance = new Simulation();
         }

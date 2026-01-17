@@ -100,7 +100,7 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
                 this::runVelocity,
                 new PPHolonomicDriveController(new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
                 PATHPLANNER_CONFIG,
-                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+                () -> kAlliance == Alliance.Red,
                 this);
 
         Pathfinding.setPathfinder(new LocalADStarAK());
@@ -172,7 +172,7 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
         }
 
         // Update gyro alert.
-        gyroDisconnectedAlert.set(!gyroInputs.connected && currentMode != Mode.SIM);
+        gyroDisconnectedAlert.set(!gyroInputs.connected && kCurrentMode != Mode.SIM);
     }
 
     /**
@@ -184,7 +184,7 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
         // Calculate module setpoints.
         speeds = ChassisSpeeds.discretize(speeds, 0.02);
         SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(speeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, kSpeedAt12Volts);
+        SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, kLinearVelocity);
 
         // Log unoptimized setpoints and setpoint speeds.
         Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
@@ -307,7 +307,7 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
 
     /** Returns the maximum linear speed in meters per second. */
     public double getMaxLinearSpeedMetersPerSec() {
-        return kSpeedAt12Volts.in(MetersPerSecond);
+        return kLinearVelocity.in(MetersPerSecond);
     }
 
     /** Returns the maximum angular speed in radians per second. */
