@@ -37,7 +37,7 @@ public class AprilTagSubsystem extends SubsystemBase {
         this.disconnectedAlerts = new Alert[io.length];
         for (int i = 0; i < inputs.length; i++) {
             disconnectedAlerts[i] =
-                    new Alert("Vision Camera " + cameras[i].name() + " Disconnected.", AlertType.kWarning);
+                    new Alert("Vision Camera " + kCameras[i].name() + " Disconnected.", AlertType.kWarning);
         }
     }
 
@@ -54,7 +54,7 @@ public class AprilTagSubsystem extends SubsystemBase {
     public void periodic() {
         for (int i = 0; i < io.length; i++) {
             io[i].updateInputs(inputs[i]);
-            Logger.processInputs("Vision/" + cameras[i].name(), inputs[i]);
+            Logger.processInputs("Vision/" + kCameras[i].name(), inputs[i]);
         }
 
         // Initialize Logger Values.
@@ -76,7 +76,7 @@ public class AprilTagSubsystem extends SubsystemBase {
 
             // Add AprilTag Poses
             for (int tagId : inputs[cameraIndex].tagIds) {
-                var tagPose = fieldLayout.getTagPose(tagId);
+                var tagPose = kFieldLayout.getTagPose(tagId);
                 if (tagPose.isPresent()) {
                     tagPoses.add(tagPose.get());
                 }
@@ -87,12 +87,12 @@ public class AprilTagSubsystem extends SubsystemBase {
                 // Check whether to reject each pose.
                 boolean rejectPose = observation.tagCount() == 0 // Must have at least one tag.
                         || (observation.tagCount() == 1
-                                && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity.
-                        || Math.abs(observation.pose().getZ()) > maxZError // Must have a realistic Z coordinate.
+                                && observation.ambiguity() > kMaxAmbiguity) // Cannot be high ambiguity.
+                        || Math.abs(observation.pose().getZ()) > kMaxZError // Must have a realistic Z coordinate.
                         || observation.pose().getX() < 0.0
-                        || observation.pose().getX() > fieldLayout.getFieldLength()
+                        || observation.pose().getX() > kFieldLayout.getFieldLength()
                         || observation.pose().getY() < 0.0
-                        || observation.pose().getY() > fieldLayout.getFieldWidth();
+                        || observation.pose().getY() > kFieldLayout.getFieldWidth();
 
                 // Add Pose to Log.
                 robotPoses.add(observation.pose());
@@ -109,10 +109,10 @@ public class AprilTagSubsystem extends SubsystemBase {
 
                 // Calculate Standard Deviations.
                 double stdDevFactor = Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
-                double linearStdDev = linearStdDevBaseline * stdDevFactor;
-                double angularStdDev = angularStdDevBaseline * stdDevFactor;
+                double linearStdDev = kLinearStdDevBaseline * stdDevFactor;
+                double angularStdDev = kAngularStdDevBaseline * stdDevFactor;
 
-                double cameraStdDevFactor = cameras[cameraIndex].stdDevFactor();
+                double cameraStdDevFactor = kCameras[cameraIndex].stdDevFactor();
                 linearStdDev *= cameraStdDevFactor;
                 angularStdDev *= cameraStdDevFactor;
 
@@ -123,7 +123,7 @@ public class AprilTagSubsystem extends SubsystemBase {
                         VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
             }
 
-            String cameraName = cameras[cameraIndex].name();
+            String cameraName = kCameras[cameraIndex].name();
 
             // Log Camera Data.
             Logger.recordOutput("Vision/" + cameraName + "/TagPoses", tagPoses.toArray(new Pose3d[tagPoses.size()]));

@@ -8,11 +8,11 @@ import edu.wpi.first.math.util.Units;
 
 public final class AprilTagConstants {
 
-    public static final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
     public record CameraConfig(String name, Transform3d robotToCamera, double stdDevFactor) {}
 
-    public static final CameraConfig[] cameras = {
+    public static final CameraConfig[] kCameras = {
         // Left Camera
         new CameraConfig(
                 "Arducam_OV9782_Colored_1",
@@ -33,9 +33,9 @@ public final class AprilTagConstants {
                 1.0)
     };
 
-    public static final double maxAmbiguity = 0.30;
-    public static final double maxZError = 0.75;
+    public static final double kMaxAmbiguity = 0.30;
+    public static final double kMaxZError = 0.75;
 
-    public static final double linearStdDevBaseline = 0.02; // Meters.
-    public static final double angularStdDevBaseline = 0.06; // Radians.
+    public static final double kLinearStdDevBaseline = 0.02; // Meters.
+    public static final double kAngularStdDevBaseline = 0.06; // Radians.
 }

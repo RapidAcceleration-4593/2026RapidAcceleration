@@ -1,6 +1,6 @@
 package frc.robot.factory;
 
-import static frc.robot.Constants.currentMode;
+import static frc.robot.Constants.*;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import frc.robot.subsystems.swerve.*;
@@ -11,7 +11,7 @@ public final class SwerveFactory {
     private SwerveFactory() {}
 
     public static SwerveSubsystem initialize() {
-        return switch (currentMode) {
+        return switch (kCurrentMode) {
             case REAL -> initializeReal();
             case SIM -> initializeSim();
             case REPLAY -> initializeReplay();

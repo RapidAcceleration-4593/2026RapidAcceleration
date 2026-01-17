@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static frc.robot.BuildConstants.*;
 import static frc.robot.Constants.*;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,12 +22,12 @@ public class Robot extends LoggedRobot {
     private RobotContainer robotContainer;
 
     public Robot() {
-        Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
-        Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
-        Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-        Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
-        Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
-        switch (BuildConstants.DIRTY) {
+        Logger.recordMetadata("ProjectName", MAVEN_NAME);
+        Logger.recordMetadata("BuildDate", BUILD_DATE);
+        Logger.recordMetadata("GitSHA", GIT_SHA);
+        Logger.recordMetadata("GitDate", GIT_DATE);
+        Logger.recordMetadata("GitBranch", GIT_BRANCH);
+        switch (DIRTY) {
             case 0:
                 Logger.recordMetadata("GitDirty", "All changes committed");
                 break;
@@ -38,7 +39,7 @@ public class Robot extends LoggedRobot {
                 break;
         }
 
-        switch (Constants.currentMode) {
+        switch (kCurrentMode) {
             case REAL:
                 // Running on a real robot, logging to a USB Drive.
                 Logger.addDataReceiver(new WPILOGWriter());
@@ -86,7 +87,7 @@ public class Robot extends LoggedRobot {
     /** This function is called once when the robot is disabled. */
     @Override
     public void disabledInit() {
-        if (currentMode == Mode.SIM) {
+        if (kCurrentMode == Mode.SIM) {
             Simulation.getInstance().resetField();
         }
     }
