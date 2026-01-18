@@ -11,14 +11,16 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class ShooterIOReal implements ShooterIO {
 
     private final SparkMax motor;
     private final SparkMaxConfig config;
-
     private final RelativeEncoder encoder;
+
     private final PIDController pid;
+    private final SimpleMotorFeedforward feedforward;
 
     private double targetRPM;
     private double appliedVolts;
@@ -34,33 +36,29 @@ public class ShooterIOReal implements ShooterIO {
 
         pid = new PIDController(kP, kI, kD);
         pid.setTolerance(kVelocityToleranceRPM.in(RPM));
+
+        feedforward = new SimpleMotorFeedforward(kS, kV, kA);
     }
 
     @Override
     public void updateInputs(ShooterInputs inputs) {
+        inputs.appliedVolts = appliedVolts;
         inputs.velocityRPM = getVelocity();
         inputs.targetRPM = targetRPM;
-        inputs.appliedVolts = appliedVolts;
     }
 
     @Override
-    public void setTargetVelocity(double rpm) {
+    public void updateControl() {
+        double pidVolts = pid.calculate(getVelocity(), targetRPM);
+        double ffVolts = feedforward.calculate(targetRPM);
+
+        appliedVolts = pidVolts + ffVolts;
+        motor.setVoltage(appliedVolts);
+    }
+
+    @Override
+    public void setVelocity(double rpm) {
         targetRPM = rpm;
-        appliedVolts = pid.calculate(getVelocity(), targetRPM);
-
-        setVelocity(appliedVolts);
-    }
-
-    @Override
-    public void stop() {
-        targetRPM = 0.0;
-        appliedVolts = 0.0;
-        motor.stopMotor();
-    }
-
-    @Override
-    public void setVelocity(double voltage) {
-        motor.setVoltage(voltage);
     }
 
     @Override
@@ -71,5 +69,12 @@ public class ShooterIOReal implements ShooterIO {
     @Override
     public boolean atSpeed() {
         return pid.atSetpoint();
+    }
+
+    @Override
+    public void stop() {
+        targetRPM = 0.0;
+        appliedVolts = 0.0;
+        motor.stopMotor();
     }
 }

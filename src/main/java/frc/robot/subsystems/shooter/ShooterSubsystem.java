@@ -1,5 +1,7 @@
 package frc.robot.subsystems.shooter;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -15,21 +17,23 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
+        io.updateControl();
+		Logger.processInputs("Shooter", inputs);
     }
 
-    public void setTargetVelocity(double rpm) {
-        io.setTargetVelocity(rpm);
-    }
-
-    public void stop() {
-        io.stop();
-    }
-
-    public boolean atTargetVelocity() {
-        return io.atSpeed();
+    public void setVelocity(double rpm) {
+        io.setVelocity(rpm);
     }
 
     public double getVelocity() {
         return inputs.velocityRPM;
+    }
+
+    public boolean atVelocity() {
+        return io.atSpeed();
+    }
+
+    public void stop() {
+        io.stop();
     }
 }

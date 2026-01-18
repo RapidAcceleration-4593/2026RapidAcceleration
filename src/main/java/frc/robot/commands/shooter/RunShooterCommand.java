@@ -21,12 +21,12 @@ public class RunShooterCommand extends Command {
 
     @Override
     public void initialize() {
-        shooter.setTargetVelocity(kDefaultShooterRPM.in(RPM));
+        shooter.setVelocity(kDefaultShooterRPM.in(RPM));
     }
 
     @Override
     public void execute() {
-        if (shooter.atTargetVelocity()) {
+        if (shooter.atVelocity()) {
             spindexer.setSpeed(kSpindexerSpeed);
         } else {
             spindexer.stop();
