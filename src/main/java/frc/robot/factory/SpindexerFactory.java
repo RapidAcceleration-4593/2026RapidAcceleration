@@ -2,13 +2,13 @@ package frc.robot.factory;
 
 import static frc.robot.Constants.*;
 
-import frc.robot.subsystems.spindexer.*;
+import frc.robot.subsystems.indexer.*;
 
 public final class SpindexerFactory {
 
     private SpindexerFactory() {}
 
-    public static SpindexerSubsystem initialize() {
+    public static IndexerSubsystem initialize() {
         return switch (kCurrentMode) {
             case REAL -> initializeReal();
             case SIM -> initializeSim();
@@ -16,15 +16,15 @@ public final class SpindexerFactory {
         };
     }
 
-    private static SpindexerSubsystem initializeReal() {
-        return new SpindexerSubsystem(new SpindexerIOReal());
+    private static IndexerSubsystem initializeReal() {
+        return new IndexerSubsystem(new IndexerIOReal());
     }
 
-    private static SpindexerSubsystem initializeSim() {
-        return new SpindexerSubsystem(new SpindexerIOSim());
+    private static IndexerSubsystem initializeSim() {
+        return new IndexerSubsystem(new IndexerIOSim());
     }
 
-    private static SpindexerSubsystem initializeReplay() {
-        return new SpindexerSubsystem(new SpindexerIO() {});
+    private static IndexerSubsystem initializeReplay() {
+        return new IndexerSubsystem(new IndexerIO() {});
     }
 }

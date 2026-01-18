@@ -11,8 +11,8 @@ import frc.robot.commands.shooter.RunShooterCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
 import frc.robot.subsystems.hood.HoodSubsystem;
+import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import frc.robot.subsystems.vision.objectdetection.ObjectDetectionSubsystem;
@@ -25,7 +25,7 @@ public class RobotContainer {
     public final ObjectDetectionSubsystem objectDetection;
     public final ShooterSubsystem shooter;
     public final HoodSubsystem hood;
-    public final SpindexerSubsystem spindexer;
+    public final IndexerSubsystem indexer;
 
     // Controller(s)
     private final CommandXboxController driverController = new CommandXboxController(kDriverControllerPort);
@@ -38,7 +38,7 @@ public class RobotContainer {
 
         shooter = ShooterFactory.initialize();
         hood = HoodFactory.initialize(swerve);
-        spindexer = SpindexerFactory.initialize();
+        indexer = SpindexerFactory.initialize();
 
         registerCommands();
         configureBindings();
@@ -50,7 +50,7 @@ public class RobotContainer {
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
 
-        operatorController.rightTrigger(0.5).whileTrue(new RunShooterCommand(shooter, hood, spindexer));
+        operatorController.rightTrigger(0.5).whileTrue(new RunShooterCommand(shooter, hood, indexer));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */

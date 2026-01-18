@@ -53,7 +53,7 @@ public final class Simulation {
         arena.resetFieldForAuto();
     }
 
-    public void launchProjectile(Pose2d robotPose, AngularVelocity velocity, Angle angle) {
+    public void launchProjectile(AngularVelocity velocity, Angle angle) {
         Distance initialHeight = Inches.of(20.5);
 
         Distance topWheelRadius = Inches.of(1.25);
@@ -67,10 +67,10 @@ public final class Simulation {
         LinearVelocity linearVelocity = topVelocity.plus(botVelocity).div(2);
 
         RebuiltFuelOnFly projectile = new RebuiltFuelOnFly(
-                robotPose.getTranslation(),
+                getPose().getTranslation(),
                 kPhysicalOffset,
                 new ChassisSpeeds(), // Consider current robot velocity.
-                robotPose.getRotation(), // Plus turret rotation.
+                getPose().getRotation(), // Plus turret rotation.
                 initialHeight,
                 linearVelocity,
                 angle);

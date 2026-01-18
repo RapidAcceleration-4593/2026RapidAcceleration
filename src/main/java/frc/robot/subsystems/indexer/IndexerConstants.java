@@ -1,6 +1,6 @@
-package frc.robot.subsystems.spindexer;
+package frc.robot.subsystems.indexer;
 
-public final class SpindexerConstants {
+public final class IndexerConstants {
 
     public static final int kSpindexerMotorID = 0;
     public static final int kFeederMotorID = 0;

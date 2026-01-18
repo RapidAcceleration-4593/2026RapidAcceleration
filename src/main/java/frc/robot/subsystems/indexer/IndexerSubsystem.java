@@ -1,22 +1,22 @@
-package frc.robot.subsystems.spindexer;
+package frc.robot.subsystems.indexer;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
-public class SpindexerSubsystem extends SubsystemBase {
+public class IndexerSubsystem extends SubsystemBase {
 
-    private final SpindexerInputsAutoLogged inputs;
-    private final SpindexerIO io;
+    private final IndexerInputsAutoLogged inputs;
+    private final IndexerIO io;
 
-    public SpindexerSubsystem(SpindexerIO io) {
+    public IndexerSubsystem(IndexerIO io) {
         this.io = io;
-        this.inputs = new SpindexerInputsAutoLogged();
+        this.inputs = new IndexerInputsAutoLogged();
     }
 
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.processInputs("Spindexer", inputs);
+        Logger.processInputs("Indexer", inputs);
     }
 
     public void setSpindexerSpeed(double speed) {

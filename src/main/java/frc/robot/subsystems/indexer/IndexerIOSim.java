@@ -1,17 +1,15 @@
-package frc.robot.subsystems.spindexer;
+package frc.robot.subsystems.indexer;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.spindexer.SpindexerConstants.*;
+import static frc.robot.subsystems.indexer.IndexerConstants.*;
 
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.util.PowerSim;
 
-public class SpindexerIOSim implements SpindexerIO {
+public class IndexerIOSim implements IndexerIO {
 
     private final SparkMax spindexer;
     private final SparkMax feeder;
@@ -19,12 +17,7 @@ public class SpindexerIOSim implements SpindexerIO {
     private final SparkMaxSim spindexerSim;
     private final SparkMaxSim feederSim;
 
-    private final SparkMaxConfig config;
-
-    public SpindexerIOSim() {
-        config = new SparkMaxConfig();
-        config.idleMode(IdleMode.kBrake).inverted(false);
-
+    public IndexerIOSim() {
         spindexer = new SparkMax(kSpindexerMotorID, MotorType.kBrushless);
         feeder = new SparkMax(kFeederMotorID, MotorType.kBrushless);
 
@@ -33,17 +26,17 @@ public class SpindexerIOSim implements SpindexerIO {
     }
 
     @Override
-    public void updateInputs(SpindexerInputs inputs) {
+    public void updateInputs(IndexerInputs inputs) {
         updateSimulation();
 
         inputs.spindexerVelocity = RPM.of(spindexerSim.getVelocity());
         inputs.feederVelocity = RPM.of(feederSim.getVelocity());
 
-        inputs.spindexerVolts = Volts.of(spindexerSim.getAppliedOutput() * PowerSim.getRailVoltage());
-        inputs.feederVolts = Volts.of(feederSim.getAppliedOutput() * PowerSim.getRailVoltage());
-
         inputs.spindexerCurrent = Amps.of(spindexerSim.getMotorCurrent());
         inputs.feederCurrent = Amps.of(feederSim.getMotorCurrent());
+
+        inputs.spindexerVolts = Volts.of(spindexerSim.getAppliedOutput() * spindexerSim.getBusVoltage());
+        inputs.feederVolts = Volts.of(feederSim.getAppliedOutput() * feederSim.getBusVoltage());
     }
 
     private void updateSimulation() {
