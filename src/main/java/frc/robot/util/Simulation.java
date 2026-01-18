@@ -68,13 +68,14 @@ public final class Simulation {
 
         RebuiltFuelOnFly projectile = new RebuiltFuelOnFly(
                 getPose().getTranslation(),
-                kPhysicalOffset,
+                kPhysicalOffset.getTranslation(),
                 new ChassisSpeeds(), // Consider current robot velocity.
                 getPose().getRotation(), // Plus turret rotation.
                 initialHeight,
                 linearVelocity,
                 angle);
 
+        projectile.enableBecomesGamePieceOnFieldAfterTouchGround();
         arena.addGamePieceProjectile(projectile);
     }
 

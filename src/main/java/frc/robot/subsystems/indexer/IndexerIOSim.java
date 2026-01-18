@@ -35,8 +35,8 @@ public class IndexerIOSim implements IndexerIO {
         inputs.spindexerCurrent = Amps.of(spindexerSim.getMotorCurrent());
         inputs.feederCurrent = Amps.of(feederSim.getMotorCurrent());
 
-        inputs.spindexerVolts = Volts.of(spindexerSim.getAppliedOutput() * spindexerSim.getBusVoltage());
-        inputs.feederVolts = Volts.of(feederSim.getAppliedOutput() * feederSim.getBusVoltage());
+        inputs.spindexerVolts = Volts.of(spindexerSim.getAppliedOutput() * PowerSim.getRailVoltage());
+        inputs.feederVolts = Volts.of(feederSim.getAppliedOutput() * PowerSim.getRailVoltage());
     }
 
     private void updateSimulation() {
@@ -46,7 +46,8 @@ public class IndexerIOSim implements IndexerIO {
 
     @Override
     public void setSpindexerSpeed(double speed) {
-        spindexer.set(speed);
+        double volts = speed * PowerSim.getRailVoltage();
+        spindexer.setVoltage(volts);
     }
 
     @Override
@@ -56,7 +57,8 @@ public class IndexerIOSim implements IndexerIO {
 
     @Override
     public void setFeederSpeed(double speed) {
-        feeder.set(speed);
+        double volts = speed * PowerSim.getRailVoltage();
+        feeder.setVoltage(volts);
     }
 
     @Override

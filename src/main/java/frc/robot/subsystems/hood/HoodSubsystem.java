@@ -1,7 +1,8 @@
 package frc.robot.subsystems.hood;
 
-import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.*;
+import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
@@ -56,7 +57,9 @@ public class HoodSubsystem extends SubsystemBase {
 
     private Distance calculateDistance(Pose2d pose) {
         Pose2d targetPose = kAlliance == Alliance.Blue ? kBlueHubPose : kRedHubPose;
-        Distance distance = Meters.of(pose.getTranslation().getDistance(targetPose.getTranslation()));
+        Pose2d shooterPose = pose.plus(kPhysicalOffset);
+
+        Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
         return distance;
     }
 
