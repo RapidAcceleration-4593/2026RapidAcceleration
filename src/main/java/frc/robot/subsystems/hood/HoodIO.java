@@ -13,6 +13,7 @@ public interface HoodIO {
     public static class HoodInputs {
         public Angle angle = Degrees.zero();
         public Angle targetAngle = Degrees.zero();
+        public boolean atTargetAngle = false;
         public boolean limitswitch = false;
 
         public Voltage appliedVolts = Volts.zero();

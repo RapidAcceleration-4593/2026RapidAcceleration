@@ -2,8 +2,6 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -23,7 +21,5 @@ public final class ShooterConstants {
     public static final AngularVelocity kDefaultShooterRPM = RPM.of(1200.0);
     public static final AngularVelocity kVelocityTolerance = RPM.of(50.0);
 
-    // TODO: Apply offset.
-    public static final Transform2d kPhysicalOffset =
-            new Transform2d(new Translation2d(-Units.inchesToMeters(2.75), 0), new Rotation2d());
+    public static final Translation2d kPhysicalOffset = new Translation2d(-Units.inchesToMeters(5.375), 0);
 }

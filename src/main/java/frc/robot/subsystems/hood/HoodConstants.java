@@ -19,7 +19,7 @@ public final class HoodConstants {
     public static final double kHoodGearRatio = 1.0; // Hood gearing.
     public static final double kDegreesPerPulse = 360.0 / (kCountsPerRotation * kHoodGearRatio);
 
-    public static final Angle kMaximumAngle = Degrees.of(0.0);
-    public static final Angle kMinimumAngle = Degrees.of(15.0);
+    public static final Angle kMinimumAngle = Degrees.of(10.0);
+    public static final Angle kMaximumAngle = Degrees.of(45.0);
     public static final Angle kAngleTolerance = Degrees.of(0.5);
 }

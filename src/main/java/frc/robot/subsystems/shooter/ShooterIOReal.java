@@ -44,6 +44,7 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void updateInputs(ShooterInputs inputs) {
+        inputs.atSpeed = atSpeed();
         inputs.velocity = getVelocity();
         inputs.targetVelocity = targetVelocity;
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());

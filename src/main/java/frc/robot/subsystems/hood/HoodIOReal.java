@@ -28,7 +28,7 @@ public class HoodIOReal implements HoodIO {
 
     private final PIDController pid;
 
-    private Angle targetAngle = Degrees.zero();
+    private Angle targetAngle = kMinimumAngle;
 
     public HoodIOReal() {
         config = new SparkMaxConfig();
@@ -56,6 +56,7 @@ public class HoodIOReal implements HoodIO {
     public void updateInputs(HoodInputs inputs) {
         inputs.angle = getAngle();
         inputs.targetAngle = targetAngle;
+        inputs.atTargetAngle = atAngle();
         inputs.limitswitch = getLimitSwitch();
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());

@@ -1,12 +1,20 @@
 package frc.robot.util;
 
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.*;
+import static frc.robot.subsystems.shooter.ShooterConstants.*;
 import static frc.robot.subsystems.swerve.SwerveConstants.MAPLESIM_CONFIG;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
 
 public final class Simulation {
@@ -43,6 +51,31 @@ public final class Simulation {
     public void resetField() {
         setPose(initialPose);
         arena.resetFieldForAuto();
+    }
+
+    public void launchProjectile(Pose2d robotPose, AngularVelocity velocity, Angle angle) {
+        Distance initialHeight = Inches.of(20.5);
+
+        Distance topWheelRadius = Inches.of(1.25);
+        Distance botWheelRadius = Inches.of(2.0);
+
+        LinearVelocity topVelocity =
+                MetersPerSecond.of((2 * Math.PI * topWheelRadius.in(Meters) * velocity.in(RPM)) / 60.0);
+        LinearVelocity botVelocity =
+                MetersPerSecond.of((2 * Math.PI * botWheelRadius.in(Meters) * velocity.in(RPM)) / 60.0);
+
+        LinearVelocity linearVelocity = topVelocity.plus(botVelocity).div(2);
+
+        RebuiltFuelOnFly projectile = new RebuiltFuelOnFly(
+                robotPose.getTranslation(),
+                kPhysicalOffset,
+                new ChassisSpeeds(), // Consider current robot velocity.
+                robotPose.getRotation(), // Plus turret rotation.
+                initialHeight,
+                linearVelocity,
+                angle);
+
+        arena.addGamePieceProjectile(projectile);
     }
 
     public void periodic() {

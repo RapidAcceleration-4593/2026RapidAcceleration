@@ -51,6 +51,7 @@ public class ShooterIOSim implements ShooterIO {
     public void updateInputs(ShooterInputs inputs) {
         updateSimulation();
 
+        inputs.atSpeed = atSpeed();
         inputs.velocity = getVelocity();
         inputs.targetVelocity = targetVelocity;
         inputs.appliedVolts = Volts.of(motorSim.getAppliedOutput() * PowerSim.getRailVoltage());
@@ -74,7 +75,7 @@ public class ShooterIOSim implements ShooterIO {
 
     @Override
     public void setVelocity(AngularVelocity velocity) {
-        targetVelocity = velocity;
+        targetVelocity = RPM.of(velocity.in(RPM));
     }
 
     @Override

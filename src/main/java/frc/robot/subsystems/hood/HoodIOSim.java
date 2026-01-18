@@ -32,7 +32,7 @@ public class HoodIOSim implements HoodIO {
 
     private final PIDController pid;
 
-    private Angle targetAngle = Degrees.zero();
+    private Angle targetAngle = kMinimumAngle;
 
     public HoodIOSim() {
         config = new SparkMaxConfig();
@@ -61,6 +61,7 @@ public class HoodIOSim implements HoodIO {
         updateSimulation();
 
         inputs.angle = getAngle();
+        inputs.atTargetAngle = atAngle();
         inputs.limitswitch = getLimitSwitch();
         inputs.appliedVolts = Volts.of(motorSim.getAppliedOutput() * PowerSim.getRailVoltage());
         inputs.outputCurrent = Amps.of(motorSim.getMotorCurrent());
