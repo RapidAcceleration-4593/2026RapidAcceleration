@@ -27,16 +27,19 @@ public class RunShooterCommand extends Command {
     @Override
     public void execute() {
         if (shooter.atVelocity()) {
-            spindexer.setSpeed(kSpindexerSpeed);
+            spindexer.setSpindexerSpeed(kSpindexerSpeed);
+            spindexer.setFeederSpeed(kFeederSpeed);
         } else {
-            spindexer.stop();
+            spindexer.stopSpindexer();
+            spindexer.stopFeeder();
         }
     }
 
     @Override
     public void end(boolean interrupted) {
         shooter.stop();
-        spindexer.stop();
+        spindexer.stopSpindexer();
+        spindexer.stopFeeder();
     }
 
     @Override

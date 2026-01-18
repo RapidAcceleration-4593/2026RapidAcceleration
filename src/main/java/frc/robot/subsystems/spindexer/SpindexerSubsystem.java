@@ -1,24 +1,37 @@
 package frc.robot.subsystems.spindexer;
 
-import static frc.robot.subsystems.spindexer.SpindexerConstants.*;
-
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 
 public class SpindexerSubsystem extends SubsystemBase {
 
-    private final SparkMax motor;
+    private final SpindexerInputsAutoLogged inputs;
+    private final SpindexerIO io;
 
-    public SpindexerSubsystem() {
-        motor = new SparkMax(kSpindexerMotorID, MotorType.kBrushless);
+    public SpindexerSubsystem(SpindexerIO io) {
+        this.io = io;
+        this.inputs = new SpindexerInputsAutoLogged();
     }
 
-    public void setSpeed(double speed) {
-        motor.set(speed);
+    @Override
+    public void periodic() {
+        io.updateInputs(inputs);
+        Logger.processInputs("Spindexer", inputs);
     }
 
-    public void stop() {
-        motor.stopMotor();
+    public void setSpindexerSpeed(double speed) {
+        io.setSpindexerSpeed(speed);
+    }
+
+    public void stopSpindexer() {
+        io.stopSpindexer();
+    }
+
+    public void setFeederSpeed(double speed) {
+        io.setFeederSpeed(speed);
+    }
+
+    public void stopFeeder() {
+        io.stopFeeder();
     }
 }
