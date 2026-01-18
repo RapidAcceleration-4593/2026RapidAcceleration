@@ -1,8 +1,8 @@
 package frc.robot.subsystems.shooter;
 
-import org.littletonrobotics.junction.Logger;
-
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -18,15 +18,15 @@ public class ShooterSubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         io.updateControl();
-		Logger.processInputs("Shooter", inputs);
+        Logger.processInputs("Shooter", inputs);
     }
 
-    public void setVelocity(double rpm) {
-        io.setVelocity(rpm);
+    public void setVelocity(AngularVelocity velocity) {
+        io.setVelocity(velocity);
     }
 
-    public double getVelocity() {
-        return inputs.velocityRPM;
+    public AngularVelocity getVelocity() {
+        return io.getVelocity();
     }
 
     public boolean atVelocity() {

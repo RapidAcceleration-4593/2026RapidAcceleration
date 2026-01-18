@@ -1,5 +1,8 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -14,6 +17,11 @@ public final class Constants {
 
     public static final Mode kCurrentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
     public static final Alliance kAlliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+
+    public static final Pose2d kBlueHubPose =
+            new Pose2d(Units.inchesToMeters(182.1), Units.inchesToMeters(158.85), new Rotation2d());
+    public static final Pose2d kRedHubPose =
+            new Pose2d(Units.inchesToMeters(469.1), Units.inchesToMeters(158.85), new Rotation2d());
 
     public static final class Controllers {
         public static final int kDriverControllerPort = 0;

@@ -7,15 +7,10 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.MomentOfInertia;
 
 public final class ShooterConstants {
 
     public static final int kShooterMotorID = 0;
-
-    public static final double kShooterGearRatio = 1.0;
-    public static final MomentOfInertia kShooterMOI = KilogramSquareMeters.of(0.00041);
 
     public static final double kP = 0.0;
     public static final double kI = 0.0;
@@ -26,10 +21,9 @@ public final class ShooterConstants {
     public static final double kA = 0.0; // Optional for acceleration.
 
     public static final AngularVelocity kDefaultShooterRPM = RPM.of(1200.0);
-    public static final AngularVelocity kVelocityToleranceRPM = RPM.of(50.0);
+    public static final AngularVelocity kVelocityTolerance = RPM.of(50.0);
 
-    public static final Current kSmartCurrentLimit = Amps.of(40);
-
+    // TODO: Apply offset.
     public static final Transform2d kPhysicalOffset =
             new Transform2d(new Translation2d(-Units.inchesToMeters(2.75), 0), new Rotation2d());
 }

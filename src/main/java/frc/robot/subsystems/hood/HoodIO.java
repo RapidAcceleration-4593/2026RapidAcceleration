@@ -1,14 +1,22 @@
 package frc.robot.subsystems.hood;
 
+import static edu.wpi.first.units.Units.*;
+
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface HoodIO {
 
     @AutoLog
     public static class HoodInputs {
-        public double angle = 0.0;
+        public Angle angle = Degrees.zero();
+        public Angle targetAngle = Degrees.zero();
         public boolean limitswitch = false;
-        public double appliedVolts = 0.0;
+
+        public Voltage appliedVolts = Volts.zero();
+        public Current outputCurrent = Amps.zero();
     }
 
     /** Fetches updates from sensors through the IO interface. */
@@ -18,11 +26,11 @@ public interface HoodIO {
     public default void updateControl() {}
 
     /** Sets angle of the adjustable hood in Degrees. */
-    public default void setAngle(double degrees) {}
+    public default void setAngle(Angle angle) {}
 
     /** Returns the current angle of the adjustable hood in Degrees. */
-    public default double getAngle() {
-        return 0.0;
+    public default Angle getAngle() {
+        return Degrees.zero();
     }
 
     /** Returns true if the adjustable hood is at its setpoint angle. */

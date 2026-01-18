@@ -9,9 +9,13 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class HoodIOReal implements HoodIO {
 
@@ -20,15 +24,15 @@ public class HoodIOReal implements HoodIO {
 
     private final Encoder encoder;
     private final DigitalInput limitswitch;
+    private final Trigger limitswitchTrigger;
 
     private final PIDController pid;
 
-    private double targetAngle;
-    private double appliedVolts;
+    private Angle targetAngle = Degrees.zero();
 
     public HoodIOReal() {
         config = new SparkMaxConfig();
-        config.idleMode(IdleMode.kBrake);
+        config.idleMode(IdleMode.kBrake).inverted(false);
 
         motor = new SparkMax(kHoodMotorID, MotorType.kBrushless);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -39,41 +43,47 @@ public class HoodIOReal implements HoodIO {
         limitswitch = new DigitalInput(kHoodLimitSwitchChannel);
 
         pid = new PIDController(kP, kI, kD);
-        pid.setTolerance(kToleranceAngle.in(Degrees));
+        pid.setTolerance(kAngleTolerance.in(Degrees));
+
+        limitswitchTrigger = new Trigger(this::getLimitSwitch);
+        limitswitchTrigger.onTrue(Commands.runOnce(() -> {
+            encoder.reset();
+            pid.reset();
+        }));
     }
 
     @Override
     public void updateInputs(HoodInputs inputs) {
         inputs.angle = getAngle();
+        inputs.targetAngle = targetAngle;
         inputs.limitswitch = getLimitSwitch();
-        inputs.appliedVolts = appliedVolts;
+        inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
+        inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
     }
 
     @Override
     public void updateControl() {
         if (getLimitSwitch()) {
-            encoder.reset();
-            pid.reset();
-
-            if (targetAngle <= 0.0) {
-                appliedVolts = 0.0;
-                motor.setVoltage(0.0);
-                return;
-            }
+            targetAngle = Degrees.of(Math.max(0.0, targetAngle.in(Degrees)));
         }
 
-        appliedVolts = pid.calculate(getAngle(), targetAngle);
-        motor.setVoltage(appliedVolts);
+        double currentDeg = getAngle().in(Degrees);
+        double targetDeg = targetAngle.in(Degrees);
+
+        double volts = pid.calculate(currentDeg, targetDeg);
+        volts = MathUtil.clamp(volts, -12.0, 12.0);
+
+        motor.setVoltage(volts);
     }
 
     @Override
-    public void setAngle(double degrees) {
-        targetAngle = degrees;
+    public void setAngle(Angle angle) {
+        targetAngle = angle;
     }
 
     @Override
-    public double getAngle() {
-        return encoder.getDistance();
+    public Angle getAngle() {
+        return Degrees.of(encoder.getDistance());
     }
 
     @Override
@@ -84,7 +94,7 @@ public class HoodIOReal implements HoodIO {
     @Override
     public void stop() {
         targetAngle = getAngle();
-        appliedVolts = 0.0;
+        pid.reset();
         motor.stopMotor();
     }
 

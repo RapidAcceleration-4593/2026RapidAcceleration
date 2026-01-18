@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.shooter.RunShooterCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
+import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -23,6 +24,7 @@ public class RobotContainer {
     public final AprilTagSubsystem apriltag;
     public final ObjectDetectionSubsystem objectDetection;
     public final ShooterSubsystem shooter;
+    public final HoodSubsystem hood;
     public final SpindexerSubsystem spindexer;
 
     // Controller(s)
@@ -33,7 +35,9 @@ public class RobotContainer {
         swerve = SwerveFactory.initialize();
         apriltag = AprilTagFactory.initialize(swerve);
         objectDetection = ObjectDetectionFactory.initialize(swerve);
+
         shooter = ShooterFactory.initialize();
+        hood = HoodFactory.initialize(swerve);
         spindexer = SpindexerFactory.initialize();
 
         registerCommands();
@@ -46,7 +50,7 @@ public class RobotContainer {
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
 
-        operatorController.rightTrigger(0.5).whileTrue(new RunShooterCommand(shooter, spindexer));
+        operatorController.rightTrigger(0.5).whileTrue(new RunShooterCommand(shooter, hood, spindexer));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */

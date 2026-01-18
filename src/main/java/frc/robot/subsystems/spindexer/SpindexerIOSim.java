@@ -3,59 +3,71 @@ package frc.robot.subsystems.spindexer;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.spindexer.SpindexerConstants.*;
 
+import com.revrobotics.sim.SparkMaxSim;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.util.PowerSim;
 
 public class SpindexerIOSim implements SpindexerIO {
 
-    private final DCMotorSim spindexer;
-    private final DCMotorSim feeder;
+    private final SparkMax spindexer;
+    private final SparkMax feeder;
+
+    private final SparkMaxSim spindexerSim;
+    private final SparkMaxSim feederSim;
+
+    private final SparkMaxConfig config;
 
     public SpindexerIOSim() {
-        spindexer = new DCMotorSim(
-                LinearSystemId.createDCMotorSystem(DCMotor.getNEO(1), kMOI.in(KilogramSquareMeters), kGearRatio),
-                DCMotor.getNEO(1));
+        config = new SparkMaxConfig();
+        config.idleMode(IdleMode.kBrake).inverted(false);
 
-        feeder = new DCMotorSim(
-                LinearSystemId.createDCMotorSystem(DCMotor.getNEO(1), kMOI.in(KilogramSquareMeters), kGearRatio),
-                DCMotor.getNEO(1));
+        spindexer = new SparkMax(kSpindexerMotorID, MotorType.kBrushless);
+        feeder = new SparkMax(kFeederMotorID, MotorType.kBrushless);
+
+        spindexerSim = new SparkMaxSim(spindexer, DCMotor.getNEO(1));
+        feederSim = new SparkMaxSim(feeder, DCMotor.getNEO(1));
     }
 
+    @Override
     public void updateInputs(SpindexerInputs inputs) {
-        spindexer.update(0.02);
-        feeder.update(0.02);
+        updateSimulation();
 
-        inputs.spindexerVelocity = spindexer.getAngularVelocityRPM();
-        inputs.feederVelocity = feeder.getAngularVelocityRPM();
+        inputs.spindexerVelocity = RPM.of(spindexerSim.getVelocity());
+        inputs.feederVelocity = RPM.of(feederSim.getVelocity());
 
-        inputs.spindexerCurrent = spindexer.getCurrentDrawAmps();
-        inputs.feederCurrent = feeder.getCurrentDrawAmps();
+        inputs.spindexerVolts = Volts.of(spindexerSim.getAppliedOutput() * PowerSim.getRailVoltage());
+        inputs.feederVolts = Volts.of(feederSim.getAppliedOutput() * PowerSim.getRailVoltage());
 
-        inputs.spindexerCurrent = spindexer.getInputVoltage();
-        inputs.feederCurrent = feeder.getInputVoltage();
+        inputs.spindexerCurrent = Amps.of(spindexerSim.getMotorCurrent());
+        inputs.feederCurrent = Amps.of(feederSim.getMotorCurrent());
+    }
+
+    private void updateSimulation() {
+        PowerSim.addCurrentDraw(spindexerSim.getMotorCurrent());
+        PowerSim.addCurrentDraw(feederSim.getMotorCurrent());
     }
 
     @Override
     public void setSpindexerSpeed(double speed) {
-        double voltage = speed * PowerSim.getRailVoltage();
-        spindexer.setInputVoltage(voltage);
+        spindexer.set(speed);
     }
 
     @Override
     public void stopSpindexer() {
-        spindexer.setInputVoltage(0.0);
+        spindexer.stopMotor();
     }
 
     @Override
     public void setFeederSpeed(double speed) {
-        double voltage = speed * PowerSim.getRailVoltage();
-        feeder.setInputVoltage(voltage);
+        feeder.set(speed);
     }
 
     @Override
     public void stopFeeder() {
-        feeder.setInputVoltage(0.0);
+        feeder.stopMotor();
     }
 }
