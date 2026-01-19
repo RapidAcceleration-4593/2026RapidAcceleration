@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.shooter.RunShooterCommand;
+import frc.robot.commands.swerve.DriveToClusterCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
 import frc.robot.subsystems.hood.HoodSubsystem;
@@ -50,6 +51,7 @@ public class RobotContainer {
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
 
+        driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
         driverController.rightTrigger(0.5).whileTrue(new RunShooterCommand(shooter, hood, indexer));
     }
 
