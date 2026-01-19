@@ -7,6 +7,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.swerve.DriveToClusterCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -39,6 +40,8 @@ public class RobotContainer {
                 swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
+
+        driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */

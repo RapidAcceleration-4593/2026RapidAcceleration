@@ -11,7 +11,6 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
@@ -20,8 +19,10 @@ import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 public final class SwerveConstants {
 
     // Robot Physical Properties.
-    public static final double kRobotMass = Units.lbsToKilograms(115.0);
-    public static final double kRobotMOI = 6.883;
+    public static final Mass kRobotMass = Pounds.of(100.0);
+    public static final MomentOfInertia kRobotMOI = KilogramSquareMeters.of(5.311);
+
+    private static final Distance kWheelRadius = Inches.of(2.0);
     public static final double kWheelCOF = 1.2;
 
     /** Current at which the wheels start to slip. */
@@ -48,8 +49,6 @@ public final class SwerveConstants {
 
     /** How much the drive motor unintentionally turns when you rotate steering (azimuth). */
     private static final double kCoupleRatio = 0.0;
-
-    private static final Distance kWheelRadius = Inches.of(2.0);
 
     private static final boolean kInvertLeftSide = false;
     private static final boolean kInvertRightSide = true;
@@ -129,8 +128,8 @@ public final class SwerveConstants {
     private static final boolean kFrontLeftSteerMotorInverted = true;
     private static final boolean kFrontLeftEncoderInverted = false;
 
-    private static final Distance kFrontLeftXPos = Inches.of(10.6875);
-    private static final Distance kFrontLeftYPos = Inches.of(10.71875);
+    private static final Distance kFrontLeftXPos = Inches.of(10.875);
+    private static final Distance kFrontLeftYPos = Inches.of(10.875);
 
     // Front Right Module.
     private static final int kFrontRightDriveMotorId = 8;
@@ -140,8 +139,8 @@ public final class SwerveConstants {
     private static final boolean kFrontRightSteerMotorInverted = true;
     private static final boolean kFrontRightEncoderInverted = false;
 
-    private static final Distance kFrontRightXPos = Inches.of(10.6875);
-    private static final Distance kFrontRightYPos = Inches.of(-10.71875);
+    private static final Distance kFrontRightXPos = Inches.of(10.875);
+    private static final Distance kFrontRightYPos = Inches.of(-10.875);
 
     // Back Left Module.
     private static final int kBackLeftDriveMotorId = 10;
@@ -151,8 +150,8 @@ public final class SwerveConstants {
     private static final boolean kBackLeftSteerMotorInverted = true;
     private static final boolean kBackLeftEncoderInverted = false;
 
-    private static final Distance kBackLeftXPos = Inches.of(-10.6875);
-    private static final Distance kBackLeftYPos = Inches.of(10.71875);
+    private static final Distance kBackLeftXPos = Inches.of(-10.875);
+    private static final Distance kBackLeftYPos = Inches.of(10.875);
 
     // Back Right Module.
     private static final int kBackRightDriveMotorId = 12;
@@ -162,8 +161,8 @@ public final class SwerveConstants {
     private static final boolean kBackRightSteerMotorInverted = true;
     private static final boolean kBackRightEncoderInverted = false;
 
-    private static final Distance kBackRightXPos = Inches.of(-10.6875);
-    private static final Distance kBackRightYPos = Inches.of(-10.71875);
+    private static final Distance kBackRightXPos = Inches.of(-10.875);
+    private static final Distance kBackRightYPos = Inches.of(-10.875);
 
     // Module Constants.
     public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
@@ -247,7 +246,7 @@ public final class SwerveConstants {
             getModuleTranslations());
 
     public static final DriveTrainSimulationConfig MAPLESIM_CONFIG = DriveTrainSimulationConfig.Default()
-            .withRobotMass(Kilograms.of(kRobotMass))
+            .withRobotMass(kRobotMass)
             .withCustomModuleTranslations(getModuleTranslations())
             .withGyro(COTS.ofPigeon2())
             .withSwerveModule(new SwerveModuleSimulationConfig(

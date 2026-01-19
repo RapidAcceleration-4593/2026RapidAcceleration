@@ -1,6 +1,7 @@
 package frc.robot.factory;
 
 import static frc.robot.Constants.*;
+import static frc.robot.subsystems.vision.objectdetection.ObjectDetectionConstants.*;
 
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.objectdetection.*;
@@ -19,14 +20,14 @@ public final class ObjectDetectionFactory {
     }
 
     private static ObjectDetectionSubsystem initializeReal(SwerveSubsystem swerve) {
-        return new ObjectDetectionSubsystem(new ObjectDetectionIOReal(), swerve::getPose);
+        return new ObjectDetectionSubsystem(new ObjectDetectionIOReal(kCameras[0].name()));
     }
 
     private static ObjectDetectionSubsystem initializeSim(SwerveSubsystem swerve) {
-        return new ObjectDetectionSubsystem(new ObjectDetectionIOReal(), Simulation.getInstance()::getPose);
+        return new ObjectDetectionSubsystem(new ObjectDetectionIOSim(Simulation.getInstance()::getPose, 20));
     }
 
     private static ObjectDetectionSubsystem initializeReplay(SwerveSubsystem swerve) {
-        return new ObjectDetectionSubsystem(new ObjectDetectionIO() {}, swerve::getPose);
+        return new ObjectDetectionSubsystem(new ObjectDetectionIO() {});
     }
 }
