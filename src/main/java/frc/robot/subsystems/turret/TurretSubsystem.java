@@ -5,14 +5,10 @@ import static frc.robot.Constants.*;
 import static frc.robot.subsystems.turret.TurretConstants.*;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Mode;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -22,55 +18,37 @@ public class TurretSubsystem extends SubsystemBase {
     private final TurretInputsAutoLogged inputs;
     private final TurretIO io;
 
-    private final PIDController pidController;
-
     public TurretSubsystem(TurretIO io, Supplier<Pose2d> robotPoseSupplier) {
         this.io = io;
         this.inputs = new TurretInputsAutoLogged();
-        this.robotPoseSupplier = robotPoseSupplier;
 
-        this.pidController = new PIDController(kTurretP, kTurretI, kTurretD);
-        pidController.setTolerance(kMaximumTolerance.in(Degrees));
+        this.robotPoseSupplier = robotPoseSupplier;
     }
 
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-
-        double currentAngle = getAngle();
-        double desiredAngle = calculateDesiredAngle();
-        double safeSetpoint = wrapToSafeRange(currentAngle, desiredAngle);
-
-        double output = pidController.calculate(currentAngle, safeSetpoint);
-        Logger.recordOutput("Turret/Setpoint", safeSetpoint); // Switch to inputs.angle.
-
-        setMotorSpeed(output);
-
-        if (kCurrentMode == Mode.SIM) {
-            Rotation3d turretRotation = new Rotation3d(0.0, 0.0, Units.degreesToRadians(safeSetpoint));
-            Pose3d turretPose = new Pose3d(0.0, 0.0, 0.0, turretRotation);
-
-            Logger.recordOutput("Turret/Pose", turretPose);
-        }
+        io.updateControl();
+        Logger.processInputs("Turret", inputs);
     }
 
-    public void setMotorSpeed(double speed) {
-        io.setMotorSpeed(speed);
+    public void setAngle(Angle angle) {
+        io.setAngle(angle);
     }
 
-    public void stopMotor() {
-        io.stopMotor();
+    public Angle getAngle() {
+        return inputs.angle;
     }
 
-    public double getAngle() {
-        return inputs.angle.in(Degrees);
+    public boolean atAngle() {
+        return inputs.atAngle;
     }
 
-    public double getSetpoint() {
-        return pidController.getSetpoint();
+    public void stop() {
+        io.stop();
     }
 
-    private double calculateDesiredAngle() {
+    public double calculateDesiredAngle() {
         Pose2d robotPose = robotPoseSupplier.get();
         Pose2d targetPose = kAlliance == Alliance.Blue ? kBlueHubPose : kRedHubPose;
 
@@ -84,7 +62,7 @@ public class TurretSubsystem extends SubsystemBase {
         return Math.toDegrees(turretAngle);
     }
 
-    private double wrapToSafeRange(double currentAngle, double desiredAngle) {
+    public double wrapToSafeRange(double currentAngle, double desiredAngle) {
         double min = kMinimumAngle.in(Degrees);
         double max = kMaximumAngle.in(Degrees);
 

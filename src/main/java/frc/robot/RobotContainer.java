@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.swerve.DriveToClusterCommand;
 import frc.robot.commands.swerve.SwerveCommands;
+import frc.robot.commands.turret.ControlTurretCommand;
 import frc.robot.factory.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
@@ -40,6 +41,7 @@ public class RobotContainer {
     private void configureBindings() {
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
                 swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
+        turret.setDefaultCommand(new ControlTurretCommand(turret));
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
 

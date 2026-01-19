@@ -3,69 +3,116 @@ package frc.robot.subsystems.turret;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.turret.TurretConstants.*;
 
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.sim.SparkMaxSim;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.PowerSim;
 
 public class TurretIOSim implements TurretIO {
 
-    private final SingleJointedArmSim turretSim;
+    private final SparkMax motor;
     private final SparkMaxSim motorSim;
-    private final EncoderSim encoderSim;
-    private final DCMotor gearbox;
+    private final SparkMaxConfig config;
 
-    private final Mechanism2d mechanism;
-    private final MechanismLigament2d turretLigament;
+    private final Encoder encoder;
+    private final EncoderSim encoderSim;
+
+    private final SingleJointedArmSim turret;
+    private final DCMotor gearbox;
+    private final PIDController pid;
+
+    private Angle targetAngle = kInitialAngle;
 
     public TurretIOSim() {
-        this.gearbox = DCMotor.getNEO(1);
+        config = new SparkMaxConfig();
+        config.idleMode(IdleMode.kBrake).inverted(false);
 
-        this.motorSim = new SparkMaxSim(kTurretMotor, gearbox);
-        this.encoderSim = new EncoderSim(kTurretEncoder);
+        motor = new SparkMax(kMotorID, MotorType.kBrushless);
+        motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        motorSim = new SparkMaxSim(motor, DCMotor.getNEO(1));
 
-        this.turretSim = new SingleJointedArmSim(
-                LinearSystemId.createSingleJointedArmSystem(
-                        gearbox, kTurretMOI.in(KilogramSquareMeters), kMotorTurretGearing),
+        encoder = new Encoder(kEncoderChannelA, kEncoderChannelB);
+        encoder.setDistancePerPulse(kDegreesPerPulse);
+        encoderSim = new EncoderSim(encoder);
+
+        gearbox = DCMotor.getNEO(1);
+        turret = new SingleJointedArmSim(
+                LinearSystemId.createSingleJointedArmSystem(gearbox, kTurretMOI.in(KilogramSquareMeters), kGearRatio),
                 gearbox,
-                kMotorTurretGearing,
-                0.5,
+                kGearRatio,
+                Units.inchesToMeters(10),
                 kMinimumAngle.in(Radians),
                 kMaximumAngle.in(Radians),
                 false,
                 kInitialAngle.in(Radians));
 
-        mechanism = new Mechanism2d(2, 2);
-        MechanismRoot2d root = mechanism.getRoot("TurretRoot", 1, 1);
-
-        turretLigament = root.append(new MechanismLigament2d("Turret", 0.6, 0));
-        SmartDashboard.putData("Turret/Mechanism", mechanism);
+        pid = new PIDController(kP, kI, kD);
+        pid.setTolerance(kMaximumTolerance.in(Degrees));
     }
 
     @Override
     public void updateInputs(TurretInputs inputs) {
         updateSimulation();
 
-        inputs.angle = Degrees.of(encoderSim.getDistance());
-        inputs.angularVelocity = DegreesPerSecond.of(encoderSim.getRate());
+        inputs.atAngle = atAngle();
+        inputs.angle = getAngle();
+        inputs.targetAngle = targetAngle;
+        inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * PowerSim.getRailVoltage());
+        inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
+    }
+
+    @Override
+    public void updateControl() {
+        double current = getAngle().in(Degrees);
+        double target = targetAngle.in(Degrees);
+
+        double volts = pid.calculate(current, target);
+        motor.setVoltage(volts);
     }
 
     private void updateSimulation() {
-        turretSim.setInput(motorSim.getAppliedOutput() * PowerSim.getRailVoltage());
-        turretSim.update(0.02); // 20 milliseconds.
-        motorSim.iterate(turretSim.getVelocityRadPerSec(), PowerSim.getRailVoltage(), 0.02);
+        turret.setInput(motorSim.getAppliedOutput() * PowerSim.getRailVoltage());
+        turret.update(0.02);
 
-        encoderSim.setDistance(Units.radiansToDegrees(turretSim.getAngleRads()));
-        encoderSim.setRate(Units.radiansToDegrees(turretSim.getVelocityRadPerSec()));
+        motorSim.iterate(
+                Units.radiansPerSecondToRotationsPerMinute(turret.getVelocityRadPerSec()),
+                PowerSim.getRailVoltage(),
+                0.02);
+        encoderSim.setDistance(Units.radiansToDegrees(turret.getAngleRads()));
+        encoderSim.setRate(Units.radiansPerSecondToRotationsPerMinute(turret.getVelocityRadPerSec()));
 
-        PowerSim.addCurrentDraw(turretSim.getCurrentDrawAmps());
-        turretLigament.setAngle(Units.radiansToDegrees(turretSim.getAngleRads()));
+        PowerSim.addCurrentDraw(motorSim.getMotorCurrent());
+    }
+
+    @Override
+    public void setAngle(Angle angle) {
+        targetAngle = angle;
+    }
+
+    public Angle getAngle() {
+        return Degrees.of(encoder.getDistance());
+    }
+
+    public boolean atAngle() {
+        return pid.atSetpoint();
+    }
+
+    @Override
+    public void stop() {
+        targetAngle = getAngle();
+        pid.reset();
+        motor.stopMotor();
     }
 }
