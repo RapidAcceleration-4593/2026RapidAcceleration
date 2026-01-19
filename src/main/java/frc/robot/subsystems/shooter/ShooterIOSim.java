@@ -1,97 +1,56 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.shooter.ShooterConstants.*;
+import static frc.robot.subsystems.shooter.ShooterConstants.kShooterWheelGearing;
+import static frc.robot.subsystems.shooter.ShooterConstants.kShooterWheelMOI;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.sim.SparkRelativeEncoderSim;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import frc.robot.util.IPhysicsSim;
 import frc.robot.util.PowerSim;
+import frc.robot.util.Simulation;
 
-public class ShooterIOSim implements ShooterIO {
+public class ShooterIOSim extends ShooterIOReal implements IPhysicsSim {
 
-    private final SparkMax motor;
     private final SparkMaxSim motorSim;
-    private final SparkMaxConfig config;
-
     private final SparkRelativeEncoderSim encoderSim;
-
-    private final PIDController pid;
-    private final SimpleMotorFeedforward feedforward;
-
-    private AngularVelocity targetVelocity = RPM.zero();
+    private final DCMotor gearbox;
+    private final FlywheelSim flywheelSim;
 
     public ShooterIOSim() {
-        config = new SparkMaxConfig();
-        config.idleMode(IdleMode.kCoast).inverted(false);
-
-        motor = new SparkMax(kShooterMotorID, MotorType.kBrushless);
-        motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        motorSim = new SparkMaxSim(motor, DCMotor.getNEO(1));
-
+        gearbox = DCMotor.getNEO(1);
+        motorSim = new SparkMaxSim(motor, gearbox);
         encoderSim = motorSim.getRelativeEncoderSim();
-
-        pid = new PIDController(kP, kI, kD);
-        pid.setTolerance(kVelocityTolerance.in(RPM));
-
-        feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+        flywheelSim = new FlywheelSim(
+                LinearSystemId.createFlywheelSystem(
+                        gearbox, kShooterWheelMOI.in(KilogramSquareMeters), kShooterWheelGearing),
+                gearbox);
+        Simulation.getInstance().addSimulatable(this);
     }
 
     @Override
     public void updateInputs(ShooterInputs inputs) {
-        updateSimulation();
-
-        inputs.atSpeed = atSpeed();
-        inputs.velocity = getVelocity();
-        inputs.targetVelocity = targetVelocity;
-        inputs.appliedVolts = Volts.of(motorSim.getAppliedOutput() * PowerSim.getRailVoltage());
-        inputs.outputCurrent = Amps.of(motorSim.getMotorCurrent());
+        super.updateInputs(inputs);
     }
 
     @Override
-    public void updateControl() {
-        double pidVolts = pid.calculate(getVelocity().in(RPM), targetVelocity.in(RPM));
-        double ffVolts = feedforward.calculate(targetVelocity.in(RPM));
-
-        double volts = pidVolts + ffVolts;
-        volts = MathUtil.clamp(volts, -12.0, 12.0);
-
-        motor.setVoltage(volts);
-    }
-
-    public void updateSimulation() {
-        PowerSim.addCurrentDraw(motorSim.getMotorCurrent());
+    public void updatePlantSim() {
+        flywheelSim.setInput(motor.getAppliedOutput() * RobotController.getBatteryVoltage());
+        flywheelSim.update(0.02);
     }
 
     @Override
-    public void setVelocity(AngularVelocity velocity) {
-        targetVelocity = RPM.of(velocity.in(RPM));
+    public void updatePowerSim() {
+        PowerSim.addCurrentDraw(flywheelSim.getCurrentDrawAmps());
     }
 
     @Override
-    public AngularVelocity getVelocity() {
-        return RPM.of(encoderSim.getVelocity());
-    }
-
-    @Override
-    public boolean atSpeed() {
-        return pid.atSetpoint();
-    }
-
-    @Override
-    public void stop() {
-        targetVelocity = RPM.zero();
-        pid.reset();
-        motor.stopMotor();
+    public void updateIOSim() {
+        motorSim.iterate(flywheelSim.getAngularVelocityRPM(), PowerSim.getRailVoltage(), 0.05);
+        encoderSim.setVelocity(motorSim.getVelocity());
     }
 }

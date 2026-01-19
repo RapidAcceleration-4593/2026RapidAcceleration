@@ -12,6 +12,8 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import java.util.ArrayList;
+import java.util.List;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
@@ -26,10 +28,13 @@ public final class Simulation {
 
     private final Pose2d initialPose;
 
+    private final List<IPhysicsSim> sims;
+
     private Simulation() {
         initialPose = new Pose2d(3, 3, new Rotation2d());
         simulation = new SwerveDriveSimulation(MAPLESIM_CONFIG, initialPose);
         arena.addDriveTrainSimulation(simulation);
+        sims = new ArrayList<IPhysicsSim>();
     }
 
     public static Simulation getInstance() {
@@ -80,9 +85,27 @@ public final class Simulation {
     }
 
     public void periodic() {
+		for (var sim : sims) {
+			sim.updatePlantSim();
+		}
+		for (var sim : sims) {
+			sim.updatePowerSim();
+		}
+		PowerSim.simulationPeriodic();
+		for (var sim : sims) {
+			sim.updateIOSim();
+		}
         arena.simulationPeriodic();
         Logger.recordOutput("FieldSimulation/RobotPosition", getPose());
         Logger.recordOutput("FieldSimulation/Fuel", arena.getGamePiecesArrayByType("Fuel"));
+    }
+
+    public void addSimulatable(IPhysicsSim sim) {
+        sims.add(sim);
+    }
+
+    public void removeSimulatable(IPhysicsSim sim) {
+        sims.remove(sim);
     }
 
     public SwerveDriveSimulation raw() {

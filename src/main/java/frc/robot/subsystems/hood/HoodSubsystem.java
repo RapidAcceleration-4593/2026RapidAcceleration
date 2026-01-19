@@ -1,7 +1,7 @@
 package frc.robot.subsystems.hood;
 
-import static frc.robot.Constants.*;
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 
 import edu.wpi.first.math.geometry.Pose2d;

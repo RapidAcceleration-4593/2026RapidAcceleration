@@ -17,7 +17,6 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-        io.updateControl();
         Logger.processInputs("Shooter", inputs);
     }
 
@@ -26,11 +25,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public AngularVelocity getVelocity() {
-        return io.getVelocity();
+        return inputs.velocity;
     }
 
     public boolean atVelocity() {
-        return io.atSpeed();
+        return inputs.atSpeed;
     }
 
     public void stop() {
