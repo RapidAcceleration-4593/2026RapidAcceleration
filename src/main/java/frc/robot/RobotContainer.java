@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.intake.*;
+import frc.robot.commands.swerve.DriveToClusterCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -42,6 +43,8 @@ public class RobotContainer {
                 swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
+
+        driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
 
         operatorController.a().whileTrue(new RetractIntakeCommand(intake));
         operatorController.y().whileTrue(new DeployIntakeCommand(intake));

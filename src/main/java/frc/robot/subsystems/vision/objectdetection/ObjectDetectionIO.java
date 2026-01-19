@@ -1,6 +1,6 @@
 package frc.robot.subsystems.vision.objectdetection;
 
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ObjectDetectionIO {
@@ -8,8 +8,11 @@ public interface ObjectDetectionIO {
     @AutoLog
     public static class ObjectDetectionInputs {
         public boolean connected = false;
-        public Pose2d[] detectedPoses = new Pose2d[0];
+        public TargetObservation[] latestTargets = new TargetObservation[0];
     }
+
+    /** Represents a single target's yaw/pitch from the camera. */
+    public record TargetObservation(Rotation2d yaw, Rotation2d pitch) {}
 
     public default void updateInputs(ObjectDetectionInputs inputs) {}
 }
