@@ -13,24 +13,33 @@ public final class AprilTagConstants {
     public record CameraConfig(String name, Transform3d robotToCamera, double stdDevFactor) {}
 
     public static final CameraConfig[] kCameras = {
-        // Left Camera
+        // Back Left Camera
         new CameraConfig(
                 "Arducam_OV9782_Colored_1",
                 new Transform3d(
-                        Units.inchesToMeters(10.0),
-                        Units.inchesToMeters(-9.0),
-                        Units.inchesToMeters(19.5),
-                        new Rotation3d(0.0, Units.degreesToRadians(15), 0.0)),
+                        Units.inchesToMeters(-10.0),
+                        Units.inchesToMeters(-10.0),
+                        Units.inchesToMeters(20.0),
+                        new Rotation3d(0.0, Units.degreesToRadians(15.0), Units.degreesToRadians(180.0))),
                 1.0),
-        // Right Camera
+        // Back Right Camera
         new CameraConfig(
                 "Arducam_OV9782_Colored_2",
                 new Transform3d(
+                        Units.inchesToMeters(-10.0),
                         Units.inchesToMeters(10.0),
-                        Units.inchesToMeters(9.0),
-                        Units.inchesToMeters(19.5),
-                        new Rotation3d(0.0, Units.degreesToRadians(15), 0.0)),
-                1.0)
+                        Units.inchesToMeters(20.0),
+                        new Rotation3d(0.0, Units.degreesToRadians(15.0), Units.degreesToRadians(180.0))),
+                1.0),
+        // Front Camera
+        new CameraConfig(
+                "Arducam_OV9782_Colored_3",
+                new Transform3d(
+                        Units.inchesToMeters(10.0),
+                        Units.inchesToMeters(0.0),
+                        Units.inchesToMeters(20.0),
+                        new Rotation3d(0.0, Units.degreesToRadians(15.0), 0.0)),
+                1.0),
     };
 
     public static final double kMaxAmbiguity = 0.30;
