@@ -1,37 +1,34 @@
 package frc.robot.subsystems.vision.objectdetection;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import java.util.LinkedList;
+import java.util.List;
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class ObjectDetectionIOReal implements ObjectDetectionIO {
 
-    private final NetworkTable table;
-    private final NetworkTableEntry densityEntry;
+    private final PhotonCamera camera;
 
-    public ObjectDetectionIOReal() {
-        table = NetworkTableInstance.getDefault().getTable("ObjectDetection");
-        densityEntry = table.getEntry("objectDensity");
+    public ObjectDetectionIOReal(String name) {
+        camera = new PhotonCamera(name);
     }
 
     @Override
     public void updateInputs(ObjectDetectionInputs inputs) {
-        boolean ntConnected = NetworkTableInstance.getDefault().isConnected();
+        inputs.connected = camera.isConnected();
 
-        double[] density = densityEntry.getDoubleArray(new double[0]);
-        boolean validData = density.length == 2 && !Double.isNaN(density[0]) && !Double.isNaN(density[1]);
+        List<TargetObservation> targets = new LinkedList<>();
 
-        inputs.connected = ntConnected && validData;
-
-        if (validData) {
-            double xError = density[0]; // Positive right.
-            double yError = density[1]; // Positive forward.
-            Rotation2d rotationToTarget = new Rotation2d(Math.atan2(yError, xError));
-            inputs.detectedPoses = new Pose2d[] {new Pose2d(xError, yError, rotationToTarget)};
-        } else {
-            inputs.detectedPoses = new Pose2d[0];
+        for (var result : camera.getAllUnreadResults()) {
+            if (result.hasTargets()) {
+                for (PhotonTrackedTarget target : result.targets) {
+                    targets.add(new TargetObservation(
+                            Rotation2d.fromDegrees(target.getYaw()), Rotation2d.fromDegrees(target.getPitch())));
+                }
+            }
         }
+
+        inputs.latestTargets = targets.toArray(new TargetObservation[0]);
     }
 }
