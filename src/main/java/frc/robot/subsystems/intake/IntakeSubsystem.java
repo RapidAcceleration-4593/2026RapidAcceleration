@@ -1,49 +1,37 @@
 package frc.robot.subsystems.intake;
 
-import static frc.robot.subsystems.intake.IntakeConstants.*;
-
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-    private final SparkMax intakeMotor;
-    private final SparkMax deployMotor;
+    private final IntakeInputsAutoLogged inputs;
+    private final IntakeIO io;
 
-    private final DigitalInput deployLS;
-    private final DigitalInput retractLS;
+    public IntakeSubsystem(IntakeIO io) {
+        this.io = io;
+        this.inputs = new IntakeInputsAutoLogged();
+    }
 
-    public IntakeSubsystem() {
-        intakeMotor = new SparkMax(kIntakeMotorID, MotorType.kBrushless);
-        deployMotor = new SparkMax(kDeployMotorID, MotorType.kBrushless);
-
-        deployLS = new DigitalInput(kDeployLS);
-        retractLS = new DigitalInput(kRetractLS);
+    @Override
+    public void periodic() {
+        io.updateInputs(inputs);
+        Logger.processInputs("Intake", inputs);
     }
 
     public void setIntakeSpeed(double speed) {
-        intakeMotor.set(speed);
+        io.setIntakeSpeed(speed);
     }
 
     public void stopIntake() {
-        intakeMotor.stopMotor();
+        io.stopIntake();
     }
 
     public void setDeploySpeed(double speed) {
-        deployMotor.set(speed);
+        io.setDeploySpeed(speed);
     }
 
     public void stopDeploy() {
-        deployMotor.stopMotor();
-    }
-
-    public boolean isDeployed() {
-        return deployLS.get();
-    }
-
-    public boolean isRetracted() {
-        return retractLS.get();
+        io.stopDeploy();
     }
 }

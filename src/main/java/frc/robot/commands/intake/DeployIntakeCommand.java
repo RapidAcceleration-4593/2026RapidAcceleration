@@ -26,6 +26,7 @@ public class DeployIntakeCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return intake.isDeployed();
+        // return intake.isDeployed();
+        return false;
     }
 }
