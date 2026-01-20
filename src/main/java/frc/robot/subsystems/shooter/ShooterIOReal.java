@@ -35,8 +35,7 @@ public class ShooterIOReal implements ShooterIO {
                 .apply(new ClosedLoopConfig()
                         .pid(kP, kI, kD)
                         .apply(new FeedForwardConfig().kS(kS).kV(kV).kA(kA))
-                        .apply(new MAXMotionConfig()
-                                .maxAcceleration(kMaxAcceleration.in(RPMPerSecond))));
+                        .apply(new MAXMotionConfig().maxAcceleration(kMaxAcceleration.in(RPMPerSecond))));
 
         motor = new SparkMax(kShooterMotorID, MotorType.kBrushless);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -69,6 +68,6 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void stop() {
-		setVelocity(RPM.of(0));
+        setVelocity(RPM.of(0));
     }
 }

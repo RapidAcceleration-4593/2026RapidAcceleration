@@ -85,16 +85,16 @@ public final class Simulation {
     }
 
     public void periodic() {
-		for (var sim : sims) {
-			sim.updatePlantSim();
-		}
-		for (var sim : sims) {
-			sim.updatePowerSim();
-		}
-		PowerSim.simulationPeriodic();
-		for (var sim : sims) {
-			sim.updateIOSim();
-		}
+        for (var sim : sims) {
+            sim.updatePlantSim();
+        }
+        for (var sim : sims) {
+            sim.updatePowerSim();
+        }
+        PowerSim.simulationPeriodic();
+        for (var sim : sims) {
+            sim.updateIOSim();
+        }
         arena.simulationPeriodic();
         Logger.recordOutput("FieldSimulation/RobotPosition", getPose());
         Logger.recordOutput("FieldSimulation/Fuel", arena.getGamePiecesArrayByType("Fuel"));
