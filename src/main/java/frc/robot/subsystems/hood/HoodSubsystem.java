@@ -14,10 +14,9 @@ import org.littletonrobotics.junction.Logger;
 
 public class HoodSubsystem extends SubsystemBase {
 
+    private final Supplier<Pose2d> poseSupplier;
     private final HoodInputsAutoLogged inputs;
     private final HoodIO io;
-
-    private final Supplier<Pose2d> poseSupplier;
 
     public HoodSubsystem(HoodIO io, Supplier<Pose2d> poseSupplier) {
         this.io = io;
@@ -38,32 +37,25 @@ public class HoodSubsystem extends SubsystemBase {
     }
 
     public Angle getAngle() {
-        return io.getAngle();
+        return inputs.angle;
     }
 
     public boolean atAngle() {
-        return io.atAngle();
+        return inputs.atTargetAngle;
     }
 
     public void stop() {
         io.stop();
     }
 
-    public void setAngleFromDistance() {
-        Distance distance = calculateDistance(poseSupplier.get());
-        Angle angle = calculateAngle(distance);
-        setAngle(angle);
-    }
-
-    private Distance calculateDistance(Pose2d pose) {
+    /** Sets the angle based on the robot's current pose relative to the Hub. */
+    public void setAngleToHub() {
         Pose2d targetPose = kAlliance == Alliance.Blue ? kBlueHubPose : kRedHubPose;
-        Pose2d shooterPose = pose.plus(kPhysicalOffset);
+        Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);
 
         Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
-        return distance;
-    }
+        Angle targetAngle = Degrees.of(5 * distance.in(Meters));
 
-    private Angle calculateAngle(Distance distance) {
-        return Degrees.of(5 * distance.in(Meters));
+        setAngle(targetAngle);
     }
 }

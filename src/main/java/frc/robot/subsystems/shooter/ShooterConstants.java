@@ -6,7 +6,6 @@ import static frc.robot.util.ExtraUnits.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.MomentOfInertia;
@@ -29,7 +28,7 @@ public final class ShooterConstants {
     public static final AngularVelocity kVelocityTolerance = RPM.of(50.0);
 
     public static final Transform2d kPhysicalOffset =
-            new Transform2d(new Translation2d(-Units.inchesToMeters(5.375), 0), new Rotation2d());
+            new Transform2d(new Translation2d(Inches.of(-5.375), Inches.zero()), new Rotation2d());
 
     public static final MomentOfInertia kShooterWheelMOI = PoundSquareInches.of(1.5);
     public static final MomentOfInertia kHoodWheelMOI =

@@ -8,16 +8,17 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 
 public final class HoodConstants {
 
-    public static final int kHoodMotorID = 0;
+    public static final int kHoodMotorID = 4;
+
     public static final int kHoodEncoderChannelA = 0;
     public static final int kHoodEncoderChannelB = 1;
-    public static final int kHoodLimitSwitchChannel = 2;
 
+    public static final int kHoodLimitSwitchChannel = 2;
     public static final boolean kHoodLimitSwitchInverted = false;
 
-    public static final double kP = 0;
-    public static final double kI = 0;
-    public static final double kD = 0;
+    public static final double kP = 0.0;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
 
     public static final double kCountsPerRotation = 0.0; // Encoder counts per revolution.
     public static final double kMotorToEncoderGearing = 60.0; // Gearing between drive motor and hood axle.

@@ -19,14 +19,14 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class HoodIOReal implements HoodIO {
 
-    final SparkMax motor;
+    protected final SparkMax motor;
+    protected final Encoder encoder;
+    protected final DigitalInput limitSwitch;
+
     private final SparkMaxConfig config;
-
-    final Encoder encoder;
-    final DigitalInput limitSwitch;
-    private final Trigger lsTrigger;
-
     private final PIDController pid;
+
+    private final Trigger lsTrigger;
 
     private Angle targetAngle = kMinimumAngle;
 
@@ -83,20 +83,18 @@ public class HoodIOReal implements HoodIO {
     }
 
     @Override
-    public Angle getAngle() {
-        return Degrees.of(encoder.getDistance());
-    }
-
-    @Override
-    public boolean atAngle() {
-        return pid.atSetpoint();
-    }
-
-    @Override
     public void stop() {
         targetAngle = getAngle();
         pid.reset();
         motor.stopMotor();
+    }
+
+    private Angle getAngle() {
+        return Degrees.of(encoder.getDistance());
+    }
+
+    private boolean atAngle() {
+        return pid.atSetpoint();
     }
 
     private boolean isLSPressed() {

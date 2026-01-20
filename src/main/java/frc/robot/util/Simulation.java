@@ -8,10 +8,6 @@ import static frc.robot.subsystems.swerve.SwerveConstants.MAPLESIM_CONFIG;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
 import java.util.ArrayList;
 import java.util.List;
 import org.ironmaple.simulation.SimulatedArena;
@@ -58,27 +54,15 @@ public final class Simulation {
         arena.resetFieldForAuto();
     }
 
-    public void launchProjectile(AngularVelocity velocity, Angle angle) {
-        Distance initialHeight = Inches.of(20.5);
-
-        Distance topWheelRadius = Inches.of(1.25);
-        Distance botWheelRadius = Inches.of(2.0);
-
-        LinearVelocity topVelocity =
-                MetersPerSecond.of((2 * Math.PI * topWheelRadius.in(Meters) * velocity.in(RPM)) / 60.0);
-        LinearVelocity botVelocity =
-                MetersPerSecond.of((2 * Math.PI * botWheelRadius.in(Meters) * velocity.in(RPM)) / 60.0);
-
-        LinearVelocity linearVelocity = topVelocity.plus(botVelocity).div(2);
-
+    public void launchProjectile() {
         RebuiltFuelOnFly projectile = new RebuiltFuelOnFly(
                 getPose().getTranslation(),
                 kPhysicalOffset.getTranslation(),
                 new ChassisSpeeds(), // Consider current robot velocity.
                 getPose().getRotation(), // Plus turret rotation.
-                initialHeight,
-                linearVelocity,
-                angle);
+                Inches.of(20.5),
+                MetersPerSecond.of(8.0),
+                Degrees.of(75.0));
 
         projectile.enableBecomesGamePieceOnFieldAfterTouchGround();
         arena.addGamePieceProjectile(projectile);

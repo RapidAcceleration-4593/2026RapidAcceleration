@@ -12,8 +12,8 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class IndexerIOReal implements IndexerIO {
 
-    private final SparkMax spindexerMotor;
-    private final SparkMax feederMotor;
+    protected final SparkMax spindexerMotor;
+    protected final SparkMax feederMotor;
 
     private final SparkMaxConfig config;
 

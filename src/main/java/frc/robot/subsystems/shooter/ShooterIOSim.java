@@ -1,8 +1,7 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.shooter.ShooterConstants.kShooterWheelGearing;
-import static frc.robot.subsystems.shooter.ShooterConstants.kShooterWheelMOI;
+import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.sim.SparkRelativeEncoderSim;

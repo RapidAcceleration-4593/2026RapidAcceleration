@@ -20,11 +20,11 @@ import edu.wpi.first.units.measure.AngularVelocity;
 
 public class ShooterIOReal implements ShooterIO {
 
-    final SparkMax motor;
-    private final SparkMaxConfig config;
+    protected final SparkMax motor;
+    protected final RelativeEncoder encoder;
 
-    final RelativeEncoder encoder;
     private final SparkClosedLoopController controller;
+    private final SparkMaxConfig config;
 
     private AngularVelocity targetVelocity = RPM.zero();
 
@@ -39,15 +39,16 @@ public class ShooterIOReal implements ShooterIO {
 
         motor = new SparkMax(kShooterMotorID, MotorType.kBrushless);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
         encoder = motor.getEncoder();
         controller = motor.getClosedLoopController();
     }
 
     @Override
     public void updateInputs(ShooterInputs inputs) {
-        inputs.atSpeed = atSpeed();
         inputs.velocity = getVelocity();
         inputs.targetVelocity = targetVelocity;
+        inputs.atTargetVelocity = atTargetVelocity();
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
     }
@@ -58,16 +59,16 @@ public class ShooterIOReal implements ShooterIO {
         controller.setSetpoint(velocity.in(RPM), ControlType.kMAXMotionVelocityControl);
     }
 
+    @Override
+    public void stop() {
+        setVelocity(RPM.of(0));
+    }
+
     private AngularVelocity getVelocity() {
         return RPM.of(encoder.getVelocity());
     }
 
-    private boolean atSpeed() {
+    private boolean atTargetVelocity() {
         return controller.isAtSetpoint();
-    }
-
-    @Override
-    public void stop() {
-        setVelocity(RPM.of(0));
     }
 }

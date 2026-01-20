@@ -29,16 +29,6 @@ public interface HoodIO {
     /** Sets angle of the adjustable hood in Degrees. */
     public default void setAngle(Angle angle) {}
 
-    /** Returns the current angle of the adjustable hood in Degrees. */
-    public default Angle getAngle() {
-        return Degrees.zero();
-    }
-
-    /** Returns true if the adjustable hood is at its setpoint angle. */
-    public default boolean atAngle() {
-        return false;
-    }
-
     /** Stops the shooter motor immediately. */
     public default void stop() {}
 

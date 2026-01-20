@@ -24,6 +24,7 @@ public class RobotContainer {
     public final SwerveSubsystem swerve;
     public final AprilTagSubsystem apriltag;
     public final ObjectDetectionSubsystem objectDetection;
+
     public final ShooterSubsystem shooter;
     public final HoodSubsystem hood;
     public final IndexerSubsystem indexer;

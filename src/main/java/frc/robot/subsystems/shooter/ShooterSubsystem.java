@@ -29,7 +29,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public boolean atVelocity() {
-        return inputs.atSpeed;
+        return inputs.atTargetVelocity;
     }
 
     public void stop() {
