@@ -44,9 +44,4 @@ public interface HoodIO {
 
     /** Resets the encoder reading to zero. */
     public default void resetEncoder() {}
-
-    /** Retrieves whether the limit switch is pressed. */
-    public default boolean getLimitSwitch() {
-        return false;
-    }
 }

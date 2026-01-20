@@ -19,12 +19,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class HoodIOReal implements HoodIO {
 
-    private final SparkMax motor;
+    final SparkMax motor;
     private final SparkMaxConfig config;
 
-    private final Encoder encoder;
-    private final DigitalInput limitswitch;
-    private final Trigger limitswitchTrigger;
+    final Encoder encoder;
+    final DigitalInput limitSwitch;
+    private final Trigger lsTrigger;
 
     private final PIDController pid;
 
@@ -40,13 +40,13 @@ public class HoodIOReal implements HoodIO {
         encoder = new Encoder(kHoodEncoderChannelA, kHoodEncoderChannelB);
         encoder.setDistancePerPulse(kDegreesPerPulse);
 
-        limitswitch = new DigitalInput(kHoodLimitSwitchChannel);
+        limitSwitch = new DigitalInput(kHoodLimitSwitchChannel);
 
         pid = new PIDController(kP, kI, kD);
         pid.setTolerance(kAngleTolerance.in(Degrees));
 
-        limitswitchTrigger = new Trigger(this::getLimitSwitch);
-        limitswitchTrigger.onTrue(Commands.runOnce(() -> {
+        lsTrigger = new Trigger(this::isLSPressed);
+        lsTrigger.onTrue(Commands.runOnce(() -> {
             encoder.reset();
             pid.reset();
         }));
@@ -57,14 +57,14 @@ public class HoodIOReal implements HoodIO {
         inputs.angle = getAngle();
         inputs.targetAngle = targetAngle;
         inputs.atTargetAngle = atAngle();
-        inputs.limitswitch = getLimitSwitch();
+        inputs.limitswitch = isLSPressed();
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
     }
 
     @Override
     public void updateControl() {
-        if (getLimitSwitch()) {
+        if (isLSPressed()) {
             targetAngle = Degrees.of(Math.max(0.0, targetAngle.in(Degrees)));
         }
 
@@ -99,8 +99,7 @@ public class HoodIOReal implements HoodIO {
         motor.stopMotor();
     }
 
-    @Override
-    public boolean getLimitSwitch() {
-        return limitswitch.get();
+    private boolean isLSPressed() {
+        return limitSwitch.get() ^ kHoodLimitSwitchInverted;
     }
 }
