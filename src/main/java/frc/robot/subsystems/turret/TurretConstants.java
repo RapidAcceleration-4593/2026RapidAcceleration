@@ -7,9 +7,9 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 
 public final class TurretConstants {
 
-    public static final int kMotorID = 0;
-    public static final int kEncoderChannelA = 0;
-    public static final int kEncoderChannelB = 1;
+    public static final int kTurretMotorID = 0;
+    public static final int kTurretEncoderChannelA = 0;
+    public static final int kTurretEncoderChannelB = 1;
 
     public static final double kP = 0.01;
     public static final double kI = 0.0;
@@ -22,7 +22,7 @@ public final class TurretConstants {
     public static final Angle kInitialAngle = Degrees.of(0.0);
     public static final Angle kMinimumAngle = Degrees.of(-150.0);
     public static final Angle kMaximumAngle = Degrees.of(150.0);
-    public static final Angle kMaximumTolerance = Degrees.of(3.0);
+    public static final Angle kAngleTolerance = Degrees.of(3.0);
 
-    public static final MomentOfInertia kTurretMOI = KilogramSquareMeters.of(0.0030);
+    public static final MomentOfInertia kTurretMOI = KilogramSquareMeters.of(0.003);
 }

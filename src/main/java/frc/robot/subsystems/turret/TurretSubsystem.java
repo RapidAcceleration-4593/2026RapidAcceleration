@@ -41,7 +41,7 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     public boolean atAngle() {
-        return inputs.atAngle;
+        return inputs.atTargetAngle;
     }
 
     public void stop() {

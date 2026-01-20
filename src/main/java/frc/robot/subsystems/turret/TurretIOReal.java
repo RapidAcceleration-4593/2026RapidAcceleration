@@ -9,16 +9,17 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Encoder;
 
 public class TurretIOReal implements TurretIO {
 
-    private final SparkMax motor;
-    private final Encoder encoder;
-    private final SparkMaxConfig config;
+    protected final SparkMax motor;
+    protected final Encoder encoder;
 
+    private final SparkMaxConfig config;
     private final PIDController pid;
 
     private Angle targetAngle = kInitialAngle;
@@ -27,21 +28,21 @@ public class TurretIOReal implements TurretIO {
         config = new SparkMaxConfig();
         config.idleMode(IdleMode.kBrake).inverted(false);
 
-        motor = new SparkMax(kMotorID, MotorType.kBrushless);
+        motor = new SparkMax(kTurretMotorID, MotorType.kBrushless);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        encoder = new Encoder(kEncoderChannelA, kEncoderChannelB);
+        encoder = new Encoder(kTurretEncoderChannelA, kTurretEncoderChannelB);
         encoder.setDistancePerPulse(kDegreesPerPulse);
 
         pid = new PIDController(kP, kI, kD);
-        pid.setTolerance(kMaximumTolerance.in(Degrees));
+        pid.setTolerance(kAngleTolerance.in(Degrees));
     }
 
     @Override
     public void updateInputs(TurretInputs inputs) {
-        inputs.atAngle = atAngle();
         inputs.angle = getAngle();
         inputs.targetAngle = targetAngle;
+        inputs.atTargetAngle = atAngle();
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
     }
@@ -52,6 +53,8 @@ public class TurretIOReal implements TurretIO {
         double target = targetAngle.in(Degrees);
 
         double volts = pid.calculate(current, target);
+        volts = MathUtil.clamp(volts, -12.0, 12.0);
+
         motor.setVoltage(volts);
     }
 

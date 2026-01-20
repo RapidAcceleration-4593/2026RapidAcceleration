@@ -11,9 +11,9 @@ public interface TurretIO {
 
     @AutoLog
     public static class TurretInputs {
-        public boolean atAngle = false;
         public Angle angle = Degrees.zero();
         public Angle targetAngle = Degrees.zero();
+        public boolean atTargetAngle = false;
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();
@@ -30,4 +30,7 @@ public interface TurretIO {
 
     /** Stops the turret motor immediately. */
     public default void stop() {}
+
+    /** Resets the encoder reading to zero. */
+    public default void resetEncoder() {}
 }
