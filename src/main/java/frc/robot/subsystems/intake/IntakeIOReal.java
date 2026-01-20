@@ -13,21 +13,21 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 public class IntakeIOReal implements IntakeIO {
 
-    private final SparkMax intakeMotor;
+    protected final SparkMax intakeMotor;
+    protected final SparkMax deployMotor;
+
+    protected final DigitalInput deployedLS;
+    protected final DigitalInput retractedLS;
+
     private final SparkMaxConfig intakeConfig;
-
-    private final SparkMax deployMotor;
     private final SparkMaxConfig deployConfig;
-
-    private final DigitalInput deployedLS;
-    private final DigitalInput retractedLS;
 
     public IntakeIOReal() {
         intakeConfig = new SparkMaxConfig();
-        intakeConfig.idleMode(IdleMode.kBrake).inverted(false);
+        intakeConfig.idleMode(IdleMode.kBrake).inverted(false).voltageCompensation(12.0);
 
         deployConfig = new SparkMaxConfig();
-        deployConfig.idleMode(IdleMode.kCoast).inverted(false);
+        deployConfig.idleMode(IdleMode.kCoast).inverted(false).voltageCompensation(12.0);
 
         intakeMotor = new SparkMax(kIntakeMotorID, MotorType.kBrushless);
         intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -55,8 +55,7 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void setIntakeSpeed(double speed) {
-        double volts = speed * intakeMotor.getBusVoltage();
-        intakeMotor.setVoltage(volts);
+        intakeMotor.setVoltage(speed);
     }
 
     @Override
@@ -66,8 +65,7 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void setDeploySpeed(double speed) {
-        double volts = speed * deployMotor.getBusVoltage();
-        deployMotor.setVoltage(volts);
+        deployMotor.setVoltage(speed);
     }
 
     @Override
