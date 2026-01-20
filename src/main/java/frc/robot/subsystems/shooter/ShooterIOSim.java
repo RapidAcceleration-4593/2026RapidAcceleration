@@ -32,11 +32,6 @@ public class ShooterIOSim extends ShooterIOReal implements IPhysicsSim {
     }
 
     @Override
-    public void updateInputs(ShooterInputs inputs) {
-        super.updateInputs(inputs);
-    }
-
-    @Override
     public void updatePlantSim() {
         flywheelSim.setInput(motor.getAppliedOutput() * RobotController.getBatteryVoltage());
         flywheelSim.update(0.02);
