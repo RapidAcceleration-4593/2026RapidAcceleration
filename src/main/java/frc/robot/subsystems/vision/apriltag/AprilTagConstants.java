@@ -1,45 +1,47 @@
 package frc.robot.subsystems.vision.apriltag;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.util.Units;
 
 public final class AprilTagConstants {
 
-    public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    public static final AprilTagFieldLayout kFieldLayout =
+            AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
 
     public record CameraConfig(String name, Transform3d robotToCamera, double stdDevFactor) {}
 
     public static final CameraConfig[] kCameras = {
+        // Front Camera
+        new CameraConfig(
+                "OV9782_1",
+                new Transform3d(
+                        Inches.of(5.0),
+                        Inches.of(0.0),
+                        Inches.of(20.0),
+                        new Rotation3d(Degrees.zero(), Degrees.of(-15.0), Degrees.zero())),
+                1.0),
         // Back Left Camera
         new CameraConfig(
-                "Arducam_OV9782_Colored_1",
+                "OV9782_2",
                 new Transform3d(
-                        Units.inchesToMeters(-10.0),
-                        Units.inchesToMeters(-10.0),
-                        Units.inchesToMeters(20.0),
-                        new Rotation3d(0.0, Units.degreesToRadians(15.0), Units.degreesToRadians(180.0))),
+                        Inches.of(-8.0),
+                        Inches.of(6.0),
+                        Inches.of(16.0),
+                        new Rotation3d(Degrees.zero(), Degrees.zero(), Degrees.of(165.0))),
                 1.0),
         // Back Right Camera
         new CameraConfig(
-                "Arducam_OV9782_Colored_2",
+                "OV9782_3",
                 new Transform3d(
-                        Units.inchesToMeters(-10.0),
-                        Units.inchesToMeters(10.0),
-                        Units.inchesToMeters(20.0),
-                        new Rotation3d(0.0, Units.degreesToRadians(15.0), Units.degreesToRadians(180.0))),
-                1.0),
-        // Front Camera
-        new CameraConfig(
-                "Arducam_OV9782_Colored_3",
-                new Transform3d(
-                        Units.inchesToMeters(10.0),
-                        Units.inchesToMeters(0.0),
-                        Units.inchesToMeters(20.0),
-                        new Rotation3d(0.0, Units.degreesToRadians(15.0), 0.0)),
-                1.0),
+                        Inches.of(-8.0),
+                        Inches.of(-6.0),
+                        Inches.of(16.0),
+                        new Rotation3d(Degrees.zero(), Degrees.zero(), Degrees.of(195.0))),
+                1.0)
     };
 
     public static final double kMaxAmbiguity = 0.30;
