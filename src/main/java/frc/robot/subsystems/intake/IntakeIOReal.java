@@ -9,79 +9,40 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.wpilibj.DigitalInput;
 
 public class IntakeIOReal implements IntakeIO {
 
-    protected final SparkMax intakeMotor;
-    protected final SparkMax deployMotor;
-
-    protected final DigitalInput deployedLS;
-    protected final DigitalInput retractedLS;
+    protected final SparkMax motor;
 
     private final SparkMaxConfig intakeConfig;
-    private final SparkMaxConfig deployConfig;
 
     public IntakeIOReal() {
         intakeConfig = new SparkMaxConfig();
         intakeConfig.idleMode(IdleMode.kBrake).inverted(false).voltageCompensation(12.0);
 
-        deployConfig = new SparkMaxConfig();
-        deployConfig.idleMode(IdleMode.kCoast).inverted(false).voltageCompensation(12.0);
-
-        intakeMotor = new SparkMax(kIntakeMotorID, MotorType.kBrushless);
-        intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        deployMotor = new SparkMax(kDeployMotorID, MotorType.kBrushless);
-        deployMotor.configure(deployConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        deployedLS = new DigitalInput(kDeployLS);
-        retractedLS = new DigitalInput(kRetractLS);
+        motor = new SparkMax(kMotorID, MotorType.kBrushless);
+        motor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override
     public void updateInputs(IntakeInputs inputs) {
         inputs.isIntaking = isIntaking();
 
-        inputs.isDeployed = isDeployed();
-        inputs.isRetracted = isRetracted();
-
-        inputs.intakeVolts = Volts.of(intakeMotor.getAppliedOutput() * intakeMotor.getBusVoltage());
-        inputs.deployVolts = Volts.of(deployMotor.getAppliedOutput() * deployMotor.getBusVoltage());
-
-        inputs.intakeCurrent = Amps.of(intakeMotor.getOutputCurrent());
-        inputs.deployCurrent = Amps.of(deployMotor.getOutputCurrent());
+        inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
+        inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
     }
 
     @Override
     public void setIntakeSpeed(double speed) {
-        intakeMotor.setVoltage(speed);
+        motor.set(speed);
     }
 
     @Override
     public void stopIntake() {
-        intakeMotor.stopMotor();
-    }
-
-    @Override
-    public void setDeploySpeed(double speed) {
-        deployMotor.setVoltage(speed);
-    }
-
-    @Override
-    public void stopDeploy() {
-        deployMotor.stopMotor();
+        motor.stopMotor();
     }
 
     public boolean isIntaking() {
-        return Math.abs(intakeMotor.get()) > 0;
-    }
-
-    public boolean isDeployed() {
-        return deployedLS.get();
-    }
-
-    public boolean isRetracted() {
-        return retractedLS.get();
+        return Math.abs(motor.get()) > 0;
     }
 }

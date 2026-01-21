@@ -12,16 +12,8 @@ public interface IntakeIO {
     public static class IntakeInputs {
         public boolean isIntaking = false;
 
-        public boolean isDeployed = false;
-        public boolean isRetracted = false;
-
-        // public Distance deployDistance = Inches.zero();
-
-        public Voltage intakeVolts = Volts.zero();
-        public Current intakeCurrent = Amps.zero();
-
-        public Voltage deployVolts = Volts.zero();
-        public Current deployCurrent = Amps.zero();
+        public Voltage appliedVolts = Volts.zero();
+        public Current outputCurrent = Amps.zero();
     }
 
     /** Fetches updates from sensors through the IO interface. */
@@ -32,10 +24,4 @@ public interface IntakeIO {
 
     /** Stops the intake motor immediately. */
     public default void stopIntake() {}
-
-    /** Sets the speed of the deploy mechanism as a percentage. */
-    public default void setDeploySpeed(double speed) {}
-
-    /** Stops the deploy motor immediately. */
-    public default void stopDeploy() {}
 }

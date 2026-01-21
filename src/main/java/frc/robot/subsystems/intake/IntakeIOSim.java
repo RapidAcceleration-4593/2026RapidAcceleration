@@ -11,23 +11,19 @@ import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 
 public class IntakeIOSim extends IntakeIOReal {
 
-    private final SparkMaxSim intakeMotorSim;
-    private final SparkMaxSim deployMotorSim;
-
-    private final DCMotor intakeGearbox;
-    private final DCMotor deployGearbox;
+    private final SparkMaxSim motorSim;
+    private final DCMotor gearbox;
 
     private final IntakeSimulation intakeSim;
 
     public IntakeIOSim(AbstractDriveTrainSimulation drivetrain) {
-        intakeGearbox = DCMotor.getNEO(1);
-        deployGearbox = DCMotor.getNEO(1);
+        gearbox = DCMotor.getNEO(1);
 
-        intakeMotorSim = new SparkMaxSim(intakeMotor, intakeGearbox);
-        deployMotorSim = new SparkMaxSim(deployMotor, deployGearbox);
-
+        motorSim = new SparkMaxSim(motor, gearbox);
         intakeSim = IntakeSimulation.OverTheBumperIntake(
                 "Fuel", drivetrain, Inches.of(30.0), Inches.of(12), IntakeSimulation.IntakeSide.FRONT, kMaxCapacity);
+
+        // TODO: Add simulatable.
     }
 
     @Override
@@ -37,8 +33,7 @@ public class IntakeIOSim extends IntakeIOReal {
     }
 
     public void updateSimulation() {
-        PowerSim.addCurrentDraw(intakeMotorSim.getMotorCurrent());
-        PowerSim.addCurrentDraw(deployMotorSim.getMotorCurrent());
+        PowerSim.addCurrentDraw(motorSim.getMotorCurrent());
     }
 
     @Override
@@ -54,6 +49,6 @@ public class IntakeIOSim extends IntakeIOReal {
     }
 
     public boolean isIntaking() {
-        return Math.abs(intakeMotor.get()) > 0;
+        return Math.abs(motor.get()) > 0;
     }
 }

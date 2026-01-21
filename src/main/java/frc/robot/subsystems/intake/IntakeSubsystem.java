@@ -26,12 +26,4 @@ public class IntakeSubsystem extends SubsystemBase {
     public void stopIntake() {
         io.stopIntake();
     }
-
-    public void setDeploySpeed(double speed) {
-        io.setDeploySpeed(speed);
-    }
-
-    public void stopDeploy() {
-        io.stopDeploy();
-    }
 }

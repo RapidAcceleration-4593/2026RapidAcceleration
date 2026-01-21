@@ -23,6 +23,7 @@ public class RobotContainer {
     public final AprilTagSubsystem apriltag;
     public final ObjectDetectionSubsystem objectDetection;
     public final IntakeSubsystem intake;
+    // TODO: Initialize DeploySubsystem.
 
     // Controller(s)
     private final CommandXboxController driverController = new CommandXboxController(kDriverControllerPort);
@@ -46,8 +47,6 @@ public class RobotContainer {
 
         driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
 
-        operatorController.a().whileTrue(new RetractIntakeCommand(intake));
-        operatorController.y().whileTrue(new DeployIntakeCommand(intake));
         operatorController.x().whileTrue(new RunIntakeCommand(intake));
     }
 
