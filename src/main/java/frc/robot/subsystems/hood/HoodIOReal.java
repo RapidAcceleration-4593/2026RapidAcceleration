@@ -47,7 +47,6 @@ public class HoodIOReal implements HoodIO {
 
         lsTrigger = new Trigger(this::isLSPressed);
         lsTrigger.onTrue(Commands.runOnce(() -> {
-            encoder.reset();
             pid.reset();
         }));
     }
@@ -64,10 +63,6 @@ public class HoodIOReal implements HoodIO {
 
     @Override
     public void updateControl() {
-        if (isLSPressed()) {
-            targetAngle = Degrees.of(Math.max(0.0, targetAngle.in(Degrees)));
-        }
-
         double currentDeg = getAngle().in(Degrees);
         double targetDeg = targetAngle.in(Degrees);
 
