@@ -30,12 +30,13 @@ public class RunShooterCommand extends Command {
     @Override
     public void initialize() {
         shooter.setVelocity(kDefaultShooterRPM);
-        hood.setAngleToHub();
     }
 
     @Override
     public void execute() {
-        if (shooter.atVelocity()) {
+        hood.setAngleToHub();
+
+        if (shooter.atVelocity() && hood.atAngle()) {
             indexer.setSpindexerSpeed(kSpindexerSpeed);
             indexer.setFeederSpeed(kFeederSpeed);
 

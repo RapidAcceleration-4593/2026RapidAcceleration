@@ -23,7 +23,7 @@ public final class HoodConstants {
     public static final double kCountsPerRotation = 8192; // Unscaled encoder counts per revolution.
     public static final double kMotorToEncoderGearing = 60.0; // Gearing between drive motor and hood axle.
     public static final double kEncoderToHoodGearing = 5.75;
-	public static final double kMotorToHoodGearing = kMotorToEncoderGearing * kEncoderToHoodGearing;
+    public static final double kMotorToHoodGearing = kMotorToEncoderGearing * kEncoderToHoodGearing;
     public static final double kDegreesPerPulse = 360.0 / (kCountsPerRotation * kEncoderToHoodGearing);
 
     public static final MomentOfInertia kHoodMOI = PoundSquareInches.of(200); // Pure guestimation.

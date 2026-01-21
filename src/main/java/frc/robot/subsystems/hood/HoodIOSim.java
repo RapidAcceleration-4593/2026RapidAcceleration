@@ -46,21 +46,21 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
         super.updateInputs(inputs);
     }
 
-	@Override
-	public void updatePlantSim() {
-		hoodSim.setInput(motorSim.getAppliedOutput() * PowerSim.getRailVoltage());
-		hoodSim.update(0.02);
-	}
+    @Override
+    public void updatePlantSim() {
+        hoodSim.setInput(motorSim.getAppliedOutput() * PowerSim.getRailVoltage());
+        hoodSim.update(0.02);
+    }
 
-	@Override
-	public void updatePowerSim() {
-		PowerSim.addCurrentDraw(hoodSim.getCurrentDrawAmps());
-	}
+    @Override
+    public void updatePowerSim() {
+        PowerSim.addCurrentDraw(hoodSim.getCurrentDrawAmps());
+    }
 
-	@Override
-	public void updateIOSim() {
-		var motorRPM = Units.radiansPerSecondToRotationsPerMinute(hoodSim.getVelocityRadPerSec()) / kMotorToHoodGearing;
-		motorSim.iterate(motorRPM, PowerSim.getRailVoltage(), 0.05);
-		encoderSim.setDistance(Units.radiansToDegrees(hoodSim.getAngleRads()) * kEncoderToHoodGearing);
-	}
+    @Override
+    public void updateIOSim() {
+        var motorRPM = Units.radiansPerSecondToRotationsPerMinute(hoodSim.getVelocityRadPerSec()) / kMotorToHoodGearing;
+        motorSim.iterate(motorRPM, PowerSim.getRailVoltage(), 0.05);
+        encoderSim.setDistance(Units.radiansToDegrees(hoodSim.getAngleRads()) * kEncoderToHoodGearing);
+    }
 }

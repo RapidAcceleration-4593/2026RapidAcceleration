@@ -2,6 +2,7 @@ package frc.robot.subsystems.hood;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.*;
+import static frc.robot.subsystems.hood.HoodConstants.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,6 +12,9 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 public class HoodSubsystem extends SubsystemBase {
 
@@ -18,11 +22,18 @@ public class HoodSubsystem extends SubsystemBase {
     private final HoodInputsAutoLogged inputs;
     private final HoodIO io;
 
+    private final LoggedMechanism2d mechanism;
+    private final LoggedMechanismRoot2d root;
+    private final LoggedMechanismLigament2d hood;
+
     public HoodSubsystem(HoodIO io, Supplier<Pose2d> poseSupplier) {
         this.io = io;
         this.inputs = new HoodInputsAutoLogged();
-
         this.poseSupplier = poseSupplier;
+
+        mechanism = new LoggedMechanism2d(1.0, 1.0);
+        root = mechanism.getRoot("HoodRoot", 0.5, 0.5);
+        hood = root.append(new LoggedMechanismLigament2d("Hood", Inches.of(12), kMinimumAngle));
     }
 
     @Override
@@ -30,6 +41,9 @@ public class HoodSubsystem extends SubsystemBase {
         io.updateInputs(inputs);
         io.updateControl();
         Logger.processInputs("Hood", inputs);
+
+        hood.setAngle(inputs.angle);
+        Logger.recordOutput("Mechanisms/Hood", mechanism);
     }
 
     public void setAngle(Angle angle) {
