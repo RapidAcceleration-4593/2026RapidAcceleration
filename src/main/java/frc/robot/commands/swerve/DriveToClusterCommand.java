@@ -12,7 +12,7 @@ public class DriveToClusterCommand extends DeferredCommand {
 
     private static final double kRotationGain = 3.0;
     private static final double kMaxAngularVelocity = 4.0;
-    private static final double kForwardVelocity = 1.5;
+    private static final double kForwardVelocity = 2.0;
 
     public DriveToClusterCommand(SwerveSubsystem swerve, ObjectDetectionSubsystem objectdetection) {
         super(

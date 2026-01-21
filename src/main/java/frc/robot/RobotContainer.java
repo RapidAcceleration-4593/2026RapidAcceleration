@@ -44,7 +44,6 @@ public class RobotContainer {
         turret.setDefaultCommand(new ControlTurretCommand(turret));
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
-
         driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
     }
 
