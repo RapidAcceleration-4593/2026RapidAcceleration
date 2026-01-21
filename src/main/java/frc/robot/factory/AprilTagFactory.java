@@ -24,7 +24,7 @@ public final class AprilTagFactory {
         return new AprilTagSubsystem(
                 swerve,
                 Arrays.stream(kCameras)
-                        .map(cfg -> new AprilTagIOPhotonVision(cfg.name(), cfg.robotToCamera()))
+                        .map(cfg -> new AprilTagIOReal(cfg.name(), cfg.robotToCamera()))
                         .toArray(AprilTagIO[]::new));
     }
 
@@ -33,7 +33,7 @@ public final class AprilTagFactory {
         return new AprilTagSubsystem(
                 swerve,
                 Arrays.stream(kCameras)
-                        .map(cfg -> new AprilTagIOPhotonVisionSim(cfg.name(), cfg.robotToCamera(), simulation::getPose))
+                        .map(cfg -> new AprilTagIOSim(cfg.name(), cfg.robotToCamera(), simulation::getPose))
                         .toArray(AprilTagIO[]::new));
     }
 

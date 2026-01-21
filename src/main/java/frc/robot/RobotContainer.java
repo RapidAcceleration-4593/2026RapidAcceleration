@@ -39,7 +39,6 @@ public class RobotContainer {
                 swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
-
         driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
     }
 
