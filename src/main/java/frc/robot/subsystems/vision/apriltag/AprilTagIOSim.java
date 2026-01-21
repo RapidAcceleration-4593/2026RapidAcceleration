@@ -9,7 +9,7 @@ import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 
-public class AprilTagIOPhotonVisionSim extends AprilTagIOPhotonVision {
+public class AprilTagIOSim extends AprilTagIOReal {
 
     private static VisionSystemSim visionSim;
 
@@ -22,7 +22,7 @@ public class AprilTagIOPhotonVisionSim extends AprilTagIOPhotonVision {
      * @param name The name of the camera.
      * @param poseSupplier A supplier that provides the robot pose to use in simulation.
      */
-    public AprilTagIOPhotonVisionSim(String name, Transform3d robotToCamera, Supplier<Pose2d> poseSupplier) {
+    public AprilTagIOSim(String name, Transform3d robotToCamera, Supplier<Pose2d> poseSupplier) {
         super(name, robotToCamera);
         this.poseSupplier = poseSupplier;
 
