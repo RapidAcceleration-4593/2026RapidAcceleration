@@ -14,12 +14,12 @@ public final class ShooterConstants {
 
     public static final int kShooterMotorID = 3;
 
-    public static final double kP = 0.0; // 01;
-    public static final double kI = 0.0;
+    public static final double kP = 0.001;
+    public static final double kI = 0.001;
     public static final double kD = 0.0;
 
     public static final double kS = 0.0; // Voltage to overcome static friction.
-    public static final double kV = 0.0017; // Volts per RPM to maintain speed.
+    public static final double kV = 0.0; // Volts per RPM to maintain speed.
     public static final double kA = 0.0; // Optional for acceleration.
 
     public static final AngularAcceleration kMaxAcceleration = RPMPerSecond.of(500);

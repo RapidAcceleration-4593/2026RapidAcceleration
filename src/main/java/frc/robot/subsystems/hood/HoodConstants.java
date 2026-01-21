@@ -16,7 +16,7 @@ public final class HoodConstants {
     public static final int kHoodLimitSwitchChannel = 2;
     public static final boolean kHoodLimitSwitchInverted = false;
 
-    public static final double kP = 0.1;
+    public static final double kP = 0.8;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 

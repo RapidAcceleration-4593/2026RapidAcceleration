@@ -69,6 +69,6 @@ public class ShooterIOReal implements ShooterIO {
     }
 
     private boolean atTargetVelocity() {
-        return controller.isAtSetpoint();
+        return Math.abs(targetVelocity.in(RPM) - encoder.getVelocity()) <= kVelocityTolerance.in(RPM);
     }
 }

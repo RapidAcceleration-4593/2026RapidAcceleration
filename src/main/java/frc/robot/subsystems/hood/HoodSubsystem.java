@@ -68,7 +68,7 @@ public class HoodSubsystem extends SubsystemBase {
         Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);
 
         Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
-        Angle targetAngle = Degrees.of(5 * distance.in(Meters));
+        Angle targetAngle = Degrees.of(8 * distance.in(Meters));
 
         setAngle(targetAngle);
     }

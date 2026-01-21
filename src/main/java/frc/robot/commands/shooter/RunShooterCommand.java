@@ -4,6 +4,7 @@ import static frc.robot.subsystems.hood.HoodConstants.*;
 import static frc.robot.subsystems.indexer.IndexerConstants.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
@@ -15,14 +16,14 @@ public class RunShooterCommand extends Command {
     private final ShooterSubsystem shooter;
     private final HoodSubsystem hood;
     private final IndexerSubsystem indexer;
-
     private final Simulation simulation;
+
+    private double lastShotTime;
 
     public RunShooterCommand(ShooterSubsystem shooter, HoodSubsystem hood, IndexerSubsystem indexer) {
         this.shooter = shooter;
         this.hood = hood;
         this.indexer = indexer;
-
         this.simulation = Simulation.getInstance();
         addRequirements(shooter, hood, indexer);
     }
@@ -30,17 +31,24 @@ public class RunShooterCommand extends Command {
     @Override
     public void initialize() {
         shooter.setVelocity(kDefaultShooterRPM);
+        lastShotTime = -1.0;
     }
 
     @Override
     public void execute() {
         hood.setAngleToHub();
 
+        double now = Timer.getFPGATimestamp();
+        boolean canShoot = lastShotTime < 0 || now - lastShotTime >= 0.25;
+
         if (shooter.atVelocity() && hood.atAngle()) {
             indexer.setSpindexerSpeed(kSpindexerSpeed);
             indexer.setFeederSpeed(kFeederSpeed);
 
-            simulation.launchProjectile();
+            if (canShoot) {
+                simulation.launchProjectile(hood.getAngle());
+                lastShotTime = now;
+            }
         } else {
             indexer.stopSpindexer();
             indexer.stopFeeder();

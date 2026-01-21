@@ -8,6 +8,7 @@ import static frc.robot.subsystems.swerve.SwerveConstants.MAPLESIM_CONFIG;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.Angle;
 import java.util.ArrayList;
 import java.util.List;
 import org.ironmaple.simulation.SimulatedArena;
@@ -54,7 +55,7 @@ public final class Simulation {
         arena.resetFieldForAuto();
     }
 
-    public void launchProjectile() {
+    public void launchProjectile(Angle angle) {
         RebuiltFuelOnFly projectile = new RebuiltFuelOnFly(
                 getPose().getTranslation(),
                 kPhysicalOffset.getTranslation(),
@@ -62,9 +63,8 @@ public final class Simulation {
                 getPose().getRotation(), // Plus turret rotation.
                 Inches.of(20.5),
                 MetersPerSecond.of(8.0),
-                Degrees.of(75.0));
+                Degrees.of(90.0).minus(angle));
 
-        projectile.enableBecomesGamePieceOnFieldAfterTouchGround();
         arena.addGamePieceProjectile(projectile);
     }
 

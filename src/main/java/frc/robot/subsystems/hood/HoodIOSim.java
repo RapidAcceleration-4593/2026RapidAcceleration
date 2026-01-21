@@ -1,14 +1,12 @@
 package frc.robot.subsystems.hood;
 
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.hood.HoodConstants.*;
 
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.util.IPhysicsSim;
@@ -20,7 +18,6 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
     private final SingleJointedArmSim hoodSim;
     private final SparkMaxSim motorSim;
     private final EncoderSim encoderSim;
-    private final DIOSim lsSim;
 
     private final DCMotor gearbox;
 
@@ -40,7 +37,6 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
 
         motorSim = new SparkMaxSim(motor, gearbox);
         encoderSim = new EncoderSim(encoder);
-        lsSim = new DIOSim(limitSwitch);
 
         Simulation.getInstance().addSimulatable(this);
     }
