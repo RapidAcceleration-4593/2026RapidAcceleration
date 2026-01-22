@@ -4,7 +4,7 @@ import static frc.robot.Constants.*;
 
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.*;
-import frc.robot.util.Simulation;
+import frc.robot.util.SimulationManager;
 
 public final class TurretFactory {
 
@@ -23,7 +23,8 @@ public final class TurretFactory {
     }
 
     private static TurretSubsystem initializeSim(SwerveSubsystem swerve) {
-        return new TurretSubsystem(new TurretIOSim(), Simulation.getInstance()::getPose);
+        SimulationManager simulation = SimulationManager.getInstance();
+        return new TurretSubsystem(new TurretIOSim(), simulation::getPose);
     }
 
     private static TurretSubsystem initializeReplay(SwerveSubsystem swerve) {

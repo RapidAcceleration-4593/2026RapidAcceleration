@@ -43,16 +43,16 @@ public class TurretIOSim extends TurretIOReal {
     }
 
     private void updateSimulation() {
-        turret.setInput(motorSim.getAppliedOutput() * PowerSim.getRailVoltage());
+        turret.setInput(motorSim.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts));
         turret.update(0.02);
 
         motorSim.iterate(
                 Units.radiansPerSecondToRotationsPerMinute(turret.getVelocityRadPerSec()),
-                PowerSim.getRailVoltage(),
+                PowerSim.getRailVoltage().in(Volts),
                 0.02);
         encoderSim.setDistance(Units.radiansToDegrees(turret.getAngleRads()));
         encoderSim.setRate(Units.radiansPerSecondToRotationsPerMinute(turret.getVelocityRadPerSec()));
 
-        PowerSim.addCurrentDraw(motorSim.getMotorCurrent());
+        PowerSim.addCurrentDraw(Amps.of(motorSim.getMotorCurrent()));
     }
 }
