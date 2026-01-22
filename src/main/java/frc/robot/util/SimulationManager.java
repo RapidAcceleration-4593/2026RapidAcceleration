@@ -1,0 +1,90 @@
+package frc.robot.util;
+
+import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.*;
+import static frc.robot.subsystems.swerve.SwerveConstants.MAPLESIM_CONFIG;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import java.util.ArrayList;
+import java.util.List;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.littletonrobotics.junction.Logger;
+
+public final class SimulationManager {
+
+    private static SimulationManager instance;
+
+    private final SwerveDriveSimulation simulation;
+    private final SimulatedArena arena = SimulatedArena.getInstance();
+    private final List<IPhysicsSim> components;
+
+    private final Pose2d initialPose;
+
+    private SimulationManager() {
+        initialPose = new Pose2d(Meters.of(3.0), Meters.of(3.0), new Rotation2d());
+        simulation = new SwerveDriveSimulation(MAPLESIM_CONFIG, initialPose);
+        arena.addDriveTrainSimulation(simulation);
+        components = new ArrayList<>();
+    }
+
+    /** Retrieves the SimulationManager instance during simulation. */
+    public static SimulationManager getInstance() {
+        if (kCurrentMode != Mode.SIM) return null;
+        if (instance == null) {
+            instance = new SimulationManager();
+        }
+        return instance;
+    }
+
+    /** Sets the simulated robot pose. */
+    public void setPose(Pose2d pose) {
+        simulation.setSimulationWorldPose(pose);
+    }
+
+    /** Retrieves the current simulated robot pose. */
+    public Pose2d getPose() {
+        return simulation.getSimulatedDriveTrainPose();
+    }
+
+    /** Resets the robot and field state for autonomous. */
+    public void resetField() {
+        setPose(initialPose);
+        arena.resetFieldForAuto();
+    }
+
+    public void periodic() {
+        for (var component : components) {
+            component.updatePlantSim();
+        }
+
+        for (var component : components) {
+            component.updatePowerSim();
+        }
+
+        PowerSim.simulationPeriodic();
+        for (var component : components) {
+            component.updateIOSim();
+        }
+
+        arena.simulationPeriodic();
+        Logger.recordOutput("FieldSimulation/RobotPosition", getPose());
+        Logger.recordOutput("FieldSimulation/Fuel", arena.getGamePiecesArrayByType("Fuel"));
+    }
+
+    /** Registers a subsystem physics simulation. */
+    public void addSimulatable(IPhysicsSim sim) {
+        components.add(sim);
+    }
+
+    /** Removes a subsystem physics simulation. */
+    public void removeSimulatable(IPhysicsSim sim) {
+        components.remove(sim);
+    }
+
+    /** Retrieves the raw MapleSim drivetrain simulation. */
+    public SwerveDriveSimulation getDriveSimulation() {
+        return simulation;
+    }
+}

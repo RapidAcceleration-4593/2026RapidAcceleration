@@ -32,7 +32,7 @@ public class RobotContainer {
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
         apriltag = AprilTagFactory.initialize(swerve);
-        objectDetection = ObjectDetectionFactory.initialize(swerve);
+        objectDetection = ObjectDetectionFactory.initialize();
         intake = IntakeFactory.initialize();
 
         registerCommands();

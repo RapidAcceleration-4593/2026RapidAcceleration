@@ -1,22 +1,34 @@
 package frc.robot.util;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.hal.simulation.RoboRioDataJNI;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 
-public class PowerSim {
-    private static double totalCurrentAmps = 0;
+public final class PowerSim {
 
-    public static void addCurrentDraw(double amps) {
-        totalCurrentAmps += amps;
+    /** Total current draw at the moment. */
+    private static Current totalCurrent;
+
+    private PowerSim() {
+        totalCurrent = Amps.zero();
     }
 
-    public static double getRailVoltage() {
-        return RoboRioDataJNI.getVInVoltage();
+    /** Adds the current draw from a simulated subsystem. */
+    public static void addCurrentDraw(Current amps) {
+        totalCurrent = totalCurrent.plus(amps);
+    }
+
+    /** Retrieves the current simulated RoboRIO voltage. */
+    public static Voltage getRailVoltage() {
+        return Volts.of(RoboRioDataJNI.getVInVoltage());
     }
 
     public static void simulationPeriodic() {
-        var voltage = BatterySim.calculateDefaultBatteryLoadedVoltage(totalCurrentAmps);
+        double voltage = BatterySim.calculateDefaultBatteryLoadedVoltage(totalCurrent.in(Amps));
         RoboRioDataJNI.setVInVoltage(voltage);
-        totalCurrentAmps = 0;
+        totalCurrent = Amps.zero();
     }
 }

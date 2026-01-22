@@ -33,7 +33,7 @@ public class IntakeIOSim extends IntakeIOReal {
     }
 
     public void updateSimulation() {
-        PowerSim.addCurrentDraw(motorSim.getMotorCurrent());
+        PowerSim.addCurrentDraw(Amps.of(motorSim.getMotorCurrent()));
     }
 
     @Override

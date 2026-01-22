@@ -3,7 +3,7 @@ package frc.robot.factory;
 import static frc.robot.Constants.*;
 
 import frc.robot.subsystems.intake.*;
-import frc.robot.util.Simulation;
+import frc.robot.util.SimulationManager;
 
 public final class IntakeFactory {
 
@@ -22,7 +22,8 @@ public final class IntakeFactory {
     }
 
     private static IntakeSubsystem initializeSim() {
-        return new IntakeSubsystem(new IntakeIOSim(Simulation.getInstance().raw()));
+        SimulationManager simulation = SimulationManager.getInstance();
+        return new IntakeSubsystem(new IntakeIOSim(simulation.getDriveSimulation()));
     }
 
     private static IntakeSubsystem initializeReplay() {
