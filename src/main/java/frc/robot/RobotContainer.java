@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.swerve.DriveToClusterCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import frc.robot.subsystems.vision.objectdetection.ObjectDetectionSubsystem;
@@ -20,7 +21,7 @@ public class RobotContainer {
     public final SwerveSubsystem swerve;
     public final AprilTagSubsystem apriltag;
     public final ObjectDetectionSubsystem objectDetection;
-    // Initialize ClimberSubsystem.
+    public final ClimberSubsystem climber;
 
     // Controller(s)
     private final CommandXboxController driverController = new CommandXboxController(kDriverControllerPort);
@@ -30,6 +31,7 @@ public class RobotContainer {
         swerve = SwerveFactory.initialize();
         apriltag = AprilTagFactory.initialize(swerve);
         objectDetection = ObjectDetectionFactory.initialize();
+        climber = ClimberFactory.initialize();
 
         registerCommands();
         configureBindings();
