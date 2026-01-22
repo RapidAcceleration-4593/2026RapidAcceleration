@@ -9,14 +9,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.util.Simulation;
+import frc.robot.util.SimulationManager;
 
 public class RunShooterCommand extends Command {
 
     private final ShooterSubsystem shooter;
     private final HoodSubsystem hood;
     private final IndexerSubsystem indexer;
-    private final Simulation simulation;
+    private final SimulationManager simulation;
 
     private double lastShotTime;
 
@@ -24,7 +24,7 @@ public class RunShooterCommand extends Command {
         this.shooter = shooter;
         this.hood = hood;
         this.indexer = indexer;
-        this.simulation = Simulation.getInstance();
+        this.simulation = SimulationManager.getInstance();
         addRequirements(shooter, hood, indexer);
     }
 

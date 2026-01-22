@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.util.IPhysicsSim;
 import frc.robot.util.PowerSim;
-import frc.robot.util.Simulation;
+import frc.robot.util.SimulationManager;
 
 public class ShooterIOSim extends ShooterIOReal implements IPhysicsSim {
 
@@ -28,7 +28,7 @@ public class ShooterIOSim extends ShooterIOReal implements IPhysicsSim {
                 LinearSystemId.createFlywheelSystem(
                         gearbox, kShooterWheelMOI.in(KilogramSquareMeters), kShooterWheelGearing),
                 gearbox);
-        Simulation.getInstance().addSimulatable(this);
+        SimulationManager.getInstance().addSimulatable(this);
     }
 
     @Override
@@ -39,12 +39,13 @@ public class ShooterIOSim extends ShooterIOReal implements IPhysicsSim {
 
     @Override
     public void updatePowerSim() {
-        PowerSim.addCurrentDraw(flywheelSim.getCurrentDrawAmps());
+        PowerSim.addCurrentDraw(Amps.of(flywheelSim.getCurrentDrawAmps()));
     }
 
     @Override
     public void updateIOSim() {
-        motorSim.iterate(flywheelSim.getAngularVelocityRPM(), PowerSim.getRailVoltage(), 0.05);
+        motorSim.iterate(
+                flywheelSim.getAngularVelocityRPM(), PowerSim.getRailVoltage().in(Volts), 0.05);
         encoderSim.setVelocity(motorSim.getVelocity());
     }
 }

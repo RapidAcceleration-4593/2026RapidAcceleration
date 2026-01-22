@@ -1,5 +1,7 @@
 package frc.robot.subsystems.indexer;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.util.PowerSim;
@@ -28,7 +30,7 @@ public class IndexerIOSim extends IndexerIOReal {
 
     /** Updates simulation variables periodically. */
     private void updateSimulation() {
-        PowerSim.addCurrentDraw(spindexerSim.getMotorCurrent());
-        PowerSim.addCurrentDraw(feederSim.getMotorCurrent());
+        PowerSim.addCurrentDraw(Amps.of(spindexerSim.getMotorCurrent()));
+        PowerSim.addCurrentDraw(Amps.of(feederSim.getMotorCurrent()));
     }
 }

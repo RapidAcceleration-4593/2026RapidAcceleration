@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.util.IPhysicsSim;
 import frc.robot.util.PowerSim;
-import frc.robot.util.Simulation;
+import frc.robot.util.SimulationManager;
 
 public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
 
@@ -38,7 +38,7 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
         motorSim = new SparkMaxSim(motor, gearbox);
         encoderSim = new EncoderSim(encoder);
 
-        Simulation.getInstance().addSimulatable(this);
+        SimulationManager.getInstance().addSimulatable(this);
     }
 
     public void updateInputs(HoodInputs inputs) {
@@ -47,19 +47,19 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
 
     @Override
     public void updatePlantSim() {
-        hoodSim.setInput(motorSim.getAppliedOutput() * PowerSim.getRailVoltage());
+        hoodSim.setInput(motorSim.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts));
         hoodSim.update(0.02);
     }
 
     @Override
     public void updatePowerSim() {
-        PowerSim.addCurrentDraw(hoodSim.getCurrentDrawAmps());
+        PowerSim.addCurrentDraw(Amps.of(hoodSim.getCurrentDrawAmps()));
     }
 
     @Override
     public void updateIOSim() {
         var motorRPM = Units.radiansPerSecondToRotationsPerMinute(hoodSim.getVelocityRadPerSec()) * kMotorToHoodGearing;
-        motorSim.iterate(motorRPM, PowerSim.getRailVoltage(), 0.02);
+        motorSim.iterate(motorRPM, PowerSim.getRailVoltage().in(Volts), 0.02);
         encoderSim.setDistance(Units.radiansToDegrees(hoodSim.getAngleRads()));
     }
 }

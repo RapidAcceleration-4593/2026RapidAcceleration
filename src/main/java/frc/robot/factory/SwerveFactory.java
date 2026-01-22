@@ -4,7 +4,7 @@ import static frc.robot.Constants.*;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import frc.robot.subsystems.swerve.*;
-import frc.robot.util.Simulation;
+import frc.robot.util.SimulationManager;
 
 public final class SwerveFactory {
 
@@ -29,8 +29,8 @@ public final class SwerveFactory {
     }
 
     private static SwerveSubsystem initializeSim() {
-        Simulation simulation = Simulation.getInstance();
-        var maplesim = simulation.raw();
+        SimulationManager simulation = SimulationManager.getInstance();
+        var maplesim = simulation.getDriveSimulation();
         var modules = maplesim.getModules();
 
         return new SwerveSubsystem(

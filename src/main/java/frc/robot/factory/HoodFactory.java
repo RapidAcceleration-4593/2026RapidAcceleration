@@ -4,7 +4,7 @@ import static frc.robot.Constants.*;
 
 import frc.robot.subsystems.hood.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-import frc.robot.util.Simulation;
+import frc.robot.util.SimulationManager;
 
 public final class HoodFactory {
 
@@ -23,7 +23,8 @@ public final class HoodFactory {
     }
 
     private static HoodSubsystem initializeSim(SwerveSubsystem swerve) {
-        return new HoodSubsystem(new HoodIOSim(), Simulation.getInstance()::getPose);
+        SimulationManager simulation = SimulationManager.getInstance();
+        return new HoodSubsystem(new HoodIOSim(), simulation::getPose);
     }
 
     private static HoodSubsystem initializeReplay(SwerveSubsystem swerve) {
