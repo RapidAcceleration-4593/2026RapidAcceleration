@@ -87,6 +87,7 @@ public final class SimulationManager {
         arena.addGamePieceProjectile(projectile);
     }
 
+    /** Run periodically during simulation. */
     public void periodic() {
         for (var component : components) {
             component.updatePlantSim();
