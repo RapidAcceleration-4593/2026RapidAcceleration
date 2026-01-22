@@ -255,7 +255,7 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
 
     /** Returns the measured chassis speeds of the robot. */
     @AutoLogOutput(key = "SwerveChassisSpeeds/Measured")
-    public ChassisSpeeds getChassisSpeeds() {
+    private ChassisSpeeds getChassisSpeeds() {
         return kinematics.toChassisSpeeds(getModuleStates());
     }
 

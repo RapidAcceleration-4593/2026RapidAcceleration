@@ -56,16 +56,15 @@ public final class SimulationManager {
         return simulation.getSimulatedDriveTrainPose();
     }
 
-	public void setaChassisSpeeds(ChassisSpeeds speeds) {
-		simulation.setAngularVelocity(speeds.omegaRadiansPerSecond);
-		simulation.setLinearVelocity(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
-	}
+    public void setChassisSpeeds(ChassisSpeeds speeds) {
+        simulation.setAngularVelocity(speeds.omegaRadiansPerSecond);
+        simulation.setLinearVelocity(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+    }
 
     public ChassisSpeeds getChassisSpeeds() {
         return new ChassisSpeeds(
                 simulation.getLinearVelocity().x, simulation.getLinearVelocity().y, simulation.getAngularVelocity());
     }
-
 
     /** Resets the robot and field state for autonomous. */
     public void resetField() {
