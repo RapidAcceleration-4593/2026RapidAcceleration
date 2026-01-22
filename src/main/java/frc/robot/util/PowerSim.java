@@ -10,11 +10,7 @@ import edu.wpi.first.wpilibj.simulation.BatterySim;
 public final class PowerSim {
 
     /** Total current draw at the moment. */
-    private static Current totalCurrent;
-
-    private PowerSim() {
-        totalCurrent = Amps.zero();
-    }
+    private static Current totalCurrent = Amps.zero();
 
     /** Adds the current draw from a simulated subsystem. */
     public static void addCurrentDraw(Current amps) {
@@ -26,6 +22,7 @@ public final class PowerSim {
         return Volts.of(RoboRioDataJNI.getVInVoltage());
     }
 
+	/** Run periodically during simulation. */
     public static void simulationPeriodic() {
         double voltage = BatterySim.calculateDefaultBatteryLoadedVoltage(totalCurrent.in(Amps));
         RoboRioDataJNI.setVInVoltage(voltage);

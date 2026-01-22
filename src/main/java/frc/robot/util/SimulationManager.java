@@ -54,6 +54,7 @@ public final class SimulationManager {
         arena.resetFieldForAuto();
     }
 
+    /** Run periodically during simulation. */
     public void periodic() {
         for (var component : components) {
             component.updatePlantSim();
