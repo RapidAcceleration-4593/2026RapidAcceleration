@@ -4,9 +4,9 @@ import static frc.robot.Constants.*;
 
 import frc.robot.subsystems.indexer.*;
 
-public final class SpindexerFactory {
+public final class IndexerFactory {
 
-    private SpindexerFactory() {}
+    private IndexerFactory() {}
 
     public static IndexerSubsystem initialize() {
         return switch (kCurrentMode) {

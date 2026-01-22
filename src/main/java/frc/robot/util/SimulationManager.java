@@ -63,7 +63,7 @@ public final class SimulationManager {
     }
 
     /** Simulates an object being launched from the shooter mechanism. */
-    public void launchProjectile(Angle angle, AngularVelocity velocity) {
+    public void launchProjectile(Angle angle, AngularVelocity velocity, ChassisSpeeds chassisSpeeds) {
         Distance topWheelRadius = Inches.of(1.25);
         Distance botWheelRadius = Inches.of(2.0);
 
@@ -78,7 +78,7 @@ public final class SimulationManager {
         RebuiltFuelOnFly projectile = new RebuiltFuelOnFly(
                 getPose().getTranslation(),
                 kPhysicalOffset.getTranslation(),
-                new ChassisSpeeds(),
+                chassisSpeeds,
                 getPose().getRotation(), // Plus turret rotation.
                 Inches.of(20.5),
                 totalLinearVelocity,

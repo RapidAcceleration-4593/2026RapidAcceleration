@@ -40,7 +40,7 @@ public class RobotContainer {
 
         shooter = ShooterFactory.initialize();
         hood = HoodFactory.initialize(swerve);
-        indexer = SpindexerFactory.initialize();
+        indexer = IndexerFactory.initialize();
 
         registerCommands();
         configureBindings();
@@ -52,7 +52,7 @@ public class RobotContainer {
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
         driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
-        driverController.rightTrigger(0.5).whileTrue(new RunShooterCommand(shooter, hood, indexer));
+        driverController.rightTrigger(0.5).whileTrue(new RunShooterCommand(swerve, shooter, hood, indexer));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */
