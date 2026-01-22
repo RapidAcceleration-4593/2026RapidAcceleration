@@ -33,7 +33,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import frc.robot.util.LocalADStarAK;
-import frc.robot.util.Simulation;
+import frc.robot.util.SimulationManager;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -89,7 +89,7 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
         this.gyroDisconnectedAlert = new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
 
         // Simulation & HAL Reporting.
-        Simulation.getInstance();
+        SimulationManager.getInstance();
         HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
 
         // PathPlanner Configuration.

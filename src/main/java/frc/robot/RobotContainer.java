@@ -29,7 +29,7 @@ public class RobotContainer {
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
         apriltag = AprilTagFactory.initialize(swerve);
-        objectDetection = ObjectDetectionFactory.initialize(swerve);
+        objectDetection = ObjectDetectionFactory.initialize();
 
         registerCommands();
         configureBindings();
@@ -40,7 +40,6 @@ public class RobotContainer {
                 swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
-
         driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
     }
 

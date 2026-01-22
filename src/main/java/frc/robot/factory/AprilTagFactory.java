@@ -5,7 +5,7 @@ import static frc.robot.subsystems.vision.apriltag.AprilTagConstants.*;
 
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.apriltag.*;
-import frc.robot.util.Simulation;
+import frc.robot.util.SimulationManager;
 import java.util.Arrays;
 
 public final class AprilTagFactory {
@@ -24,16 +24,16 @@ public final class AprilTagFactory {
         return new AprilTagSubsystem(
                 swerve,
                 Arrays.stream(kCameras)
-                        .map(cfg -> new AprilTagIOPhotonVision(cfg.name(), cfg.robotToCamera()))
+                        .map(cfg -> new AprilTagIOReal(cfg.name(), cfg.robotToCamera()))
                         .toArray(AprilTagIO[]::new));
     }
 
     private static AprilTagSubsystem initializeSim(SwerveSubsystem swerve) {
-        Simulation simulation = Simulation.getInstance();
+        SimulationManager simulation = SimulationManager.getInstance();
         return new AprilTagSubsystem(
                 swerve,
                 Arrays.stream(kCameras)
-                        .map(cfg -> new AprilTagIOPhotonVisionSim(cfg.name(), cfg.robotToCamera(), simulation::getPose))
+                        .map(cfg -> new AprilTagIOSim(cfg.name(), cfg.robotToCamera(), simulation::getPose))
                         .toArray(AprilTagIO[]::new));
     }
 

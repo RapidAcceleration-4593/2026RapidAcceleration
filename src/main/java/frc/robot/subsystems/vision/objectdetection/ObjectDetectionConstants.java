@@ -1,8 +1,9 @@
 package frc.robot.subsystems.vision.objectdetection;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.util.Units;
 
 public final class ObjectDetectionConstants {
 
@@ -10,11 +11,11 @@ public final class ObjectDetectionConstants {
 
     public static final CameraConfig[] kCameras = {
         new CameraConfig(
-                "Arducam_OV9782_Colored_4",
+                "OV9782_4",
                 new Transform3d(
-                        Units.inchesToMeters(10.0),
-                        Units.inchesToMeters(0.0),
-                        Units.inchesToMeters(20.0),
-                        new Rotation3d(0.0, Units.degreesToRadians(15), 0.0))),
+                        Inches.of(10.0),
+                        Inches.zero(),
+                        Inches.of(20.0),
+                        new Rotation3d(Degrees.zero(), Degrees.of(15.0), Degrees.zero()))),
     };
 }

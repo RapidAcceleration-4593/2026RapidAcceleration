@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Set;
 import org.photonvision.PhotonCamera;
 
-public class AprilTagIOPhotonVision implements AprilTagIO {
+public class AprilTagIOReal implements AprilTagIO {
 
     protected final PhotonCamera camera;
     protected final Transform3d robotToCamera;
 
-    public AprilTagIOPhotonVision(String name, Transform3d robotToCamera) {
+    public AprilTagIOReal(String name, Transform3d robotToCamera) {
         camera = new PhotonCamera(name);
         this.robotToCamera = robotToCamera;
     }
