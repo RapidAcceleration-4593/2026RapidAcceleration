@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.simulation.BatterySim;
 public final class PowerSim {
 
     /** Total current draw at the moment. */
-    private static Current totalCurrent;
+    private static Current totalCurrent = Amps.zero();
 
     private PowerSim() {
         totalCurrent = Amps.zero();

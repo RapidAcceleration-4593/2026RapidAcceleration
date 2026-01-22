@@ -46,7 +46,7 @@ public class RunShooterCommand extends Command {
             indexer.setFeederSpeed(kFeederSpeed);
 
             if (canShoot) {
-                simulation.launchProjectile(hood.getAngle());
+                simulation.launchProjectile(hood.getAngle(), shooter.getVelocity());
                 lastShotTime = now;
             }
         } else {

@@ -14,8 +14,8 @@ public final class ShooterConstants {
 
     public static final int kShooterMotorID = 3;
 
-    public static final double kP = 0.001;
-    public static final double kI = 0.001;
+    public static final double kP = 0.0015;
+    public static final double kI = 0.002;
     public static final double kD = 0.0;
 
     public static final double kS = 0.0; // Voltage to overcome static friction.
@@ -24,7 +24,7 @@ public final class ShooterConstants {
 
     public static final AngularAcceleration kMaxAcceleration = RPMPerSecond.of(500);
 
-    public static final AngularVelocity kDefaultShooterRPM = RPM.of(1200.0);
+    public static final AngularVelocity kDefaultShooterRPM = RPM.of(1700.0);
     public static final AngularVelocity kVelocityTolerance = RPM.of(50.0);
 
     public static final Transform2d kPhysicalOffset =

@@ -9,6 +9,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.Constants.Mode;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,14 +62,26 @@ public final class SimulationManager {
         arena.resetFieldForAuto();
     }
 
-    public void launchProjectile(Angle angle) {
+    /** Simulates an object being launched from the shooter mechanism. */
+    public void launchProjectile(Angle angle, AngularVelocity velocity) {
+        Distance topWheelRadius = Inches.of(1.25);
+        Distance botWheelRadius = Inches.of(2.0);
+
+        LinearVelocity topLinearVelocity =
+                MetersPerSecond.of(velocity.in(RadiansPerSecond) * topWheelRadius.in(Meters));
+        LinearVelocity botLinearVelocity =
+                MetersPerSecond.of(velocity.in(RadiansPerSecond) * botWheelRadius.in(Meters));
+
+        LinearVelocity totalLinearVelocity =
+                topLinearVelocity.plus(botLinearVelocity).div(2);
+
         RebuiltFuelOnFly projectile = new RebuiltFuelOnFly(
                 getPose().getTranslation(),
                 kPhysicalOffset.getTranslation(),
-                new ChassisSpeeds(), // Consider current robot velocity.
+                new ChassisSpeeds(),
                 getPose().getRotation(), // Plus turret rotation.
                 Inches.of(20.5),
-                MetersPerSecond.of(8.0),
+                totalLinearVelocity,
                 Degrees.of(90.0).minus(angle));
 
         arena.addGamePieceProjectile(projectile);
