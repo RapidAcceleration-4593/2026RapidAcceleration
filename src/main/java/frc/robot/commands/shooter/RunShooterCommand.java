@@ -9,12 +9,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.util.SimulationManager;
 
 public class RunShooterCommand extends Command {
-
-    private final SwerveSubsystem swerve;
 
     private final ShooterSubsystem shooter;
     private final HoodSubsystem hood;
@@ -24,10 +21,7 @@ public class RunShooterCommand extends Command {
 
     private double lastShotTime;
 
-    public RunShooterCommand(
-            SwerveSubsystem swerve, ShooterSubsystem shooter, HoodSubsystem hood, IndexerSubsystem indexer) {
-        this.swerve = swerve;
-
+    public RunShooterCommand(ShooterSubsystem shooter, HoodSubsystem hood, IndexerSubsystem indexer) {
         this.shooter = shooter;
         this.hood = hood;
         this.indexer = indexer;
@@ -54,7 +48,7 @@ public class RunShooterCommand extends Command {
             indexer.setFeederSpeed(kFeederSpeed);
 
             if (canShoot) {
-                simulation.launchProjectile(hood.getAngle(), shooter.getVelocity(), swerve.getChassisSpeeds());
+                simulation.launchProjectile(hood.getAngle(), shooter.getVelocity());
                 lastShotTime = now;
             }
         } else {

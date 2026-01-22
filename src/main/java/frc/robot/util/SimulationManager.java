@@ -56,6 +56,17 @@ public final class SimulationManager {
         return simulation.getSimulatedDriveTrainPose();
     }
 
+	public void setaChassisSpeeds(ChassisSpeeds speeds) {
+		simulation.setAngularVelocity(speeds.omegaRadiansPerSecond);
+		simulation.setLinearVelocity(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+	}
+
+    public ChassisSpeeds getChassisSpeeds() {
+        return new ChassisSpeeds(
+                simulation.getLinearVelocity().x, simulation.getLinearVelocity().y, simulation.getAngularVelocity());
+    }
+
+
     /** Resets the robot and field state for autonomous. */
     public void resetField() {
         setPose(initialPose);
@@ -63,7 +74,7 @@ public final class SimulationManager {
     }
 
     /** Simulates an object being launched from the shooter mechanism. */
-    public void launchProjectile(Angle angle, AngularVelocity velocity, ChassisSpeeds chassisSpeeds) {
+    public void launchProjectile(Angle angle, AngularVelocity velocity) {
         Distance topWheelRadius = Inches.of(1.25);
         Distance botWheelRadius = Inches.of(2.0);
 
@@ -78,7 +89,7 @@ public final class SimulationManager {
         RebuiltFuelOnFly projectile = new RebuiltFuelOnFly(
                 getPose().getTranslation(),
                 kPhysicalOffset.getTranslation(),
-                chassisSpeeds,
+                getChassisSpeeds(),
                 getPose().getRotation(), // Plus turret rotation.
                 Inches.of(20.5),
                 totalLinearVelocity,
