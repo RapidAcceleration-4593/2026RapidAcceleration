@@ -14,7 +14,7 @@ public interface HoodIO {
         public Angle angle = Degrees.zero();
         public Angle targetAngle = Degrees.zero();
         public boolean atTargetAngle = false;
-        public boolean limitswitch = false;
+        public boolean atLimitSwitch = false;
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();
@@ -26,12 +26,9 @@ public interface HoodIO {
     /** Applies the feedback control loop mechanism. */
     public default void updateControl() {}
 
-    /** Sets angle of the adjustable hood in Degrees. */
+    /** Sets angle of the adjustable hood. */
     public default void setAngle(Angle angle) {}
 
-    /** Stops the shooter motor immediately. */
+    /** Stops the hood motor immediately. */
     public default void stop() {}
-
-    /** Resets the encoder reading to zero. */
-    public default void resetEncoder() {}
 }

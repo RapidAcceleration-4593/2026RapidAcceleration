@@ -1,7 +1,6 @@
 package frc.robot.commands.shooter;
 
 import static frc.robot.subsystems.hood.HoodConstants.*;
-import static frc.robot.subsystems.indexer.IndexerConstants.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -44,25 +43,22 @@ public class RunShooterCommand extends Command {
         boolean canShoot = lastShotTime < 0 || now - lastShotTime >= 0.25;
 
         if (shooter.atVelocity() && hood.atAngle()) {
-            indexer.setSpindexerSpeed(kSpindexerSpeed);
-            indexer.setFeederSpeed(kFeederSpeed);
+            indexer.run();
 
             if (canShoot) {
                 simulation.launchProjectile(hood.getAngle(), shooter.getVelocity());
                 lastShotTime = now;
             }
         } else {
-            indexer.stopSpindexer();
-            indexer.stopFeeder();
+            indexer.stop();
         }
     }
 
     @Override
     public void end(boolean interrupted) {
         shooter.stop();
+        indexer.stop();
         hood.setAngle(kMinimumAngle);
-        indexer.stopSpindexer();
-        indexer.stopFeeder();
     }
 
     @Override

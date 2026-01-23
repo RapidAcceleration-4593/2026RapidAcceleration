@@ -41,24 +41,14 @@ public class IndexerIOReal implements IndexerIO {
     }
 
     @Override
-    public void setSpindexerSpeed(double speed) {
-        double volts = speed * spindexerMotor.getBusVoltage();
-        spindexerMotor.setVoltage(volts);
+    public void run() {
+        spindexerMotor.setVoltage(kSpindexerVolts);
+        feederMotor.setVoltage(kFeederVolts);
     }
 
     @Override
-    public void stopSpindexer() {
+    public void stop() {
         spindexerMotor.stopMotor();
-    }
-
-    @Override
-    public void setFeederSpeed(double speed) {
-        double volts = speed * feederMotor.getBusVoltage();
-        feederMotor.setVoltage(volts);
-    }
-
-    @Override
-    public void stopFeeder() {
         feederMotor.stopMotor();
     }
 }

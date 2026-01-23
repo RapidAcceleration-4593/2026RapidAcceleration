@@ -19,19 +19,11 @@ public class IndexerSubsystem extends SubsystemBase {
         Logger.processInputs("Indexer", inputs);
     }
 
-    public void setSpindexerSpeed(double speed) {
-        io.setSpindexerSpeed(speed);
+    public void run() {
+        io.run();
     }
 
-    public void stopSpindexer() {
-        io.stopSpindexer();
-    }
-
-    public void setFeederSpeed(double speed) {
-        io.setFeederSpeed(speed);
-    }
-
-    public void stopFeeder() {
-        io.stopFeeder();
+    public void stop() {
+        io.stop();
     }
 }

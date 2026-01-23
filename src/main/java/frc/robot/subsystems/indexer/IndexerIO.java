@@ -24,15 +24,9 @@ public interface IndexerIO {
     /** Fetches updates from sensors through the IO interface. */
     public default void updateInputs(IndexerInputs inputs) {}
 
-    /** Sets the speed of the spindexer motor as a percentage. */
-    public default void setSpindexerSpeed(double speed) {}
+    /** Runs the spindexer and feeder motors. */
+    public default void run() {}
 
-    /** Stops the spindexer motor immediately. */
-    public default void stopSpindexer() {}
-
-    /** Sets the speed of the feeder motor as a percentage. */
-    public default void setFeederSpeed(double speed) {}
-
-    /** Stops the feeder motor immediately. */
-    public default void stopFeeder() {}
+    /** Stops the spindexer and feeder motors immediately. */
+    public default void stop() {}
 }

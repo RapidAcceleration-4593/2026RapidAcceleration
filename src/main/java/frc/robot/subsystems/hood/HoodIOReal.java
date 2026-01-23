@@ -48,6 +48,7 @@ public class HoodIOReal implements HoodIO {
         lsTrigger = new Trigger(this::isLSPressed);
         lsTrigger.onTrue(Commands.runOnce(() -> {
             pid.reset();
+            encoder.reset();
         }));
     }
 
@@ -56,7 +57,8 @@ public class HoodIOReal implements HoodIO {
         inputs.angle = getAngle();
         inputs.targetAngle = targetAngle;
         inputs.atTargetAngle = atAngle();
-        inputs.limitswitch = isLSPressed();
+        inputs.atLimitSwitch = isLSPressed();
+
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
     }
