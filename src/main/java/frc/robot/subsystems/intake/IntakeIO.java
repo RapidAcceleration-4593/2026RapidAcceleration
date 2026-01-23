@@ -19,9 +19,9 @@ public interface IntakeIO {
     /** Fetches updates from sensors through the IO interface. */
     public default void updateInputs(IntakeInputs inputs) {}
 
-    /** Sets the speed of the intake mechanism as a percentage. */
-    public default void setIntakeSpeed(double speed) {}
+    /** Runs the intake motor. */
+    public default void run() {}
 
     /** Stops the intake motor immediately. */
-    public default void stopIntake() {}
+    public default void stop() {}
 }

@@ -19,11 +19,11 @@ public class IntakeSubsystem extends SubsystemBase {
         Logger.processInputs("Intake", inputs);
     }
 
-    public void setIntakeSpeed(double speed) {
-        io.setIntakeSpeed(speed);
+    public void run() {
+        io.run();
     }
 
-    public void stopIntake() {
-        io.stopIntake();
+    public void stop() {
+        io.stop();
     }
 }

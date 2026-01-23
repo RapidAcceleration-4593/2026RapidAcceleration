@@ -33,12 +33,12 @@ public class IntakeIOReal implements IntakeIO {
     }
 
     @Override
-    public void setIntakeSpeed(double speed) {
-        motor.set(speed);
+    public void run() {
+        motor.setVoltage(kIntakeVolts);
     }
 
     @Override
-    public void stopIntake() {
+    public void stop() {
         motor.stopMotor();
     }
 
