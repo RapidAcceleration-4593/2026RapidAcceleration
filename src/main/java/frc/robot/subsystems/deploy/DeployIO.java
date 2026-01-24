@@ -34,5 +34,5 @@ public interface DeployIO {
     public default void setDistance(Distance distance) {}
 
     /** Stops the deployment mechanism immediately. */
-    public default void stopDeploy() {}
+    public default void stop() {}
 }

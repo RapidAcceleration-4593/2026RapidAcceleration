@@ -1,10 +1,21 @@
 package frc.robot.subsystems.deploy;
 
+import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.deploy.DeployConstants.*;
+
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import frc.robot.util.IPhysicsSim;
+import frc.robot.util.PowerSim;
+import frc.robot.util.SimulationManager;
 
-public class DeployIOSim extends DeployIOReal {
+public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
+
+    private final SingleJointedArmSim deploySim;
 
     private final SparkMaxSim leftMotorSim;
     private final SparkMaxSim rightMotorSim;
@@ -16,16 +27,45 @@ public class DeployIOSim extends DeployIOReal {
     public DeployIOSim() {
         gearbox = DCMotor.getNeo550(2);
 
+        deploySim = new SingleJointedArmSim(
+                LinearSystemId.createSingleJointedArmSystem(
+                        gearbox, kMOI.in(KilogramSquareMeters), kMotorToDeployGearing),
+                gearbox,
+                kMotorToDeployGearing,
+                Units.inchesToMeters(12.0),
+                0.0,
+                0.0,
+                false,
+                0.0);
+
         leftMotorSim = new SparkMaxSim(leftMotor, gearbox);
         rightMotorSim = new SparkMaxSim(rightMotor, gearbox);
 
         encoderSim = new EncoderSim(encoder);
 
-        // TODO: Add simulatable.
+        SimulationManager.getInstance().addSimulatable(this);
     }
 
     @Override
-    public void updateInputs(DeployInputs inputs) {
-        super.updateInputs(inputs);
+    public void updatePlantSim() {
+        double leftInput =
+                leftMotorSim.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts);
+        double rightInput =
+                rightMotorSim.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts);
+        deploySim.setInput(leftInput + rightInput);
+        deploySim.update(0.02);
+    }
+
+    @Override
+    public void updatePowerSim() {
+        PowerSim.addCurrentDraw(Amps.of(leftMotorSim.getMotorCurrent()));
+        PowerSim.addCurrentDraw(Amps.of(rightMotorSim.getMotorCurrent()));
+    }
+
+    @Override
+    public void updateIOSim() {
+        leftMotorSim.iterate(0.0, PowerSim.getRailVoltage().in(Volts), 0.02); // TODO: For Flanegan, love Lincoln
+        rightMotorSim.iterate(0.0, PowerSim.getRailVoltage().in(Volts), 0.02); // TODO: For Flanegan, love Lincoln
+        encoderSim.setDistance(0.0); // TODO: For Flanegan, love Lincoln
     }
 }

@@ -9,6 +9,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
@@ -24,28 +26,38 @@ public class DeployIOReal implements DeployIO {
     protected final DigitalInput limitswitch;
 
     private final SparkMaxConfig deployConfig;
+    private final SparkMaxConfig followerConfig;
     private final Trigger lsTrigger;
+
+    private final PIDController controller;
 
     private Distance targetDistance = kMinimumDistance;
 
     public DeployIOReal() {
-        deployConfig = new SparkMaxConfig();
-        deployConfig.idleMode(IdleMode.kCoast).inverted(false);
-
         leftMotor = new SparkMax(kLeftMotorID, MotorType.kBrushless);
-        leftMotor.configure(deployConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
         rightMotor = new SparkMax(kRightMotorID, MotorType.kBrushless);
+
+        deployConfig = new SparkMaxConfig();
+        deployConfig.idleMode(IdleMode.kCoast);
+
+        followerConfig = new SparkMaxConfig();
+        followerConfig.follow(leftMotor, true);
+
+        leftMotor.configure(deployConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         rightMotor.configure(deployConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        rightMotor.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        controller = new PIDController(kP, kI, kD);
 
         encoder = new Encoder(kEncoderChannelA, kEncoderChannelB);
-        // TODO: Set encoder distance per pulse.
+        encoder.setDistancePerPulse(kDistancePerPulse);
 
         limitswitch = new DigitalInput(kLimitSwitchChannel);
 
         lsTrigger = new Trigger(this::isLSPressed);
         lsTrigger.onTrue(Commands.runOnce(() -> {
             encoder.reset();
+            controller.reset();
         }));
     }
 
@@ -66,8 +78,13 @@ public class DeployIOReal implements DeployIO {
 
     @Override
     public void updateControl() {
-        leftMotor.setVoltage(0.0);
-        rightMotor.setVoltage(0.0);
+        double current = getDistance().in(Inches);
+        double target = targetDistance.in(Inches);
+
+        double volts = controller.calculate(current, target);
+        volts = MathUtil.clamp(volts, -12.0, 12.0);
+
+        leftMotor.setVoltage(volts);
     }
 
     @Override
@@ -76,10 +93,10 @@ public class DeployIOReal implements DeployIO {
     }
 
     @Override
-    public void stopDeploy() {
+    public void stop() {
         targetDistance = getDistance();
+        controller.reset();
         leftMotor.stopMotor();
-        rightMotor.stopMotor();
     }
 
     public Distance getDistance() {
@@ -87,7 +104,7 @@ public class DeployIOReal implements DeployIO {
     }
 
     private boolean atDistance() {
-        return false; // TODO: Handle control loop.
+        return controller.atSetpoint();
     }
 
     private boolean isLSPressed() {

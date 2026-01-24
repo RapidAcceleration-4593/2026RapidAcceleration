@@ -11,6 +11,7 @@ import frc.robot.commands.intake.*;
 import frc.robot.commands.swerve.DriveToClusterCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
+import frc.robot.subsystems.deploy.DeploySubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
@@ -23,7 +24,7 @@ public class RobotContainer {
     public final AprilTagSubsystem apriltag;
     public final ObjectDetectionSubsystem objectDetection;
     public final IntakeSubsystem intake;
-    // TODO: Initialize DeploySubsystem.
+    public final DeploySubsystem deploy;
 
     // Controller(s)
     private final CommandXboxController driverController = new CommandXboxController(kDriverControllerPort);
@@ -34,6 +35,7 @@ public class RobotContainer {
         apriltag = AprilTagFactory.initialize(swerve);
         objectDetection = ObjectDetectionFactory.initialize();
         intake = IntakeFactory.initialize();
+        deploy = DeployFactory.initialize();
 
         registerCommands();
         configureBindings();
