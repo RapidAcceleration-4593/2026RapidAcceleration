@@ -34,7 +34,7 @@ public class HoodSubsystem extends SubsystemBase {
         mechanism = new LoggedMechanism2d(1.0, 1.0);
         root = mechanism.getRoot("HoodRoot", 0.5, 0.5);
         hood = root.append(new LoggedMechanismLigament2d("Hood", Inches.of(12), kMinimumAngle));
-	}
+    }
 
     @Override
     public void periodic() {

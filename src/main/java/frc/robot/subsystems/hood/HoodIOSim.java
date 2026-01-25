@@ -41,6 +41,7 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
         SimulationManager.getInstance().addSimulatable(this);
     }
 
+    @Override
     public void updateInputs(HoodInputs inputs) {
         super.updateInputs(inputs);
     }

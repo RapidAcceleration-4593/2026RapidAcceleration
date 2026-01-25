@@ -28,6 +28,7 @@ public class ShooterIOSim extends ShooterIOReal implements IPhysicsSim {
                 LinearSystemId.createFlywheelSystem(
                         gearbox, kShooterWheelMOI.in(KilogramSquareMeters), kShooterWheelGearing),
                 gearbox);
+
         SimulationManager.getInstance().addSimulatable(this);
     }
 
