@@ -8,18 +8,18 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
+import edu.wpi.first.units.measure.Voltage;
 
 public class IndexerIOReal implements IndexerIO {
 
     protected final SparkMax spindexerMotor;
     protected final SparkMax feederMotor;
 
-    private final SparkMaxConfig config;
-
     public IndexerIOReal() {
-        config = new SparkMaxConfig();
-        config.idleMode(IdleMode.kBrake).inverted(false);
+        SparkBaseConfig config = new SparkMaxConfig().idleMode(IdleMode.kBrake).inverted(false);
 
         spindexerMotor = new SparkMax(kSpindexerMotorID, MotorType.kBrushless);
         spindexerMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -41,8 +41,12 @@ public class IndexerIOReal implements IndexerIO {
     }
 
     @Override
-    public void run() {
+    public void setSpindexerVoltage(Voltage volts) {
         spindexerMotor.setVoltage(kSpindexerVolts);
+    }
+
+	@Override
+    public void setFeederVoltage(Voltage volts) {
         feederMotor.setVoltage(kFeederVolts);
     }
 

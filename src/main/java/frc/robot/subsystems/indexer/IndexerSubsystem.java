@@ -1,6 +1,11 @@
 package frc.robot.subsystems.indexer;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import static frc.robot.subsystems.indexer.IndexerConstants.kFeederVolts;
+import static frc.robot.subsystems.indexer.IndexerConstants.kSpindexerVolts;
+
 import org.littletonrobotics.junction.Logger;
 
 public class IndexerSubsystem extends SubsystemBase {
@@ -19,11 +24,14 @@ public class IndexerSubsystem extends SubsystemBase {
         Logger.processInputs("Indexer", inputs);
     }
 
-    public void run() {
-        io.run();
+    public Command run() {
+		return runOnce(() -> {
+			io.setSpindexerVoltage(kSpindexerVolts);
+			io.setFeederVoltage(kFeederVolts);
+		});
     }
 
-    public void stop() {
-        io.stop();
+    public Command stop() {
+        return runOnce(() -> io.stop());
     }
 }

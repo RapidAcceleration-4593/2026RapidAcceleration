@@ -13,22 +13,14 @@ public class IndexerIOSim extends IndexerIOReal implements IPhysicsSim {
     private final SparkMaxSim spindexerSim;
     private final SparkMaxSim feederSim;
 
-    private final DCMotor spindexerGearbox;
-    private final DCMotor feederGearbox;
-
     public IndexerIOSim() {
-        spindexerGearbox = DCMotor.getNeo550(1);
-        feederGearbox = DCMotor.getNEO(1);
+        DCMotor spindexerGearbox = DCMotor.getNeo550(1);
+        DCMotor feederGearbox = DCMotor.getNEO(1);
 
         spindexerSim = new SparkMaxSim(spindexerMotor, spindexerGearbox);
         feederSim = new SparkMaxSim(feederMotor, feederGearbox);
 
         SimulationManager.getInstance().addSimulatable(this);
-    }
-
-    @Override
-    public void updateInputs(IndexerInputs inputs) {
-        super.updateInputs(inputs);
     }
 
     @Override
