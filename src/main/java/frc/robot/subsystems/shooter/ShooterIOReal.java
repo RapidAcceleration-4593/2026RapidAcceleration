@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.FeedForwardConfig;
 import com.revrobotics.spark.config.MAXMotionConfig;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -22,20 +23,18 @@ public class ShooterIOReal implements ShooterIO {
 
     protected final SparkMax motor;
     protected final RelativeEncoder encoder;
-
     private final SparkClosedLoopController controller;
-    private final SparkMaxConfig config;
 
-    private AngularVelocity targetVelocity = RPM.zero();
+	private AngularVelocity targetVelocity = RPM.zero();
 
     public ShooterIOReal() {
-        config = new SparkMaxConfig();
-        config.idleMode(IdleMode.kCoast)
+        SparkBaseConfig config = new SparkMaxConfig()
+                .idleMode(IdleMode.kCoast)
                 .inverted(false)
                 .apply(new ClosedLoopConfig()
                         .pid(kP, kI, kD)
                         .apply(new FeedForwardConfig().kS(kS).kV(kV).kA(kA))
-                        .apply(new MAXMotionConfig().maxAcceleration(kMaxAcceleration.in(RPMPerSecond))));
+                        .apply(new MAXMotionConfig().maxAcceleration(kMaxAcceleration.in(RPMPerSecond)).allowedProfileError(kVelocityTolerance.in(RPM))));
 
         motor = new SparkMax(kShooterMotorID, MotorType.kBrushless);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -46,29 +45,22 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void updateInputs(ShooterInputs inputs) {
-        inputs.velocity = getVelocity();
-        inputs.targetVelocity = targetVelocity;
-        inputs.atTargetVelocity = atTargetVelocity();
+        inputs.velocity = RPM.of(encoder.getVelocity());
+		inputs.targetVelocity = targetVelocity;
+		inputs.atTargetVelocity = controller.isAtSetpoint();
+
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
     }
 
     @Override
     public void setVelocity(AngularVelocity velocity) {
-        targetVelocity = velocity;
+		targetVelocity = velocity;
         controller.setSetpoint(velocity.in(RPM), ControlType.kMAXMotionVelocityControl);
     }
 
     @Override
     public void stop() {
-        setVelocity(RPM.of(0));
-    }
-
-    private AngularVelocity getVelocity() {
-        return RPM.of(encoder.getVelocity());
-    }
-
-    private boolean atTargetVelocity() {
-        return Math.abs(targetVelocity.in(RPM) - encoder.getVelocity()) <= kVelocityTolerance.in(RPM);
+        setVelocity(RPM.zero());
     }
 }

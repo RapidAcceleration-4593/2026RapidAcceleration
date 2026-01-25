@@ -17,11 +17,11 @@ public class ShooterIOSim extends ShooterIOReal implements IPhysicsSim {
 
     private final SparkMaxSim motorSim;
     private final SparkRelativeEncoderSim encoderSim;
-    private final DCMotor gearbox;
     private final FlywheelSim flywheelSim;
 
     public ShooterIOSim() {
-        gearbox = DCMotor.getNEO(1);
+        DCMotor gearbox = DCMotor.getNEO(1);
+
         motorSim = new SparkMaxSim(motor, gearbox);
         encoderSim = motorSim.getRelativeEncoderSim();
         flywheelSim = new FlywheelSim(

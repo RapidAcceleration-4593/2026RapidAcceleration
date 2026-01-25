@@ -22,7 +22,7 @@ public interface ShooterIO {
     /** Fetches updates from sensors through the IO interface. */
     public default void updateInputs(ShooterInputs inputs) {}
 
-    /** Sets velocity of the shooter motor. */
+    /** Sets the velocity of the shooter motor. */
     public default void setVelocity(AngularVelocity velocity) {}
 
     /** Stops the shooter motor immediately. */
