@@ -5,7 +5,6 @@ import static frc.robot.subsystems.hood.HoodConstants.*;
 
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -19,17 +18,14 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
     private final SparkMaxSim motorSim;
     private final EncoderSim encoderSim;
 
-    private final DCMotor gearbox;
-
     public HoodIOSim() {
-        gearbox = DCMotor.getNeo550(1);
+        DCMotor gearbox = DCMotor.getNeo550(1);
 
         hoodSim = new SingleJointedArmSim(
-                LinearSystemId.createSingleJointedArmSystem(
-                        gearbox, kHoodMOI.in(KilogramSquareMeters), kMotorToHoodGearing),
                 gearbox,
                 kMotorToHoodGearing,
-                0.3,
+                kHoodMOI.in(KilogramSquareMeters),
+                Units.inchesToMeters(12.0),
                 kMinimumAngle.in(Radians),
                 kMaximumAngle.in(Radians),
                 true,
@@ -39,11 +35,6 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
         encoderSim = new EncoderSim(encoder);
 
         SimulationManager.getInstance().addSimulatable(this);
-    }
-
-    @Override
-    public void updateInputs(HoodInputs inputs) {
-        super.updateInputs(inputs);
     }
 
     @Override
@@ -59,7 +50,8 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
 
     @Override
     public void updateIOSim() {
-        var motorRPM = Units.radiansPerSecondToRotationsPerMinute(hoodSim.getVelocityRadPerSec()) * kMotorToHoodGearing;
+        double motorRPM =
+                Units.radiansPerSecondToRotationsPerMinute(hoodSim.getVelocityRadPerSec()) * kMotorToHoodGearing;
         motorSim.iterate(motorRPM, PowerSim.getRailVoltage().in(Volts), 0.02);
         encoderSim.setDistance(Units.radiansToDegrees(hoodSim.getAngleRads()));
     }

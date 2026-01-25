@@ -12,9 +12,7 @@ public interface HoodIO {
     @AutoLog
     public static class HoodInputs {
         public Angle angle = Degrees.zero();
-        public Angle targetAngle = Degrees.zero();
-        public boolean atTargetAngle = false;
-        public boolean atLimitSwitch = false;
+        public boolean limitswitch = false;
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();
@@ -23,11 +21,8 @@ public interface HoodIO {
     /** Fetches updates from sensors through the IO interface. */
     public default void updateInputs(HoodInputs inputs) {}
 
-    /** Applies the feedback control loop mechanism. */
-    public default void updateControl() {}
-
-    /** Sets angle of the adjustable hood. */
-    public default void setAngle(Angle angle) {}
+    /** Sets voltage of the adjustable hood motor. */
+    public default void setVoltage(Voltage volts) {}
 
     /** Stops the hood motor immediately. */
     public default void stop() {}

@@ -10,11 +10,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.Mode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
@@ -73,17 +75,10 @@ public final class SimulationManager {
     }
 
     /** Simulates an object being launched from the shooter mechanism. */
-    public void launchProjectile(Angle angle, AngularVelocity velocity) {
-        Distance topWheelRadius = Inches.of(1.25);
-        Distance botWheelRadius = Inches.of(2.0);
-
-        LinearVelocity topLinearVelocity =
-                MetersPerSecond.of(velocity.in(RadiansPerSecond) * topWheelRadius.in(Meters));
-        LinearVelocity botLinearVelocity =
-                MetersPerSecond.of(velocity.in(RadiansPerSecond) * botWheelRadius.in(Meters));
-
-        LinearVelocity totalLinearVelocity =
-                topLinearVelocity.plus(botLinearVelocity).div(2);
+    private void launchProjectile(Angle angle, AngularVelocity velocity) {
+        double avgWheelRadiusMeters =
+                Inches.of(1.25).in(Meters) / 2 + Inches.of(2.0).in(Meters) / 2;
+        LinearVelocity linearVelocity = MetersPerSecond.of(velocity.in(RadiansPerSecond) * avgWheelRadiusMeters);
 
         RebuiltFuelOnFly projectile = new RebuiltFuelOnFly(
                 getPose().getTranslation(),
@@ -91,10 +86,15 @@ public final class SimulationManager {
                 getChassisSpeeds(),
                 getPose().getRotation(), // Plus turret rotation.
                 Inches.of(20.5),
-                totalLinearVelocity,
+                linearVelocity,
                 Degrees.of(90.0).minus(angle));
 
         arena.addGamePieceProjectile(projectile);
+    }
+
+    public Command launchProjectileCommand(Supplier<Angle> angle, Supplier<AngularVelocity> velocity) {
+        return Commands.runOnce(() -> launchProjectile(angle.get(), velocity.get()))
+                .withTimeout(Seconds.of(0.4));
     }
 
     /** Run periodically during simulation. */
