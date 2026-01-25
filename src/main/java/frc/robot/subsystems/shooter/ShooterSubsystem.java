@@ -29,9 +29,9 @@ public class ShooterSubsystem extends SubsystemBase {
         return inputs.velocity;
     }
 
-	public AngularVelocity getTargetVelocity() {
-		return inputs.targetVelocity;
-	}
+    public AngularVelocity getTargetVelocity() {
+        return inputs.targetVelocity;
+    }
 
     public boolean atTargetVelocity() {
         return inputs.atTargetVelocity;

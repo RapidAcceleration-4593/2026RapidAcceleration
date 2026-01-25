@@ -25,7 +25,7 @@ public class ShooterIOReal implements ShooterIO {
     protected final RelativeEncoder encoder;
     private final SparkClosedLoopController controller;
 
-	private AngularVelocity targetVelocity = RPM.zero();
+    private AngularVelocity targetVelocity = RPM.zero();
 
     public ShooterIOReal() {
         SparkBaseConfig config = new SparkMaxConfig()
@@ -34,7 +34,9 @@ public class ShooterIOReal implements ShooterIO {
                 .apply(new ClosedLoopConfig()
                         .pid(kP, kI, kD)
                         .apply(new FeedForwardConfig().kS(kS).kV(kV).kA(kA))
-                        .apply(new MAXMotionConfig().maxAcceleration(kMaxAcceleration.in(RPMPerSecond)).allowedProfileError(kVelocityTolerance.in(RPM))));
+                        .apply(new MAXMotionConfig()
+                                .maxAcceleration(kMaxAcceleration.in(RPMPerSecond))
+                                .allowedProfileError(kVelocityTolerance.in(RPM))));
 
         motor = new SparkMax(kShooterMotorID, MotorType.kBrushless);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -46,8 +48,8 @@ public class ShooterIOReal implements ShooterIO {
     @Override
     public void updateInputs(ShooterInputs inputs) {
         inputs.velocity = RPM.of(encoder.getVelocity());
-		inputs.targetVelocity = targetVelocity;
-		inputs.atTargetVelocity = controller.isAtSetpoint();
+        inputs.targetVelocity = targetVelocity;
+        inputs.atTargetVelocity = controller.isAtSetpoint();
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
@@ -55,7 +57,7 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void setVelocity(AngularVelocity velocity) {
-		targetVelocity = velocity;
+        targetVelocity = velocity;
         controller.setSetpoint(velocity.in(RPM), ControlType.kMAXMotionVelocityControl);
     }
 
