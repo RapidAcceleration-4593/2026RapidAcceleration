@@ -41,12 +41,12 @@ public class IndexerIOReal implements IndexerIO {
 
     @Override
     public void setSpindexerVoltage(Voltage volts) {
-        spindexerMotor.setVoltage(kSpindexerVolts);
+        spindexerMotor.setVoltage(volts);
     }
 
     @Override
     public void setFeederVoltage(Voltage volts) {
-        feederMotor.setVoltage(kFeederVolts);
+        feederMotor.setVoltage(volts);
     }
 
     @Override
