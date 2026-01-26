@@ -10,6 +10,8 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.units.measure.Voltage;
+
 public class IntakeIOReal implements IntakeIO {
 
     protected final SparkMax motor;
@@ -26,23 +28,19 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void updateInputs(IntakeInputs inputs) {
-        inputs.isIntaking = isIntaking();
+        inputs.isIntaking = Math.abs(motor.get()) > 0;
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
     }
 
     @Override
-    public void run() {
-        motor.setVoltage(kIntakeVolts);
+    public void setVoltage(Voltage volts) {
+        motor.setVoltage(volts);
     }
 
     @Override
     public void stop() {
         motor.stopMotor();
-    }
-
-    public boolean isIntaking() {
-        return Math.abs(motor.get()) > 0;
     }
 }

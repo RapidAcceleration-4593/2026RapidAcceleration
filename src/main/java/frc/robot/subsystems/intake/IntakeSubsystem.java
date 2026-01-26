@@ -1,5 +1,8 @@
 package frc.robot.subsystems.intake;
 
+import static frc.robot.subsystems.intake.IntakeConstants.kIntakeVolts;
+
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -19,11 +22,11 @@ public class IntakeSubsystem extends SubsystemBase {
         Logger.processInputs("Intake", inputs);
     }
 
-    public void run() {
-        io.run();
+    public Command run() {
+        return runOnce(() -> io.setVoltage(kIntakeVolts));
     }
 
-    public void stop() {
-        io.stop();
+    public Command stop() {
+        return runOnce(io::stop);
     }
 }

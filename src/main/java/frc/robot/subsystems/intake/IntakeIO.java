@@ -19,8 +19,8 @@ public interface IntakeIO {
     /** Fetches updates from sensors through the IO interface. */
     public default void updateInputs(IntakeInputs inputs) {}
 
-    /** Runs the intake motor. */
-    public default void run() {}
+    /** Sets the voltage of the intake motor. */
+    public default void setVoltage(Voltage volts) {}
 
     /** Stops the intake motor immediately. */
     public default void stop() {}

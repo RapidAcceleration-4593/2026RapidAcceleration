@@ -14,12 +14,11 @@ import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 public class IntakeIOSim extends IntakeIOReal implements IPhysicsSim {
 
     private final SparkMaxSim motorSim;
-    private final DCMotor gearbox;
 
     private final IntakeSimulation intakeSim;
 
     public IntakeIOSim(AbstractDriveTrainSimulation drivetrain) {
-        gearbox = DCMotor.getNEO(1);
+        DCMotor gearbox = DCMotor.getNEO(1);
 
         motorSim = new SparkMaxSim(motor, gearbox);
         intakeSim = IntakeSimulation.OverTheBumperIntake(
@@ -28,17 +27,6 @@ public class IntakeIOSim extends IntakeIOReal implements IPhysicsSim {
         SimulationManager.getInstance().addSimulatable(this);
     }
 
-    @Override
-    public void run() {
-        super.run();
-        intakeSim.startIntake();
-    }
-
-    @Override
-    public void stop() {
-        super.stop();
-        intakeSim.stopIntake();
-    }
 
     @Override
     public void updatePlantSim() {
