@@ -2,6 +2,8 @@ package frc.robot.subsystems.swerve;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import frc.robot.util.PhoenixUtil;
 import java.util.Arrays;
@@ -11,7 +13,9 @@ public class ModuleIOTalonFXSim extends ModuleIOTalonFX {
 
     private final SwerveModuleSimulation simulation;
 
-    public ModuleIOTalonFXSim(SwerveModuleConstants<?, ?, ?> constants, SwerveModuleSimulation simulation) {
+    public ModuleIOTalonFXSim(
+            SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> constants,
+            SwerveModuleSimulation simulation) {
         super(PhoenixUtil.regulateModuleConstantForSimulation(constants));
 
         this.simulation = simulation;

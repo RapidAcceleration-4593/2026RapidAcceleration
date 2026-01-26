@@ -100,7 +100,7 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
                 this::runVelocity,
                 new PPHolonomicDriveController(new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
                 PATHPLANNER_CONFIG,
-                () -> kAlliance == Alliance.Red,
+                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
                 this);
 
         Pathfinding.setPathfinder(new LocalADStarAK());

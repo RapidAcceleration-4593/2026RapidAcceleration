@@ -47,9 +47,15 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        swerve.setDefaultCommand(SwerveCommands.joystickDrive(
-                swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
+        swerve.setDefaultCommand(new SwerveCommands()
+                .joystickDrive(
+                        swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
         hood.setDefaultCommand(new ControlHoodCommand(hood));
+
+        driverController
+                .rightBumper()
+                .whileTrue(new SwerveCommands()
+                        .joystickDrivePointToHub(swerve, driverController::getLeftY, driverController::getLeftX));
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
         driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));

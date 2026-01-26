@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -97,7 +98,8 @@ public class HoodSubsystem extends SubsystemBase {
     }
 
     private Angle calculateHubAngle() {
-        Pose2d targetPose = kAlliance == Alliance.Blue ? kBlueHubPose : kRedHubPose;
+        Pose2d targetPose =
+                DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? kBlueHubPose : kRedHubPose;
         Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);
 
         Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
