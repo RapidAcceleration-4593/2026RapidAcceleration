@@ -7,7 +7,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.hood.ControlHoodCommand;
 import frc.robot.commands.swerve.DriveToClusterCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
@@ -50,7 +49,7 @@ public class RobotContainer {
         swerve.setDefaultCommand(new SwerveCommands()
                 .joystickDrive(
                         swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
-        hood.setDefaultCommand(new ControlHoodCommand(hood));
+        hood.setDefaultCommand(hood.updateControl());
 
         driverController
                 .rightBumper()

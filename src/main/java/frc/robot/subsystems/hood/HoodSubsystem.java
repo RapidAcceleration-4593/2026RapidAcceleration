@@ -56,18 +56,20 @@ public class HoodSubsystem extends SubsystemBase {
         Logger.recordOutput("Mechanisms/Hood", mechanism);
     }
 
-    public void updateControl() {
-        targetAngle = Degrees.of(
-                MathUtil.clamp(targetAngle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
+    public Command updateControl() {
+        return run(() -> {
+            targetAngle = Degrees.of(
+                    MathUtil.clamp(targetAngle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
 
-        double output = controller.calculate(inputs.angle.in(Degrees), targetAngle.in(Degrees));
-        output = MathUtil.clamp(output, -12.0, 12.0);
+            double output = controller.calculate(inputs.angle.in(Degrees), targetAngle.in(Degrees));
+            output = MathUtil.clamp(output, -12.0, 12.0);
 
-        io.setVoltage(Volts.of(output));
+            io.setVoltage(Volts.of(output));
+        });
     }
 
-    public void setTargetAngle(Angle angle) {
-        targetAngle = angle;
+    public Command setTargetAngle(Angle angle) {
+        return runOnce(() -> targetAngle = angle);
     }
 
     public Angle getCurrentAngle() {
@@ -84,9 +86,11 @@ public class HoodSubsystem extends SubsystemBase {
         return controller.atSetpoint();
     }
 
-    public void stop() {
-        controller.reset();
-        io.stop();
+    public Command stop() {
+        return runOnce(() -> {
+            controller.reset();
+            io.stop();
+        });
     }
 
     public Command setAngleCommand(Angle angle) {

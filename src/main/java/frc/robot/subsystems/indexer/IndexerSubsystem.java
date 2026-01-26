@@ -31,6 +31,6 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     public Command stop() {
-        return runOnce(() -> io.stop());
+        return runOnce(io::stop);
     }
 }

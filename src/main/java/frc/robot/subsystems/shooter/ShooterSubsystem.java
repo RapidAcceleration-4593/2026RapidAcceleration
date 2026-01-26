@@ -38,6 +38,6 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public Command stop() {
-        return runOnce(() -> io.stop());
+        return runOnce(io::stop);
     }
 }
