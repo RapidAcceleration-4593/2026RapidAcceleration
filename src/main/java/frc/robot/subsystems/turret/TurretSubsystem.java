@@ -7,6 +7,7 @@ import static frc.robot.subsystems.turret.TurretConstants.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.Supplier;
@@ -50,7 +51,8 @@ public class TurretSubsystem extends SubsystemBase {
 
     public double calculateDesiredAngle() {
         Pose2d robotPose = robotPoseSupplier.get();
-        Pose2d targetPose = kAlliance == Alliance.Blue ? kBlueHubPose : kRedHubPose;
+        Pose2d targetPose =
+                DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? kBlueHubPose : kRedHubPose;
 
         double dx = targetPose.getX() - robotPose.getX();
         double dy = targetPose.getY() - robotPose.getY();

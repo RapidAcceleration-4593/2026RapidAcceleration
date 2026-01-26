@@ -22,7 +22,7 @@ public final class PowerSim {
         return Volts.of(RoboRioDataJNI.getVInVoltage());
     }
 
-	/** Run periodically during simulation. */
+    /** Run periodically during simulation. */
     public static void simulationPeriodic() {
         double voltage = BatterySim.calculateDefaultBatteryLoadedVoltage(totalCurrent.in(Amps));
         RoboRioDataJNI.setVInVoltage(voltage);

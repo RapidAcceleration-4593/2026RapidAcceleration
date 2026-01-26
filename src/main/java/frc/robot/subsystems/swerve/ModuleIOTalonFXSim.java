@@ -13,7 +13,6 @@ public class ModuleIOTalonFXSim extends ModuleIOTalonFX {
 
     private final SwerveModuleSimulation simulation;
 
-    @SuppressWarnings("unchecked")
     public ModuleIOTalonFXSim(
             SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> constants,
             SwerveModuleSimulation simulation) {
