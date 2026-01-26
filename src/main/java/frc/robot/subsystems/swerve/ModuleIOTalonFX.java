@@ -69,9 +69,9 @@ public abstract class ModuleIOTalonFX implements ModuleIO {
         this.constants = constants;
 
         // CANBusName depreciated in 2027 for new SystemCore.
-        driveTalon = new TalonFX(constants.DriveMotorId, DrivetrainConstants.CANBusName);
-        turnTalon = new TalonFX(constants.SteerMotorId, DrivetrainConstants.CANBusName);
-        cancoder = new CANcoder(constants.EncoderId, DrivetrainConstants.CANBusName);
+        driveTalon = new TalonFX(constants.DriveMotorId, kCANBus);
+        turnTalon = new TalonFX(constants.SteerMotorId, kCANBus);
+        cancoder = new CANcoder(constants.EncoderId, kCANBus);
 
         // Configure drive motor.
         var driveConfig = constants.DriveMotorInitialConfigs;
