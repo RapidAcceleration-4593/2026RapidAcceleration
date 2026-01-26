@@ -93,10 +93,6 @@ public class HoodSubsystem extends SubsystemBase {
         });
     }
 
-    public Command setAngleCommand(Angle angle) {
-        return runOnce(() -> setTargetAngle(angle));
-    }
-
     public Command setAngleToHubCommand() {
         return run(() -> setTargetAngle(calculateHubAngle()));
     }

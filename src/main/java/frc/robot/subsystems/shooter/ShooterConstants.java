@@ -24,7 +24,8 @@ public final class ShooterConstants {
 
     public static final AngularAcceleration kMaxAcceleration = RPMPerSecond.of(500);
 
-    public static final AngularVelocity kDefaultShooterRPM = RPM.of(1700.0);
+    public static final AngularVelocity kMaximumVelocity = RPM.of(1700.0);
+    public static final AngularVelocity kMinimumVelocity = RPM.zero();
     public static final AngularVelocity kVelocityTolerance = RPM.of(50.0);
 
     public static final Transform2d kPhysicalOffset =

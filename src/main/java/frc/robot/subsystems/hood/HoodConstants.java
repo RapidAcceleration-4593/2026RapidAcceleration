@@ -29,5 +29,5 @@ public final class HoodConstants {
 
     public static final Angle kMinimumAngle = Degrees.of(10.0);
     public static final Angle kMaximumAngle = Degrees.of(45.0);
-    public static final Angle kAngleTolerance = Degrees.of(0.5);
+    public static final Angle kAngleTolerance = Degrees.of(3.0);
 }

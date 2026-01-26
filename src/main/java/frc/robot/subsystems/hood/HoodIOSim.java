@@ -6,6 +6,7 @@ import static frc.robot.subsystems.hood.HoodConstants.*;
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.util.IPhysicsSim;
@@ -50,9 +51,9 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
 
     @Override
     public void updateIOSim() {
-        double motorRPM =
-                Units.radiansPerSecondToRotationsPerMinute(hoodSim.getVelocityRadPerSec()) * kMotorToHoodGearing;
-        motorSim.iterate(motorRPM, PowerSim.getRailVoltage().in(Volts), 0.02);
-        encoderSim.setDistance(Units.radiansToDegrees(hoodSim.getAngleRads()));
+        AngularVelocity motorVelocity =
+                RadiansPerSecond.of(hoodSim.getVelocityRadPerSec()).times(kMotorToHoodGearing);
+        motorSim.iterate(motorVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
+        encoderSim.setDistance(Degrees.convertFrom(hoodSim.getAngleRads(), Radians));
     }
 }
