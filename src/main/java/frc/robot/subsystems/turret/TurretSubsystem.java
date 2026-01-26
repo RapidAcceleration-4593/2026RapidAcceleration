@@ -5,12 +5,16 @@ import static frc.robot.Constants.*;
 import static frc.robot.subsystems.turret.TurretConstants.*;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -19,59 +23,91 @@ public class TurretSubsystem extends SubsystemBase {
     private final TurretInputsAutoLogged inputs;
     private final TurretIO io;
 
+    private final PIDController controller;
+    private Angle targetAngle = kMinimumAngle;
+
     public TurretSubsystem(TurretIO io, Supplier<Pose2d> robotPoseSupplier) {
         this.io = io;
         this.inputs = new TurretInputsAutoLogged();
-
         this.robotPoseSupplier = robotPoseSupplier;
+
+        controller = new PIDController(kP, kI, kD);
+        controller.setTolerance(kAngleTolerance.in(Degrees));
     }
 
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-        io.updateControl();
         Logger.processInputs("Turret", inputs);
     }
 
-    public void setAngle(Angle angle) {
-        io.setAngle(angle);
+    public Command updateControl() {
+        return run(() -> {
+            targetAngle = Degrees.of(
+                    MathUtil.clamp(targetAngle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
+
+            double output = controller.calculate(inputs.angle.in(Degrees), targetAngle.in(Degrees));
+            output = MathUtil.clamp(output, -12.0, 12.0);
+
+            io.setVoltage((Volts.of(output)));
+        });
     }
 
-    public Angle getAngle() {
+    public Command setTargetAngle(Angle angle) {
+        return runOnce(() -> targetAngle = angle);
+    }
+
+    public Angle getCurrentAngle() {
         return inputs.angle;
     }
 
-    public boolean atAngle() {
-        return inputs.atTargetAngle;
+    @AutoLogOutput(key = "Turret/TargetAngle")
+    public Angle getTargetAngle() {
+        return targetAngle;
     }
 
-    public void stop() {
-        io.stop();
+    @AutoLogOutput(key = "Turret/AtTargetAngle")
+    public boolean atTargetAngle() {
+        return controller.atSetpoint();
     }
 
-    public double calculateDesiredAngle() {
+    public Command stop() {
+        return runOnce(() -> {
+            controller.reset();
+            io.stop();
+        });
+    }
+
+    public Command setAngleToHubCommand() {
+        return run(() -> {
+            Angle safe = calculateSafeAngle(getCurrentAngle(), calculateHubAngle());
+            setTargetAngle(safe);
+        });
+    }
+
+    private Angle calculateHubAngle() {
         Pose2d robotPose = robotPoseSupplier.get();
         Pose2d targetPose =
                 DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? kBlueHubPose : kRedHubPose;
 
-        double dx = targetPose.getX() - robotPose.getX();
-        double dy = targetPose.getY() - robotPose.getY();
+        Distance dx = targetPose.getMeasureX().minus(robotPose.getMeasureY());
+        Distance dy = targetPose.getMeasureY().minus(robotPose.getMeasureY());
 
-        double fieldAngle = Math.atan2(dy, dx);
+        double fieldAngle = Math.atan2(dy.in(Meters), dx.in(Meters));
         double robotYaw = robotPose.getRotation().getRadians();
         double turretAngle = fieldAngle - robotYaw;
 
-        return Math.toDegrees(turretAngle);
+        return Radians.of(turretAngle);
     }
 
-    public double wrapToSafeRange(double currentAngle, double desiredAngle) {
-        double min = kMinimumAngle.in(Degrees);
-        double max = kMaximumAngle.in(Degrees);
+    private Angle calculateSafeAngle(Angle current, Angle desired) {
+        Angle safeRange = kMaximumAngle.minus(kMinimumAngle);
+        Angle errorRange = desired.minus(current);
 
-        // Choose the shortest path according to error.
-        double error = MathUtil.inputModulus(desiredAngle - currentAngle, min - max, max - min);
-        double candidate = currentAngle + error;
+        Angle error = Degrees.of(
+                MathUtil.inputModulus(errorRange.in(Degrees), -safeRange.in(Degrees), safeRange.in(Degrees)));
+        Angle candidate = current.plus(error);
 
-        return MathUtil.clamp(candidate, min, max);
+        return Degrees.of(MathUtil.clamp(candidate.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
     }
 }

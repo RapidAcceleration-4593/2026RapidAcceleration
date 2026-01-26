@@ -12,8 +12,6 @@ public interface TurretIO {
     @AutoLog
     public static class TurretInputs {
         public Angle angle = Degrees.zero();
-        public Angle targetAngle = Degrees.zero();
-        public boolean atTargetAngle = false;
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();
@@ -22,15 +20,9 @@ public interface TurretIO {
     /** Fetches updates from sensors through the IO interface. */
     public default void updateInputs(TurretInputs inputs) {}
 
-    /** Applies the feedback control loop mechanism. */
-    public default void updateControl() {}
-
-    /** Sets the angle of the turret motor. */
-    public default void setAngle(Angle angle) {}
+    /** Sets the voltage of the turret motor. */
+    public default void setVoltage(Voltage volts) {}
 
     /** Stops the turret motor immediately. */
     public default void stop() {}
-
-    /** Resets the encoder reading to zero. */
-    public default void resetEncoder() {}
 }

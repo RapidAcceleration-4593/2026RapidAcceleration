@@ -41,6 +41,7 @@ public class RobotContainer {
         swerve.setDefaultCommand(new SwerveCommands()
                 .joystickDrive(
                         swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
+        turret.setDefaultCommand(turret.updateControl());
 
         driverController
                 .rightBumper()

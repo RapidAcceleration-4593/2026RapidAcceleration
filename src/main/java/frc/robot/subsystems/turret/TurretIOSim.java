@@ -9,21 +9,18 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import frc.robot.util.IPhysicsSim;
 import frc.robot.util.PowerSim;
 
-public class TurretIOSim extends TurretIOReal {
+public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
+
+    private final SingleJointedArmSim turret;
 
     private final SparkMaxSim motorSim;
     private final EncoderSim encoderSim;
 
-    private final SingleJointedArmSim turret;
-    private final DCMotor gearbox;
-
     public TurretIOSim() {
-        gearbox = DCMotor.getNEO(1);
-
-        motorSim = new SparkMaxSim(motor, gearbox);
-        encoderSim = new EncoderSim(encoder);
+        DCMotor gearbox = DCMotor.getNEO(1);
 
         turret = new SingleJointedArmSim(
                 LinearSystemId.createSingleJointedArmSystem(gearbox, kTurretMOI.in(KilogramSquareMeters), kGearRatio),
@@ -34,25 +31,29 @@ public class TurretIOSim extends TurretIOReal {
                 kMaximumAngle.in(Radians),
                 false,
                 kInitialAngle.in(Radians));
+
+        motorSim = new SparkMaxSim(motor, gearbox);
+        encoderSim = new EncoderSim(encoder);
     }
 
     @Override
-    public void updateInputs(TurretInputs inputs) {
-        super.updateInputs(inputs);
-        updateSimulation();
-    }
-
-    private void updateSimulation() {
+    public void updatePlantSim() {
         turret.setInput(motorSim.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts));
         turret.update(0.02);
+    }
 
+    @Override
+    public void updatePowerSim() {
+        PowerSim.addCurrentDraw(Amps.of(motorSim.getMotorCurrent()));
+    }
+
+    @Override
+    public void updateIOSim() {
         motorSim.iterate(
                 Units.radiansPerSecondToRotationsPerMinute(turret.getVelocityRadPerSec()),
                 PowerSim.getRailVoltage().in(Volts),
                 0.02);
         encoderSim.setDistance(Units.radiansToDegrees(turret.getAngleRads()));
         encoderSim.setRate(Units.radiansPerSecondToRotationsPerMinute(turret.getVelocityRadPerSec()));
-
-        PowerSim.addCurrentDraw(Amps.of(motorSim.getMotorCurrent()));
     }
 }
