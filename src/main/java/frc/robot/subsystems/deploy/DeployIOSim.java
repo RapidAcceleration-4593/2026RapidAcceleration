@@ -17,15 +17,11 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
 
     private final SingleJointedArmSim deploySim;
 
-    private final SparkMaxSim leftMotorSim;
-    private final SparkMaxSim rightMotorSim;
-
+    private final SparkMaxSim motorSim;
     private final EncoderSim encoderSim;
 
-    private final DCMotor gearbox;
-
     public DeployIOSim() {
-        gearbox = DCMotor.getNeo550(2);
+        DCMotor gearbox = DCMotor.getNeo550(2);
 
         deploySim = new SingleJointedArmSim(
                 LinearSystemId.createSingleJointedArmSystem(
@@ -38,9 +34,7 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
                 false,
                 0.0);
 
-        leftMotorSim = new SparkMaxSim(leftMotor, gearbox);
-        rightMotorSim = new SparkMaxSim(rightMotor, gearbox);
-
+        motorSim = new SparkMaxSim(motor, gearbox);
         encoderSim = new EncoderSim(encoder);
 
         SimulationManager.getInstance().addSimulatable(this);
@@ -48,24 +42,19 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
 
     @Override
     public void updatePlantSim() {
-        double leftInput =
-                leftMotorSim.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts);
-        double rightInput =
-                rightMotorSim.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts);
-        deploySim.setInput(leftInput + rightInput);
+        double input = motorSim.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts);
+        deploySim.setInput(input);
         deploySim.update(0.02);
     }
 
     @Override
     public void updatePowerSim() {
-        PowerSim.addCurrentDraw(Amps.of(leftMotorSim.getMotorCurrent()));
-        PowerSim.addCurrentDraw(Amps.of(rightMotorSim.getMotorCurrent()));
+        PowerSim.addCurrentDraw(Amps.of(motorSim.getMotorCurrent()));
     }
 
     @Override
     public void updateIOSim() {
-        leftMotorSim.iterate(0.0, PowerSim.getRailVoltage().in(Volts), 0.02); // TODO: For Flanegan, love Lincoln
-        rightMotorSim.iterate(0.0, PowerSim.getRailVoltage().in(Volts), 0.02); // TODO: For Flanegan, love Lincoln
+        motorSim.iterate(0.0, PowerSim.getRailVoltage().in(Volts), 0.02); // TODO: For Flanegan, love Lincoln
         encoderSim.setDistance(0.0); // TODO: For Flanegan, love Lincoln
     }
 }

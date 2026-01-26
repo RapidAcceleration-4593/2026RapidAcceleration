@@ -12,27 +12,18 @@ public interface DeployIO {
     @AutoLog
     public static class DeployInputs {
         public Distance distance = Inches.zero();
-        public Distance targetDistance = Inches.zero();
+        public boolean limitswitch = false;
 
-        public boolean atTargetDistance = false;
-        public boolean isLimitSwitchPressed = false;
-
-        public Voltage leftAppliedVolts = Volts.zero();
-        public Voltage rightAppliedVolts = Volts.zero();
-
-        public Current leftOutputCurrent = Amps.zero();
-        public Current rightOutputCurrent = Amps.zero();
+        public Voltage appliedVolts = Volts.zero();
+        public Current outputCurrent = Amps.zero();
     }
 
     /** Fetches updates from sensors through the IO interface. */
     public default void updateInputs(DeployInputs inputs) {}
 
-    /** Applies the feedback control loop mechanism. */
-    public default void updateControl() {}
+    /** Sets the voltage of the deployment motor. */
+    public default void setVoltage(Voltage volts) {}
 
-    /** Sets the distance of the deploy in inches. */
-    public default void setDistance(Distance distance) {}
-
-    /** Stops the deployment mechanism immediately. */
+    /** Stops the deployment motor immediately. */
     public default void stop() {}
 }

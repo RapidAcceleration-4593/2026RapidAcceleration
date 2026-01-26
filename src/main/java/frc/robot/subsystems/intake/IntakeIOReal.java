@@ -9,7 +9,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.units.measure.Voltage;
 
 public class IntakeIOReal implements IntakeIO {
@@ -22,7 +21,7 @@ public class IntakeIOReal implements IntakeIO {
         intakeConfig = new SparkMaxConfig();
         intakeConfig.idleMode(IdleMode.kBrake).inverted(false).voltageCompensation(12.0);
 
-        motor = new SparkMax(kMotorID, MotorType.kBrushless);
+        motor = new SparkMax(kIntakeMotorID, MotorType.kBrushless);
         motor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 

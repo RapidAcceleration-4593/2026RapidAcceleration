@@ -14,7 +14,6 @@ import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 public class IntakeIOSim extends IntakeIOReal implements IPhysicsSim {
 
     private final SparkMaxSim motorSim;
-
     private final IntakeSimulation intakeSim;
 
     public IntakeIOSim(AbstractDriveTrainSimulation drivetrain) {
@@ -26,7 +25,6 @@ public class IntakeIOSim extends IntakeIOReal implements IPhysicsSim {
 
         SimulationManager.getInstance().addSimulatable(this);
     }
-
 
     @Override
     public void updatePlantSim() {
