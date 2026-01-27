@@ -1,5 +1,6 @@
 package frc.robot.commands.swerve;
 
+import static frc.robot.Constants.*;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import edu.wpi.first.math.MathUtil;
@@ -7,7 +8,6 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -23,7 +23,6 @@ import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 public class SwerveCommands {
 
@@ -37,94 +36,72 @@ public class SwerveCommands {
     private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Radians per Second.
     private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Radians per Squared Second.
 
-    private SwerveCommands() {}
+    private Translation2d getLinearVelocityFromJoysticks(double x, double y) {
+        // Apply Deadband and square for finer control.
+        double magnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
+        magnitude = Math.pow(magnitude, 2);
 
-    private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
-        // Apply Deadband.
-        double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
-        Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
+        double angle = Math.atan2(y, x);
+        return new Translation2d(magnitude * Math.cos(angle), magnitude * Math.sin(angle));
+    }
 
-        // Square magnitude for more precise control.
-        linearMagnitude = linearMagnitude * linearMagnitude;
-
-        // Return new linear velocity.
-        return new Pose2d(new Translation2d(), linearDirection)
-                .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-                .getTranslation();
+    private ChassisSpeeds fieldRelativeSpeeds(SwerveSubsystem swerve, Translation2d linear, double omega) {
+        boolean flipped = DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == Alliance.Red;
+        return ChassisSpeeds.fromFieldRelativeSpeeds(
+                new ChassisSpeeds(
+                        linear.getX() * swerve.getMaxLinearSpeedMetersPerSec(),
+                        linear.getY() * swerve.getMaxLinearSpeedMetersPerSec(),
+                        omega),
+                flipped ? swerve.getRotation().plus(new Rotation2d(Math.PI)) : swerve.getRotation());
     }
 
     /** Field relative drive command using two joysticks (controlling linear and angular velocities). */
-    public static Command joystickDrive(
-            SwerveSubsystem drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
+    public Command joystickDrive(
+            SwerveSubsystem swerve, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
         return Commands.run(
                 () -> {
                     // Get linear velocity.
-                    Translation2d linearVelocity =
+                    Translation2d linear =
                             getLinearVelocityFromJoysticks(-xSupplier.getAsDouble(), -ySupplier.getAsDouble());
 
-                    // Apply rotation deadband.
+                    // Apply rotation deadband. Square rotation value for more precise control.
                     double omega = MathUtil.applyDeadband(-omegaSupplier.getAsDouble(), DEADBAND);
-
-                    // Square rotation value for more precise control.
                     omega = Math.copySign(omega * omega, omega);
+                    omega *= swerve.getMaxAngularSpeedRadPerSec();
 
-                    // Convert to field relative speeds and send command.
-                    ChassisSpeeds speeds = new ChassisSpeeds(
-                            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                            omega * drive.getMaxAngularSpeedRadPerSec());
-                    boolean isFlipped = DriverStation.getAlliance().isPresent()
-                            && DriverStation.getAlliance().get() == Alliance.Red;
-                    drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
-                            speeds,
-                            isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation()));
+                    swerve.runVelocity(fieldRelativeSpeeds(swerve, linear, omega));
                 },
-                drive);
+                swerve);
     }
 
     /**
-     * Field relative drive command using joystick for linear control and PID for angular control. Possible use cases
-     * include snapping to an angle, aiming at a vision target, or controlling absolute rotation with a joystick.
+     * Drive field-oriented with left joystick controlling translation, but the robot automatically rotates to face a
+     * fixed target rotation.
      */
-    public static Command joystickDriveAtAngle(
-            SwerveSubsystem drive,
-            DoubleSupplier xSupplier,
-            DoubleSupplier ySupplier,
-            Supplier<Rotation2d> rotationSupplier) {
-        // Create PID controller.
+    public Command joystickDrivePointToHub(SwerveSubsystem swerve, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
         ProfiledPIDController angleController = new ProfiledPIDController(
                 ANGLE_KP, 0.0, ANGLE_KD, new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
         angleController.enableContinuousInput(-Math.PI, Math.PI);
 
-        // Construct command.
+        Pose2d targetPose =
+                DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue ? kBlueHubPose : kRedHubPose;
+
         return Commands.run(
                         () -> {
-                            // Get linear velocity.
-                            Translation2d linearVelocity =
-                                    getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+                            Translation2d linear =
+                                    getLinearVelocityFromJoysticks(-xSupplier.getAsDouble(), -ySupplier.getAsDouble());
+                            Rotation2d toTarget = targetPose
+                                    .getTranslation()
+                                    .minus(swerve.getPose().getTranslation())
+                                    .getAngle();
 
-                            // Calculate angular speed.
                             double omega = angleController.calculate(
-                                    drive.getRotation().getRadians(),
-                                    rotationSupplier.get().getRadians());
-
-                            // Convert to field relative speeds and send command.
-                            ChassisSpeeds speeds = new ChassisSpeeds(
-                                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                                    omega);
-                            boolean isFlipped = DriverStation.getAlliance().isPresent()
-                                    && DriverStation.getAlliance().get() == Alliance.Red;
-                            drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
-                                    speeds,
-                                    isFlipped
-                                            ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                                            : drive.getRotation()));
+                                    swerve.getRotation().getRadians(), toTarget.getRadians());
+                            swerve.runVelocity(fieldRelativeSpeeds(swerve, linear, omega));
                         },
-                        drive)
-
-                // Reset PID controller when command starts.
-                .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+                        swerve)
+                .beforeStarting(() -> angleController.reset(swerve.getRotation().getRadians()));
     }
 
     /**
@@ -132,7 +109,7 @@ public class SwerveCommands {
      *
      * <p>This command should only be used in voltage control mode.
      */
-    public static Command feedforwardCharacterization(SwerveSubsystem drive) {
+    public static Command feedforwardCharacterization(SwerveSubsystem swerve) {
         List<Double> velocitySamples = new LinkedList<>();
         List<Double> voltageSamples = new LinkedList<>();
         Timer timer = new Timer();
@@ -145,12 +122,7 @@ public class SwerveCommands {
                 }),
 
                 // Allow modules to orient.
-                Commands.run(
-                                () -> {
-                                    drive.runCharacterization(0.0);
-                                },
-                                drive)
-                        .withTimeout(FF_START_DELAY),
+                Commands.run(() -> swerve.runCharacterization(0.0), swerve).withTimeout(FF_START_DELAY),
 
                 // Start timer.
                 Commands.runOnce(timer::restart),
@@ -159,24 +131,21 @@ public class SwerveCommands {
                 Commands.run(
                                 () -> {
                                     double voltage = timer.get() * FF_RAMP_RATE;
-                                    drive.runCharacterization(voltage);
-                                    velocitySamples.add(drive.getFFCharacterizationVelocity());
+                                    swerve.runCharacterization(voltage);
+                                    velocitySamples.add(swerve.getFFCharacterizationVelocity());
                                     voltageSamples.add(voltage);
                                 },
-                                drive)
-
-                        // When cancelled, calculate and print results.
+                                swerve)
                         .finallyDo(() -> {
                             int n = velocitySamples.size();
-                            double sumX = 0.0;
-                            double sumY = 0.0;
-                            double sumXY = 0.0;
-                            double sumX2 = 0.0;
+                            double sumX = 0.0, sumY = 0.0, sumXY = 0.0, sumX2 = 0.0;
                             for (int i = 0; i < n; i++) {
-                                sumX += velocitySamples.get(i);
-                                sumY += voltageSamples.get(i);
-                                sumXY += velocitySamples.get(i) * voltageSamples.get(i);
-                                sumX2 += velocitySamples.get(i) * velocitySamples.get(i);
+                                double v = velocitySamples.get(i);
+                                double u = voltageSamples.get(i);
+                                sumX += v;
+                                sumY += u;
+                                sumXY += v * u;
+                                sumX2 += v * v;
                             }
                             double kS = (sumY * sumX2 - sumX * sumXY) / (n * sumX2 - sumX * sumX);
                             double kV = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
@@ -189,7 +158,7 @@ public class SwerveCommands {
     }
 
     /** Measures the robot's wheel radius by spinning in a circle. */
-    public static Command wheelRadiusCharacterization(SwerveSubsystem drive) {
+    public static Command wheelRadiusCharacterization(SwerveSubsystem swerve) {
         SlewRateLimiter limiter = new SlewRateLimiter(WHEEL_RADIUS_RAMP_RATE);
         WheelRadiusCharacterizationState state = new WheelRadiusCharacterizationState();
 
@@ -197,17 +166,15 @@ public class SwerveCommands {
                 // Drive control sequence.
                 Commands.sequence(
                         // Reset acceleration limiter.
-                        Commands.runOnce(() -> {
-                            limiter.reset(0.0);
-                        }),
+                        Commands.runOnce(() -> limiter.reset(0.0)),
 
                         // Turn in place, accelerating up to full speed.
                         Commands.run(
                                 () -> {
                                     double speed = limiter.calculate(WHEEL_RADIUS_MAX_VELOCITY);
-                                    drive.runVelocity(new ChassisSpeeds(0.0, 0.0, speed));
+                                    swerve.runVelocity(new ChassisSpeeds(0.0, 0.0, speed));
                                 },
-                                drive)),
+                                swerve)),
 
                 // Measurement sequence.
                 Commands.sequence(
@@ -216,22 +183,20 @@ public class SwerveCommands {
 
                         // Record starting measurement.
                         Commands.runOnce(() -> {
-                            state.positions = drive.getWheelRadiusCharacterizationPositions();
-                            state.lastAngle = drive.getRotation();
+                            state.positions = swerve.getWheelRadiusCharacterizationPositions();
+                            state.lastAngle = swerve.getRotation();
                             state.gyroDelta = 0.0;
                         }),
 
                         // Update gyro delta.
                         Commands.run(() -> {
-                                    var rotation = drive.getRotation();
+                                    Rotation2d rotation = swerve.getRotation();
                                     state.gyroDelta += Math.abs(
                                             rotation.minus(state.lastAngle).getRadians());
                                     state.lastAngle = rotation;
                                 })
-
-                                // When cancelled, calculate and print results.
                                 .finallyDo(() -> {
-                                    double[] positions = drive.getWheelRadiusCharacterizationPositions();
+                                    double[] positions = swerve.getWheelRadiusCharacterizationPositions();
                                     double wheelDelta = 0.0;
                                     for (int i = 0; i < 4; i++) {
                                         wheelDelta += Math.abs(positions[i] - state.positions[i]) / 4.0;
@@ -243,11 +208,8 @@ public class SwerveCommands {
                                     System.out.println("\tWheel Delta: " + formatter.format(wheelDelta) + " radians");
                                     System.out.println(
                                             "\tGyro Delta: " + formatter.format(state.gyroDelta) + " radians");
-                                    System.out.println("\tWheel Radius: "
-                                            + formatter.format(wheelRadius)
-                                            + " meters, "
-                                            + formatter.format(Units.metersToInches(wheelRadius))
-                                            + " inches");
+                                    System.out.println("\tWheel Radius: " + formatter.format(wheelRadius) + " meters, "
+                                            + formatter.format(Units.metersToInches(wheelRadius)) + " inches");
                                 })));
     }
 
