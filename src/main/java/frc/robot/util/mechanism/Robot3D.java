@@ -1,7 +1,6 @@
 package frc.robot.util.mechanism;
 
 import edu.wpi.first.math.geometry.Pose3d;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -17,17 +16,17 @@ public class Robot3D {
         AutoLogOutputManager.addObject(this);
     }
 
-	public void configure(BuildScript script) {
-		clearConfiguration();
-		Builder b = new Builder(this);
-		script.build(b);
-	}
+    public void configure(BuildScript script) {
+        clearConfiguration();
+        Builder b = new Builder(this);
+        script.build(b);
+    }
 
-	private void clearConfiguration() {
-		mechanisms.clear();
-		rootMechanisms.clear();
-		loggedMechanisms.clear();
-	}
+    private void clearConfiguration() {
+        mechanisms.clear();
+        rootMechanisms.clear();
+        loggedMechanisms.clear();
+    }
 
     private void addMechanism(Node3D mechanism, boolean logged) {
         mechanisms.add(mechanism);
@@ -42,19 +41,19 @@ public class Robot3D {
     public LinearMechanism3D getLinearMechanism(String name) {
         for (Node3D mech : mechanisms) {
             if (mech.getName() == name && mech instanceof LinearMechanism3D) {
-                return (LinearMechanism3D)mech;
+                return (LinearMechanism3D) mech;
             }
         }
-        throw new IllegalArgumentException("No LinearMechanism3D with name '"+name+"' is on this Robot3D!");
+        throw new IllegalArgumentException("No LinearMechanism3D with name '" + name + "' is on this Robot3D!");
     }
 
-    public LinearMechanism3D getAngularMechanism(String name) {
+    public AngularMechanism3D getAngularMechanism(String name) {
         for (Node3D mech : mechanisms) {
-            if (mech.getName() == name && mech instanceof LinearMechanism3D) {
-                return (LinearMechanism3D)mech;
+            if (mech.getName() == name && mech instanceof AngularMechanism3D) {
+                return (AngularMechanism3D) mech;
             }
         }
-        throw new IllegalArgumentException("No LinearMechanism3D with name '"+name+"' is on this Robot3D!");
+        throw new IllegalArgumentException("No LinearMechanism3D with name '" + name + "' is on this Robot3D!");
     }
 
     public static Robot3D getInstance() {
@@ -76,24 +75,24 @@ public class Robot3D {
         return mechPoses;
     }
 
-	@FunctionalInterface
-	public interface BuildScript {
-		public void build(Builder builder);
-	}
+    @FunctionalInterface
+    public interface BuildScript {
+        public void build(Builder builder);
+    }
 
-	public static class Builder {
-		private Robot3D instance;
+    public static class Builder {
+        private Robot3D instance;
 
-		Builder(Robot3D instance) {
-			this.instance = instance;
-		}
+        Builder(Robot3D instance) {
+            this.instance = instance;
+        }
 
-		public void addMechanism(Node3D node) {
-			instance.addMechanism(node, true);
-		}
+        public void addMechanism(Node3D node) {
+            instance.addMechanism(node, true);
+        }
 
-		public void addMechanism(Node3D node, boolean logged) {
-			instance.addMechanism(node, logged);
-		}
-	}
+        public void addMechanism(Node3D node, boolean logged) {
+            instance.addMechanism(node, logged);
+        }
+    }
 }

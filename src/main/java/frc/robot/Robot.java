@@ -1,19 +1,23 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import static frc.robot.BuildConstants.*;
 import static frc.robot.Constants.*;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.SimulationManager;
-import frc.robot.util.tuning.SimPoseTuner;
+import frc.robot.util.mechanism.AngularMechanism3D;
+import frc.robot.util.mechanism.LinearMechanism3D;
+import frc.robot.util.mechanism.Robot3D;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
@@ -23,7 +27,8 @@ public class Robot extends LoggedRobot {
     private Command autonomousCommand;
     private RobotContainer robotContainer;
 
-    private SimPoseTuner tuner;
+    private AngularMechanism3D spindexer, shooterBase, hood;
+    private LinearMechanism3D intake, climber;
 
     public Robot() {
         Logger.recordMetadata("ProjectName", MAVEN_NAME);
@@ -67,13 +72,25 @@ public class Robot extends LoggedRobot {
         // Initialize AdvantageKit Logger.
         Logger.start();
         robotContainer = new RobotContainer();
+
+		SmartDashboard.putNumber("IntakeInches", 0);
+		SmartDashboard.putNumber("ClimberInches", 0);
+		SmartDashboard.putNumber("ShooterBaseDeg", 0);
+		SmartDashboard.putNumber("HoodDeg", 0);
+		SmartDashboard.putNumber("SpindexerDeg", 0);
+
+        spindexer = Robot3D.getInstance().getAngularMechanism("Spindexer");
+        shooterBase = Robot3D.getInstance().getAngularMechanism("ShooterBase");
+        hood = Robot3D.getInstance().getAngularMechanism("Hood");
+
+        intake = Robot3D.getInstance().getLinearMechanism("Intake");
+        climber = Robot3D.getInstance().getLinearMechanism("Climber");
     }
 
     /** This function is called periodically during all modes. */
     @Override
     public void robotInit() {
         DriverStation.silenceJoystickConnectionWarning(true);
-        tuner = new SimPoseTuner("MechTuner", Pose3d.kZero);
     }
 
     /** This function is called periodically during all modes. */
@@ -87,12 +104,12 @@ public class Robot extends LoggedRobot {
 
         // Return to normal thread priority.
         Threads.setCurrentThreadPriority(false, 10);
-		Logger.recordOutput("ChassisPos", Pose3d.kZero);
-		Logger.recordOutput("IntakePos", Pose3d.kZero);
-		Logger.recordOutput("SpindexerPos", new Pose3d(0.034, 0, 0, Rotation3d.kZero));
-		Logger.recordOutput("ShooterBasePos", new Pose3d(-0.144, 0, 0, Rotation3d.kZero));
-		Logger.recordOutput("HoodPos", new Pose3d(-0.025, 0, 0.47, new Rotation3d(0, 0.25, 0)));
-		Logger.recordOutput("ClimberPos", Pose3d.kZero);
+
+        spindexer.setAngle(Degrees.of(SmartDashboard.getNumber("SpindexerDeg", 0)));
+        shooterBase.setAngle(Degrees.of(SmartDashboard.getNumber("ShooterBaseDeg", 0)));
+        hood.setAngle(Degrees.of(SmartDashboard.getNumber("HoodDeg", 0)));
+        intake.setDistance(Inches.of(SmartDashboard.getNumber("IntakeInches", 0)));
+        climber.setDistance(Inches.of(SmartDashboard.getNumber("ClimberInches", 0)));
     }
 
     /** This function is called once when the robot is disabled. */
