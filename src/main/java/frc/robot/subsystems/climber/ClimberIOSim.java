@@ -14,10 +14,8 @@ public class ClimberIOSim extends ClimberIOReal implements IPhysicsSim {
     private final SparkMaxSim motorSim;
     private final EncoderSim encoderSim;
 
-    private final DCMotor gearbox;
-
     public ClimberIOSim() {
-        gearbox = DCMotor.getNEO(1);
+        DCMotor gearbox = DCMotor.getNEO(1);
 
         motorSim = new SparkMaxSim(motor, gearbox);
         encoderSim = new EncoderSim(encoder);
@@ -25,12 +23,10 @@ public class ClimberIOSim extends ClimberIOReal implements IPhysicsSim {
         SimulationManager.getInstance().addSimulatable(this);
     }
 
-    public void updateInputs(ClimberInputs inputs) {
-        super.updateInputs(inputs);
-    }
-
     @Override
-    public void updatePlantSim() {}
+    public void updatePlantSim() {
+        // TODO: Implement.
+    }
 
     @Override
     public void updatePowerSim() {

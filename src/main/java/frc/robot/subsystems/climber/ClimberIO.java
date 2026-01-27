@@ -10,8 +10,6 @@ public interface ClimberIO {
     @AutoLog
     public static class ClimberInputs {
         public Distance distance = Inches.zero();
-        public Distance targetDistance = Inches.zero();
-        public boolean atDistance = false;
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();
@@ -20,11 +18,8 @@ public interface ClimberIO {
     /** Fetches updates from sensors through the IO interface. */
     public default void updateInputs(ClimberInputs inputs) {}
 
-    /** Applies the feedback control loop mechanism. */
-    public default void updateControl() {}
-
-    /** Sets the distance for the climber. */
-    public default void setDistance(Distance distance) {}
+    /** Sets the voltage for the climber. */
+    public default void setVoltage(Voltage volts) {}
 
     /** Stops the climber motor. */
     public default void stop() {}
