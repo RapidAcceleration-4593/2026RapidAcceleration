@@ -13,6 +13,7 @@ import frc.robot.factory.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import frc.robot.subsystems.vision.objectdetection.ObjectDetectionSubsystem;
+import frc.robot.util.mechanism.Robot3D;
 
 public class RobotContainer {
 
@@ -32,6 +33,7 @@ public class RobotContainer {
 
         registerCommands();
         configureBindings();
+		setupRobot3D();
     }
 
     private void configureBindings() {
@@ -46,6 +48,10 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand("ExampleCommand", Commands.none());
     }
+
+	private void setupRobot3D() {
+		Robot3D.getInstance().configure((builder) -> {});
+	}
 
     /** Select the command to run in autonomous mode. */
     public Command getAutonomousCommand() {

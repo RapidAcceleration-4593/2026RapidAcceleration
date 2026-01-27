@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.units.measure.Angle;
 
-public class AngularMechanism3D extends Node3D {
+public class AngularMechanism3D extends Mechanism3D {
 	private Axis axis;
 
 	public AngularMechanism3D(String name, Pose3d offset, Axis axis) {
@@ -14,7 +14,7 @@ public class AngularMechanism3D extends Node3D {
 		this.axis = axis;
 	}
 
-	public AngularMechanism3D(String name, Pose3d offset, Node3D parent, Axis axis) {
+	public AngularMechanism3D(String name, Pose3d offset, Mechanism3D parent, Axis axis) {
 		super(name, offset, parent);
 		this.axis = axis;
 	}

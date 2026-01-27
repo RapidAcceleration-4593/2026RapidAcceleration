@@ -6,27 +6,28 @@ import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.AutoLogOutputManager;
-import org.littletonrobotics.junction.Logger;
 
 public class Robot3D {
     private static Robot3D instance;
-    private Pose3d robot = Pose3d.kZero;
     private List<Node3D> mechanisms = new ArrayList<Node3D>();
     private List<Node3D> rootMechanisms = new ArrayList<Node3D>();
     private List<Node3D> loggedMechanisms = new ArrayList<Node3D>();
 
     private Robot3D() {
         AutoLogOutputManager.addObject(this);
-        createMechanisms();
     }
 
-    private void createMechanisms() {
+	public void configure(BuildScript script) {
+		clearConfiguration();
+		Builder b = new Builder(this);
+		script.build(b);
+	}
 
-    }
-
-    private void addMechanism(Node3D mechanism) {
-        addMechanism(mechanism, true);
-    }
+	private void clearConfiguration() {
+		mechanisms.clear();
+		rootMechanisms.clear();
+		loggedMechanisms.clear();
+	}
 
     private void addMechanism(Node3D mechanism, boolean logged) {
         mechanisms.add(mechanism);
@@ -74,4 +75,25 @@ public class Robot3D {
         }
         return mechPoses;
     }
+
+	@FunctionalInterface
+	public interface BuildScript {
+		public void build(Builder builder);
+	}
+
+	public static class Builder {
+		private Robot3D instance;
+
+		Builder(Robot3D instance) {
+			this.instance = instance;
+		}
+
+		public void addMechanism(Node3D node) {
+			instance.addMechanism(node, true);
+		}
+
+		public void addMechanism(Node3D node, boolean logged) {
+			instance.addMechanism(node, logged);
+		}
+	}
 }

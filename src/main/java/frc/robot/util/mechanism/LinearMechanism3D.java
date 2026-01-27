@@ -6,14 +6,14 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.units.measure.Distance;
 
-public class LinearMechanism3D extends Node3D {
+public class LinearMechanism3D extends Mechanism3D {
 	private Axis axis;
 
 	public LinearMechanism3D(String name, Pose3d offset, Axis axis) {
 		super(name, offset);
 	}
 
-	public LinearMechanism3D(String name, Pose3d offset, Node3D parent, Axis axis) {
+	public LinearMechanism3D(String name, Pose3d offset, Mechanism3D parent, Axis axis) {
 		super(name, offset, parent);
 	}
 
