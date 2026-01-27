@@ -5,27 +5,27 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Example-1"
+            "name": "ShootCommand"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ExampleCommand"
+            "waitTime": 3.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Example-2"
+            "pathName": "RightClimb-1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ClimbCommand"
           }
         }
       ]

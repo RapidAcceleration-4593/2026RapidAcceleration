@@ -55,6 +55,6 @@ public class RobotContainer {
 
     /** Select the command to run in autonomous mode. */
     public Command getAutonomousCommand() {
-        return AutoBuilder.buildAuto("Example");
+        return AutoBuilder.buildAuto("DoNothing");
     }
 }
