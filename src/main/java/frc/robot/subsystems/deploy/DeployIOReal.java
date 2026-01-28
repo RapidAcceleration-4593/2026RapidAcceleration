@@ -27,7 +27,7 @@ public class DeployIOReal implements DeployIO {
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         encoder = new Encoder(kEncoderChannelA, kEncoderChannelB);
-        encoder.setDistancePerPulse(kDistancePerPulse);
+        encoder.setDistancePerPulse(kInchesPerPulse);
 
         limitswitch = new DigitalInput(kLimitSwitchChannel);
     }
