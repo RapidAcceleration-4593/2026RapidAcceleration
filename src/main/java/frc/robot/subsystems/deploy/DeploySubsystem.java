@@ -24,7 +24,6 @@ public class DeploySubsystem extends SubsystemBase {
     private final LoggedMechanismLigament2d deploy;
 
     private final PIDController controller;
-    private Distance targetDistance = kMinimumDistance;
 
     public DeploySubsystem(DeployIO io) {
         this.io = io;
@@ -47,20 +46,25 @@ public class DeploySubsystem extends SubsystemBase {
         Logger.recordOutput("Mechanisms/Deploy", mechanism);
     }
 
-    public Command updateControl() {
-        return run(() -> {
-            targetDistance = Inches.of(MathUtil.clamp(
-                    targetDistance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches)));
+    public Command goToDistanceCommand(Distance distance) {
+        return runOnce(() -> controller.setSetpoint(
+                        MathUtil.clamp(distance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches))))
+                .andThen(run(() -> {
+                    double output = controller.calculate(inputs.distance.in(Inches));
+                    output = MathUtil.clamp(output, -12.0, 12.0);
 
-            double output = controller.calculate(inputs.distance.in(Inches), targetDistance.in(Inches));
-            output = MathUtil.clamp(output, -12.0, 12.0);
-
-            io.setVoltage(Volts.of(output));
-        });
+                    io.setVoltage(Volts.of(output));
+                }))
+                .until(() -> shouldStopDriving())
+                .finallyDo(() -> {
+					stop();
+				controller.setSetpoint(inputs.distance.in(Inches));});
     }
 
-    public Command setTargetDistance(Distance distance) {
-        return runOnce(() -> targetDistance = distance);
+    private boolean shouldStopDriving() {
+        // Should stop if driving backward into the limit switch
+        if (inputs.limitswitch && controller.getSetpoint() < inputs.distance.in(Inches)) return true;
+        return controller.atSetpoint();
     }
 
     public Distance getCurrentDistance() {
@@ -69,7 +73,7 @@ public class DeploySubsystem extends SubsystemBase {
 
     @AutoLogOutput(key = "Deploy/TargetDistance")
     public Distance getTargetDistance() {
-        return targetDistance;
+        return Inches.of(controller.getSetpoint());
     }
 
     @AutoLogOutput(key = "Deploy/AtTargetDistance")
@@ -77,10 +81,12 @@ public class DeploySubsystem extends SubsystemBase {
         return controller.atSetpoint();
     }
 
-    public Command stop() {
-        return runOnce(() -> {
-            controller.reset();
-            io.stop();
-        });
+    public Command stopCommand() {
+        return runOnce(this::stop);
     }
+
+	private void stop() {
+		controller.reset();
+		io.stop();
+	}
 }

@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
 import static frc.robot.Constants.Controllers.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -44,7 +45,6 @@ public class RobotContainer {
         swerve.setDefaultCommand(new SwerveCommands()
                 .joystickDrive(
                         swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
-        deploy.setDefaultCommand(deploy.updateControl());
 
         driverController
                 .rightBumper()
@@ -53,6 +53,7 @@ public class RobotContainer {
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
         driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
+        driverController.rightTrigger().whileTrue(deploy.goToDistanceCommand(Inches.of(10)));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */
