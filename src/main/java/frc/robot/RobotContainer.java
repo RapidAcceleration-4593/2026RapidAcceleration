@@ -17,6 +17,7 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import frc.robot.subsystems.vision.objectdetection.ObjectDetectionSubsystem;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
 
@@ -24,23 +25,29 @@ public class RobotContainer {
     public final SwerveSubsystem swerve;
     public final AprilTagSubsystem apriltag;
     public final ObjectDetectionSubsystem objectDetection;
-
     public final ShooterSubsystem shooter;
     public final HoodSubsystem hood;
     public final IndexerSubsystem indexer;
 
     // Controller(s)
-    private final CommandXboxController driverController = new CommandXboxController(kDriverControllerPort);
-    private final CommandXboxController operatorController = new CommandXboxController(kOperatorControllerPort);
+    private final CommandXboxController driverController;
+    private final CommandXboxController operatorController;
+
+    // Autonomous Chooser
+    private final LoggedDashboardChooser<Command> autonomousChooser;
 
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
         apriltag = AprilTagFactory.initialize(swerve);
         objectDetection = ObjectDetectionFactory.initialize();
-
         shooter = ShooterFactory.initialize();
         hood = HoodFactory.initialize(swerve);
         indexer = IndexerFactory.initialize();
+
+        driverController = new CommandXboxController(kDriverControllerPort);
+        operatorController = new CommandXboxController(kOperatorControllerPort);
+
+        autonomousChooser = new LoggedDashboardChooser<>("Autonomous Routine", AutoBuilder.buildAutoChooser());
 
         registerCommands();
         configureBindings();
@@ -70,6 +77,6 @@ public class RobotContainer {
 
     /** Select the command to run in autonomous mode. */
     public Command getAutonomousCommand() {
-        return AutoBuilder.buildAuto("Example");
+        return autonomousChooser.get();
     }
 }
