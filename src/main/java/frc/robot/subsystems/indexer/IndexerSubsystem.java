@@ -1,7 +1,6 @@
 package frc.robot.subsystems.indexer;
 
-import static frc.robot.subsystems.indexer.IndexerConstants.kFeederVolts;
-import static frc.robot.subsystems.indexer.IndexerConstants.kSpindexerVolts;
+import static frc.robot.subsystems.indexer.IndexerConstants.*;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;

@@ -25,8 +25,7 @@ public class ShooterIOSim extends ShooterIOReal implements IPhysicsSim {
         motorSim = new SparkMaxSim(motor, gearbox);
         encoderSim = motorSim.getRelativeEncoderSim();
         flywheelSim = new FlywheelSim(
-                LinearSystemId.createFlywheelSystem(
-                        gearbox, kShooterWheelMOI.in(KilogramSquareMeters), kShooterWheelGearing),
+                LinearSystemId.createFlywheelSystem(gearbox, kShooterMOI.in(KilogramSquareMeters), kShooterGearing),
                 gearbox);
 
         SimulationManager.getInstance().addSimulatable(this);

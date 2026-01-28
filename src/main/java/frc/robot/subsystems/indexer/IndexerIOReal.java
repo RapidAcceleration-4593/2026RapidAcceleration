@@ -18,7 +18,7 @@ public class IndexerIOReal implements IndexerIO {
     protected final SparkMax feederMotor;
 
     public IndexerIOReal() {
-        SparkBaseConfig config = new SparkMaxConfig().idleMode(IdleMode.kBrake).inverted(false);
+        SparkBaseConfig config = new SparkMaxConfig().idleMode(IdleMode.kCoast).inverted(false);
 
         spindexerMotor = new SparkMax(kSpindexerMotorID, MotorType.kBrushless);
         spindexerMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

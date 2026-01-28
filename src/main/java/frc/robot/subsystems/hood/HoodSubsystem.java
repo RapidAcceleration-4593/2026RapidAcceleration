@@ -1,9 +1,8 @@
 package frc.robot.subsystems.hood;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.*;
+import static frc.robot.Constants.Field.*;
 import static frc.robot.subsystems.hood.HoodConstants.*;
-import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -13,7 +12,9 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -45,6 +46,12 @@ public class HoodSubsystem extends SubsystemBase {
 
         controller = new PIDController(kP, kI, kD);
         controller.setTolerance(kAngleTolerance.in(Degrees));
+
+        Trigger lsTrigger = new Trigger(() -> inputs.limitswitch);
+        lsTrigger.onTrue(Commands.runOnce(() -> {
+            controller.reset();
+            // TODO: Reset encoder.
+        }));
     }
 
     @Override

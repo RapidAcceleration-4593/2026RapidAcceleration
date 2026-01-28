@@ -2,7 +2,6 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
-import static frc.robot.util.ExtraUnits.*;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
@@ -34,9 +33,7 @@ public class ShooterIOReal implements ShooterIO {
                 .apply(new ClosedLoopConfig()
                         .pid(kP, kI, kD)
                         .apply(new FeedForwardConfig().kS(kS).kV(kV).kA(kA))
-                        .apply(new MAXMotionConfig()
-                                .maxAcceleration(kMaxAcceleration.in(RPMPerSecond))
-                                .allowedProfileError(kVelocityTolerance.in(RPM))));
+                        .apply(new MAXMotionConfig()));
 
         motor = new SparkMax(kShooterMotorID, MotorType.kBrushless);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -49,7 +46,8 @@ public class ShooterIOReal implements ShooterIO {
     public void updateInputs(ShooterInputs inputs) {
         inputs.velocity = RPM.of(encoder.getVelocity());
         inputs.targetVelocity = targetVelocity;
-        inputs.atTargetVelocity = controller.isAtSetpoint();
+        inputs.atTargetVelocity =
+                Math.abs(targetVelocity.in(RPM) - encoder.getVelocity()) <= kVelocityTolerance.in(RPM);
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
