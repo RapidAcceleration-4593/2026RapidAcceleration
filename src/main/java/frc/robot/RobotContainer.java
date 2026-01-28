@@ -13,6 +13,7 @@ import frc.robot.factory.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import frc.robot.subsystems.vision.objectdetection.ObjectDetectionSubsystem;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
 
@@ -22,13 +23,21 @@ public class RobotContainer {
     public final ObjectDetectionSubsystem objectDetection;
 
     // Controller(s)
-    private final CommandXboxController driverController = new CommandXboxController(kDriverControllerPort);
-    private final CommandXboxController operatorController = new CommandXboxController(kOperatorControllerPort);
+    private final CommandXboxController driverController;
+    private final CommandXboxController operatorController;
+
+    // Autonomous Chooser
+    private final LoggedDashboardChooser<Command> autonomousChooser;
 
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
         apriltag = AprilTagFactory.initialize(swerve);
         objectDetection = ObjectDetectionFactory.initialize();
+
+        driverController = new CommandXboxController(kDriverControllerPort);
+        operatorController = new CommandXboxController(kOperatorControllerPort);
+
+        autonomousChooser = new LoggedDashboardChooser<>("Autonomous Routine", AutoBuilder.buildAutoChooser());
 
         registerCommands();
         configureBindings();
@@ -55,6 +64,6 @@ public class RobotContainer {
 
     /** Select the command to run in autonomous mode. */
     public Command getAutonomousCommand() {
-        return AutoBuilder.buildAuto("DoNothing");
+        return autonomousChooser.get();
     }
 }
