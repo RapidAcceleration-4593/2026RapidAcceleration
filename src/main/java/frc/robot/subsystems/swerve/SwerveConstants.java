@@ -36,7 +36,7 @@ public final class SwerveConstants {
     public static final AngularAcceleration kAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
 
     /** CANBus/CANivore that all modules are connected to. */
-    public static final CANBus kCANBus = new CANBus("drivebase", "./logs/example.hoot");
+    public static final CANBus kCANBus = new CANBus("drivebase");
 
     /** Configs for the Pigeon 2; leave null to skip applying Pigeon 2 configs. */
     private static final Pigeon2Configuration kPigeonConfigs = null;

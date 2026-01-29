@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
 import static frc.robot.Constants.Controllers.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -11,8 +12,10 @@ import frc.robot.commands.shooter.ShootCommand;
 import frc.robot.commands.swerve.DriveToClusterCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
+import frc.robot.subsystems.deploy.DeploySubsystem;
 import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
@@ -28,6 +31,8 @@ public class RobotContainer {
     public final ShooterSubsystem shooter;
     public final HoodSubsystem hood;
     public final IndexerSubsystem indexer;
+    public final IntakeSubsystem intake;
+    public final DeploySubsystem deploy;
 
     // Controller(s)
     private final CommandXboxController driverController;
@@ -43,6 +48,8 @@ public class RobotContainer {
         shooter = ShooterFactory.initialize();
         hood = HoodFactory.initialize(swerve);
         indexer = IndexerFactory.initialize();
+        intake = IntakeFactory.initialize();
+        deploy = DeployFactory.initialize();
 
         driverController = new CommandXboxController(kDriverControllerPort);
         operatorController = new CommandXboxController(kOperatorControllerPort);
@@ -65,6 +72,7 @@ public class RobotContainer {
 
         driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
         driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
+        driverController.rightTrigger().whileTrue(deploy.goToDistanceCommand(Inches.of(10)));
 
         operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
     }
