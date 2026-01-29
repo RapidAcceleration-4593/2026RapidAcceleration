@@ -38,7 +38,7 @@ public class ClimberIOReal implements ClimberIO {
 
     @Override
     public void setVoltage(Voltage volts) {
-        motor.setVoltage(null);
+        motor.setVoltage(volts);
     }
 
     @Override

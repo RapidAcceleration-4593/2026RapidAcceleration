@@ -23,7 +23,7 @@ public class ClimberSubsystem extends SubsystemBase {
     private final LoggedMechanismLigament2d climber;
 
     private final PIDController controller;
-    private Distance targetDistance = kMinimunDistance;
+    private Distance targetDistance = kMinimumDistance;
 
     public ClimberSubsystem(ClimberIO io) {
         this.io = io;
@@ -49,7 +49,7 @@ public class ClimberSubsystem extends SubsystemBase {
     public Command updateControl() {
         return run(() -> {
             targetDistance = Inches.of(MathUtil.clamp(
-                    targetDistance.in(Inches), kMinimunDistance.in(Inches), kMaximumDistance.in(Inches)));
+                    targetDistance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches)));
 
             double output = controller.calculate(inputs.distance.in(Inches), targetDistance.in(Inches));
             output = MathUtil.clamp(output, -12.0, 12.0);

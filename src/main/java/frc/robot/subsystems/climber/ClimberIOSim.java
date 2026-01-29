@@ -1,9 +1,16 @@
 package frc.robot.subsystems.climber;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.climber.ClimberConstants.kCarriageMass;
+import static frc.robot.subsystems.climber.ClimberConstants.kDrumRadius;
+import static frc.robot.subsystems.climber.ClimberConstants.kMaximumDistance;
+import static frc.robot.subsystems.climber.ClimberConstants.kMinimumDistance;
+import static frc.robot.subsystems.climber.ClimberConstants.kMotorToClimberGearing;
 
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import frc.robot.util.IPhysicsSim;
 import frc.robot.util.PowerSim;
@@ -11,11 +18,23 @@ import frc.robot.util.SimulationManager;
 
 public class ClimberIOSim extends ClimberIOReal implements IPhysicsSim {
 
+    private final ElevatorSim climberSim;
+
     private final SparkMaxSim motorSim;
     private final EncoderSim encoderSim;
 
     public ClimberIOSim() {
         DCMotor gearbox = DCMotor.getNEO(1);
+
+        climberSim = new ElevatorSim(
+                gearbox,
+                kMotorToClimberGearing,
+                kCarriageMass.in(Kilograms),
+                kDrumRadius.in(Meters),
+                kMinimumDistance.in(Meters),
+                kMaximumDistance.in(Meters),
+                true,
+                kMinimumDistance.in(Meters));
 
         motorSim = new SparkMaxSim(motor, gearbox);
         encoderSim = new EncoderSim(encoder);
@@ -25,17 +44,20 @@ public class ClimberIOSim extends ClimberIOReal implements IPhysicsSim {
 
     @Override
     public void updatePlantSim() {
-        // TODO: Implement.
+        climberSim.setInput(motor.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts));
+        climberSim.update(0.2);
     }
 
     @Override
     public void updatePowerSim() {
-        PowerSim.addCurrentDraw(Amps.zero());
+        PowerSim.addCurrentDraw(Amps.of(climberSim.getCurrentDrawAmps()));
     }
 
     @Override
     public void updateIOSim() {
-        motorSim.iterate(0.0, PowerSim.getRailVoltage().in(Volts), 0.02);
-        encoderSim.setDistance(0.0);
+        var drumRadPS = climberSim.getVelocityMetersPerSecond() / kDrumRadius.in(Meters);
+        AngularVelocity motorAngularVelocity = RadiansPerSecond.of(drumRadPS * kMotorToClimberGearing);
+        motorSim.iterate(motorAngularVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
+        encoderSim.setDistance(climberSim.getPositionMeters());
     }
 }
