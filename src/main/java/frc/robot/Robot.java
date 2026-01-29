@@ -17,7 +17,6 @@ import frc.robot.util.mechanism.Robot3D;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
@@ -73,11 +72,11 @@ public class Robot extends LoggedRobot {
         Logger.start();
         robotContainer = new RobotContainer();
 
-		SmartDashboard.putNumber("IntakeInches", 0);
-		SmartDashboard.putNumber("ClimberInches", 0);
-		SmartDashboard.putNumber("ShooterBaseDeg", 0);
-		SmartDashboard.putNumber("HoodDeg", 0);
-		SmartDashboard.putNumber("SpindexerDeg", 0);
+        SmartDashboard.putNumber("IntakeInches", 0);
+        SmartDashboard.putNumber("ClimberInches", 0);
+        SmartDashboard.putNumber("ShooterBaseDeg", 0);
+        SmartDashboard.putNumber("HoodDeg", 0);
+        SmartDashboard.putNumber("SpindexerDeg", 0);
 
         spindexer = Robot3D.getInstance().getAngularMechanism("Spindexer");
         shooterBase = Robot3D.getInstance().getAngularMechanism("ShooterBase");

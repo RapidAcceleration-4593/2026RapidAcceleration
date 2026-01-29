@@ -5,33 +5,27 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Example-1"
+            "name": "ShootCommand"
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 1.5
+            "pathName": "RightClimb-1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ExampleCommand"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Example-2"
+            "name": "ClimbCommand"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Right",
   "choreoAuto": false
 }
