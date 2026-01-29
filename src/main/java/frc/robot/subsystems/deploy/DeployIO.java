@@ -12,7 +12,8 @@ public interface DeployIO {
     @AutoLog
     public static class DeployInputs {
         public Distance distance = Inches.zero();
-        public boolean limitswitch = false;
+        public boolean inLimitSwitch = false;
+        public boolean outLimitSwitch = false;
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();
@@ -26,4 +27,7 @@ public interface DeployIO {
 
     /** Stops the deployment motor immediately. */
     public default void stop() {}
+
+    /** Resets the deploy encoder to zero position. */
+    public default void resetEncoder() {}
 }

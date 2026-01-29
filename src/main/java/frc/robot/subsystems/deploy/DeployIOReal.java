@@ -18,7 +18,8 @@ public class DeployIOReal implements DeployIO {
 
     protected final SparkMax motor;
     protected final Encoder encoder;
-    protected final DigitalInput limitswitch;
+    protected final DigitalInput inLimitSwitch;
+    protected final DigitalInput outLimitSwitch;
 
     public DeployIOReal() {
         SparkBaseConfig config = new SparkMaxConfig().idleMode(IdleMode.kCoast);
@@ -29,13 +30,15 @@ public class DeployIOReal implements DeployIO {
         encoder = new Encoder(kEncoderChannelA, kEncoderChannelB);
         encoder.setDistancePerPulse(kInchesPerPulse);
 
-        limitswitch = new DigitalInput(kLimitSwitchChannel);
+        inLimitSwitch = new DigitalInput(kInLimitSwitchChannel);
+        outLimitSwitch = new DigitalInput(kOutLimitSwitchChannel);
     }
 
     @Override
     public void updateInputs(DeployInputs inputs) {
         inputs.distance = Inches.of(encoder.getDistance());
-        inputs.limitswitch = limitswitch.get();
+        inputs.inLimitSwitch = inLimitSwitch.get();
+        inputs.outLimitSwitch = outLimitSwitch.get();
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());

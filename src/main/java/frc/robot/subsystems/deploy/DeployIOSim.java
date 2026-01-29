@@ -18,7 +18,8 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
     private final ElevatorSim deploySim;
     private final SparkMaxSim motorSim;
     private final EncoderSim encoderSim;
-    private final DIOSim lsSim;
+    private final DIOSim inLimitSwitchSim;
+    private final DIOSim outLimitSwitchSim;
 
     public DeployIOSim() {
         DCMotor gearbox = DCMotor.getNeo550(2);
@@ -35,7 +36,8 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
 
         motorSim = new SparkMaxSim(motor, gearbox);
         encoderSim = new EncoderSim(encoder);
-        lsSim = new DIOSim(limitswitch);
+        inLimitSwitchSim = new DIOSim(inLimitSwitch);
+        outLimitSwitchSim = new DIOSim(outLimitSwitch);
 
         SimulationManager.getInstance().addSimulatable(this);
     }
@@ -59,6 +61,7 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
         AngularVelocity motorAngularVelocity = RadiansPerSecond.of(drumRadPS * kMotorToDeployGearing);
         motorSim.iterate(motorAngularVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
         encoderSim.setDistance(deploySim.getPositionMeters());
-        lsSim.setValue(deploySim.hasHitLowerLimit());
+        inLimitSwitchSim.setValue(deploySim.hasHitLowerLimit());
+        outLimitSwitchSim.setValue(deploySim.hasHitUpperLimit());
     }
 }

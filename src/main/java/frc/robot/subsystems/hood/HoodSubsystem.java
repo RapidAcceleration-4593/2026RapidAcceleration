@@ -49,6 +49,7 @@ public class HoodSubsystem extends SubsystemBase {
         Trigger lsTrigger = new Trigger(() -> inputs.limitswitch);
         lsTrigger.onTrue(Commands.runOnce(() -> {
             controller.reset();
+            controller.setSetpoint(kMinimumAngle.in(Degrees));
             io.resetEncoder();
         }));
     }

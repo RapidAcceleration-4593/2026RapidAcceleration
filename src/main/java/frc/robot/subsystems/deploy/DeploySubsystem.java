@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
@@ -35,6 +36,19 @@ public class DeploySubsystem extends SubsystemBase {
 
         controller = new PIDController(kP, kI, kD);
         controller.setTolerance(kDistanceTolerance.in(Inches));
+
+        Trigger inLimitSwitchTrigger = new Trigger(() -> inputs.inLimitSwitch);
+        inLimitSwitchTrigger.onTrue(runOnce(() -> {
+            controller.reset();
+            controller.setSetpoint(kMinimumDistance.in(Inches));
+            io.resetEncoder();
+        }));
+
+        Trigger outLimitSwitchTrigger = new Trigger(() -> inputs.outLimitSwitch);
+        outLimitSwitchTrigger.onTrue(runOnce(() -> {
+            controller.reset();
+            controller.setSetpoint(kMaximumDistance.in(Inches));
+        }));
     }
 
     @Override
@@ -63,8 +77,7 @@ public class DeploySubsystem extends SubsystemBase {
     }
 
     private boolean shouldStopDriving() {
-        // Should stop if driving backward into the limit switch
-        if (inputs.limitswitch && controller.getSetpoint() < inputs.distance.in(Inches)) return true;
+        if (inputs.inLimitSwitch || inputs.outLimitSwitch) return true;
         return controller.atSetpoint();
     }
 

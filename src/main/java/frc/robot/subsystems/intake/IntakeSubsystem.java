@@ -22,11 +22,11 @@ public class IntakeSubsystem extends SubsystemBase {
         Logger.processInputs("Intake", inputs);
     }
 
-    public Command run() {
+    public Command runCommand() {
         return runOnce(() -> io.setVoltage(kIntakeVolts));
     }
 
-    public Command stop() {
+    public Command stopCommand() {
         return runOnce(io::stop);
     }
 }
