@@ -57,8 +57,9 @@ public class DeploySubsystem extends SubsystemBase {
                 }))
                 .until(() -> shouldStopDriving())
                 .finallyDo(() -> {
-					stop();
-				controller.setSetpoint(inputs.distance.in(Inches));});
+                    stop();
+                    controller.setSetpoint(inputs.distance.in(Inches));
+                });
     }
 
     private boolean shouldStopDriving() {
@@ -85,8 +86,8 @@ public class DeploySubsystem extends SubsystemBase {
         return runOnce(this::stop);
     }
 
-	private void stop() {
-		controller.reset();
-		io.stop();
-	}
+    private void stop() {
+        controller.reset();
+        io.stop();
+    }
 }
