@@ -33,7 +33,6 @@ public class HoodSubsystem extends SubsystemBase {
     private final LoggedMechanismLigament2d hood;
 
     private final PIDController controller;
-    private Angle targetAngle = kMinimumAngle;
 
     public HoodSubsystem(HoodIO io, Supplier<Pose2d> poseSupplier) {
         this.io = io;
@@ -50,7 +49,7 @@ public class HoodSubsystem extends SubsystemBase {
         Trigger lsTrigger = new Trigger(() -> inputs.limitswitch);
         lsTrigger.onTrue(Commands.runOnce(() -> {
             controller.reset();
-            // TODO: Reset encoder.
+            io.resetEncoder();
         }));
     }
 
@@ -63,20 +62,25 @@ public class HoodSubsystem extends SubsystemBase {
         Logger.recordOutput("Mechanisms/Hood", mechanism);
     }
 
-    public Command updateControl() {
-        return run(() -> {
-            targetAngle = Degrees.of(
-                    MathUtil.clamp(targetAngle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
+    public Command goToAngleCommand(Angle angle) {
+        return runOnce(() -> controller.setSetpoint(
+                        MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees))))
+                .andThen(run(() -> {
+                    double output = controller.calculate(inputs.angle.in(Degrees));
+                    output = MathUtil.clamp(output, -12.0, 12.0);
 
-            double output = controller.calculate(inputs.angle.in(Degrees), targetAngle.in(Degrees));
-            output = MathUtil.clamp(output, -12.0, 12.0);
-
-            io.setVoltage(Volts.of(output));
-        });
+                    io.setVoltage(Volts.of(output));
+                }))
+                .until(this::shouldStop)
+                .finallyDo(() -> {
+                    stop();
+                    controller.setSetpoint(inputs.angle.in(Degrees));
+                });
     }
 
-    public Command setTargetAngle(Angle angle) {
-        return runOnce(() -> targetAngle = angle);
+    private boolean shouldStop() {
+        if (inputs.limitswitch && controller.getSetpoint() < inputs.angle.in(Degrees)) return true;
+        return controller.atSetpoint();
     }
 
     public Angle getCurrentAngle() {
@@ -85,7 +89,7 @@ public class HoodSubsystem extends SubsystemBase {
 
     @AutoLogOutput(key = "Hood/TargetAngle")
     public Angle getTargetAngle() {
-        return targetAngle;
+        return Degrees.of(controller.getSetpoint());
     }
 
     @AutoLogOutput(key = "Hood/AtTargetAngle")
@@ -93,15 +97,17 @@ public class HoodSubsystem extends SubsystemBase {
         return controller.atSetpoint();
     }
 
-    public Command stop() {
-        return runOnce(() -> {
-            controller.reset();
-            io.stop();
-        });
+    public Command stopCommand() {
+        return runOnce(this::stop);
+    }
+
+    private void stop() {
+        controller.reset();
+        io.stop();
     }
 
     public Command setAngleToHubCommand() {
-        return run(() -> setTargetAngle(calculateHubAngle()));
+        return goToAngleCommand(calculateHubAngle());
     }
 
     private Angle calculateHubAngle() {

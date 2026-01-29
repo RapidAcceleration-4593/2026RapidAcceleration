@@ -22,14 +22,14 @@ public class IndexerSubsystem extends SubsystemBase {
         Logger.processInputs("Indexer", inputs);
     }
 
-    public Command run() {
+    public Command runCommand() {
         return runOnce(() -> {
             io.setSpindexerVoltage(kSpindexerVolts);
             io.setFeederVoltage(kFeederVolts);
         });
     }
 
-    public Command stop() {
+    public Command stopCommand() {
         return runOnce(io::stop);
     }
 }

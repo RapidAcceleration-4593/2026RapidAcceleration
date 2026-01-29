@@ -26,4 +26,7 @@ public interface HoodIO {
 
     /** Stops the hood motor immediately. */
     public default void stop() {}
+
+    /** Resets the hood encoder to zero position. */
+    public default void resetEncoder() {}
 }

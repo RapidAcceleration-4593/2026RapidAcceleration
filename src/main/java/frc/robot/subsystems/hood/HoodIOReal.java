@@ -50,4 +50,9 @@ public class HoodIOReal implements HoodIO {
     public void stop() {
         motor.stopMotor();
     }
+
+    @Override
+    public void resetEncoder() {
+        encoder.reset();
+    }
 }

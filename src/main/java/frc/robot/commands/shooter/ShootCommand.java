@@ -22,24 +22,24 @@ public class ShootCommand extends Command {
 
     @Override
     public void initialize() {
-        shooter.setVelocity(ShooterConstants.kMaximumVelocity);
+        shooter.setVelocityCommand(ShooterConstants.kMaximumVelocity);
     }
 
     @Override
     public void execute() {
         hood.setAngleToHubCommand();
         if (shooter.atTargetVelocity() && hood.atTargetAngle()) {
-            indexer.run();
+            indexer.runCommand();
         } else {
-            indexer.stop();
+            indexer.stopCommand();
         }
     }
 
     @Override
     public void end(boolean interrputed) {
-        shooter.setVelocity(ShooterConstants.kZeroVelocity);
-        hood.setTargetAngle(HoodConstants.kMinimumAngle);
-        indexer.stop();
+        shooter.setVelocityCommand(ShooterConstants.kZeroVelocity);
+        hood.goToAngleCommand(HoodConstants.kMinimumAngle);
+        indexer.stopCommand();
     }
 
     @Override
