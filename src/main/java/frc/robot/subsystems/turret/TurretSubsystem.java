@@ -1,7 +1,7 @@
 package frc.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.*;
+import static frc.robot.Constants.Field.*;
 import static frc.robot.subsystems.turret.TurretConstants.*;
 
 import edu.wpi.first.math.MathUtil;
