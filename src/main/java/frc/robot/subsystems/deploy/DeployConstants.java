@@ -7,13 +7,13 @@ import edu.wpi.first.units.measure.Mass;
 
 public final class DeployConstants {
 
-    public static final int kDeployMotorID = 2;
+    public static final int kDeployMotorID = 6;
 
-    public static final int kEncoderChannelA = 0;
-    public static final int kEncoderChannelB = 1;
+    public static final int kEncoderChannelA = 3;
+    public static final int kEncoderChannelB = 4;
 
-    public static final int kInLimitSwitchChannel = 2;
-    public static final int kOutLimitSwitchChannel = 3;
+    public static final int kInLimitSwitchChannel = 5;
+    public static final int kOutLimitSwitchChannel = 6;
 
     public static final double kP = 0.1;
     public static final double kI = 0.0;
@@ -24,8 +24,8 @@ public final class DeployConstants {
     public static final double kEncoderToDeployGearing = 1.0;
     public static final double kMotorToDeployGearing = kMotorToEncoderGearing * kEncoderToDeployGearing;
 
-    public static final Distance kMinimumDistance = Inches.zero();
-    public static final Distance kMaximumDistance = Inches.of(11.2);
+    public static final Distance kRetractedDistance = Inches.zero();
+    public static final Distance kExtendedDistance = Inches.of(11.2);
     public static final Distance kDistanceTolerance = Inches.of(0.5);
 
     public static final Distance kDrumRadius = Inches.of(0.71);

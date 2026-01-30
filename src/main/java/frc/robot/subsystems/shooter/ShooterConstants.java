@@ -7,7 +7,7 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 
 public final class ShooterConstants {
 
-    public static final int kShooterMotorID = 3;
+    public static final int kShooterMotorID = 1;
 
     public static final double kP = 0.0;
     public static final double kI = 0.0;

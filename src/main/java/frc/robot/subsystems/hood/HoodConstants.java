@@ -10,7 +10,7 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 
 public final class HoodConstants {
 
-    public static final int kHoodMotorID = 4;
+    public static final int kHoodMotorID = 2;
 
     public static final int kHoodEncoderChannelA = 0;
     public static final int kHoodEncoderChannelB = 1;

@@ -295,8 +295,8 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
     }
 
     /** Resets the gyro angle to zero. */
-    public void resetGyro() {
-        gyroIO.resetGyro();
+    public Command resetGyroCommand() {
+        return runOnce(gyroIO::resetGyro);
     }
 
     /** Adds a new timestamped vision measurement. */

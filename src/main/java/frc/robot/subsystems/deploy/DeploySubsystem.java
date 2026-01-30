@@ -40,14 +40,14 @@ public class DeploySubsystem extends SubsystemBase {
         Trigger inLimitSwitchTrigger = new Trigger(() -> inputs.inLimitSwitch);
         inLimitSwitchTrigger.onTrue(runOnce(() -> {
             controller.reset();
-            controller.setSetpoint(kMinimumDistance.in(Inches));
+            controller.setSetpoint(kRetractedDistance.in(Inches));
             io.resetEncoder();
         }));
 
         Trigger outLimitSwitchTrigger = new Trigger(() -> inputs.outLimitSwitch);
         outLimitSwitchTrigger.onTrue(runOnce(() -> {
             controller.reset();
-            controller.setSetpoint(kMaximumDistance.in(Inches));
+            controller.setSetpoint(kExtendedDistance.in(Inches));
         }));
     }
 
@@ -61,8 +61,8 @@ public class DeploySubsystem extends SubsystemBase {
     }
 
     public Command goToDistanceCommand(Distance distance) {
-        return runOnce(() -> controller.setSetpoint(
-                        MathUtil.clamp(distance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches))))
+        return runOnce(() -> controller.setSetpoint(MathUtil.clamp(
+                        distance.in(Inches), kRetractedDistance.in(Inches), kExtendedDistance.in(Inches))))
                 .andThen(run(() -> {
                     double output = controller.calculate(inputs.distance.in(Inches));
                     output = MathUtil.clamp(output, -12.0, 12.0);

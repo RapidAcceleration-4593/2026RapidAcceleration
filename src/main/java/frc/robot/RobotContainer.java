@@ -1,14 +1,14 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Inches;
 import static frc.robot.Constants.Controllers.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.shooter.ShootCommand;
+import frc.robot.commands.ClimbCommand;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.commands.swerve.DriveToClusterCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
@@ -29,11 +29,14 @@ public class RobotContainer {
     public final SwerveSubsystem swerve;
     public final AprilTagSubsystem apriltag;
     public final ObjectDetectionSubsystem objectDetection;
+
     public final ShooterSubsystem shooter;
     public final HoodSubsystem hood;
     public final IndexerSubsystem indexer;
+
     public final IntakeSubsystem intake;
     public final DeploySubsystem deploy;
+
     public final ClimberSubsystem climber;
 
     // Controller(s)
@@ -47,11 +50,14 @@ public class RobotContainer {
         swerve = SwerveFactory.initialize();
         apriltag = AprilTagFactory.initialize(swerve);
         objectDetection = ObjectDetectionFactory.initialize();
+
         shooter = ShooterFactory.initialize();
         hood = HoodFactory.initialize(swerve);
         indexer = IndexerFactory.initialize();
+
         intake = IntakeFactory.initialize();
         deploy = DeployFactory.initialize();
+
         climber = ClimberFactory.initialize();
 
         driverController = new CommandXboxController(kDriverControllerPort);
@@ -73,17 +79,19 @@ public class RobotContainer {
                 .whileTrue(new SwerveCommands()
                         .joystickDrivePointToHub(swerve, driverController::getLeftY, driverController::getLeftX));
 
-        driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
+        driverController.start().onTrue(swerve.resetGyroCommand());
         driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
-        driverController.rightTrigger().whileTrue(deploy.goToDistanceCommand(Inches.of(10)));
 
         operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
-        operatorController.y().onTrue(climber.goToDistanceCommand(Inches.of(4)));
+        operatorController.leftTrigger(0.5).whileTrue(new IntakeCommand(intake, deploy));
+        operatorController.rightBumper().whileTrue(new ClimbCommand(climber, deploy));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */
     private void registerCommands() {
-        NamedCommands.registerCommand("ExampleCommand", Commands.none());
+        NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, hood, indexer).withTimeout(4.0));
+        NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy).withTimeout(3.0));
+        NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber, deploy));
     }
 
     /** Select the command to run in autonomous mode. */
