@@ -9,11 +9,11 @@ public final class DeployConstants {
 
     public static final int kDeployMotorID = 2;
 
-    public static final int kEncoderChannelA = 0;
-    public static final int kEncoderChannelB = 1;
+    public static final int kEncoderChannelA = 2;
+    public static final int kEncoderChannelB = 3;
 
-    public static final int kInLimitSwitchChannel = 2;
-    public static final int kOutLimitSwitchChannel = 3;
+    public static final int kInLimitSwitchChannel = 4;
+    public static final int kOutLimitSwitchChannel = 5;
 
     public static final double kP = 0.1;
     public static final double kI = 0.0;
