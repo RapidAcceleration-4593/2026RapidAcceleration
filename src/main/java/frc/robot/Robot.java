@@ -11,8 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.SimulationManager;
-import frc.robot.util.mechanism.AngularMechanism3D;
-import frc.robot.util.mechanism.LinearMechanism3D;
+import frc.robot.util.mechanism.MechanismLigament3D;
 import frc.robot.util.mechanism.Robot3D;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -24,10 +23,10 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
 
     private Command autonomousCommand;
+    private MechanismContainer mechanismContainer;
     private RobotContainer robotContainer;
 
-    private AngularMechanism3D spindexer, shooterBase, hood;
-    private LinearMechanism3D intake, climber;
+    private MechanismLigament3D spindexer, shooterBase, hood, intake, climber;
 
     public Robot() {
         Logger.recordMetadata("ProjectName", MAVEN_NAME);
@@ -70,6 +69,7 @@ public class Robot extends LoggedRobot {
 
         // Initialize AdvantageKit Logger.
         Logger.start();
+        mechanismContainer = new MechanismContainer();
         robotContainer = new RobotContainer();
 
         SmartDashboard.putNumber("IntakeInches", 0);
@@ -78,12 +78,12 @@ public class Robot extends LoggedRobot {
         SmartDashboard.putNumber("HoodDeg", 0);
         SmartDashboard.putNumber("SpindexerDeg", 0);
 
-        spindexer = Robot3D.getInstance().getAngularMechanism("Spindexer");
-        shooterBase = Robot3D.getInstance().getAngularMechanism("ShooterBase");
-        hood = Robot3D.getInstance().getAngularMechanism("Hood");
+        spindexer = Robot3D.getInstance().getMechanism("Spindexer");
+        shooterBase = Robot3D.getInstance().getMechanism("ShooterBase");
+        hood = Robot3D.getInstance().getMechanism("Hood");
 
-        intake = Robot3D.getInstance().getLinearMechanism("Intake");
-        climber = Robot3D.getInstance().getLinearMechanism("Climber");
+        intake = Robot3D.getInstance().getMechanism("Intake");
+        climber = Robot3D.getInstance().getMechanism("Climber");
     }
 
     /** This function is called periodically during all modes. */

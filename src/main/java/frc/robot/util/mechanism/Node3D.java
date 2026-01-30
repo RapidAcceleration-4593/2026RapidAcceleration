@@ -100,7 +100,14 @@ public class Node3D {
         }
     }
 
-    public void setMechanismPose(Pose3d pose) {
+    public void setRelativePose(Pose3d pose) {
         relativePose = pose;
+    }
+
+    public Node3D getRootNode() {
+        if (hasParent()) {
+            return parent.getRootNode();
+        }
+        return this;
     }
 }
