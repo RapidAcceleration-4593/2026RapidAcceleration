@@ -67,7 +67,6 @@ public class RobotContainer {
         swerve.setDefaultCommand(new SwerveCommands()
                 .joystickDrive(
                         swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
-        climber.setDefaultCommand(climber.updateControl());
 
         driverController
                 .rightBumper()
@@ -79,7 +78,7 @@ public class RobotContainer {
         driverController.rightTrigger().whileTrue(deploy.goToDistanceCommand(Inches.of(10)));
 
         operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
-        operatorController.y().onTrue(climber.setTargetDistance(Inches.of(10)));
+        operatorController.y().onTrue(climber.goToDistanceCommand(Inches.of(4)));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */

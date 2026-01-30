@@ -1,11 +1,7 @@
 package frc.robot.subsystems.climber;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.climber.ClimberConstants.kCarriageMass;
-import static frc.robot.subsystems.climber.ClimberConstants.kDrumRadius;
-import static frc.robot.subsystems.climber.ClimberConstants.kMaximumDistance;
-import static frc.robot.subsystems.climber.ClimberConstants.kMinimumDistance;
-import static frc.robot.subsystems.climber.ClimberConstants.kMotorToClimberGearing;
+import static frc.robot.subsystems.climber.ClimberConstants.*;
 
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;

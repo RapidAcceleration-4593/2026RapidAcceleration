@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
@@ -23,7 +24,6 @@ public class ClimberSubsystem extends SubsystemBase {
     private final LoggedMechanismLigament2d climber;
 
     private final PIDController controller;
-    private Distance targetDistance = kMinimumDistance;
 
     public ClimberSubsystem(ClimberIO io) {
         this.io = io;
@@ -46,35 +46,45 @@ public class ClimberSubsystem extends SubsystemBase {
         Logger.recordOutput("Mechanism/Climber", mechanism);
     }
 
-    public Command updateControl() {
-        return run(() -> {
-            targetDistance = Inches.of(MathUtil.clamp(
-                    targetDistance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches)));
+    public Command goToDistanceCommand(Distance distance) {
+        return runOnce(() -> controller.setSetpoint(
+                        MathUtil.clamp(distance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches))))
+                .andThen(run(() -> {
+                    double output = controller.calculate(inputs.distance.in(Inches));
+                    output = MathUtil.clamp(output, -12.0, 12.0);
 
-            double output = controller.calculate(inputs.distance.in(Inches), targetDistance.in(Inches));
-            output = MathUtil.clamp(output, -12.0, 12.0);
-
-            io.setVoltage(Volts.of(output));
-        });
+                    io.setVoltage(Volts.of(output));
+                }))
+                .until(this::shouldStop)
+                .finallyDo(() -> {
+                    stop();
+                    controller.setSetpoint(inputs.distance.in(Inches));
+                });
     }
 
-    public Command setTargetDistance(Distance distance) {
-        return runOnce(() -> targetDistance = distance);
+    private boolean shouldStop() {
+        return false;
     }
 
     public Distance getCurrentDistance() {
         return inputs.distance;
     }
 
+    @AutoLogOutput(key = "Climber/TargetDistance")
     public Distance getTargetDistance() {
-        return targetDistance;
+        return Inches.of(controller.getSetpoint());
     }
 
+    @AutoLogOutput(key = "Climber/AtTargetDistance")
     public boolean atTargetDistance() {
         return controller.atSetpoint();
     }
 
-    public Command stop() {
-        return runOnce(() -> io.stop());
+    public Command stopCommand() {
+        return runOnce(this::stop);
+    }
+
+    private void stop() {
+        io.stop();
     }
 }
