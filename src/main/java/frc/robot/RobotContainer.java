@@ -12,6 +12,7 @@ import frc.robot.commands.shooter.ShootCommand;
 import frc.robot.commands.swerve.DriveToClusterCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.deploy.DeploySubsystem;
 import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
@@ -33,6 +34,7 @@ public class RobotContainer {
     public final IndexerSubsystem indexer;
     public final IntakeSubsystem intake;
     public final DeploySubsystem deploy;
+    public final ClimberSubsystem climber;
 
     // Controller(s)
     private final CommandXboxController driverController;
@@ -50,6 +52,7 @@ public class RobotContainer {
         indexer = IndexerFactory.initialize();
         intake = IntakeFactory.initialize();
         deploy = DeployFactory.initialize();
+        climber = ClimberFactory.initialize();
 
         driverController = new CommandXboxController(kDriverControllerPort);
         operatorController = new CommandXboxController(kOperatorControllerPort);
@@ -75,6 +78,7 @@ public class RobotContainer {
         driverController.rightTrigger().whileTrue(deploy.goToDistanceCommand(Inches.of(10)));
 
         operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
+        operatorController.y().onTrue(climber.goToDistanceCommand(Inches.of(4)));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */

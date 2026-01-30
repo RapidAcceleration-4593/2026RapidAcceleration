@@ -6,8 +6,8 @@ import edu.wpi.first.units.measure.Voltage;
 
 public final class IndexerConstants {
 
-    public static final int kSpindexerMotorID = 1;
-    public static final int kFeederMotorID = 2;
+    public static final int kSpindexerMotorID = 5;
+    public static final int kFeederMotorID = 6;
 
     public static final Voltage kSpindexerVolts = Volts.of(0.5);
     public static final Voltage kFeederVolts = Volts.of(3.0);
