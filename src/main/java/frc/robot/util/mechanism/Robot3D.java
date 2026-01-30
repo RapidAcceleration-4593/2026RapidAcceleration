@@ -61,7 +61,7 @@ public class Robot3D {
         }
 
         var runnable = mech.getUpdateRunnable();
-        if (updateRunnables.contains(runnable)) {
+        if (!updateRunnables.contains(runnable)) {
             updateRunnables.add(runnable);
         }
     }
@@ -75,8 +75,16 @@ public class Robot3D {
         throw new Error("Could not find Mechanism with name '" + name + "'!");
     }
 
-    @AutoLogOutput
+    @AutoLogOutput(key = "MechanismPoses")
     private Pose3d[] log() {
-        return (Pose3d[]) mechanisms.toArray();
+        for (var updater : updateRunnables) {
+            updater.run();
+        }
+        Pose3d[] poses = new Pose3d[mechanisms.size()];
+        var size = poses.length;
+        for (int i = 0; i < mechanisms.size(); i++) {
+            poses[i] = mechanisms.get(i).getPose3d();
+        }
+        return poses;
     }
 }
