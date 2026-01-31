@@ -22,11 +22,11 @@ public final class DeployConstants {
     public static final double kMotorToDeployGearing = kMotorToEncoderGearing * kEncoderToDeployGearing;
 
     public static final Distance kRetractedDistance = Inches.zero();
-    public static final Distance kExtendedDistance = Inches.of(11.2);
+    public static final Distance kExtendedDistance = Inches.of(8.0);
     public static final Distance kDistanceTolerance = Inches.of(0.5);
 
-    public static final Distance kDrumDiameter = Inches.of(1.5);
-    public static final double kInchesConversionFactor = Math.PI * kDrumDiameter.in(Inches) / kEncoderToDeployGearing;
+    public static final Distance kDrumRadius = Inches.of(0.75);
+    public static final double kInchesConversionFactor = 2 * Math.PI * kDrumRadius.in(Inches) / kEncoderToDeployGearing;
 
     public static final Mass kCarriageMass = Pounds.of(13);
 }

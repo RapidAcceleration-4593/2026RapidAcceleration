@@ -24,9 +24,9 @@ public final class HoodConstants {
     public static final double kMotorToHoodGearing = kMotorToEncoderGearing * kEncoderToHoodGearing;
 	public static final double kDegreesConversionFactor = 360.0 / kEncoderToHoodGearing;
 
-    public static final Angle kMinimumAngle = Degrees.of(10.0);
+    public static final Angle kMinimumAngle = Degrees.of(20.0);
     public static final Angle kMaximumAngle = Degrees.of(45.0);
-    public static final Angle kAngleTolerance = Degrees.of(3.0);
+    public static final Angle kAngleTolerance = Degrees.of(1.0);
 
     public static final Transform2d kPhysicalOffset =
             new Transform2d(new Translation2d(Inches.of(-5.375), Inches.zero()), new Rotation2d());

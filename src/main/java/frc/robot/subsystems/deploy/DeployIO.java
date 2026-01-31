@@ -28,6 +28,9 @@ public interface DeployIO {
     /** Sets the position of the deployment motor. */
     public default void setPosition(Distance distance) {}
 
+	/** Resets the closed-loop error, encoder, and setpoint. */
+	public default void resetPosition() {}
+
     /** Stops the deployment motor immediately. */
     public default void stop() {}
 }

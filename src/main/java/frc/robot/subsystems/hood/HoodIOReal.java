@@ -19,8 +19,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class HoodIOReal implements HoodIO {
 
@@ -63,19 +61,19 @@ public class HoodIOReal implements HoodIO {
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
-
-        Trigger limitSwitchTrigger = new Trigger(limitswitch::get);
-        limitSwitchTrigger.onTrue(Commands.runOnce(() -> {
-			controller.setIAccum(0);
-            encoder.setPosition(0);
-			controller.setSetpoint(encoder.getPosition(), ControlType.kMAXMotionPositionControl);
-        }));
     }
 
     @Override
     public void setPosition(Angle angle) {
         controller.setSetpoint(angle.in(Degrees), ControlType.kMAXMotionPositionControl);
     }
+
+	@Override
+	public void resetPosition() {
+		controller.setIAccum(0);
+		encoder.setPosition(0);
+		controller.setSetpoint(encoder.getPosition(), ControlType.kMAXMotionPositionControl);
+	}
 
     @Override
     public void stop() {

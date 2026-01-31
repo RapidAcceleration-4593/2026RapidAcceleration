@@ -28,7 +28,7 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
                 gearbox,
                 kMotorToDeployGearing,
                 kCarriageMass.in(Kilograms),
-                kDrumDiameter.div(2).in(Meters),
+                kDrumRadius.in(Meters),
                 kRetractedDistance.in(Meters),
                 kExtendedDistance.in(Meters),
                 false,
@@ -57,7 +57,7 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
     @Override
     public void updateIOSim() {
         var carriageMPS = deploySim.getVelocityMetersPerSecond();
-        var drumRadPS = carriageMPS / kDrumDiameter.div(2).in(Meters);
+        var drumRadPS = carriageMPS / kDrumRadius.in(Meters);
         AngularVelocity motorAngularVelocity = RadiansPerSecond.of(drumRadPS * kMotorToDeployGearing);
         motorSim.iterate(motorAngularVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
         encoderSim.setPosition(deploySim.getPositionMeters());

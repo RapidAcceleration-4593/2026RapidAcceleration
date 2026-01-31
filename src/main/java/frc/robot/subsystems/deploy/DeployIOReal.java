@@ -18,8 +18,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class DeployIOReal implements DeployIO {
 
@@ -29,7 +27,6 @@ public class DeployIOReal implements DeployIO {
     protected final DigitalInput outLimitSwitch;
 
     private final SparkClosedLoopController controller;
-    private Distance targetDistance = Inches.zero();
 
     public DeployIOReal() {
         motor = new SparkMax(kDeployMotorID, MotorType.kBrushless);
@@ -52,26 +49,12 @@ public class DeployIOReal implements DeployIO {
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();
-
-        Trigger inLimitSwitchTrigger = new Trigger(inLimitSwitch::get);
-        inLimitSwitchTrigger.onTrue(Commands.runOnce(() -> {
-			controller.setIAccum(0);
-            encoder.setPosition(kRetractedDistance.in(Inches));
-			controller.setSetpoint(encoder.getPosition(), ControlType.kMAXMotionPositionControl);
-        }));
-
-        Trigger outLimitSwitchTrigger = new Trigger(outLimitSwitch::get);
-        outLimitSwitchTrigger.onTrue(Commands.runOnce(() -> {
-			controller.setIAccum(0);
-			encoder.setPosition(kExtendedDistance.in(Inches));
-			controller.setSetpoint(encoder.getPosition(), ControlType.kMAXMotionPositionControl);
-        }));
     }
 
     @Override
     public void updateInputs(DeployInputs inputs) {
         inputs.distance = Inches.of(encoder.getPosition());
-        inputs.targetDistance = targetDistance;
+        inputs.targetDistance = Inches.of(controller.getSetpoint());
         inputs.atTargetDistance = controller.isAtSetpoint();
 
         inputs.inLimitSwitch = inLimitSwitch.get();
@@ -81,10 +64,21 @@ public class DeployIOReal implements DeployIO {
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
     }
 
+	@Override
     public void setPosition(Distance distance) {
-        targetDistance = distance;
         controller.setSetpoint(distance.in(Inches), ControlType.kMAXMotionPositionControl);
     }
+
+	@Override
+	public void resetPosition() {
+		controller.setIAccum(0);
+
+		// TODO: Simplify. Create getter methods for limitswitch, in case they're inverted.
+		if (inLimitSwitch.get()) encoder.setPosition(kRetractedDistance.in(Inches));
+		if (outLimitSwitch.get()) encoder.setPosition(kExtendedDistance.in(Inches));
+
+		controller.setSetpoint(encoder.getPosition(), ControlType.kMAXMotionPositionControl);
+	}
 
     @Override
     public void stop() {
