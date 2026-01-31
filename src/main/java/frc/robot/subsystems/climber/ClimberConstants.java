@@ -11,7 +11,7 @@ public final class ClimberConstants {
     public static final int kClimberEncoderChannelA = 7;
     public static final int kClimberEncoderChannelB = 8;
 
-    public static final double kP = 0.1;
+    public static final double kP = 0.0;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 

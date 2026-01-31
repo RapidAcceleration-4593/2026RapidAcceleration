@@ -6,6 +6,7 @@ import static frc.robot.subsystems.shooter.ShooterConstants.*;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -22,23 +23,27 @@ public class ShooterIOReal implements ShooterIO {
 
     protected final SparkMax motor;
     protected final RelativeEncoder encoder;
-    private final SparkClosedLoopController controller;
 
+    private final SparkClosedLoopController controller;
     private AngularVelocity targetVelocity = RPM.zero();
 
     public ShooterIOReal() {
+        motor = new SparkMax(kShooterMotorID, MotorType.kBrushless);
+        encoder = motor.getEncoder();
+
         SparkBaseConfig config = new SparkMaxConfig()
                 .idleMode(IdleMode.kCoast)
                 .inverted(false)
                 .apply(new ClosedLoopConfig()
+                        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                         .pid(kP, kI, kD)
                         .apply(new FeedForwardConfig().kS(kS).kV(kV).kA(kA))
-                        .apply(new MAXMotionConfig()));
+                        .apply(new MAXMotionConfig()
+                                .maxAcceleration(0)
+                                .cruiseVelocity(0)
+                                .allowedProfileError(0)));
 
-        motor = new SparkMax(kShooterMotorID, MotorType.kBrushless);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        encoder = motor.getEncoder();
         controller = motor.getClosedLoopController();
     }
 

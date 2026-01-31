@@ -12,6 +12,9 @@ public interface DeployIO {
     @AutoLog
     public static class DeployInputs {
         public Distance distance = Inches.zero();
+        public Distance targetDistance = Inches.zero();
+        public boolean atTargetDistance = false;
+
         public boolean inLimitSwitch = false;
         public boolean outLimitSwitch = false;
 
@@ -22,12 +25,9 @@ public interface DeployIO {
     /** Fetches updates from sensors through the IO interface. */
     public default void updateInputs(DeployInputs inputs) {}
 
-    /** Sets the voltage of the deployment motor. */
-    public default void setVoltage(Voltage volts) {}
+    /** Sets the position of the deployment motor. */
+    public default void setPosition(Distance distance) {}
 
     /** Stops the deployment motor immediately. */
     public default void stop() {}
-
-    /** Resets the deploy encoder to zero position. */
-    public default void resetEncoder() {}
 }

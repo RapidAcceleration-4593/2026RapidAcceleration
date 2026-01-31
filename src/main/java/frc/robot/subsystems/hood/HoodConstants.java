@@ -12,20 +12,17 @@ public final class HoodConstants {
 
     public static final int kHoodMotorID = 2;
 
-    public static final int kHoodEncoderChannelA = 0;
-    public static final int kHoodEncoderChannelB = 1;
-
     public static final int kHoodLimitSwitchChannel = 2;
 
     public static final double kP = 0.0;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
-    public static final double kCountsPerRotation = 8192;
-    public static final double kMotorToEncoderGearing = 125.0;
+    public static final int kCountsPerRotation = 8192;
+	public static final double kMotorToEncoderGearing = 125.0;
     public static final double kEncoderToHoodGearing = 6.3125;
     public static final double kMotorToHoodGearing = kMotorToEncoderGearing * kEncoderToHoodGearing;
-    public static final double kDegreesPerPulse = 360.0 / (kCountsPerRotation * kEncoderToHoodGearing);
+	public static final double kDegreesConversionFactor = 360.0 / kEncoderToHoodGearing;
 
     public static final Angle kMinimumAngle = Degrees.of(10.0);
     public static final Angle kMaximumAngle = Degrees.of(45.0);
