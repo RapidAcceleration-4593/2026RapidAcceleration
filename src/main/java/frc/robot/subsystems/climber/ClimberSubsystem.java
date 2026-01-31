@@ -2,12 +2,14 @@ package frc.robot.subsystems.climber;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.climber.ClimberConstants.*;
+import static frc.robot.util.mechanism.MechanismFinder.fLengthMechanism3D;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.mechanism.LengthMechanism3D;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
@@ -25,6 +27,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
     private final PIDController controller;
 
+    private final LengthMechanism3D climber3D;
+
     public ClimberSubsystem(ClimberIO io) {
         this.io = io;
         this.inputs = new ClimberInputsAutoLogged();
@@ -35,6 +39,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
         controller = new PIDController(kP, kI, kD);
         controller.setTolerance(kDistanceTolerance.in(Inches));
+        climber3D = fLengthMechanism3D.find("Climber");
     }
 
     @Override
@@ -43,6 +48,7 @@ public class ClimberSubsystem extends SubsystemBase {
         Logger.processInputs("Climber", inputs);
 
         climber.setLength(inputs.distance);
+        climber3D.setLength(inputs.distance);
         Logger.recordOutput("Mechanism/Climber", mechanism);
     }
 

@@ -1,8 +1,13 @@
 package frc.robot.util.mechanism;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import java.util.ArrayList;
@@ -102,6 +107,36 @@ public class Node3D {
 
     public void setRelativePose(Pose3d pose) {
         relativePose = pose;
+    }
+
+    public void setAngle(Angle angle, Axis axis, boolean inverted) {
+        double angleRads = angle.in(Radians) * (inverted ? -1 : 1);
+        switch (axis) {
+            case X:
+                setRelativePose(new Pose3d(0, 0, 0, new Rotation3d(angleRads, 0, 0)));
+                break;
+            case Y:
+                setRelativePose(new Pose3d(0, 0, 0, new Rotation3d(0, angleRads, 0)));
+                break;
+            case Z:
+                setRelativePose(new Pose3d(0, 0, 0, new Rotation3d(0, 0, angleRads)));
+                break;
+        }
+    }
+
+    public void setRelativeDistance(Distance distance, Axis axis, boolean inverted) {
+        double distanceMeters = distance.in(Meters) * (inverted ? -1 : 1);
+        switch (axis) {
+            case X:
+                setRelativePose(new Pose3d(distanceMeters, 0, 0, Rotation3d.kZero));
+                break;
+            case Y:
+                setRelativePose(new Pose3d(0, distanceMeters, 0, Rotation3d.kZero));
+                break;
+            case Z:
+                setRelativePose(new Pose3d(0, 0, distanceMeters, Rotation3d.kZero));
+                break;
+        }
     }
 
     public Node3D getRootNode() {

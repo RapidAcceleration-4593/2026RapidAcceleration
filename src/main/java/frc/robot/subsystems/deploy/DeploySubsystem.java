@@ -2,6 +2,7 @@ package frc.robot.subsystems.deploy;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.deploy.DeployConstants.*;
+import static frc.robot.util.mechanism.MechanismFinder.fLengthMechanism3D;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -9,6 +10,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.mechanism.LengthMechanism3D;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
@@ -25,6 +27,8 @@ public class DeploySubsystem extends SubsystemBase {
     private final LoggedMechanismLigament2d deploy;
 
     private final PIDController controller;
+
+    private final LengthMechanism3D deploy3D;
 
     public DeploySubsystem(DeployIO io) {
         this.io = io;
@@ -49,6 +53,8 @@ public class DeploySubsystem extends SubsystemBase {
             controller.reset();
             controller.setSetpoint(kMaximumDistance.in(Inches));
         }));
+
+        deploy3D = fLengthMechanism3D.find("Deploy");
     }
 
     @Override
@@ -57,6 +63,7 @@ public class DeploySubsystem extends SubsystemBase {
         Logger.processInputs("Deploy", inputs);
 
         deploy.setLength(inputs.distance);
+        deploy3D.setLength(inputs.distance);
         Logger.recordOutput("Mechanisms/Deploy", mechanism);
     }
 

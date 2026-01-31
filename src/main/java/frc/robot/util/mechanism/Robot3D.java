@@ -9,7 +9,7 @@ import org.littletonrobotics.junction.AutoLogOutputManager;
 public class Robot3D {
     private static Robot3D instance;
 
-    private ArrayList<MechanismLigament3D> mechanisms = new ArrayList<>();
+    private ArrayList<Mechanism3D> mechanisms = new ArrayList<>();
     private ArrayList<Runnable> updateRunnables = new ArrayList<>();
 
     public Robot3D() {
@@ -23,7 +23,7 @@ public class Robot3D {
         return instance;
     }
 
-    public void addMechanisms(Dictionary<MechanismLigament3D, Integer> mechsAndIndexes) {
+    public void addMechanisms(Dictionary<Mechanism3D, Integer> mechsAndIndexes) {
         var iter = mechsAndIndexes.keys();
         while (iter.hasMoreElements()) {
             var mech = iter.nextElement();
@@ -31,13 +31,13 @@ public class Robot3D {
         }
     }
 
-    public void addMechanisms(MechanismLigament3D[] mechs) {
+    public void addMechanisms(Mechanism3D[] mechs) {
         for (int i = 0; i < mechs.length; i++) {
             addMechanism(mechs[i], i);
         }
     }
 
-    public void addMechanism(MechanismLigament3D mech, int index) {
+    public void addMechanism(Mechanism3D mech, int index) {
         var name = mech.getName();
         for (var iMech : mechanisms) {
             if (iMech == null) continue;
@@ -66,7 +66,7 @@ public class Robot3D {
         }
     }
 
-    public MechanismLigament3D getMechanism(String name) {
+    Mechanism3D getMechanism(String name) {
         for (var mech : mechanisms) {
             if (name == mech.getName()) {
                 return mech;
@@ -81,7 +81,6 @@ public class Robot3D {
             updater.run();
         }
         Pose3d[] poses = new Pose3d[mechanisms.size()];
-        var size = poses.length;
         for (int i = 0; i < mechanisms.size(); i++) {
             poses[i] = mechanisms.get(i).getPose3d();
         }

@@ -3,6 +3,7 @@ package frc.robot.subsystems.hood;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Field.*;
 import static frc.robot.subsystems.hood.HoodConstants.*;
+import static frc.robot.util.mechanism.MechanismFinder.fAngleMechanism3D;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.mechanism.AngleMechanism3D;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -34,6 +36,8 @@ public class HoodSubsystem extends SubsystemBase {
 
     private final PIDController controller;
 
+    // private final AngleMechanism3D hood3d;
+
     public HoodSubsystem(HoodIO io, Supplier<Pose2d> poseSupplier) {
         this.io = io;
         this.inputs = new HoodInputsAutoLogged();
@@ -52,6 +56,7 @@ public class HoodSubsystem extends SubsystemBase {
             controller.setSetpoint(kMinimumAngle.in(Degrees));
             io.resetEncoder();
         }));
+        // hood3d = fAngleMechanism3D.find("Hood");
     }
 
     @Override
@@ -60,6 +65,7 @@ public class HoodSubsystem extends SubsystemBase {
         Logger.processInputs("Hood", inputs);
 
         hood.setAngle(inputs.angle);
+        // hood3d.setAngle(inputs.angle);
         Logger.recordOutput("Mechanisms/Hood", mechanism);
     }
 

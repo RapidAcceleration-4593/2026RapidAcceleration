@@ -1,18 +1,13 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
 import static frc.robot.BuildConstants.*;
 import static frc.robot.Constants.*;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.SimulationManager;
-import frc.robot.util.mechanism.MechanismLigament3D;
-import frc.robot.util.mechanism.Robot3D;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -25,8 +20,6 @@ public class Robot extends LoggedRobot {
     private Command autonomousCommand;
     private MechanismContainer mechanismContainer;
     private RobotContainer robotContainer;
-
-    private MechanismLigament3D spindexer, shooterBase, hood, intake, climber;
 
     public Robot() {
         Logger.recordMetadata("ProjectName", MAVEN_NAME);
@@ -71,19 +64,6 @@ public class Robot extends LoggedRobot {
         Logger.start();
         mechanismContainer = new MechanismContainer();
         robotContainer = new RobotContainer();
-
-        SmartDashboard.putNumber("IntakeInches", 0);
-        SmartDashboard.putNumber("ClimberInches", 0);
-        SmartDashboard.putNumber("ShooterBaseDeg", 0);
-        SmartDashboard.putNumber("HoodDeg", 0);
-        SmartDashboard.putNumber("SpindexerDeg", 0);
-
-        spindexer = Robot3D.getInstance().getMechanism("Spindexer");
-        shooterBase = Robot3D.getInstance().getMechanism("ShooterBase");
-        hood = Robot3D.getInstance().getMechanism("Hood");
-
-        intake = Robot3D.getInstance().getMechanism("Intake");
-        climber = Robot3D.getInstance().getMechanism("Climber");
     }
 
     /** This function is called periodically during all modes. */
@@ -103,12 +83,6 @@ public class Robot extends LoggedRobot {
 
         // Return to normal thread priority.
         Threads.setCurrentThreadPriority(false, 10);
-
-        spindexer.setAngle(Degrees.of(SmartDashboard.getNumber("SpindexerDeg", 0)));
-        shooterBase.setAngle(Degrees.of(SmartDashboard.getNumber("ShooterBaseDeg", 0)));
-        hood.setAngle(Degrees.of(SmartDashboard.getNumber("HoodDeg", 0)));
-        intake.setDistance(Inches.of(SmartDashboard.getNumber("IntakeInches", 0)));
-        climber.setDistance(Inches.of(SmartDashboard.getNumber("ClimberInches", 0)));
     }
 
     /** This function is called once when the robot is disabled. */
