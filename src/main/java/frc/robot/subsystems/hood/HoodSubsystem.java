@@ -20,9 +20,6 @@ import frc.robot.util.mechanism.AngleMechanism3D;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 public class HoodSubsystem extends SubsystemBase {
 
@@ -30,22 +27,14 @@ public class HoodSubsystem extends SubsystemBase {
     private final HoodInputsAutoLogged inputs;
     private final HoodIO io;
 
-    private final LoggedMechanism2d mechanism;
-    private final LoggedMechanismRoot2d root;
-    private final LoggedMechanismLigament2d hood;
-
     private final PIDController controller;
 
-    // private final AngleMechanism3D hood3d;
+    private final AngleMechanism3D hood3d;
 
     public HoodSubsystem(HoodIO io, Supplier<Pose2d> poseSupplier) {
         this.io = io;
         this.inputs = new HoodInputsAutoLogged();
         this.poseSupplier = poseSupplier;
-
-        mechanism = new LoggedMechanism2d(1.0, 1.0);
-        root = mechanism.getRoot("HoodRoot", 0.5, 0.5);
-        hood = root.append(new LoggedMechanismLigament2d("Hood", Inches.of(12), kMinimumAngle));
 
         controller = new PIDController(kP, kI, kD);
         controller.setTolerance(kAngleTolerance.in(Degrees));
@@ -56,7 +45,7 @@ public class HoodSubsystem extends SubsystemBase {
             controller.setSetpoint(kMinimumAngle.in(Degrees));
             io.resetEncoder();
         }));
-        // hood3d = fAngleMechanism3D.find("Hood");
+        hood3d = fAngleMechanism3D.find("Hood");
     }
 
     @Override
@@ -64,9 +53,7 @@ public class HoodSubsystem extends SubsystemBase {
         io.updateInputs(inputs);
         Logger.processInputs("Hood", inputs);
 
-        hood.setAngle(inputs.angle);
-        // hood3d.setAngle(inputs.angle);
-        Logger.recordOutput("Mechanisms/Hood", mechanism);
+        hood3d.setAngle(inputs.angle);
     }
 
     public Command goToAngleCommand(Angle angle) {

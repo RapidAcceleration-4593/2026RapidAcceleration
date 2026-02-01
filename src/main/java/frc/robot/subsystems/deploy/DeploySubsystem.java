@@ -13,18 +13,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.mechanism.LengthMechanism3D;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 public class DeploySubsystem extends SubsystemBase {
 
     private final DeployInputsAutoLogged inputs;
     private final DeployIO io;
-
-    private final LoggedMechanism2d mechanism;
-    private final LoggedMechanismRoot2d root;
-    private final LoggedMechanismLigament2d deploy;
 
     private final PIDController controller;
 
@@ -33,10 +26,6 @@ public class DeploySubsystem extends SubsystemBase {
     public DeploySubsystem(DeployIO io) {
         this.io = io;
         this.inputs = new DeployInputsAutoLogged();
-
-        mechanism = new LoggedMechanism2d(1.0, 1.0);
-        root = mechanism.getRoot("DeployRoot", 0.5, 0.5);
-        deploy = root.append(new LoggedMechanismLigament2d("Deploy", Inches.of(12), Degrees.zero()));
 
         controller = new PIDController(kP, kI, kD);
         controller.setTolerance(kDistanceTolerance.in(Inches));
@@ -62,9 +51,7 @@ public class DeploySubsystem extends SubsystemBase {
         io.updateInputs(inputs);
         Logger.processInputs("Deploy", inputs);
 
-        deploy.setLength(inputs.distance);
         deploy3D.setLength(inputs.distance);
-        Logger.recordOutput("Mechanisms/Deploy", mechanism);
     }
 
     public Command goToDistanceCommand(Distance distance) {

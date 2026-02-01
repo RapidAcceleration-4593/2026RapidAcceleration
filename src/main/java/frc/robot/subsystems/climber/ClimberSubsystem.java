@@ -12,18 +12,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.mechanism.LengthMechanism3D;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 public class ClimberSubsystem extends SubsystemBase {
 
     private final ClimberInputsAutoLogged inputs;
     private final ClimberIO io;
-
-    private final LoggedMechanism2d mechanism;
-    private final LoggedMechanismRoot2d root;
-    private final LoggedMechanismLigament2d climber;
 
     private final PIDController controller;
 
@@ -32,10 +25,6 @@ public class ClimberSubsystem extends SubsystemBase {
     public ClimberSubsystem(ClimberIO io) {
         this.io = io;
         this.inputs = new ClimberInputsAutoLogged();
-
-        mechanism = new LoggedMechanism2d(1.0, 1.0);
-        root = mechanism.getRoot("ClimberRoot", 0.5, 0.5);
-        climber = root.append(new LoggedMechanismLigament2d("Climber", Inches.of(12), Degrees.zero()));
 
         controller = new PIDController(kP, kI, kD);
         controller.setTolerance(kDistanceTolerance.in(Inches));
@@ -47,9 +36,7 @@ public class ClimberSubsystem extends SubsystemBase {
         io.updateInputs(inputs);
         Logger.processInputs("Climber", inputs);
 
-        climber.setLength(inputs.distance);
         climber3D.setLength(inputs.distance);
-        Logger.recordOutput("Mechanism/Climber", mechanism);
     }
 
     public Command goToDistanceCommand(Distance distance) {
