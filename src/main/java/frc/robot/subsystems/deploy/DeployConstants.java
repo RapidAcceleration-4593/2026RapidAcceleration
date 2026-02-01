@@ -7,13 +7,13 @@ import edu.wpi.first.units.measure.Mass;
 
 public final class DeployConstants {
 
-    public static final int kDeployMotorID = 2;
+    public static final int kDeployMotorID = 6;
 
-    public static final int kEncoderChannelA = 2;
-    public static final int kEncoderChannelB = 3;
+    public static final int kEncoderChannelA = 3;
+    public static final int kEncoderChannelB = 4;
 
-    public static final int kInLimitSwitchChannel = 4;
-    public static final int kOutLimitSwitchChannel = 5;
+    public static final int kInLimitSwitchChannel = 5;
+    public static final int kOutLimitSwitchChannel = 6;
 
     public static final double kP = 0.1;
     public static final double kI = 0.0;

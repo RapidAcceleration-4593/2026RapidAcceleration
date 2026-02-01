@@ -73,7 +73,7 @@ public class HoodSubsystem extends SubsystemBase {
     }
 
     private boolean shouldStop() {
-        if (inputs.limitswitch && controller.getSetpoint() < inputs.angle.in(Degrees)) return true;
+        if (inputs.limitswitch) return true;
         return controller.atSetpoint();
     }
 
