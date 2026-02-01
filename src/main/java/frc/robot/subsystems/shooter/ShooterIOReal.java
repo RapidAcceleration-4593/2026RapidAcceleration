@@ -35,13 +35,13 @@ public class ShooterIOReal implements ShooterIO {
                 .idleMode(IdleMode.kCoast)
                 .inverted(false)
                 .apply(new ClosedLoopConfig()
-                        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                         .pid(kP, kI, kD)
+                        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                         .apply(new FeedForwardConfig().kS(kS).kV(kV).kA(kA))
                         .apply(new MAXMotionConfig()
-                                .maxAcceleration(0)
-                                .cruiseVelocity(0)
-                                .allowedProfileError(0)));
+                                .cruiseVelocity(kCruiseVelocity.in(RPM))
+                                .maxAcceleration(kMaxAcceleration.in(RPM.per(Second)))
+                                .allowedProfileError(kVelocityTolerance.in(RPM))));
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();

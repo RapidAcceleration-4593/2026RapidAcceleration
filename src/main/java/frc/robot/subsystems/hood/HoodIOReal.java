@@ -6,14 +6,13 @@ import static frc.robot.subsystems.hood.HoodConstants.*;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.MAXMotionConfig;
-import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -39,13 +38,12 @@ public class HoodIOReal implements HoodIO {
                 .inverted(false)
                 .apply(new ClosedLoopConfig()
                         .pid(kP, kI, kD)
-						.feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
+                        .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
                         .apply(new MAXMotionConfig()
-                                .cruiseVelocity(0)
-                                .maxAcceleration(0)
-                                .allowedProfileError(0)
-                                .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)));
-		config.encoder.countsPerRevolution(kCountsPerRotation).positionConversionFactor(kDegreesConversionFactor);
+                                .cruiseVelocity(kCruiseVelocity.in(RPM))
+                                .maxAcceleration(kMaxAcceleration.in(RPM.per(Second)))
+                                .allowedProfileError(kAngleTolerance.in(Degrees))));
+        config.encoder.countsPerRevolution(kCountsPerRotation).positionConversionFactor(kDegreesConversionFactor);
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();
@@ -57,7 +55,7 @@ public class HoodIOReal implements HoodIO {
         inputs.targetAngle = Degrees.of(encoder.getPosition());
         inputs.atTargetAngle = controller.isAtSetpoint();
 
-        inputs.limitswitch = limitswitch.get();
+        inputs.limitswitch = isAtBottom();
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
@@ -68,15 +66,19 @@ public class HoodIOReal implements HoodIO {
         controller.setSetpoint(angle.in(Degrees), ControlType.kMAXMotionPositionControl);
     }
 
-	@Override
-	public void resetPosition() {
-		controller.setIAccum(0);
-		encoder.setPosition(0);
-		controller.setSetpoint(encoder.getPosition(), ControlType.kMAXMotionPositionControl);
-	}
+    @Override
+    public void resetPosition() {
+        controller.setIAccum(0);
+        encoder.setPosition(0);
+        controller.setSetpoint(encoder.getPosition(), ControlType.kMAXMotionPositionControl);
+    }
 
     @Override
     public void stop() {
         motor.stopMotor();
+    }
+
+    private boolean isAtBottom() {
+        return limitswitch.get() ^ kInvertHoodLS;
     }
 }

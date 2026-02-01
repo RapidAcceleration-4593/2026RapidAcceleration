@@ -22,7 +22,7 @@ public class ShootCommand extends Command {
 
     @Override
     public void initialize() {
-        shooter.setVelocityCommand(ShooterConstants.kMaximumVelocity);
+        shooter.setVelocityCommand(ShooterConstants.kShootVelocity);
     }
 
     @Override

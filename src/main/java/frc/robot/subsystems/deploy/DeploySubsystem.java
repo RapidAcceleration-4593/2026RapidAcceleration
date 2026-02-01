@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
@@ -29,10 +28,10 @@ public class DeploySubsystem extends SubsystemBase {
         mechanism = new LoggedMechanism2d(1.0, 1.0);
         root = mechanism.getRoot("DeployRoot", 0.5, 0.5);
         deploy = root.append(new LoggedMechanismLigament2d("Deploy", Inches.of(12), Degrees.zero()));
-    
-		Trigger lsTrigger = new Trigger(() -> (inputs.inLimitSwitch || inputs.outLimitSwitch));
+
+        Trigger lsTrigger = new Trigger(() -> (inputs.inLimitSwitch || inputs.outLimitSwitch));
         lsTrigger.onTrue(Commands.runOnce(io::resetPosition));
-	}
+    }
 
     @Override
     public void periodic() {

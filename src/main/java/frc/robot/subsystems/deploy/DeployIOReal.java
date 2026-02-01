@@ -6,8 +6,8 @@ import static frc.robot.subsystems.deploy.DeployConstants.*;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -23,8 +23,8 @@ public class DeployIOReal implements DeployIO {
 
     protected final SparkMax motor;
     protected final RelativeEncoder encoder;
-    protected final DigitalInput inLimitSwitch;
-    protected final DigitalInput outLimitSwitch;
+    protected final DigitalInput retractedLS;
+    protected final DigitalInput extendedLS;
 
     private final SparkClosedLoopController controller;
 
@@ -32,20 +32,20 @@ public class DeployIOReal implements DeployIO {
         motor = new SparkMax(kDeployMotorID, MotorType.kBrushless);
         encoder = motor.getAlternateEncoder();
 
-        inLimitSwitch = new DigitalInput(kInLimitSwitchChannel);
-        outLimitSwitch = new DigitalInput(kOutLimitSwitchChannel);
+        retractedLS = new DigitalInput(kRetractedLSChannel);
+        extendedLS = new DigitalInput(kExtendedLSChannel);
 
         SparkBaseConfig config = new SparkMaxConfig()
                 .idleMode(IdleMode.kCoast)
                 .inverted(false)
                 .apply(new ClosedLoopConfig()
                         .pid(kP, kI, kD)
-						.feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
+                        .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
                         .apply(new MAXMotionConfig()
-                                .cruiseVelocity(0)
-                                .maxAcceleration(0)
-                                .allowedProfileError(0)));
-		config.encoder.countsPerRevolution(kCountsPerRotation).positionConversionFactor(kInchesConversionFactor);
+                                .cruiseVelocity(kCruiseVelocity.in(RPM))
+                                .maxAcceleration(kMaxAcceleration.in(RPM.per(Second)))
+                                .allowedProfileError(kDistanceTolerance.in(Inches))));
+        config.encoder.countsPerRevolution(kCountsPerRotation).positionConversionFactor(kInchesConversionFactor);
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();
@@ -57,31 +57,41 @@ public class DeployIOReal implements DeployIO {
         inputs.targetDistance = Inches.of(controller.getSetpoint());
         inputs.atTargetDistance = controller.isAtSetpoint();
 
-        inputs.inLimitSwitch = inLimitSwitch.get();
-        inputs.outLimitSwitch = outLimitSwitch.get();
+        inputs.inLimitSwitch = isAtRetracted();
+        inputs.outLimitSwitch = isAtExtended();
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
     }
 
-	@Override
+    @Override
     public void setPosition(Distance distance) {
         controller.setSetpoint(distance.in(Inches), ControlType.kMAXMotionPositionControl);
     }
 
-	@Override
-	public void resetPosition() {
-		controller.setIAccum(0);
+    @Override
+    public void resetPosition() {
+        controller.setIAccum(0);
 
-		// TODO: Simplify. Create getter methods for limitswitch, in case they're inverted.
-		if (inLimitSwitch.get()) encoder.setPosition(kRetractedDistance.in(Inches));
-		if (outLimitSwitch.get()) encoder.setPosition(kExtendedDistance.in(Inches));
+        if (isAtRetracted()) {
+            encoder.setPosition(kRetractedDistance.in(Inches));
+        } else if (isAtExtended()) {
+            encoder.setPosition(kExtendedDistance.in(Inches));
+        }
 
-		controller.setSetpoint(encoder.getPosition(), ControlType.kMAXMotionPositionControl);
-	}
+        controller.setSetpoint(encoder.getPosition(), ControlType.kMAXMotionPositionControl);
+    }
 
     @Override
     public void stop() {
         motor.stopMotor();
+    }
+
+    private boolean isAtRetracted() {
+        return retractedLS.get() ^ kInvertInLS;
+    }
+
+    private boolean isAtExtended() {
+        return extendedLS.get() & kInvertOutLS;
     }
 }
