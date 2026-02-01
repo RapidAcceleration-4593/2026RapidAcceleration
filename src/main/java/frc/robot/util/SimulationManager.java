@@ -11,6 +11,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.Mode;
@@ -33,7 +35,10 @@ public final class SimulationManager {
     private final Pose2d initialPose;
 
     private SimulationManager() {
-        initialPose = new Pose2d(Meters.of(3.0), Meters.of(3.0), new Rotation2d());
+        initialPose = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue
+                ? new Pose2d(Inches.of(118.11), Inches.of(158.85), new Rotation2d())
+                : new Pose2d(Inches.of(533.09), Inches.of(158.85), Rotation2d.fromDegrees(180));
+
         simulation = new SwerveDriveSimulation(MAPLESIM_CONFIG, initialPose);
         arena.addDriveTrainSimulation(simulation);
         components = new ArrayList<>();

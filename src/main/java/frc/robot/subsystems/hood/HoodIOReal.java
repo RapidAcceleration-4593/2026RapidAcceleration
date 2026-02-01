@@ -6,11 +6,13 @@ import static frc.robot.subsystems.hood.HoodConstants.*;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.MAXMotionConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
@@ -30,20 +32,29 @@ public class HoodIOReal implements HoodIO {
     public HoodIOReal() {
         motor = new SparkMax(kHoodMotorID, MotorType.kBrushless);
         encoder = motor.getAlternateEncoder();
-
         limitswitch = new DigitalInput(kHoodLimitSwitchChannel);
 
-        SparkBaseConfig config = new SparkMaxConfig()
-                .idleMode(IdleMode.kBrake)
+        SparkBaseConfig baseConfig =
+                new SparkMaxConfig().inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(60);
+
+        AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
                 .inverted(false)
-                .apply(new ClosedLoopConfig()
-                        .pid(kP, kI, kD)
-                        .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
-                        .apply(new MAXMotionConfig()
-                                .cruiseVelocity(kCruiseVelocity.in(RPM))
-                                .maxAcceleration(kMaxAcceleration.in(RPM.per(Second)))
-                                .allowedProfileError(kAngleTolerance.in(Degrees))));
-        config.encoder.countsPerRevolution(kCountsPerRotation).positionConversionFactor(kDegreesConversionFactor);
+                .countsPerRevolution(kCountsPerRotation)
+                .positionConversionFactor(kDegreesConversionFactor)
+                .velocityConversionFactor(1.0); // TODO: Velocity conversion factor, if needed.
+
+        ClosedLoopConfig controlConfig = new ClosedLoopConfig()
+                .pid(kP, kI, kD)
+                .allowedClosedLoopError(kAngleTolerance.in(Degrees), ClosedLoopSlot.kSlot0)
+                .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
+                .apply(new MAXMotionConfig()
+                        .cruiseVelocity(kCruiseVelocity.in(RPM))
+                        .maxAcceleration(kMaxAcceleration.in(RPM.per(Second))));
+
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.apply(baseConfig);
+        config.apply(altEncoderConfig);
+        config.apply(controlConfig);
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();

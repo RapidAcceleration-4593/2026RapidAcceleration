@@ -17,6 +17,7 @@ public final class HoodConstants {
     public static final int kHoodLimitSwitchChannel = 2;
 
     public static final boolean kInvertHoodLS = false;
+    public static final boolean kInvertHoodEncoder = false;
 
     public static final double kP = 0.0;
     public static final double kI = 0.0;

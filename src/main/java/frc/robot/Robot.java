@@ -138,7 +138,9 @@ public class Robot extends LoggedRobot {
 
     /** This function is called once when the robot is in simulation. */
     @Override
-    public void simulationInit() {}
+    public void simulationInit() {
+        SimulationManager.getInstance();
+    }
 
     /** This function is called periodically when in simulaiton. */
     @Override
