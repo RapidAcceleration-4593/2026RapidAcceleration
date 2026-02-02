@@ -6,13 +6,10 @@ import static frc.robot.subsystems.hood.HoodConstants.kPhysicalOffset;
 import static frc.robot.subsystems.swerve.SwerveConstants.MAPLESIM_CONFIG;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.Mode;
@@ -32,16 +29,10 @@ public final class SimulationManager {
     private final SimulatedArena arena = SimulatedArena.getInstance();
     private final List<IPhysicsSim> components;
 
-    private final Pose2d initialPose;
-
     private boolean intakeExtended;
 
     private SimulationManager() {
-        initialPose = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue
-                ? new Pose2d(Inches.of(118.11), Inches.of(158.85), new Rotation2d())
-                : new Pose2d(Inches.of(533.09), Inches.of(158.85), Rotation2d.fromDegrees(180));
-
-        simulation = new SwerveDriveSimulation(MAPLESIM_CONFIG, initialPose);
+        simulation = new SwerveDriveSimulation(MAPLESIM_CONFIG, new Pose2d());
         arena.addDriveTrainSimulation(simulation);
         components = new ArrayList<>();
     }
@@ -77,6 +68,8 @@ public final class SimulationManager {
 
     /** Resets the robot and field state for autonomous. */
     public void resetField() {
+        Pose2d initialPose = FieldUtil.getInitialPose();
+
         setPose(initialPose);
         arena.resetFieldForAuto();
     }

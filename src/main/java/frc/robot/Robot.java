@@ -64,7 +64,7 @@ public class Robot extends LoggedRobot {
         robotContainer = new RobotContainer();
     }
 
-    /** This function is called periodically during all modes. */
+    /** This function is called once during all modes. */
     @Override
     public void robotInit() {
         DriverStation.silenceJoystickConnectionWarning(true);
@@ -85,11 +85,7 @@ public class Robot extends LoggedRobot {
 
     /** This function is called once when the robot is disabled. */
     @Override
-    public void disabledInit() {
-        if (kCurrentMode == Mode.SIM) {
-            SimulationManager.getInstance().resetField();
-        }
-    }
+    public void disabledInit() {}
 
     /** This function is called periodically when the robot is disabled. */
     @Override
@@ -139,7 +135,7 @@ public class Robot extends LoggedRobot {
     /** This function is called once when the robot is in simulation. */
     @Override
     public void simulationInit() {
-        SimulationManager.getInstance();
+        SimulationManager.getInstance().resetField();
     }
 
     /** This function is called periodically when in simulaiton. */
