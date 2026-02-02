@@ -18,15 +18,15 @@ public final class DeployConstants {
     public static final boolean kInvertOutLS = false;
     public static final boolean kInvertDeployEncoder = false;
 
-    public static final double kP = 0.0;
+    public static final double kP = 0.1;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
-    public static final AngularVelocity kCruiseVelocity = RPM.zero();
-    public static final AngularAcceleration kMaxAcceleration = RPM.per(Second).zero();
+    public static final AngularVelocity kCruiseVelocity = RPM.of(100000);
+    public static final AngularAcceleration kMaxAcceleration = RPM.per(Second).of(2000000);
     public static final Distance kRetractedDistance = Inches.zero();
     public static final Distance kExtendedDistance = Inches.of(8.0);
-    public static final Distance kDistanceTolerance = Inches.of(0.5);
+    public static final Distance kDistanceTolerance = Inches.of(0.1);
 
     public static final int kCountsPerRotation = 8192;
     public static final double kMotorToEncoderGearing = 20.0;

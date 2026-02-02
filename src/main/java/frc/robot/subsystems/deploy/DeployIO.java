@@ -13,7 +13,6 @@ public interface DeployIO {
     public static class DeployInputs {
         public Distance distance = Inches.zero();
         public Distance targetDistance = Inches.zero();
-        public boolean atTargetDistance = false;
 
         public boolean inLimitSwitch = false;
         public boolean outLimitSwitch = false;

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.deploy;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.deploy.DeployConstants.kDistanceTolerance;
 
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,6 +22,8 @@ public class DeploySubsystem extends SubsystemBase {
     private final LoggedMechanismRoot2d root;
     private final LoggedMechanismLigament2d deploy;
 
+    private Distance targetDistance = Inches.zero();
+
     public DeploySubsystem(DeployIO io) {
         this.io = io;
         this.inputs = new DeployInputsAutoLogged();
@@ -37,15 +40,18 @@ public class DeploySubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Deploy", inputs);
+        targetDistance = inputs.targetDistance;
 
         deploy.setLength(inputs.distance);
         Logger.recordOutput("Mechanisms/Deploy", mechanism);
+        if (getCurrentCommand() != null)
+            Logger.recordOutput("Command", this.getCurrentCommand().getName());
+        else Logger.recordOutput("Command", "none");
     }
 
     public Command goToDistanceCommand(Distance distance) {
-        return runOnce(() -> io.setPosition(distance))
-                .until(this::atTargetDistance)
-                .finallyDo(io::stop);
+        return Commands.parallel(runOnce(() -> setPosition(distance)), Commands.waitUntil(this::atTargetDistance))
+                .finallyDo(this::stop);
     }
 
     public Distance getCurrentDistance() {
@@ -57,10 +63,22 @@ public class DeploySubsystem extends SubsystemBase {
     }
 
     public boolean atTargetDistance() {
-        return inputs.atTargetDistance;
+        var measured = inputs.distance.in(Inches);
+        var target = targetDistance.in(Inches);
+        var isNear = inputs.distance.isNear(targetDistance, kDistanceTolerance);
+        return isNear;
     }
 
     public Command stopCommand() {
-        return runOnce(io::stop);
+        return runOnce(this::stop);
+    }
+
+    private void stop() {
+        io.stop();
+    }
+
+    private void setPosition(Distance distance) {
+        this.targetDistance = distance;
+        io.setPosition(distance);
     }
 }

@@ -42,7 +42,6 @@ public class DeployIOReal implements DeployIO {
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
                 .inverted(false)
                 .countsPerRevolution(kCountsPerRotation)
-                .positionConversionFactor(kInchesConversionFactor)
                 .velocityConversionFactor(1.0); // TODO: Velocity conversion factor, if needed.
 
         ClosedLoopConfig controlConfig = new ClosedLoopConfig()
@@ -64,9 +63,9 @@ public class DeployIOReal implements DeployIO {
 
     @Override
     public void updateInputs(DeployInputs inputs) {
-        inputs.distance = Inches.of(encoder.getPosition());
+        inputs.distance = Inches.of(kInchesConversionFactor * encoder.getPosition());
         inputs.targetDistance = Inches.of(controller.getSetpoint());
-        inputs.atTargetDistance = controller.isAtSetpoint();
+        // inputs.atTargetDistance = controller.isAtSetpoint();
 
         inputs.inLimitSwitch = isAtRetracted();
         inputs.outLimitSwitch = isAtExtended();
@@ -103,6 +102,6 @@ public class DeployIOReal implements DeployIO {
     }
 
     private boolean isAtExtended() {
-        return extendedLS.get() & kInvertOutLS;
+        return extendedLS.get() ^ kInvertOutLS;
     }
 }

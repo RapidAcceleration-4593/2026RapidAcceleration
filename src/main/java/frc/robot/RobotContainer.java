@@ -81,7 +81,7 @@ public class RobotContainer {
         driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
 
         operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
-        operatorController.leftTrigger(0.5).whileTrue(new IntakeCommand(intake, deploy));
+        driverController.x().whileTrue(new IntakeCommand(intake, deploy));
         // operatorController.rightBumper().whileTrue(new ClimbCommand(climber, deploy));
     }
 
