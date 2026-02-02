@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.swerve.DriveToClusterCommand;
+import frc.robot.commands.swerve.PathfindCommands;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
 import frc.robot.subsystems.deploy.DeploySubsystem;
@@ -78,10 +79,13 @@ public class RobotContainer {
                         .joystickDrivePointToHub(swerve, driverController::getLeftY, driverController::getLeftX));
 
         driverController.start().onTrue(swerve.resetGyroCommand());
-        driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
 
-        operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
-        driverController.x().whileTrue(new IntakeCommand(intake, deploy));
+        driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
+		driverController.leftBumper().whileTrue(new PathfindCommands().pathfindToOppositeZone(swerve));
+
+        driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
+        driverController.rightBumper().whileTrue(new IntakeCommand(intake, deploy));
+		
         // operatorController.rightBumper().whileTrue(new ClimbCommand(climber, deploy));
     }
 

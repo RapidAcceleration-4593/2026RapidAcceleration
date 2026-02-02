@@ -19,12 +19,12 @@ public final class HoodConstants {
     public static final boolean kInvertHoodLS = false;
     public static final boolean kInvertHoodEncoder = false;
 
-    public static final double kP = 0.0;
+    public static final double kP = 0.1;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
-    public static final AngularVelocity kCruiseVelocity = RPM.zero();
-    public static final AngularAcceleration kMaxAcceleration = RPM.per(Second).zero();
+    public static final AngularVelocity kCruiseVelocity = DegreesPerSecond.of(20.0);
+    public static final AngularAcceleration kMaxAcceleration = DegreesPerSecondPerSecond.of(40.0);
     public static final Angle kMinimumAngle = Degrees.of(20.0);
     public static final Angle kMaximumAngle = Degrees.of(45.0);
     public static final Angle kAngleTolerance = Degrees.of(1.0);
@@ -33,7 +33,9 @@ public final class HoodConstants {
     public static final double kMotorToEncoderGearing = 125.0;
     public static final double kEncoderToHoodGearing = 6.3125;
     public static final double kMotorToHoodGearing = kMotorToEncoderGearing * kEncoderToHoodGearing;
-    public static final double kDegreesConversionFactor = 360.0 / kEncoderToHoodGearing;
+
+    public static final double kPositionConversionFactor = 360.0 / kEncoderToHoodGearing;
+    public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final Transform2d kPhysicalOffset =
             new Transform2d(new Translation2d(Inches.of(-5.375), Inches.zero()), new Rotation2d());

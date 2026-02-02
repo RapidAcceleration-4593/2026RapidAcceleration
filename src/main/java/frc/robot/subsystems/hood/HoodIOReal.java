@@ -27,7 +27,7 @@ public class HoodIOReal implements HoodIO {
     protected final RelativeEncoder encoder;
     protected final DigitalInput limitswitch;
 
-    private final SparkClosedLoopController controller;
+    protected final SparkClosedLoopController controller;
 
     public HoodIOReal() {
         motor = new SparkMax(kHoodMotorID, MotorType.kBrushless);
@@ -40,16 +40,16 @@ public class HoodIOReal implements HoodIO {
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
                 .inverted(false)
                 .countsPerRevolution(kCountsPerRotation)
-                .positionConversionFactor(kDegreesConversionFactor)
-                .velocityConversionFactor(1.0); // TODO: Velocity conversion factor, if needed.
+                .positionConversionFactor(kPositionConversionFactor)
+                .velocityConversionFactor(kVelocityConversionFactor);
 
         ClosedLoopConfig controlConfig = new ClosedLoopConfig()
                 .pid(kP, kI, kD)
                 .allowedClosedLoopError(kAngleTolerance.in(Degrees), ClosedLoopSlot.kSlot0)
                 .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
                 .apply(new MAXMotionConfig()
-                        .cruiseVelocity(kCruiseVelocity.in(RPM))
-                        .maxAcceleration(kMaxAcceleration.in(RPM.per(Second))));
+                        .cruiseVelocity(kCruiseVelocity.in(DegreesPerSecond))
+                        .maxAcceleration(kMaxAcceleration.in(DegreesPerSecondPerSecond)));
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
@@ -66,7 +66,7 @@ public class HoodIOReal implements HoodIO {
         inputs.targetAngle = Degrees.of(controller.getSetpoint());
         inputs.atTargetAngle = controller.isAtSetpoint();
 
-        inputs.limitswitch = isAtBottom();
+        inputs.limitswitch = limitswitch.get() ^ kInvertHoodLS;
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
@@ -87,9 +87,5 @@ public class HoodIOReal implements HoodIO {
     @Override
     public void stop() {
         motor.stopMotor();
-    }
-
-    private boolean isAtBottom() {
-        return limitswitch.get() ^ kInvertHoodLS;
     }
 }

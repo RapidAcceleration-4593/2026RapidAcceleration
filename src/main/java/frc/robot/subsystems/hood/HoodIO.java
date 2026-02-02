@@ -1,6 +1,7 @@
 package frc.robot.subsystems.hood;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.hood.HoodConstants.*;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
@@ -11,8 +12,8 @@ public interface HoodIO {
 
     @AutoLog
     public static class HoodInputs {
-        public Angle angle = Degrees.zero();
-        public Angle targetAngle = Degrees.zero();
+        public Angle angle = kMinimumAngle;
+        public Angle targetAngle = kMinimumAngle;
         public boolean atTargetAngle = false;
 
         public boolean limitswitch = false;

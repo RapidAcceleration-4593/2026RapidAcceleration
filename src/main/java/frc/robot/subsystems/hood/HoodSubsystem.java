@@ -49,29 +49,6 @@ public class HoodSubsystem extends SubsystemBase {
         Logger.recordOutput("Mechanisms/Hood", mechanism);
     }
 
-    /**
-     * Constructs a command that continuously attempts to reach the supplied angle.
-     *
-     * @param angleSupplier The function that supplies the setpoint angle this subsystem should reach.
-     * @param finishWhenTargetReached Should the command finish when the target is reached?
-     */
-    public Command goToAngleCommand(Supplier<Angle> angleSupplier, boolean finishWhenTargetReached) {
-        var c = run(() -> io.setPosition(angleSupplier.get())).finallyDo(io::stop);
-        if (finishWhenTargetReached) {
-            return c.until(this::atTargetAngle);
-        }
-        return c;
-    }
-
-    /**
-     * Constructs a command that attempts to reach the given angle, and finishes when the angle has been reached.
-     *
-     * @param angle The angle this subsystem should reach.
-     */
-    public Command goToAngleCommand(Angle angle) {
-        return goToAngleCommand(() -> angle, true);
-    }
-
     public Angle getCurrentAngle() {
         return inputs.angle;
     }
@@ -88,14 +65,32 @@ public class HoodSubsystem extends SubsystemBase {
         return runOnce(io::stop);
     }
 
-    /**
-     * Constructs a command which continuously calculates the optimal shooting angle and drives there. This command
-     * never finishes.
+	/**
+     * Constructs a command that continuously attempts to reach the supplied angle.
+     *
+     * @param angleSupplier The function that supplies the setpoint angle this subsystem should reach.
+     * @param finishWhenTargetReached Should the command finish when the target is reached?
      */
+    public Command goToAngleCommand(Supplier<Angle> angleSupplier, boolean finishWhenTargetReached) {
+        Command command = run(() -> io.setPosition(angleSupplier.get())).finallyDo(io::stop);
+		return finishWhenTargetReached ? command.until(this::atTargetAngle) : command;
+    }
+
+    /**
+     * Constructs a command that attempts to reach the given angle, and finishes when the angle has been reached.
+     *
+     * @param angle The angle this subsystem should reach.
+     */
+    public Command goToAngleCommand(Angle angle) {
+        return goToAngleCommand(() -> angle, true);
+    }
+
+    /** Constructs a command that continuously adjusts the hood for the hub based on the current robot position. */
     public Command pointAtHubCommand() {
         return goToAngleCommand(this::calculateHubAngle, false);
     }
 
+	/** Calculates the optimal hood angle to shoot at the hub based on the current robot position. */
     private Angle calculateHubAngle() {
         Pose2d targetPose = FieldUtil.getTargetHubPose();
         Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);

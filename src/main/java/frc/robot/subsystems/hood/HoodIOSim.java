@@ -58,6 +58,6 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
                 RadiansPerSecond.of(hoodSim.getVelocityRadPerSec()).times(kMotorToHoodGearing);
         motorSim.iterate(motorVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
         encoderSim.setPosition(Degrees.convertFrom(hoodSim.getAngleRads(), Radians));
-        limitSwitchSim.setValue(false); // TODO: Simulate.
+        limitSwitchSim.setValue(hoodSim.hasHitLowerLimit());
     }
 }
