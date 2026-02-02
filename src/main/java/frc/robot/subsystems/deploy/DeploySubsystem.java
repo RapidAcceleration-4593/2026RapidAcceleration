@@ -43,7 +43,9 @@ public class DeploySubsystem extends SubsystemBase {
     }
 
     public Command goToDistanceCommand(Distance distance) {
-        return runOnce(() -> io.setPosition(distance));
+        return runOnce(() -> io.setPosition(distance))
+                .until(this::atTargetDistance)
+                .finallyDo(io::stop);
     }
 
     public Distance getCurrentDistance() {

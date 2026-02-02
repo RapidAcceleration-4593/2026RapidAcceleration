@@ -24,9 +24,12 @@ public class IndexerSubsystem extends SubsystemBase {
 
     public Command runCommand() {
         return runOnce(() -> {
-            io.setSpindexerVoltage(kSpindexerVolts);
-            io.setFeederVoltage(kFeederVolts);
-        });
+                    io.setSpindexerVoltage(kSpindexerVolts);
+                    io.setFeederVoltage(kFeederVolts);
+                })
+                .finallyDo(() -> {
+                    io.stop();
+                });
     }
 
     public Command stopCommand() {

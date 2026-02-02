@@ -34,6 +34,8 @@ public final class SimulationManager {
 
     private final Pose2d initialPose;
 
+    private boolean intakeExtended;
+
     private SimulationManager() {
         initialPose = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue
                 ? new Pose2d(Inches.of(118.11), Inches.of(158.85), new Rotation2d())
@@ -135,5 +137,13 @@ public final class SimulationManager {
     /** Retrieves the raw MapleSim drivetrain simulation. */
     public SwerveDriveSimulation getDriveSimulation() {
         return simulation;
+    }
+
+    public boolean isIntakeExtended() {
+        return intakeExtended;
+    }
+
+    public void setIntakeExtended(boolean extended) {
+        intakeExtended = extended;
     }
 }

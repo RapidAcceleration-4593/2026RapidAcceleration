@@ -21,8 +21,8 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.processInputs("Shooter", inputs);
     }
 
-    public Command setVelocityCommand(AngularVelocity velocity) {
-        return runOnce(() -> io.setVelocity(velocity));
+    public Command runAtVelocityCommand(AngularVelocity velocity) {
+        return runOnce(() -> io.setVelocity(velocity)).finallyDo(io::stop);
     }
 
     public AngularVelocity getCurrentVelocity() {
