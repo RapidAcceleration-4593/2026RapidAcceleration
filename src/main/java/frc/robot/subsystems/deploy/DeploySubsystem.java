@@ -64,19 +64,37 @@ public class DeploySubsystem extends SubsystemBase {
         return inputs.distance.isNear(targetDistance, kDistanceTolerance);
     }
 
+    /**
+     * Constructs a command to run the deploy at a set voltage.
+     *
+     * @param volts The voltage to apply to the motor.
+     * @return A command to set the motor voltage and stop when complete.
+     */
     public Command setVoltageCommand(Voltage volts) {
         return Commands.runOnce(() -> io.setVoltage(volts)).finallyDo(io::stop);
     }
 
-    public Command stopCommand() {
-        return runOnce(io::stop);
-    }
-
+    /**
+     * Constructs a command to run the deploy to a set distance.
+     *
+     * @param distance The distance to apply to the closed-loop PID control.
+     * @return A command to run the motor to a distance and stop when complete.
+     */
     public Command goToDistanceCommand(Distance distance) {
         return Commands.parallel(runOnce(() -> this.setPosition(distance)), Commands.waitUntil(this::atTargetDistance))
                 .finallyDo(io::stop);
     }
 
+    /**
+     * Constructs a command to stop the deploy motor.
+     *
+     * @return A command to stop the motor immediately.
+     */
+    public Command stopCommand() {
+        return runOnce(io::stop);
+    }
+
+    /** Sets the distance of the closed-loop PID control. */
     private void setPosition(Distance distance) {
         this.targetDistance = distance;
         io.setPosition(distance);

@@ -23,14 +23,34 @@ public class IntakeSubsystem extends SubsystemBase {
         Logger.processInputs("Intake", inputs);
     }
 
+    public boolean isIntaking() {
+        return inputs.isIntaking;
+    }
+
+    /**
+     * Constructs a command to run the intake at a set voltage.
+     *
+     * @param volts The voltage to apply to the motor.
+     * @return A command to set the intake motor and stop when complete.
+     */
     public Command setVoltageCommand(Voltage volts) {
         return runOnce(() -> io.setVoltage(volts));
     }
 
+    /**
+     * Constructs a command to run the intake motor.
+     *
+     * @return A command to run the intake motor and stop when complete.
+     */
     public Command runCommand() {
-        return runOnce(() -> io.setVoltage(kIntakeVolts));
+        return runOnce(() -> io.setVoltage(kIntakeVolts)).finallyDo(io::stop);
     }
 
+    /**
+     * Constructs a command to stop the intake motor.
+     *
+     * @return A command to stop the motor immediately.
+     */
     public Command stopCommand() {
         return runOnce(io::stop);
     }

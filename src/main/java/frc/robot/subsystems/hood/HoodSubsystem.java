@@ -68,22 +68,49 @@ public class HoodSubsystem extends SubsystemBase {
         return inputs.angle.isNear(targetAngle, kAngleTolerance);
     }
 
+    /**
+     * Constructs a command to run the hood at a set voltage.
+     *
+     * @param volts The voltage to apply to the motor.
+     * @return A command to set the motor voltage and stop when complete.
+     */
     public Command setVoltageCommand(Voltage volts) {
         return Commands.runOnce(() -> io.setVoltage(volts)).finallyDo(io::stop);
     }
 
-    public Command stopCommand() {
-        return runOnce(io::stop);
-    }
-
+    /**
+     * Constructs a command to run the hood to a set angle.
+     *
+     * @param angle The angle to apply to the closed-loop PID control.
+     * @return A command to run the motor to an angle and stop when complete.
+     */
     public Command goToAngleCommand(Angle angle) {
         return run(() -> this.setPosition(angle)).until(this::atTargetAngle).finallyDo(io::stop);
     }
 
+    /**
+     * Constructs a command to continuously run the hood to the calculated Hub angle.
+     *
+     * @return A command to run the motor to the calculated Hub angle without stopping.
+     */
     public Command pointAtHubCommand() {
         return run(() -> this.setPosition(calculateHubAngle().get())).finallyDo(io::stop);
     }
 
+    /**
+     * Constructs a command to stop the hood motor.
+     *
+     * @return A command to stop the motor immediately.
+     */
+    public Command stopCommand() {
+        return runOnce(io::stop);
+    }
+
+    /**
+     * Calculates the angle based on the distance from the Hub.
+     *
+     * @return An angle supplier from a linear regression equation.
+     */
     private Supplier<Angle> calculateHubAngle() {
         Pose2d targetPose = FieldUtil.getTargetHubPose();
         Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);
@@ -92,6 +119,7 @@ public class HoodSubsystem extends SubsystemBase {
         return () -> Degrees.of(10.0 * distance.in(Meters));
     }
 
+    /** Sets the angle of the closed-loop PID control. */
     private void setPosition(Angle angle) {
         this.targetAngle = angle;
         io.setPosition(angle);

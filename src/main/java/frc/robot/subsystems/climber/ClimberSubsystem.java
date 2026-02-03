@@ -48,26 +48,6 @@ public class ClimberSubsystem extends SubsystemBase {
         Logger.recordOutput("Mechanism/Climber", mechanism);
     }
 
-    public Command setVoltageCommand(Voltage volts) {
-        return Commands.runOnce(() -> io.setVoltage(volts)).finallyDo(io::stop);
-    }
-
-    public Command goToDistanceCommand(Distance distance) {
-        return runOnce(() -> controller.setSetpoint(
-                        MathUtil.clamp(distance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches))))
-                .andThen(run(() -> {
-                    double output = controller.calculate(inputs.distance.in(Inches));
-                    output = MathUtil.clamp(output, -12.0, 12.0);
-
-                    io.setVoltage(Volts.of(output));
-                }))
-                .until(this::shouldStop)
-                .finallyDo(() -> {
-                    stop();
-                    controller.setSetpoint(inputs.distance.in(Inches));
-                });
-    }
-
     private boolean shouldStop() {
         return false;
     }
@@ -86,10 +66,48 @@ public class ClimberSubsystem extends SubsystemBase {
         return controller.atSetpoint();
     }
 
+    /**
+     * Constructs a command to run the climber at a set voltage.
+     *
+     * @param volts The voltage to apply to the motor.
+     * @return A command to set the motor voltage and stop when complete.
+     */
+    public Command setVoltageCommand(Voltage volts) {
+        return Commands.runOnce(() -> io.setVoltage(volts)).finallyDo(io::stop);
+    }
+
+    /**
+     * Constructs a command to run the climber to a set distance.
+     *
+     * @param distance The distance to apply to the open-loop PID control.
+     * @return A command to run the motor to a distance and stop when complete.
+     */
+    public Command goToDistanceCommand(Distance distance) {
+        return runOnce(() -> controller.setSetpoint(
+                        MathUtil.clamp(distance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches))))
+                .andThen(run(() -> {
+                    double output = controller.calculate(inputs.distance.in(Inches));
+                    output = MathUtil.clamp(output, -12.0, 12.0);
+
+                    io.setVoltage(Volts.of(output));
+                }))
+                .until(this::shouldStop)
+                .finallyDo(() -> {
+                    stop();
+                    controller.setSetpoint(inputs.distance.in(Inches));
+                });
+    }
+
+    /**
+     * Constructs a command to stop the climber motor.
+     *
+     * @return A command to stop the motor immediately.
+     */
     public Command stopCommand() {
         return runOnce(this::stop);
     }
 
+    /** Stops the climber motor immediately. */
     private void stop() {
         io.stop();
     }

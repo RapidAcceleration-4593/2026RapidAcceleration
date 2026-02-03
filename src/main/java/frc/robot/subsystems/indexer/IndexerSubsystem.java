@@ -24,14 +24,31 @@ public class IndexerSubsystem extends SubsystemBase {
         Logger.processInputs("Indexer", inputs);
     }
 
+    /**
+     * Constructs a command to only run the spindexer at a set voltage.
+     *
+     * @param volts The voltage to apply to the motor.
+     * @return A command to set the spindexer motor and stop when complete.
+     */
     public Command setSpindexerVoltageCommand(Voltage volts) {
         return Commands.runOnce(() -> io.setSpindexerVoltage(volts)).finallyDo(io::stopSpindexer);
     }
 
+    /**
+     * Constructs a command to only run the feeder at a set voltage.
+     *
+     * @param volts The voltage to apply to the motor.
+     * @return A command to set the feeder motor and stop when complete.
+     */
     public Command setFeederVoltageCommand(Voltage volts) {
         return Commands.runOnce(() -> io.setFeederVoltage(volts)).finallyDo(io::stopFeeder);
     }
 
+    /**
+     * Constructs a command to run both the spindexer and feeder motors.
+     *
+     * @return A command to run the spindexer and feeder motors and stop when complete.
+     */
     public Command runCommand() {
         return runOnce(() -> {
                     io.setSpindexerVoltage(kSpindexerVolts);
@@ -43,6 +60,11 @@ public class IndexerSubsystem extends SubsystemBase {
                 });
     }
 
+    /**
+     * Constructs a command to stop both the spindexer and feeder motors.
+     *
+     * @return A command to stop the motors immediately.
+     */
     public Command stopCommand() {
         return runOnce(() -> {
             io.stopSpindexer();

@@ -43,18 +43,36 @@ public class ShooterSubsystem extends SubsystemBase {
         return inputs.velocity.isNear(targetVelocity, kVelocityTolerance);
     }
 
-    public Command runAtVelocityCommand(AngularVelocity velocity) {
-        return run(() -> this.setVelocity(velocity)).finallyDo(io::stop);
-    }
-
+    /**
+     * Constructs a command to run the shooter at a set voltage.
+     *
+     * @param volts The voltage to apply to the motor.
+     * @return A command to set the motor voltage and stop when complete.
+     */
     public Command setVoltageCommand(Voltage volts) {
         return runOnce(() -> io.setVoltage(volts)).finallyDo(io::stop);
     }
 
+    /**
+     * Constructs a command to run the shooter at a set velocity.
+     *
+     * @param velocity The velocity to apply to the closed-loop PID control.
+     * @return A command to run the motor at a velocity and stop when completed.
+     */
+    public Command runAtVelocityCommand(AngularVelocity velocity) {
+        return run(() -> this.setVelocity(velocity)).finallyDo(io::stop);
+    }
+
+    /**
+     * Constructs a command to stop the shooter motor.
+     *
+     * @return A command to stop the motor immediately.
+     */
     public Command stopCommand() {
         return runOnce(io::stop);
     }
 
+    /** Sets the velocity of the closed-loop PID control. */
     private void setVelocity(AngularVelocity velocity) {
         targetVelocity = velocity;
         io.setVelocity(velocity);
