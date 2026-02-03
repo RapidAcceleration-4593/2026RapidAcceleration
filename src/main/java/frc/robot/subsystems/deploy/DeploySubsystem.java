@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.deploy.DeployConstants.*;
 
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -63,12 +64,16 @@ public class DeploySubsystem extends SubsystemBase {
         return inputs.distance.isNear(targetDistance, kDistanceTolerance);
     }
 
+    public Command setVoltageCommand(Voltage volts) {
+        return Commands.runOnce(() -> io.setVoltage(volts)).finallyDo(io::stop);
+    }
+
     public Command stopCommand() {
         return runOnce(io::stop);
     }
 
     public Command goToDistanceCommand(Distance distance) {
-        return Commands.parallel(runOnce(() -> setPosition(distance)), Commands.waitUntil(this::atTargetDistance))
+        return Commands.parallel(runOnce(() -> this.setPosition(distance)), Commands.waitUntil(this::atTargetDistance))
                 .finallyDo(io::stop);
     }
 

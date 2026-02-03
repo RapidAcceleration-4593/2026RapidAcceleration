@@ -18,6 +18,7 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 
 public class ShooterIOReal implements ShooterIO {
 
@@ -60,7 +61,12 @@ public class ShooterIOReal implements ShooterIO {
     }
 
     @Override
+    public void setVoltage(Voltage volts) {
+        motor.setVoltage(volts);
+    }
+
+    @Override
     public void stop() {
-        setVelocity(RPM.zero());
+        this.setVelocity(kZeroVelocity);
     }
 }

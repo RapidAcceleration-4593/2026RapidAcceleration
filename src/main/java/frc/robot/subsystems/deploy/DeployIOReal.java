@@ -18,6 +18,7 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class DeployIOReal implements DeployIO {
@@ -89,6 +90,11 @@ public class DeployIOReal implements DeployIO {
         }
 
         setPosition(Inches.of(encoder.getPosition()));
+    }
+
+    @Override
+    public void setVoltage(Voltage volts) {
+        motor.setVoltage(volts);
     }
 
     @Override

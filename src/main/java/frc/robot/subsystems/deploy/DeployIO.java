@@ -31,6 +31,9 @@ public interface DeployIO {
     /** Resets the closed-loop error, encoder, and setpoint. */
     public default void resetPosition() {}
 
+    /** Sets the voltage of the deployment motor. */
+    public default void setVoltage(Voltage volts) {}
+
     /** Stops the deployment motor immediately. */
     public default void stop() {}
 }

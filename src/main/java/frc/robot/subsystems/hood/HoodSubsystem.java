@@ -6,6 +6,7 @@ import static frc.robot.subsystems.hood.HoodConstants.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -67,16 +68,20 @@ public class HoodSubsystem extends SubsystemBase {
         return inputs.angle.isNear(targetAngle, kAngleTolerance);
     }
 
+    public Command setVoltageCommand(Voltage volts) {
+        return Commands.runOnce(() -> io.setVoltage(volts)).finallyDo(io::stop);
+    }
+
     public Command stopCommand() {
         return runOnce(io::stop);
     }
 
     public Command goToAngleCommand(Angle angle) {
-        return run(() -> setPosition(angle)).until(this::atTargetAngle).finallyDo(io::stop);
+        return run(() -> this.setPosition(angle)).until(this::atTargetAngle).finallyDo(io::stop);
     }
 
     public Command pointAtHubCommand() {
-        return run(() -> setPosition(calculateHubAngle().get())).finallyDo(io::stop);
+        return run(() -> this.setPosition(calculateHubAngle().get())).finallyDo(io::stop);
     }
 
     private Supplier<Angle> calculateHubAngle() {

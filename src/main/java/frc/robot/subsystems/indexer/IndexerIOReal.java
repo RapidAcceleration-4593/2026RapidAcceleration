@@ -53,8 +53,12 @@ public class IndexerIOReal implements IndexerIO {
     }
 
     @Override
-    public void stop() {
+    public void stopSpindexer() {
         spindexerMotor.stopMotor();
+    }
+
+    @Override
+    public void stopFeeder() {
         feederMotor.stopMotor();
     }
 }

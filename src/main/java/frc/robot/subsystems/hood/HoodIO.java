@@ -30,6 +30,9 @@ public interface HoodIO {
     /** Resets the closed-loop error, encoder, and setpoint. */
     public default void resetPosition() {}
 
+    /** Sets the voltage of the hood motor. */
+    public default void setVoltage(Voltage volts) {}
+
     /** Stops the hood motor immediately. */
     public default void stop() {}
 }

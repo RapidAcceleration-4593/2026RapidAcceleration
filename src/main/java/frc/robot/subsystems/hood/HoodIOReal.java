@@ -18,6 +18,7 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class HoodIOReal implements HoodIO {
@@ -79,6 +80,11 @@ public class HoodIOReal implements HoodIO {
         controller.setIAccum(0);
         encoder.setPosition(0);
         controller.setSetpoint(encoder.getPosition(), ControlType.kMAXMotionPositionControl);
+    }
+
+    @Override
+    public void setVoltage(Voltage volts) {
+        motor.setVoltage(volts);
     }
 
     @Override

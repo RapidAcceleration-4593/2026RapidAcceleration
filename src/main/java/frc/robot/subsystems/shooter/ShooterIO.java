@@ -24,6 +24,9 @@ public interface ShooterIO {
     /** Sets the velocity of the shooter motor. */
     public default void setVelocity(AngularVelocity velocity) {}
 
+    /** Sets the voltage of the shooter motor. */
+    public default void setVoltage(Voltage volts) {}
+
     /** Stops the shooter motor immediately. */
     public default void stop() {}
 }

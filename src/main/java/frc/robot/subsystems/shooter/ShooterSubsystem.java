@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
@@ -43,7 +44,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public Command runAtVelocityCommand(AngularVelocity velocity) {
-        return run(() -> setVelocity(velocity)).finallyDo(io::stop);
+        return run(() -> this.setVelocity(velocity)).finallyDo(io::stop);
+    }
+
+    public Command setVoltageCommand(Voltage volts) {
+        return runOnce(() -> io.setVoltage(volts)).finallyDo(io::stop);
     }
 
     public Command stopCommand() {

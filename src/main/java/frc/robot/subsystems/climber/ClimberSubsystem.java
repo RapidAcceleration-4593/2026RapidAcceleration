@@ -6,7 +6,9 @@ import static frc.robot.subsystems.climber.ClimberConstants.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -44,6 +46,10 @@ public class ClimberSubsystem extends SubsystemBase {
 
         climber.setLength(inputs.distance);
         Logger.recordOutput("Mechanism/Climber", mechanism);
+    }
+
+    public Command setVoltageCommand(Voltage volts) {
+        return Commands.runOnce(() -> io.setVoltage(volts)).finallyDo(io::stop);
     }
 
     public Command goToDistanceCommand(Distance distance) {
