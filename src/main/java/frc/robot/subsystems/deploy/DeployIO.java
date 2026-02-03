@@ -1,6 +1,7 @@
 package frc.robot.subsystems.deploy;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.deploy.DeployConstants.*;
 
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
@@ -11,8 +12,8 @@ public interface DeployIO {
 
     @AutoLog
     public static class DeployInputs {
-        public Distance distance = Inches.zero();
-        public Distance targetDistance = Inches.zero();
+        public Distance distance = kRetractedDistance;
+        public Distance targetDistance = kRetractedDistance;
 
         public boolean inLimitSwitch = false;
         public boolean outLimitSwitch = false;

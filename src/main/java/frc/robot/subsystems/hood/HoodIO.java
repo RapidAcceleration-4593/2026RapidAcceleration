@@ -14,7 +14,6 @@ public interface HoodIO {
     public static class HoodInputs {
         public Angle angle = kMinimumAngle;
         public Angle targetAngle = kMinimumAngle;
-        public boolean atTargetAngle = false;
 
         public boolean limitswitch = false;
 

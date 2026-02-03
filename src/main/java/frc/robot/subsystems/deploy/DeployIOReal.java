@@ -6,7 +6,6 @@ import static frc.robot.subsystems.deploy.DeployConstants.*;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -37,20 +36,21 @@ public class DeployIOReal implements DeployIO {
         retractedLS = new DigitalInput(kRetractedLSChannel);
         extendedLS = new DigitalInput(kExtendedLSChannel);
 
-        SparkBaseConfig baseConfig = new SparkMaxConfig().inverted(false).idleMode(IdleMode.kCoast);
+        SparkBaseConfig baseConfig =
+                new SparkMaxConfig().inverted(false).idleMode(IdleMode.kCoast).smartCurrentLimit(60);
 
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
                 .inverted(false)
                 .countsPerRevolution(kCountsPerRotation)
-                .velocityConversionFactor(1.0); // TODO: Velocity conversion factor, if needed.
+                .positionConversionFactor(kPositionConversionFactor)
+                .velocityConversionFactor(kVelocityConversionFactor);
 
         ClosedLoopConfig controlConfig = new ClosedLoopConfig()
                 .pid(kP, kI, kD)
-                .allowedClosedLoopError(kDistanceTolerance.in(Inches), ClosedLoopSlot.kSlot0)
                 .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
                 .apply(new MAXMotionConfig()
-                        .cruiseVelocity(kCruiseVelocity.in(RPM))
-                        .maxAcceleration(kMaxAcceleration.in(RPM.per(Second))));
+                        .cruiseVelocity(kCruiseVelocity.in(InchesPerSecond))
+                        .maxAcceleration(kMaxAcceleration.in(InchesPerSecondPerSecond)));
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
@@ -63,9 +63,8 @@ public class DeployIOReal implements DeployIO {
 
     @Override
     public void updateInputs(DeployInputs inputs) {
-        inputs.distance = Inches.of(kInchesConversionFactor * encoder.getPosition());
+        inputs.distance = Inches.of(encoder.getPosition());
         inputs.targetDistance = Inches.of(controller.getSetpoint());
-        // inputs.atTargetDistance = controller.isAtSetpoint();
 
         inputs.inLimitSwitch = isAtRetracted();
         inputs.outLimitSwitch = isAtExtended();

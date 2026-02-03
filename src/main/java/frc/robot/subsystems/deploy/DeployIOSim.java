@@ -7,8 +7,10 @@ import com.revrobotics.sim.SparkMaxAlternateEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.util.IPhysicsSim;
@@ -24,7 +26,7 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
     private final DIOSim extendedLSSim;
 
     public DeployIOSim() {
-        DCMotor gearbox = DCMotor.getNeo550(2);
+        DCMotor gearbox = DCMotor.getNeo550(1);
 
         deploySim = new ElevatorSim(
                 LinearSystemId.createElevatorSystem(
@@ -45,8 +47,8 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
 
     @Override
     public void updatePlantSim() {
-        double input = motorSim.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts);
-        deploySim.setInput(input);
+        deploySim.setInput(
+                motorSim.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts));
         deploySim.update(0.02);
     }
 
@@ -57,11 +59,18 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
 
     @Override
     public void updateIOSim() {
-        var carriageMPS = deploySim.getVelocityMetersPerSecond();
-        var drumRadPS = carriageMPS / kDrumRadius.in(Meters);
-        AngularVelocity motorAngularVelocity = RadiansPerSecond.of(drumRadPS * kMotorToDeployGearing);
-        motorSim.iterate(motorAngularVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
-        encoderSim.setPosition(Units.metersToInches(deploySim.getPositionMeters()));
+        LinearVelocity carriageVelocity = MetersPerSecond.of(deploySim.getVelocityMetersPerSecond());
+        AngularVelocity drumVelocity =
+                RadiansPerSecond.of(carriageVelocity.in(MetersPerSecond) / kDrumRadius.in(Meters));
+        AngularVelocity motorVelocity = drumVelocity.times(kMotorToDeployGearing);
+
+        motorSim.iterate(motorVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
+
+        Distance deployDistance = Meters.of(deploySim.getPositionMeters());
+        Angle drumRotations = Rotations.of(deployDistance.in(Meters) / (2 * Math.PI * kDrumRadius.in(Meters)));
+        Angle motorRotations = drumRotations.times(kMotorToDeployGearing);
+
+        encoderSim.setPosition(motorRotations.in(Rotations));
         retractedLSSim.setValue(deploySim.hasHitLowerLimit());
         extendedLSSim.setValue(deploySim.hasHitUpperLimit());
 

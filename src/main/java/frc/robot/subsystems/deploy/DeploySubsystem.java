@@ -2,6 +2,7 @@ package frc.robot.subsystems.deploy;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.deploy.DeployConstants.kDistanceTolerance;
+import static frc.robot.subsystems.deploy.DeployConstants.kRetractedDistance;
 
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,7 +23,7 @@ public class DeploySubsystem extends SubsystemBase {
     private final LoggedMechanismRoot2d root;
     private final LoggedMechanismLigament2d deploy;
 
-    private Distance targetDistance = Inches.zero();
+    private Distance targetDistance = kRetractedDistance;
 
     public DeploySubsystem(DeployIO io) {
         this.io = io;
@@ -63,10 +64,7 @@ public class DeploySubsystem extends SubsystemBase {
     }
 
     public boolean atTargetDistance() {
-        var measured = inputs.distance.in(Inches);
-        var target = targetDistance.in(Inches);
-        var isNear = inputs.distance.isNear(targetDistance, kDistanceTolerance);
-        return isNear;
+        return inputs.distance.isNear(targetDistance, kDistanceTolerance);
     }
 
     public Command stopCommand() {

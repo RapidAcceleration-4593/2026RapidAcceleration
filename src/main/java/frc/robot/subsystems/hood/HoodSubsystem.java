@@ -27,6 +27,8 @@ public class HoodSubsystem extends SubsystemBase {
     private final LoggedMechanismRoot2d root;
     private final LoggedMechanismLigament2d hood;
 
+    private Angle targetAngle = kMinimumAngle;
+
     public HoodSubsystem(HoodIO io, Supplier<Pose2d> poseSupplier) {
         this.io = io;
         this.inputs = new HoodInputsAutoLogged();
@@ -44,6 +46,7 @@ public class HoodSubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Hood", inputs);
+        targetAngle = inputs.targetAngle;
 
         hood.setAngle(inputs.angle);
         Logger.recordOutput("Mechanisms/Hood", mechanism);
@@ -58,22 +61,26 @@ public class HoodSubsystem extends SubsystemBase {
     }
 
     public boolean atTargetAngle() {
-        return inputs.atTargetAngle;
+        return inputs.angle.isNear(targetAngle, kAngleTolerance);
     }
 
     public Command stopCommand() {
         return runOnce(io::stop);
     }
 
-	/**
+    /**
      * Constructs a command that continuously attempts to reach the supplied angle.
      *
      * @param angleSupplier The function that supplies the setpoint angle this subsystem should reach.
      * @param finishWhenTargetReached Should the command finish when the target is reached?
      */
     public Command goToAngleCommand(Supplier<Angle> angleSupplier, boolean finishWhenTargetReached) {
-        Command command = run(() -> io.setPosition(angleSupplier.get())).finallyDo(io::stop);
-		return finishWhenTargetReached ? command.until(this::atTargetAngle) : command;
+        Command command = run(() -> {
+                    this.targetAngle = angleSupplier.get();
+                    io.setPosition(angleSupplier.get());
+                })
+                .finallyDo(io::stop);
+        return finishWhenTargetReached ? command.until(this::atTargetAngle) : command;
     }
 
     /**
@@ -90,13 +97,12 @@ public class HoodSubsystem extends SubsystemBase {
         return goToAngleCommand(this::calculateHubAngle, false);
     }
 
-	/** Calculates the optimal hood angle to shoot at the hub based on the current robot position. */
+    /** Calculates the optimal hood angle to shoot at the hub based on the current robot position. */
     private Angle calculateHubAngle() {
         Pose2d targetPose = FieldUtil.getTargetHubPose();
         Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);
 
         Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
-
         return Degrees.of(8.0 * distance.in(Meters));
     }
 }

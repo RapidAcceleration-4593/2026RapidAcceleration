@@ -73,19 +73,19 @@ public class RobotContainer {
                 .joystickDrive(
                         swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
 
-        driverController
-                .rightBumper()
-                .whileTrue(new SwerveCommands()
-                        .joystickDrivePointToHub(swerve, driverController::getLeftY, driverController::getLeftX));
+        // driverController
+        //         .rightTrigger()
+        //         .whileTrue(new SwerveCommands()
+        //                 .joystickDrivePointToHub(swerve, driverController::getLeftY, driverController::getLeftX));
 
         driverController.start().onTrue(swerve.resetGyroCommand());
 
         driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
-		driverController.leftBumper().whileTrue(new PathfindCommands().pathfindToOppositeZone(swerve));
+        driverController.leftBumper().whileTrue(new PathfindCommands().pathfindToOppositeZone(swerve));
 
         driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
         driverController.rightBumper().whileTrue(new IntakeCommand(intake, deploy));
-		
+
         // operatorController.rightBumper().whileTrue(new ClimbCommand(climber, deploy));
     }
 

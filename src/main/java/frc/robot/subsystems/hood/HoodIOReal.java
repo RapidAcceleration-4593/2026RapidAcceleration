@@ -6,7 +6,6 @@ import static frc.robot.subsystems.hood.HoodConstants.*;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -27,7 +26,7 @@ public class HoodIOReal implements HoodIO {
     protected final RelativeEncoder encoder;
     protected final DigitalInput limitswitch;
 
-    protected final SparkClosedLoopController controller;
+    private final SparkClosedLoopController controller;
 
     public HoodIOReal() {
         motor = new SparkMax(kHoodMotorID, MotorType.kBrushless);
@@ -45,7 +44,6 @@ public class HoodIOReal implements HoodIO {
 
         ClosedLoopConfig controlConfig = new ClosedLoopConfig()
                 .pid(kP, kI, kD)
-                .allowedClosedLoopError(kAngleTolerance.in(Degrees), ClosedLoopSlot.kSlot0)
                 .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
                 .apply(new MAXMotionConfig()
                         .cruiseVelocity(kCruiseVelocity.in(DegreesPerSecond))
@@ -64,7 +62,6 @@ public class HoodIOReal implements HoodIO {
     public void updateInputs(HoodInputs inputs) {
         inputs.angle = Degrees.of(encoder.getPosition());
         inputs.targetAngle = Degrees.of(controller.getSetpoint());
-        inputs.atTargetAngle = controller.isAtSetpoint();
 
         inputs.limitswitch = limitswitch.get() ^ kInvertHoodLS;
 
