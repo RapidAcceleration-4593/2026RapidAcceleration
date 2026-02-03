@@ -25,7 +25,7 @@ public final class DeployConstants {
     public static final Distance kMinimumDistance = Inches.zero();
     public static final Distance kMaximumDistance = Inches.of(11.195);
     public static final Distance kDistanceTolerance = Inches.of(0.5);
-	public static final LinearVelocity kCruiseVelocity = InchesPerSecond.of(8);
+    public static final LinearVelocity kCruiseVelocity = InchesPerSecond.of(8);
     public static final LinearAcceleration kMaxAcceleration = InchesPerSecondPerSecond.of(12);
 
     public static final int kCountsPerRotation = 8192;

@@ -122,8 +122,9 @@ public class HoodSubsystem extends SubsystemBase {
 
     /** Sets the angle of the closed-loop PID control. */
     private void setPosition(Angle angle) {
-		Angle clampedAngle = Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
-    	targetAngle = clampedAngle;
+        Angle clampedAngle =
+                Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
+        targetAngle = clampedAngle;
         io.setPosition(clampedAngle);
     }
 }

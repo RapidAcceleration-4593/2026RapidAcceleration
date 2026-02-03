@@ -21,7 +21,7 @@ public final class ShooterConstants {
     public static final AngularVelocity kZeroVelocity = RPM.zero();
     public static final AngularVelocity kShootVelocity = RPM.of(3000.0);
     public static final AngularVelocity kVelocityTolerance = RPM.of(50.0);
-	public static final AngularVelocity kCruiseVelocity = RPM.of(3000);
+    public static final AngularVelocity kCruiseVelocity = RPM.of(3000);
     public static final AngularAcceleration kMaxAcceleration = RPM.per(Second).of(4000);
 
     public static final double kShooterGearing = 1.0;

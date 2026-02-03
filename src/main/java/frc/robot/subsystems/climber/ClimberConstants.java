@@ -7,7 +7,8 @@ import edu.wpi.first.units.measure.Mass;
 
 public final class ClimberConstants {
 
-    public static final int kClimberMotorID = 0;
+    public static final int kRightClimberMotorID = 0;
+	public static final int kLeftClimberMotorID = 0;
 
     public static final int kClimberEncoderChannelA = 0;
     public static final int kClimberEncoderChannelB = 0;

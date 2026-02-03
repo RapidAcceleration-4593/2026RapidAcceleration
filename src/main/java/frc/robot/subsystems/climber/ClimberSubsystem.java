@@ -49,6 +49,7 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     private boolean shouldStop() {
+		// TODO: Implement.
         return false;
     }
 
@@ -67,13 +68,23 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     /**
-     * Constructs a command to run the climber at a set voltage.
+     * Constructs a command to run the left climber at a set voltage.
      *
      * @param volts The voltage to apply to the motor.
-     * @return A command to set the motor voltage and stop when complete.
+     * @return A command to set the left motor voltage and stop when complete.
      */
-    public Command setVoltageCommand(Voltage volts) {
-        return Commands.runOnce(() -> io.setVoltage(volts)).finallyDo(io::stop);
+    public Command setLeftVoltageCommand(Voltage volts) {
+        return Commands.runOnce(() -> io.setLeftVoltage(volts)).finallyDo(io::stopLeft);
+    }
+
+	/**
+     * Constructs a command to run the right climber at a set voltage.
+     *
+     * @param volts The voltage to apply to the motor.
+     * @return A command to set the right motor voltage and stop when complete.
+     */
+    public Command setRightVoltageCommand(Voltage volts) {
+        return Commands.runOnce(() -> io.setRightVoltage(volts)).finallyDo(io::stopRight);
     }
 
     /**
@@ -89,26 +100,32 @@ public class ClimberSubsystem extends SubsystemBase {
                     double output = controller.calculate(inputs.distance.in(Inches));
                     output = MathUtil.clamp(output, -12.0, 12.0);
 
-                    io.setVoltage(Volts.of(output));
+                    io.setLeftVoltage(Volts.of(output));
+					io.setRightVoltage(Volts.of(output));
                 }))
                 .until(this::shouldStop)
                 .finallyDo(() -> {
-                    stop();
+                    io.stopLeft();
+					io.stopRight();
                     controller.setSetpoint(inputs.distance.in(Inches));
                 });
     }
 
     /**
-     * Constructs a command to stop the climber motor.
+     * Constructs a command to stop the left climber motor.
      *
      * @return A command to stop the motor immediately.
      */
-    public Command stopCommand() {
-        return runOnce(this::stop);
+    public Command stopLeftCommand() {
+        return runOnce(io::stopLeft);
     }
 
-    /** Stops the climber motor immediately. */
-    private void stop() {
-        io.stop();
+	/**
+     * Constructs a command to stop the right climber motor.
+     *
+     * @return A command to stop the motor immediately.
+     */
+    public Command stopRightCommand() {
+        return runOnce(io::stopRight);
     }
 }

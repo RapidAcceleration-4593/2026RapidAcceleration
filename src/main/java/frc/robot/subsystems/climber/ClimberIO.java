@@ -12,16 +12,25 @@ public interface ClimberIO {
     public static class ClimberInputs {
         public Distance distance = kMinimumDistance;
 
-        public Voltage appliedVolts = Volts.zero();
-        public Current outputCurrent = Amps.zero();
+        public Voltage leftAppliedVolts = Volts.zero();
+        public Current leftOutputCurrent = Amps.zero();
+
+		public Voltage rightAppliedVolts = Volts.zero();
+        public Current rightOutputCurrent = Amps.zero();
     }
 
     /** Fetches updates from sensors through the IO interface. */
     public default void updateInputs(ClimberInputs inputs) {}
 
-    /** Sets the voltage for the climber. */
-    public default void setVoltage(Voltage volts) {}
+    /** Sets the voltage for the left climber. */
+    public default void setLeftVoltage(Voltage volts) {}
 
-    /** Stops the climber motor immediately. */
-    public default void stop() {}
+	/** Sets the voltage for the right climber. */
+    public default void setRightVoltage(Voltage volts) {}
+
+    /** Stops the left climber motor immediately. */
+    public default void stopLeft() {}
+
+	/** Stops the right climber motor immediately. */
+    public default void stopRight() {}
 }

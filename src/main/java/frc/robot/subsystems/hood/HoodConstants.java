@@ -26,7 +26,7 @@ public final class HoodConstants {
     public static final Angle kMinimumAngle = Degrees.of(20.0);
     public static final Angle kMaximumAngle = Degrees.of(45.0);
     public static final Angle kAngleTolerance = Degrees.of(1.0);
-	public static final AngularVelocity kCruiseVelocity = DegreesPerSecond.of(20.0);
+    public static final AngularVelocity kCruiseVelocity = DegreesPerSecond.of(20.0);
     public static final AngularAcceleration kMaxAcceleration = DegreesPerSecondPerSecond.of(40.0);
 
     public static final int kCountsPerRotation = 8192;
