@@ -18,8 +18,8 @@ public final class ShooterConstants {
     public static final double kV = 0.0; // Volts per RPM to maintain speed.
     public static final double kA = 0.0; // Optional for acceleration.
 
-    public static final AngularVelocity kCruiseVelocity = RPM.zero();
-    public static final AngularAcceleration kMaxAcceleration = RPM.per(Second).zero();
+    public static final AngularVelocity kCruiseVelocity = RPM.of(3000);
+    public static final AngularAcceleration kMaxAcceleration = RPM.per(Second).of(5000);
     public static final AngularVelocity kZeroVelocity = RPM.zero();
     public static final AngularVelocity kShootVelocity = RPM.of(3000.0);
     public static final AngularVelocity kVelocityTolerance = RPM.of(50.0);

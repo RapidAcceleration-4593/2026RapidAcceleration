@@ -7,7 +7,6 @@ import com.revrobotics.sim.SparkMaxAlternateEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -63,17 +62,13 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
         AngularVelocity drumVelocity =
                 RadiansPerSecond.of(carriageVelocity.in(MetersPerSecond) / kDrumRadius.in(Meters));
         AngularVelocity motorVelocity = drumVelocity.times(kMotorToDeployGearing);
-
         motorSim.iterate(motorVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
 
         Distance deployDistance = Meters.of(deploySim.getPositionMeters());
-        Angle drumRotations = Rotations.of(deployDistance.in(Meters) / (2 * Math.PI * kDrumRadius.in(Meters)));
-        Angle motorRotations = drumRotations.times(kMotorToDeployGearing);
+        encoderSim.setPosition(deployDistance.in(Inches));
 
-        encoderSim.setPosition(motorRotations.in(Rotations));
         retractedLSSim.setValue(deploySim.hasHitLowerLimit());
         extendedLSSim.setValue(deploySim.hasHitUpperLimit());
-
         SimulationManager.getInstance().setIntakeExtended(deploySim.hasHitUpperLimit());
     }
 }

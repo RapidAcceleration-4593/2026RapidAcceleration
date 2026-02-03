@@ -1,5 +1,7 @@
 package frc.robot.subsystems.shooter;
 
+import static frc.robot.subsystems.shooter.ShooterConstants.*;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -9,6 +11,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private final ShooterInputsAutoLogged inputs;
     private final ShooterIO io;
+
+    private AngularVelocity targetVelocity = kZeroVelocity;
 
     public ShooterSubsystem(ShooterIO io) {
         this.io = io;
@@ -34,7 +38,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public boolean atTargetVelocity() {
-        return inputs.atTargetVelocity;
+        return inputs.velocity.isNear(targetVelocity, kVelocityTolerance);
     }
 
     public Command stopCommand() {

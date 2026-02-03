@@ -1,8 +1,7 @@
 package frc.robot.subsystems.deploy;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.deploy.DeployConstants.kDistanceTolerance;
-import static frc.robot.subsystems.deploy.DeployConstants.kRetractedDistance;
+import static frc.robot.subsystems.deploy.DeployConstants.*;
 
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,11 +49,6 @@ public class DeploySubsystem extends SubsystemBase {
         else Logger.recordOutput("Command", "none");
     }
 
-    public Command goToDistanceCommand(Distance distance) {
-        return Commands.parallel(runOnce(() -> setPosition(distance)), Commands.waitUntil(this::atTargetDistance))
-                .finallyDo(this::stop);
-    }
-
     public Distance getCurrentDistance() {
         return inputs.distance;
     }
@@ -68,11 +62,12 @@ public class DeploySubsystem extends SubsystemBase {
     }
 
     public Command stopCommand() {
-        return runOnce(this::stop);
+        return runOnce(io::stop);
     }
 
-    private void stop() {
-        io.stop();
+    public Command goToDistanceCommand(Distance distance) {
+        return Commands.parallel(runOnce(() -> setPosition(distance)), Commands.waitUntil(this::atTargetDistance))
+                .finallyDo(io::stop);
     }
 
     private void setPosition(Distance distance) {

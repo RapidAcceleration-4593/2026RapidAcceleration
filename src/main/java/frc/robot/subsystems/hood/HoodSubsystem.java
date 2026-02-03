@@ -50,6 +50,9 @@ public class HoodSubsystem extends SubsystemBase {
 
         hood.setAngle(inputs.angle);
         Logger.recordOutput("Mechanisms/Hood", mechanism);
+        if (getCurrentCommand() != null)
+            Logger.recordOutput("Command", this.getCurrentCommand().getName());
+        else Logger.recordOutput("Command", "none");
     }
 
     public Angle getCurrentAngle() {
@@ -68,41 +71,24 @@ public class HoodSubsystem extends SubsystemBase {
         return runOnce(io::stop);
     }
 
-    /**
-     * Constructs a command that continuously attempts to reach the supplied angle.
-     *
-     * @param angleSupplier The function that supplies the setpoint angle this subsystem should reach.
-     * @param finishWhenTargetReached Should the command finish when the target is reached?
-     */
-    public Command goToAngleCommand(Supplier<Angle> angleSupplier, boolean finishWhenTargetReached) {
-        Command command = run(() -> {
-                    this.targetAngle = angleSupplier.get();
-                    io.setPosition(angleSupplier.get());
-                })
-                .finallyDo(io::stop);
-        return finishWhenTargetReached ? command.until(this::atTargetAngle) : command;
-    }
-
-    /**
-     * Constructs a command that attempts to reach the given angle, and finishes when the angle has been reached.
-     *
-     * @param angle The angle this subsystem should reach.
-     */
     public Command goToAngleCommand(Angle angle) {
-        return goToAngleCommand(() -> angle, true);
+        return run(() -> setPosition(angle)).until(this::atTargetAngle).finallyDo(io::stop);
     }
 
-    /** Constructs a command that continuously adjusts the hood for the hub based on the current robot position. */
     public Command pointAtHubCommand() {
-        return goToAngleCommand(this::calculateHubAngle, false);
+        return run(() -> setPosition(calculateHubAngle().get())).finallyDo(io::stop);
     }
 
-    /** Calculates the optimal hood angle to shoot at the hub based on the current robot position. */
-    private Angle calculateHubAngle() {
+    private Supplier<Angle> calculateHubAngle() {
         Pose2d targetPose = FieldUtil.getTargetHubPose();
         Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);
 
         Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
-        return Degrees.of(8.0 * distance.in(Meters));
+        return () -> Degrees.of(10.0 * distance.in(Meters));
+    }
+
+    private void setPosition(Angle angle) {
+        this.targetAngle = angle;
+        io.setPosition(angle);
     }
 }

@@ -13,7 +13,6 @@ public interface ShooterIO {
     public static class ShooterInputs {
         public AngularVelocity velocity = RPM.zero();
         public AngularVelocity targetVelocity = RPM.zero();
-        public boolean atTargetVelocity = false;
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();
