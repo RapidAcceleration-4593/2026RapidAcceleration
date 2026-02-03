@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Controllers.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -74,27 +75,36 @@ public class RobotContainer {
                 .joystickDrive(
                         swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
 
-        // driverController
-        //         .rightTrigger()
-        //         .whileTrue(new SwerveCommands()
-        //                 .joystickDrivePointToHub(swerve, driverController::getLeftY, driverController::getLeftX));
+        // <------- Experimental ------->
+		driverController.a().whileTrue(shooter.setVoltageCommand(Volts.of(0)));
+		driverController.b().whileTrue(indexer.setSpindexerVoltageCommand(Volts.of(0)));
+		driverController.x().whileTrue(indexer.setFeederVoltageCommand(Volts.of(0)));
+		driverController.y().whileTrue(intake.setVoltageCommand(Volts.of(0)));
 
+
+		// <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());
 
-        driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
         driverController.leftBumper().whileTrue(new PathfindCommands().pathfindToOppositeZone(swerve));
+        driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
 
-        driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
-        driverController.rightBumper().onTrue(new IntakeCommand(intake, deploy).withName("IntakeCommand"));
-        driverController.povDown().onTrue(new RetractIntakeCommand(intake, deploy).withName("RetractCommand"));
 
-        // operatorController.rightBumper().whileTrue(new ClimbCommand(climber, deploy));
+		// <------- Operator Controller ------->
+        operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
+		operatorController
+                .rightTrigger()
+                .whileTrue(new SwerveCommands()
+                        .joystickDrivePointToHub(swerve, driverController::getLeftY, driverController::getLeftX));
+
+        operatorController.leftTrigger().onTrue(new IntakeCommand(intake, deploy).withName("IntakeCommand"));
+        operatorController.leftBumper().onTrue(new RetractIntakeCommand(intake, deploy).withName("RetractCommand"));
+        // operatorController.rightBumper().whileTrue(new ClimbCommand(climber, deploy).withName("ClimbCommand"));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */
     private void registerCommands() {
-        NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, hood, indexer).withTimeout(4.0));
-        NamedCommands.registerCommand("IntakeCommand", new RetractIntakeCommand(intake, deploy).withTimeout(3.0));
+        NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, hood, indexer));
+        NamedCommands.registerCommand("IntakeCommand", new RetractIntakeCommand(intake, deploy));
         // NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber, deploy));
     }
 

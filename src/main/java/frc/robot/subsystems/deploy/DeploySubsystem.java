@@ -23,7 +23,7 @@ public class DeploySubsystem extends SubsystemBase {
     private final LoggedMechanismRoot2d root;
     private final LoggedMechanismLigament2d deploy;
 
-    private Distance targetDistance = kRetractedDistance;
+    private Distance targetDistance = kMinimumDistance;
 
     public DeploySubsystem(DeployIO io) {
         this.io = io;

@@ -8,6 +8,6 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 public class IntakeCommand extends SequentialCommandGroup {
 
     public IntakeCommand(IntakeSubsystem intake, DeploySubsystem deploy) {
-        addCommands(deploy.goToDistanceCommand(DeployConstants.kExtendedDistance), intake.runCommand());
+        addCommands(deploy.goToDistanceCommand(DeployConstants.kMaximumDistance), intake.runCommand());
     }
 }

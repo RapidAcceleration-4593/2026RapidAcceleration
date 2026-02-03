@@ -12,8 +12,8 @@ public interface DeployIO {
 
     @AutoLog
     public static class DeployInputs {
-        public Distance distance = kRetractedDistance;
-        public Distance targetDistance = kRetractedDistance;
+        public Distance distance = kMinimumDistance;
+        public Distance targetDistance = kMinimumDistance;
 
         public boolean inLimitSwitch = false;
         public boolean outLimitSwitch = false;

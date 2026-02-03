@@ -84,9 +84,9 @@ public class DeployIOReal implements DeployIO {
         controller.setIAccum(0);
 
         if (isAtRetracted()) {
-            encoder.setPosition(kRetractedDistance.in(Inches));
+            encoder.setPosition(kMinimumDistance.in(Inches));
         } else if (isAtExtended()) {
-            encoder.setPosition(kExtendedDistance.in(Inches));
+            encoder.setPosition(kMaximumDistance.in(Inches));
         }
 
         setPosition(Inches.of(encoder.getPosition()));

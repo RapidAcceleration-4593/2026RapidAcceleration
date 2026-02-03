@@ -33,10 +33,10 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
                 LinearSystemId.createElevatorSystem(
                         gearbox, kCarriageMass.in(Kilograms), kDrumRadius.in(Meters), kMotorToDeployGearing),
                 gearbox,
-                kRetractedDistance.in(Meters),
-                kExtendedDistance.in(Meters),
+                kMinimumDistance.in(Meters),
+                kMaximumDistance.in(Meters),
                 false,
-                kRetractedDistance.in(Meters));
+                kMinimumDistance.in(Meters));
 
         motorSim = new SparkMaxSim(motor, gearbox);
         encoderSim = new SparkMaxAlternateEncoderSim(motor);

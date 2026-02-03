@@ -61,7 +61,7 @@ public class HoodIOReal implements HoodIO {
 
     @Override
     public void updateInputs(HoodInputs inputs) {
-        inputs.angle = Degrees.of(encoder.getPosition());
+        inputs.angle = Degrees.of(encoder.getPosition()).plus(kMinimumAngle);
         inputs.targetAngle = Degrees.of(controller.getSetpoint());
 
         inputs.limitswitch = limitswitch.get() ^ kInvertHoodLS;

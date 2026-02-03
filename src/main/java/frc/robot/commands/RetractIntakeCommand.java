@@ -8,6 +8,6 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 public class RetractIntakeCommand extends SequentialCommandGroup {
 
     public RetractIntakeCommand(IntakeSubsystem intake, DeploySubsystem deploy) {
-        addCommands(intake.stopCommand(), deploy.goToDistanceCommand(DeployConstants.kRetractedDistance));
+        addCommands(intake.stopCommand(), deploy.goToDistanceCommand(DeployConstants.kMinimumDistance));
     }
 }

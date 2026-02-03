@@ -12,7 +12,7 @@ public class ClimbCommand extends SequentialCommandGroup {
     public ClimbCommand(ClimberSubsystem climber, DeploySubsystem deploy) {
         addCommands(
                 Commands.parallel(
-                        deploy.goToDistanceCommand(DeployConstants.kRetractedDistance),
+                        deploy.goToDistanceCommand(DeployConstants.kMinimumDistance),
                         climber.goToDistanceCommand(ClimberConstants.kMaximumDistance)),
                 climber.goToDistanceCommand(ClimberConstants.kMinimumDistance));
     }

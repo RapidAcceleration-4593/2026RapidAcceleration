@@ -3,6 +3,7 @@ package frc.robot.subsystems.hood;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.hood.HoodConstants.*;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
@@ -121,7 +122,8 @@ public class HoodSubsystem extends SubsystemBase {
 
     /** Sets the angle of the closed-loop PID control. */
     private void setPosition(Angle angle) {
-        this.targetAngle = angle;
-        io.setPosition(angle);
+		Angle clampedAngle = Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
+    	targetAngle = clampedAngle;
+        io.setPosition(clampedAngle);
     }
 }
