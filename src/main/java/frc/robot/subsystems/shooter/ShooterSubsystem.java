@@ -23,10 +23,11 @@ public class ShooterSubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Shooter", inputs);
-    }
+		targetVelocity = inputs.targetVelocity;
 
-    public Command runAtVelocityCommand(AngularVelocity velocity) {
-        return runOnce(() -> io.setVelocity(velocity)).finallyDo(io::stop);
+		if (getCurrentCommand() != null)
+            Logger.recordOutput("Command", this.getCurrentCommand().getName());
+        else Logger.recordOutput("Command", "none");
     }
 
     public AngularVelocity getCurrentVelocity() {
@@ -41,7 +42,16 @@ public class ShooterSubsystem extends SubsystemBase {
         return inputs.velocity.isNear(targetVelocity, kVelocityTolerance);
     }
 
+	public Command runAtVelocityCommand(AngularVelocity velocity) {
+        return run(() -> setVelocity(velocity)).finallyDo(io::stop);
+    }
+
     public Command stopCommand() {
         return runOnce(io::stop);
     }
+
+	private void setVelocity(AngularVelocity velocity) {
+		targetVelocity = velocity;
+		io.setVelocity(velocity);
+	}
 }
