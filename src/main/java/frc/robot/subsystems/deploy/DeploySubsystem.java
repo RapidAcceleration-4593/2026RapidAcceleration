@@ -44,9 +44,11 @@ public class DeploySubsystem extends SubsystemBase {
 
         deploy.setLength(inputs.distance);
         Logger.recordOutput("Mechanisms/Deploy", mechanism);
-        if (getCurrentCommand() != null)
+        if (getCurrentCommand() != null) {
             Logger.recordOutput("Command", this.getCurrentCommand().getName());
-        else Logger.recordOutput("Command", "none");
+        } else {
+            Logger.recordOutput("Command", "none");
+        }
     }
 
     public Distance getCurrentDistance() {

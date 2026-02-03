@@ -38,7 +38,7 @@ public class ShooterIOReal implements ShooterIO {
                         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                         .apply(new FeedForwardConfig().sva(kS, kV, kA))
                         .apply(new MAXMotionConfig()
-								.cruiseVelocity(kCruiseVelocity.in(RPM))
+                                .cruiseVelocity(kCruiseVelocity.in(RPM))
                                 .maxAcceleration(kMaxAcceleration.in(RPM.per(Second)))));
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

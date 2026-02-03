@@ -7,6 +7,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.RetractIntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.swerve.DriveToClusterCommand;
 import frc.robot.commands.swerve.PathfindCommands;
@@ -84,7 +85,8 @@ public class RobotContainer {
         driverController.leftBumper().whileTrue(new PathfindCommands().pathfindToOppositeZone(swerve));
 
         driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
-        driverController.rightBumper().whileTrue(new IntakeCommand(intake, deploy));
+        driverController.rightBumper().onTrue(new IntakeCommand(intake, deploy).withName("IntakeCommand"));
+        driverController.povDown().onTrue(new RetractIntakeCommand(intake, deploy).withName("RetractCommand"));
 
         // operatorController.rightBumper().whileTrue(new ClimbCommand(climber, deploy));
     }
@@ -92,7 +94,7 @@ public class RobotContainer {
     /** Register NamedCommands to be used in PathPlanner for autonomous. */
     private void registerCommands() {
         NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, hood, indexer).withTimeout(4.0));
-        NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy).withTimeout(3.0));
+        NamedCommands.registerCommand("IntakeCommand", new RetractIntakeCommand(intake, deploy).withTimeout(3.0));
         // NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber, deploy));
     }
 
