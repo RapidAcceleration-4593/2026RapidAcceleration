@@ -12,7 +12,7 @@ public interface ObjectDetectionIO {
     }
 
     /** Represents a single target's yaw/pitch from the camera. */
-    public record TargetObservation(Rotation2d yaw, Rotation2d pitch) {}
+    public static record TargetObservation(Rotation2d yaw, Rotation2d pitch) {}
 
     public default void updateInputs(ObjectDetectionInputs inputs) {}
 }
