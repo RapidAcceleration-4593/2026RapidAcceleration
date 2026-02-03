@@ -24,6 +24,9 @@ public class DualCamODSubsystem {
 
 	public /*possibly change that */ Pose2d positionFromDualYaw (ObjectDetectionIO.TargetObservation a, ObjectDetectionIO.TargetObservation b){
 		double distanceBetweenCams = KSyncableCameras[0].cameraToFrontCenter.getX() - KSyncableCameras[1].cameraToFrontCenter.getX();
+		double unscaledDistance = (Math.cos(b.yaw().getRadians()) * Math.sin(a.yaw().getRadians())) / (Math.sin(b.yaw().getRadians())) + Math.cos(a.yaw().getRadians());
+		//equation seems wrong, check this later
+		double scaleFactor = distanceBetweenCams/unscaledDistance;
 	}
 
 
