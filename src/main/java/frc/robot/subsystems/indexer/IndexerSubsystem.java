@@ -2,9 +2,7 @@ package frc.robot.subsystems.indexer;
 
 import static frc.robot.subsystems.indexer.IndexerConstants.*;
 
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -22,26 +20,12 @@ public class IndexerSubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Indexer", inputs);
-    }
 
-    /**
-     * Constructs a command to only run the spindexer at a set voltage.
-     *
-     * @param volts The voltage to apply to the motor.
-     * @return A command to set the spindexer motor and stop when complete.
-     */
-    public Command setSpindexerVoltageCommand(Voltage volts) {
-        return Commands.runOnce(() -> io.setSpindexerVoltage(volts));
-    }
-
-    /**
-     * Constructs a command to only run the feeder at a set voltage.
-     *
-     * @param volts The voltage to apply to the motor.
-     * @return A command to set the feeder motor and stop when complete.
-     */
-    public Command setFeederVoltageCommand(Voltage volts) {
-        return Commands.runOnce(() -> io.setFeederVoltage(volts));
+        if (getCurrentCommand() != null) {
+            Logger.recordOutput("Command", this.getCurrentCommand().getName());
+        } else {
+            Logger.recordOutput("Command", "none");
+        }
     }
 
     /**
@@ -50,11 +34,12 @@ public class IndexerSubsystem extends SubsystemBase {
      * @return A command to run the spindexer and feeder motors and stop when complete.
      */
     public Command runCommand() {
-        return runOnce(() -> {
+        return startEnd(
+                () -> {
                     io.setSpindexerVoltage(kSpindexerVolts);
                     io.setFeederVoltage(kFeederVolts);
-                })
-                .finallyDo(() -> {
+                },
+                () -> {
                     io.stopSpindexer();
                     io.stopFeeder();
                 });
@@ -65,14 +50,9 @@ public class IndexerSubsystem extends SubsystemBase {
      *
      * @return A command to stop the motors immediately.
      */
-    public Command stopSpindexerCommand() {
+    public Command stopCommand() {
         return runOnce(() -> {
             io.stopSpindexer();
-        });
-    }
-
-    public Command stopFeederCommand() {
-        return runOnce(() -> {
             io.stopFeeder();
         });
     }

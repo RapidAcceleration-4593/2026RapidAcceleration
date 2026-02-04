@@ -5,10 +5,13 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.MomentOfInertia;
+import edu.wpi.first.units.measure.Voltage;
 
 public final class ShooterConstants {
 
     public static final int kShooterMotorID = 7;
+
+    public static final Voltage kShooterVolts = Volts.of(10); // Only for experimental use.
 
     public static final double kP = 0.0; // 0.0011
     public static final double kI = 0.0; // 0.001

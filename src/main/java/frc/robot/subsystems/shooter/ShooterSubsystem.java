@@ -12,7 +12,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final ShooterInputsAutoLogged inputs;
     private final ShooterIO io;
 
-    // private AngularVelocity targetVelocity = kZeroVelocity;
+    private AngularVelocity targetVelocity = kZeroVelocity;
 
     public ShooterSubsystem(ShooterIO io) {
         this.io = io;
@@ -23,11 +23,13 @@ public class ShooterSubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Shooter", inputs);
-        // targetVelocity = inputs.targetVelocity;
+        targetVelocity = inputs.targetVelocity;
 
-        if (getCurrentCommand() != null)
+        if (getCurrentCommand() != null) {
             Logger.recordOutput("Command", this.getCurrentCommand().getName());
-        else Logger.recordOutput("Command", "none");
+        } else {
+            Logger.recordOutput("Command", "none");
+        }
     }
 
     public AngularVelocity getCurrentVelocity() {
@@ -38,18 +40,17 @@ public class ShooterSubsystem extends SubsystemBase {
         return inputs.targetVelocity;
     }
 
-    // public boolean atTargetVelocity() {
-    // return inputs.velocity.isNear(targetVelocity, kVelocityTolerance);
-    // }
+    public boolean atTargetVelocity() {
+        return inputs.velocity.isNear(targetVelocity, kVelocityTolerance);
+    }
 
     /**
-     * Constructs a command to run the shooter at a set voltage.
+     * Constructs a command to run the shooter at a set voltage. ONLY FOR EXPERIMENTAL USE.
      *
-     * @param volts The voltage to apply to the motor.
      * @return A command to set the motor voltage and stop when complete.
      */
-    public Command setVoltageCommand(double volts) {
-        return runOnce(() -> io.setVoltage(volts));
+    public Command runCommand() {
+        return startEnd(() -> io.setVoltage(kShooterVolts), io::stop);
     }
 
     /**
@@ -58,9 +59,9 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param velocity The velocity to apply to the closed-loop PID control.
      * @return A command to run the motor at a velocity and stop when completed.
      */
-    // public Command runAtVelocityCommand(AngularVelocity velocity) {
-    //     return run(() -> this.setVelocity(velocity)).finallyDo(io::stop);
-    // }
+    public Command runAtVelocityCommand(AngularVelocity velocity) {
+        return runOnce(() -> setVelocity(velocity));
+    }
 
     /**
      * Constructs a command to stop the shooter motor.
@@ -72,8 +73,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** Sets the velocity of the closed-loop PID control. */
-    // private void setVelocity(AngularVelocity velocity) {
-    // targetVelocity = velocity;
-    // io.setVelocity(velocity);
-    // }
+    private void setVelocity(AngularVelocity velocity) {
+        targetVelocity = velocity;
+        io.setVelocity(velocity);
+    }
 }

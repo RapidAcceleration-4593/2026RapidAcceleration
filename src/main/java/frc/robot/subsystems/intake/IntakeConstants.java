@@ -10,7 +10,7 @@ public final class IntakeConstants {
 
     public static final int kIntakeMotorID = 9;
 
-    public static final Voltage kIntakeVolts = Volts.of(0);
+    public static final Voltage kIntakeVolts = Volts.of(10);
     public static final int kMaxCapacity = 35;
 
     public static final double kMotorToIntakeGearing = 4;

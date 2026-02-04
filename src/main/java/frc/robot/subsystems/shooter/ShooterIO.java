@@ -22,10 +22,10 @@ public interface ShooterIO {
     public default void updateInputs(ShooterInputs inputs) {}
 
     /** Sets the velocity of the shooter motor. */
-    // public default void setVelocity(AngularVelocity velocity) {}
+    public default void setVelocity(AngularVelocity velocity) {}
 
     /** Sets the voltage of the shooter motor. */
-    public default void setVoltage(double volts) {}
+    public default void setVoltage(Voltage volts) {}
 
     /** Stops the shooter motor immediately. */
     public default void stop() {}

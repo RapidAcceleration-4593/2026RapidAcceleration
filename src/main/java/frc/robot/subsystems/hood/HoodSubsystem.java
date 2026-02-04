@@ -52,9 +52,11 @@ public class HoodSubsystem extends SubsystemBase {
 
         hood.setAngle(inputs.angle);
         Logger.recordOutput("Mechanisms/Hood", mechanism);
-        if (getCurrentCommand() != null)
+        if (getCurrentCommand() != null) {
             Logger.recordOutput("Command", this.getCurrentCommand().getName());
-        else Logger.recordOutput("Command", "none");
+        } else {
+            Logger.recordOutput("Command", "none");
+        }
     }
 
     public Angle getCurrentAngle() {
@@ -76,7 +78,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @return A command to set the motor voltage and stop when complete.
      */
     public Command setVoltageCommand(Voltage volts) {
-        return Commands.runOnce(() -> io.setVoltage(volts)).finallyDo(io::stop);
+        return startEnd(() -> io.setVoltage(volts), io::stop);
     }
 
     /**
@@ -86,7 +88,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @return A command to run the motor to an angle and stop when complete.
      */
     public Command goToAngleCommand(Angle angle) {
-        return run(() -> this.setPosition(angle)).until(this::atTargetAngle).finallyDo(io::stop);
+        return runOnce(() -> setPosition(angle));
     }
 
     /**
@@ -95,7 +97,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @return A command to run the motor to the calculated Hub angle without stopping.
      */
     public Command pointAtHubCommand() {
-        return run(() -> this.setPosition(calculateHubAngle().get())).finallyDo(io::stop);
+        return run(() -> setPosition(calculateHubAngle().get()));
     }
 
     /**
@@ -113,11 +115,13 @@ public class HoodSubsystem extends SubsystemBase {
      * @return An angle supplier from a linear regression equation.
      */
     private Supplier<Angle> calculateHubAngle() {
-        Pose2d targetPose = FieldUtil.getTargetHubPose();
-        Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);
+        return () -> {
+            Pose2d targetPose = FieldUtil.getTargetHubPose();
+            Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);
 
-        Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
-        return () -> Degrees.of(10.0 * distance.in(Meters));
+            Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
+            return Degrees.of(10.0 * distance.in(Meters));
+        };
     }
 
     /** Sets the angle of the closed-loop PID control. */

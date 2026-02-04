@@ -35,11 +35,11 @@ public class IndexerIOReal implements IndexerIO {
         inputs.spindexerVelocity = RPM.of(spindexerMotor.getEncoder().getVelocity());
         inputs.feederVelocity = RPM.of(feederMotor.getEncoder().getVelocity());
 
-        inputs.spindexerCurrent = Amps.of(spindexerMotor.getOutputCurrent());
-        inputs.feederCurrent = Amps.of(feederMotor.getOutputCurrent());
-
         inputs.spindexerVolts = Volts.of(spindexerMotor.getAppliedOutput() * spindexerMotor.getBusVoltage());
         inputs.feederVolts = Volts.of(feederMotor.getAppliedOutput() * feederMotor.getBusVoltage());
+
+        inputs.spindexerCurrent = Amps.of(spindexerMotor.getOutputCurrent());
+        inputs.feederCurrent = Amps.of(feederMotor.getOutputCurrent());
     }
 
     @Override

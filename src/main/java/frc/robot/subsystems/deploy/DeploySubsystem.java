@@ -71,7 +71,7 @@ public class DeploySubsystem extends SubsystemBase {
      * @return A command to set the motor voltage and stop when complete.
      */
     public Command setVoltageCommand(Voltage volts) {
-        return Commands.runOnce(() -> io.setVoltage(volts)).finallyDo(io::stop);
+        return startEnd(() -> io.setVoltage(volts), io::stop);
     }
 
     /**
@@ -81,8 +81,7 @@ public class DeploySubsystem extends SubsystemBase {
      * @return A command to run the motor to a distance and stop when complete.
      */
     public Command goToDistanceCommand(Distance distance) {
-        return Commands.parallel(runOnce(() -> this.setPosition(distance)), Commands.waitUntil(this::atTargetDistance))
-                .finallyDo(io::stop);
+        return runOnce(() -> setPosition(distance));
     }
 
     /**

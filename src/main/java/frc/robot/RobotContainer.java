@@ -1,6 +1,5 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Controllers.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -68,20 +67,9 @@ public class RobotContainer {
                         swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
 
         // <------- Experimental ------->
-        driverController.a().onTrue(shooter.setVoltageCommand(1.0));
-        driverController.a().onFalse(shooter.stopCommand());
-
-        driverController.b().whileTrue(indexer.setSpindexerVoltageCommand(Volts.of(4)));
-        driverController.b().onFalse(indexer.stopSpindexerCommand());
-
-        driverController.x().whileTrue(indexer.setFeederVoltageCommand(Volts.of(10)));
-        driverController.x().onFalse(indexer.stopFeederCommand());
-
-        driverController.y().whileTrue(intake.setVoltageCommand(Volts.of(12)));
-        driverController.y().onFalse(intake.stopCommand());
-
-        driverController.leftBumper().onTrue(SwerveCommands.feedforwardCharacterization(swerve));
-        driverController.rightBumper().onTrue(SwerveCommands.wheelRadiusCharacterization(swerve));
+        driverController.a().onTrue(shooter.runCommand());
+        driverController.b().whileTrue(indexer.runCommand());
+        driverController.y().whileTrue(intake.runCommand());
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());
