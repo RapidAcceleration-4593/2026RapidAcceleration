@@ -1,10 +1,12 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Controllers.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.ShootCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
 import frc.robot.subsystems.deploy.DeploySubsystem;
@@ -67,9 +69,12 @@ public class RobotContainer {
                         swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
 
         // <------- Experimental ------->
-        driverController.a().onTrue(shooter.runCommand());
-        driverController.b().whileTrue(indexer.runCommand());
-        driverController.y().whileTrue(intake.runCommand());
+        driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
+
+        driverController.a().whileTrue(hood.setVoltageCommand(Volts.of(4)));
+        driverController.b().whileTrue(hood.setVoltageCommand(Volts.of(-4)));
+        driverController.x().whileTrue(deploy.setVoltageCommand(Volts.of(4)));
+        driverController.y().whileTrue(deploy.setVoltageCommand(Volts.of(-4)));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());
@@ -93,7 +98,7 @@ public class RobotContainer {
     private void registerCommands() {
         // NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, hood, indexer));
         // NamedCommands.registerCommand("IntakeCommand", new RetractIntakeCommand(intake, deploy));
-        // NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber, deploy));
+        // NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
     }
 
     /** Select the command to run in autonomous mode. */

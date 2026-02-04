@@ -8,7 +8,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -74,7 +73,7 @@ public class ClimberSubsystem extends SubsystemBase {
      * @return A command to set the left motor voltage and stop when complete.
      */
     public Command setLeftVoltageCommand(Voltage volts) {
-        return Commands.runOnce(() -> io.setLeftVoltage(volts)).finallyDo(io::stopLeft);
+        return startEnd(() -> io.setLeftVoltage(volts), io::stopLeft);
     }
 
     /**
@@ -84,7 +83,7 @@ public class ClimberSubsystem extends SubsystemBase {
      * @return A command to set the right motor voltage and stop when complete.
      */
     public Command setRightVoltageCommand(Voltage volts) {
-        return Commands.runOnce(() -> io.setRightVoltage(volts)).finallyDo(io::stopRight);
+        return startEnd(() -> io.setRightVoltage(volts), io::stopRight);
     }
 
     /**

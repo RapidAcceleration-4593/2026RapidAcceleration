@@ -9,11 +9,13 @@ public class ShootCommand extends ParallelCommandGroup {
 
     /** Points the hood at the hub, spins up the shooter, and runs the indexer until this Command is canceled. */
     public ShootCommand(ShooterSubsystem shooter, HoodSubsystem hood, IndexerSubsystem indexer) {
-        addCommands();
-        // shooter.runAtVelocityCommand(ShooterConstants.kShootVelocity),
-        // hood.pointAtHubCommand(),
-        // Commands.waitUntil(() -> shooter.atTargetVelocity()
-        //                 && shooter.getTargetVelocity().isEquivalent(ShooterConstants.kShootVelocity))
-        //         .andThen(indexer.runCommand()));
+        addCommands(
+			shooter.runCommand(),
+			indexer.runCommand()
+
+			// shooter.runAtVelocityCommand(ShooterConstants.kShootVelocity),
+			// hood.pointAtHubCommand(),
+			// indexer.runCommand().onlyWhile(shooter::atTargetVelocity)			
+		);
     }
 }

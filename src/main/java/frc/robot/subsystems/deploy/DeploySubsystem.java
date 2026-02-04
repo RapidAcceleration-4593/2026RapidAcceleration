@@ -81,7 +81,7 @@ public class DeploySubsystem extends SubsystemBase {
      * @return A command to run the motor to a distance and stop when complete.
      */
     public Command goToDistanceCommand(Distance distance) {
-        return runOnce(() -> setPosition(distance));
+        return startEnd(() -> setPosition(distance), io::stop).until(this::atTargetDistance);
     }
 
     /**

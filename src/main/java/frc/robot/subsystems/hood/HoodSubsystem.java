@@ -88,7 +88,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @return A command to run the motor to an angle and stop when complete.
      */
     public Command goToAngleCommand(Angle angle) {
-        return runOnce(() -> setPosition(angle));
+        return startEnd(() -> setPosition(angle), io::stop).until(this::atTargetAngle);
     }
 
     /**
@@ -97,7 +97,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @return A command to run the motor to the calculated Hub angle without stopping.
      */
     public Command pointAtHubCommand() {
-        return run(() -> setPosition(calculateHubAngle().get()));
+        return runEnd(() -> setPosition(calculateHubAngle().get()), io::stop);
     }
 
     /**
