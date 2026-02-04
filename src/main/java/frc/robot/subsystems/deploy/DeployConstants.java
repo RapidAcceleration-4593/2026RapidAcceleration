@@ -9,10 +9,10 @@ import edu.wpi.first.units.measure.Mass;
 
 public final class DeployConstants {
 
-    public static final int kDeployMotorID = 0;
+    public static final int kDeployMotorID = 6;
 
-    public static final int kRetractedLSChannel = 0;
-    public static final int kExtendedLSChannel = 0;
+    public static final int kRetractedLSChannel = 1;
+    public static final int kExtendedLSChannel = 2;
 
     public static final boolean kInvertInLS = false;
     public static final boolean kInvertOutLS = false;

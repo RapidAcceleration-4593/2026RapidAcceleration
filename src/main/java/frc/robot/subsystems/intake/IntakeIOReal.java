@@ -19,7 +19,7 @@ public class IntakeIOReal implements IntakeIO {
 
     public IntakeIOReal() {
         intakeConfig = new SparkMaxConfig();
-        intakeConfig.idleMode(IdleMode.kBrake).inverted(false).voltageCompensation(12.0);
+        intakeConfig.idleMode(IdleMode.kBrake).inverted(true).voltageCompensation(12.0);
 
         motor = new SparkMax(kIntakeMotorID, MotorType.kBrushless);
         motor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

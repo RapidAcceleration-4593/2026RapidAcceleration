@@ -31,7 +31,7 @@ public class IndexerSubsystem extends SubsystemBase {
      * @return A command to set the spindexer motor and stop when complete.
      */
     public Command setSpindexerVoltageCommand(Voltage volts) {
-        return Commands.runOnce(() -> io.setSpindexerVoltage(volts)).finallyDo(io::stopSpindexer);
+        return Commands.runOnce(() -> io.setSpindexerVoltage(volts));
     }
 
     /**
@@ -41,7 +41,7 @@ public class IndexerSubsystem extends SubsystemBase {
      * @return A command to set the feeder motor and stop when complete.
      */
     public Command setFeederVoltageCommand(Voltage volts) {
-        return Commands.runOnce(() -> io.setFeederVoltage(volts)).finallyDo(io::stopFeeder);
+        return Commands.runOnce(() -> io.setFeederVoltage(volts));
     }
 
     /**
@@ -65,9 +65,14 @@ public class IndexerSubsystem extends SubsystemBase {
      *
      * @return A command to stop the motors immediately.
      */
-    public Command stopCommand() {
+    public Command stopSpindexerCommand() {
         return runOnce(() -> {
             io.stopSpindexer();
+        });
+    }
+
+    public Command stopFeederCommand() {
+        return runOnce(() -> {
             io.stopFeeder();
         });
     }

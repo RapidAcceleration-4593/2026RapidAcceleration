@@ -22,18 +22,18 @@ public final class SwerveConstants {
     public static final Mass kRobotMass = Pounds.of(100.0);
     public static final MomentOfInertia kRobotMOI = KilogramSquareMeters.of(5.311);
 
-    private static final Distance kWheelRadius = Inches.of(2.0);
+    private static final Distance kWheelRadius = Inches.of(1.910);
     public static final double kWheelCOF = 1.2;
 
     /** Current at which the wheels start to slip. */
     private static final Current kSlipCurrent = Amps.of(120.0);
 
     /** Theoretical Maximum Speed at 12V. */
-    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(4.5);
+    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(3.0); // 4.5
 
-    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(5.0);
-    public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(540.0);
-    public static final AngularAcceleration kAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
+    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(3.0); // 5.0
+    public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(270.0); // 540.0
+    public static final AngularAcceleration kAngularAcceleration = DegreesPerSecondPerSecond.of(360.0); // 720.0
 
     /** CANBus/CANivore that all modules are connected to. */
     public static final CANBus kCANBus = new CANBus("drivebase");
@@ -63,8 +63,12 @@ public final class SwerveConstants {
             .withKA(0.0)
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
-    private static final Slot0Configs kDriveGains =
-            new Slot0Configs().withKP(0.1).withKI(0.0).withKD(0.0).withKS(0.0).withKV(0.124);
+    private static final Slot0Configs kDriveGains = new Slot0Configs()
+            .withKP(0.1)
+            .withKI(0.0)
+            .withKD(0.0)
+            .withKS(0.14574)
+            .withKV(0.62698);
 
     private static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
     private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.Voltage;
@@ -124,7 +128,7 @@ public final class SwerveConstants {
     private static final int kFrontLeftDriveMotorId = 6;
     private static final int kFrontLeftSteerMotorId = 7;
     private static final int kFrontLeftEncoderId = 1;
-    private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.00390625);
+    private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.31982421875);
     private static final boolean kFrontLeftSteerMotorInverted = true;
     private static final boolean kFrontLeftEncoderInverted = false;
 
@@ -135,7 +139,7 @@ public final class SwerveConstants {
     private static final int kFrontRightDriveMotorId = 8;
     private static final int kFrontRightSteerMotorId = 9;
     private static final int kFrontRightEncoderId = 2;
-    private static final Angle kFrontRightEncoderOffset = Rotations.of(0.1103515625);
+    private static final Angle kFrontRightEncoderOffset = Rotations.of(0.2138671875);
     private static final boolean kFrontRightSteerMotorInverted = true;
     private static final boolean kFrontRightEncoderInverted = false;
 
@@ -146,7 +150,7 @@ public final class SwerveConstants {
     private static final int kBackLeftDriveMotorId = 10;
     private static final int kBackLeftSteerMotorId = 11;
     private static final int kBackLeftEncoderId = 3;
-    private static final Angle kBackLeftEncoderOffset = Rotations.of(-0.086669921875);
+    private static final Angle kBackLeftEncoderOffset = Rotations.of(-0.1611328125);
     private static final boolean kBackLeftSteerMotorInverted = true;
     private static final boolean kBackLeftEncoderInverted = false;
 
@@ -157,7 +161,7 @@ public final class SwerveConstants {
     private static final int kBackRightDriveMotorId = 12;
     private static final int kBackRightSteerMotorId = 13;
     private static final int kBackRightEncoderId = 4;
-    private static final Angle kBackRightEncoderOffset = Rotations.of(-0.4140625);
+    private static final Angle kBackRightEncoderOffset = Rotations.of(-0.139892578125);
     private static final boolean kBackRightSteerMotorInverted = true;
     private static final boolean kBackRightEncoderInverted = false;
 
