@@ -15,7 +15,7 @@ public interface ClimberIO {
         public Voltage leftAppliedVolts = Volts.zero();
         public Current leftOutputCurrent = Amps.zero();
 
-		public Voltage rightAppliedVolts = Volts.zero();
+        public Voltage rightAppliedVolts = Volts.zero();
         public Current rightOutputCurrent = Amps.zero();
     }
 
@@ -25,12 +25,12 @@ public interface ClimberIO {
     /** Sets the voltage for the left climber. */
     public default void setLeftVoltage(Voltage volts) {}
 
-	/** Sets the voltage for the right climber. */
+    /** Sets the voltage for the right climber. */
     public default void setRightVoltage(Voltage volts) {}
 
     /** Stops the left climber motor immediately. */
     public default void stopLeft() {}
 
-	/** Stops the right climber motor immediately. */
+    /** Stops the right climber motor immediately. */
     public default void stopRight() {}
 }

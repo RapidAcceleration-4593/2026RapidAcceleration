@@ -49,7 +49,7 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     private boolean shouldStop() {
-		// TODO: Implement.
+        // TODO: Implement.
         return false;
     }
 
@@ -77,7 +77,7 @@ public class ClimberSubsystem extends SubsystemBase {
         return Commands.runOnce(() -> io.setLeftVoltage(volts)).finallyDo(io::stopLeft);
     }
 
-	/**
+    /**
      * Constructs a command to run the right climber at a set voltage.
      *
      * @param volts The voltage to apply to the motor.
@@ -101,12 +101,12 @@ public class ClimberSubsystem extends SubsystemBase {
                     output = MathUtil.clamp(output, -12.0, 12.0);
 
                     io.setLeftVoltage(Volts.of(output));
-					io.setRightVoltage(Volts.of(output));
+                    io.setRightVoltage(Volts.of(output));
                 }))
                 .until(this::shouldStop)
                 .finallyDo(() -> {
                     io.stopLeft();
-					io.stopRight();
+                    io.stopRight();
                     controller.setSetpoint(inputs.distance.in(Inches));
                 });
     }
@@ -120,7 +120,7 @@ public class ClimberSubsystem extends SubsystemBase {
         return runOnce(io::stopLeft);
     }
 
-	/**
+    /**
      * Constructs a command to stop the right climber motor.
      *
      * @return A command to stop the motor immediately.

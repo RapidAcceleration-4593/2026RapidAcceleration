@@ -73,8 +73,8 @@ public class RobotContainer {
         driverController.x().whileTrue(indexer.setFeederVoltageCommand(Volts.of(0)));
         driverController.y().whileTrue(intake.setVoltageCommand(Volts.of(0)));
 
-		driverController.leftBumper().onTrue(SwerveCommands.feedforwardCharacterization(swerve));
-		driverController.rightBumper().onTrue(SwerveCommands.wheelRadiusCharacterization(swerve));
+        driverController.leftBumper().onTrue(SwerveCommands.feedforwardCharacterization(swerve));
+        driverController.rightBumper().onTrue(SwerveCommands.wheelRadiusCharacterization(swerve));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());

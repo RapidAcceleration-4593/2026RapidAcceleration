@@ -39,7 +39,7 @@ public class ClimberIOReal implements ClimberIO {
         inputs.leftAppliedVolts = Volts.of(leftMotor.getAppliedOutput() * leftMotor.getBusVoltage());
         inputs.leftOutputCurrent = Amps.of(leftMotor.getOutputCurrent());
 
-		inputs.rightAppliedVolts = Volts.of(rightMotor.getAppliedOutput() * rightMotor.getBusVoltage());
+        inputs.rightAppliedVolts = Volts.of(rightMotor.getAppliedOutput() * rightMotor.getBusVoltage());
         inputs.rightOutputCurrent = Amps.of(rightMotor.getOutputCurrent());
     }
 
@@ -48,7 +48,7 @@ public class ClimberIOReal implements ClimberIO {
         leftMotor.setVoltage(volts);
     }
 
-	@Override
+    @Override
     public void setRightVoltage(Voltage volts) {
         rightMotor.setVoltage(volts);
     }
@@ -58,8 +58,8 @@ public class ClimberIOReal implements ClimberIO {
         leftMotor.stopMotor();
     }
 
-	@Override
-	public void stopRight() {
-		rightMotor.stopMotor();
-	}
+    @Override
+    public void stopRight() {
+        rightMotor.stopMotor();
+    }
 }

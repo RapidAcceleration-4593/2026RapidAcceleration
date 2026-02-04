@@ -42,9 +42,11 @@ public class ClimberIOSim extends ClimberIOReal implements IPhysicsSim {
 
     @Override
     public void updatePlantSim() {
-		// TODO: Seperate left & right climber simulations.
-		double leftClimberInput = leftMotor.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts);
-		double rightClimberInput = leftMotor.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts);
+        // TODO: Seperate left & right climber simulations.
+        double leftClimberInput =
+                leftMotor.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts);
+        double rightClimberInput =
+                leftMotor.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts);
         climberSim.setInput(leftClimberInput + rightClimberInput);
         climberSim.update(0.2);
     }
@@ -58,8 +60,10 @@ public class ClimberIOSim extends ClimberIOReal implements IPhysicsSim {
     public void updateIOSim() {
         var drumRadPS = climberSim.getVelocityMetersPerSecond() / kDrumRadius.in(Meters);
         AngularVelocity motorAngularVelocity = RadiansPerSecond.of(drumRadPS * kMotorToClimberGearing);
-        leftMotorSim.iterate(motorAngularVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
-        rightMotorSim.iterate(motorAngularVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
+        leftMotorSim.iterate(
+                motorAngularVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
+        rightMotorSim.iterate(
+                motorAngularVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
         encoderSim.setDistance(climberSim.getPositionMeters());
     }
 }
