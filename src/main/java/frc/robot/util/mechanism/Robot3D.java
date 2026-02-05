@@ -12,10 +12,19 @@ public class Robot3D {
     private ArrayList<Mechanism3D> mechanisms = new ArrayList<>();
     private ArrayList<Runnable> updateRunnables = new ArrayList<>();
 
+    /**
+     * Creates a new {@link Robot3D}. The returned instance is not set as the singleton. Access to the singleton should
+     * always be done through {@link #getInstance()}.
+     */
     public Robot3D() {
         AutoLogOutputManager.addObject(this);
     }
 
+    /**
+     * Returns the singleton instance of the {@link Robot3D}.
+     *
+     * @return The singleton.
+     */
     public static Robot3D getInstance() {
         if (instance == null) {
             instance = new Robot3D();
@@ -23,6 +32,12 @@ public class Robot3D {
         return instance;
     }
 
+    /**
+     * Adds a dictionary of {@link Mechanism3D}s to this {@link Robot3D}.
+     *
+     * @param mechsAndIndexes The dictionary with a {@link Mechanism3D} as the key and the index that it should be
+     *     logged at as the value.
+     */
     public void addMechanisms(Dictionary<Mechanism3D, Integer> mechsAndIndexes) {
         var iter = mechsAndIndexes.keys();
         while (iter.hasMoreElements()) {
@@ -31,18 +46,30 @@ public class Robot3D {
         }
     }
 
+    /**
+     * Appends a list of {@link Mechanism3D}s to the current list of {@link Mechanism3D}s.
+     *
+     * @param mechs The list of {@link Mechanism3D}s.
+     */
     public void addMechanisms(Mechanism3D[] mechs) {
         for (int i = 0; i < mechs.length; i++) {
             addMechanism(mechs[i], i);
         }
     }
 
+    /**
+     * Adds a {@link Mechanism3D} at the given index.
+     *
+     * @param mech The {@link Mechanism3D} to add.
+     * @param index The index where the {@link Mechanism3D} should be placed.
+     */
     public void addMechanism(Mechanism3D mech, int index) {
         var name = mech.getName();
         for (var iMech : mechanisms) {
             if (iMech == null) continue;
-            if (name == iMech.getName() && !mech.equals(iMech)) {
-                throw new Error("Mechanism with name '" + name + "' has already been added to this Robot3D!");
+            if (name.equals(iMech.getName()) && !mech.equals(iMech)) {
+                throw new IllegalArgumentException(
+                        "Mechanism with name '" + name + "' has already been added to this Robot3D!");
             }
         }
 
@@ -51,7 +78,7 @@ public class Robot3D {
         }
 
         if (mechanisms.get(index) != null) {
-            throw new Error("Cannot put Mechanism '" + mech.getName() + "' at index " + index
+            throw new IllegalArgumentException("Cannot put Mechanism '" + mech.getName() + "' at index " + index
                     + " because it is already occupied by '"
                     + mechanisms.get(index).getName() + "'!");
         }
@@ -66,13 +93,22 @@ public class Robot3D {
         }
     }
 
+    /**
+     * Searches for and returns a {@link Mechanism3D} with a matching name. Throws an error if no match is found.
+     *
+     * @param name The name the returned {@link Mechanism3D} should have.
+     * @return A {@link Mechanism3D} with a matching name.
+     */
     Mechanism3D getMechanism(String name) {
         for (var mech : mechanisms) {
-            if (name == mech.getName()) {
+            if (mech == null) {
+                continue;
+            }
+            if (name.equals(mech.getName())) {
                 return mech;
             }
         }
-        throw new Error("Could not find Mechanism with name '" + name + "'!");
+        throw new IllegalArgumentException("Could not find Mechanism with name '" + name + "'!");
     }
 
     @AutoLogOutput(key = "MechanismPoses")

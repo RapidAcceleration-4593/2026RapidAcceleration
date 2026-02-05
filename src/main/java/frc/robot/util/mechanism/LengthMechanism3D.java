@@ -5,23 +5,24 @@ import edu.wpi.first.units.measure.Distance;
 public final class LengthMechanism3D extends SimpleMechanism3D {
 
     /**
-     * Creates a new {@link LengthMechanism3D} which will set the translation of the given {@link Node3D} along the given axis, relative to its parent node.
+     * Creates a new {@link LengthMechanism3D} which will set the translation of the given {@link Node3D} along the
+     * given axis, relative to its parent node.
      *
      * @param node The {@link Node3D} whose pose should be updated by this {@link LengthMechanism3D}.
-     * @param axis The axis, in object space, along which the {@link Node3D} should be
-     *     rotated.
+     * @param axis The axis, in object space, along which the {@link Node3D} should be rotated.
      */
     public LengthMechanism3D(Node3D node, Axis axis) {
         this(node, axis, false);
     }
 
     /**
-     * Creates a new {@link LengthMechanism3D} which will set the translation of the given {@link Node3D} along the given axis, relative to its parent node.
+     * Creates a new {@link LengthMechanism3D} which will set the translation of the given {@link Node3D} along the
+     * given axis, relative to its parent node.
      *
      * @param node The {@link Node3D} whose pose should be updated by this {@link LengthMechanism3D}.
-     * @param axis The axis, in object space, along which the {@link Node3D} should be
-     *     rotated.
-	 * @param inverted If true, the angle input to {@link #setLength()} will be multiplied by -1 before being applied to the {@link Node3D}.
+     * @param axis The axis, in object space, along which the {@link Node3D} should be rotated.
+     * @param inverted If true, the input to {@link #setLength()} will be multiplied by -1 before being applied to the
+     *     {@link Node3D}.
      */
     public LengthMechanism3D(Node3D node, Axis axis, boolean inverted) {
         super(node, axis, inverted);

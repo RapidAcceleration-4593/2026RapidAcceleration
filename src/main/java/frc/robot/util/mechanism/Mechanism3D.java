@@ -18,15 +18,18 @@ public abstract class Mechanism3D {
      */
     protected abstract String getName();
 
-	/**
-	 * Returns the {@link Runnable} that should be periodically called to update the return value of {@link #getPose3d()}.
-	 * @return A runnable that should be periodically called to update this {@link Mechanism3D}.
-	 */
+    /**
+     * Returns the {@link Runnable} that should be periodically called to update the return value of
+     * {@link #getPose3d()}.
+     *
+     * @return A runnable that should be periodically called to update this {@link Mechanism3D}.
+     */
     protected abstract Runnable getUpdateRunnable();
 
-	/**
-	 * Returns the robot space position and rotation of this {@link Mechanism3D}.
-	 * @return The pose, in robot space, of this {@link Mechanism3D}.
-	 */
+    /**
+     * Returns the robot space position and rotation of this {@link Mechanism3D}.
+     *
+     * @return The pose, in robot space, of this {@link Mechanism3D}.
+     */
     protected abstract Pose3d getPose3d();
 }

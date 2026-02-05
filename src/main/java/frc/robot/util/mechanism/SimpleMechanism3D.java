@@ -2,6 +2,10 @@ package frc.robot.util.mechanism;
 
 import edu.wpi.first.math.geometry.Pose3d;
 
+/**
+ * A parent class for {@link Mechanism3D}s which have only a single axial degree of freedom and use {@link Node3D}s for
+ * pose calculations.
+ */
 public abstract class SimpleMechanism3D extends Mechanism3D {
     protected Axis axis;
     protected boolean inverted = false;
