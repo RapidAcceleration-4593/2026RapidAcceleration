@@ -1,6 +1,5 @@
 package frc.robot.commands.swerve;
 
-import static frc.robot.Constants.Field.*;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import edu.wpi.first.math.MathUtil;
@@ -18,10 +17,12 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.util.FieldUtil;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.DoubleSupplier;
 
 public class SwerveCommands {
@@ -84,24 +85,27 @@ public class SwerveCommands {
                 ANGLE_KP, 0.0, ANGLE_KD, new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
         angleController.enableContinuousInput(-Math.PI, Math.PI);
 
-        Pose2d targetPose =
-                DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue ? kBlueHubPose : kRedHubPose;
+        return Commands.defer(
+                () -> {
+                    Pose2d targetPose = FieldUtil.getTargetHubPose();
+                    angleController.reset(swerve.getRotation().getRadians());
 
-        return Commands.run(
-                        () -> {
-                            Translation2d linear =
-                                    getLinearVelocityFromJoysticks(-xSupplier.getAsDouble(), -ySupplier.getAsDouble());
-                            Rotation2d toTarget = targetPose
-                                    .getTranslation()
-                                    .minus(swerve.getPose().getTranslation())
-                                    .getAngle();
+                    return Commands.run(
+                            () -> {
+                                Translation2d linear = getLinearVelocityFromJoysticks(
+                                        -xSupplier.getAsDouble(), -ySupplier.getAsDouble());
+                                Rotation2d toTarget = targetPose
+                                        .getTranslation()
+                                        .minus(swerve.getPose().getTranslation())
+                                        .getAngle();
 
-                            double omega = angleController.calculate(
-                                    swerve.getRotation().getRadians(), toTarget.getRadians());
-                            swerve.runVelocity(fieldRelativeSpeeds(swerve, linear, omega));
-                        },
-                        swerve)
-                .beforeStarting(() -> angleController.reset(swerve.getRotation().getRadians()));
+                                double omega = angleController.calculate(
+                                        swerve.getRotation().getRadians(), toTarget.getRadians());
+                                swerve.runVelocity(fieldRelativeSpeeds(swerve, linear, omega));
+                            },
+                            swerve);
+                },
+                Set.of(swerve));
     }
 
     /**

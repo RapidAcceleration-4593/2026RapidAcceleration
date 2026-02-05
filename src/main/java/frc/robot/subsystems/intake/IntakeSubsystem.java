@@ -20,12 +20,28 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Intake", inputs);
+
+        if (getCurrentCommand() != null) {
+            Logger.recordOutput("Command", this.getCurrentCommand().getName());
+        } else {
+            Logger.recordOutput("Command", "none");
+        }
     }
 
+    /**
+     * Constructs a command to run the intake motor.
+     *
+     * @return A command to run the intake motor and stop when complete.
+     */
     public Command runCommand() {
-        return runOnce(() -> io.setVoltage(kIntakeVolts));
+        return startEnd(() -> io.setVoltage(kIntakeVolts), io::stop);
     }
 
+    /**
+     * Constructs a command to stop the intake motor.
+     *
+     * @return A command to stop the motor immediately.
+     */
     public Command stopCommand() {
         return runOnce(io::stop);
     }

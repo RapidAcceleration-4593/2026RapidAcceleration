@@ -1,15 +1,12 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Controllers.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.shooter.ShootCommand;
-import frc.robot.commands.swerve.DriveToClusterCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
 import frc.robot.subsystems.deploy.DeploySubsystem;
@@ -19,22 +16,24 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
-import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
-import frc.robot.subsystems.vision.objectdetection.ObjectDetectionSubsystem;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
 
     // Subsystem(s)
     public final SwerveSubsystem swerve;
-    public final AprilTagSubsystem apriltag;
-    public final ObjectDetectionSubsystem objectDetection;
-    public final TurretSubsystem turret;
+    // public final AprilTagSubsystem apriltag;
+    // public final ObjectDetectionSubsystem objectDetection;
+
     public final ShooterSubsystem shooter;
+    public final TurretSubsystem turret;
     public final HoodSubsystem hood;
     public final IndexerSubsystem indexer;
+
     public final IntakeSubsystem intake;
     public final DeploySubsystem deploy;
+
+    // public final ClimberSubsystem climber;
 
     // Controller(s)
     private final CommandXboxController driverController;
@@ -45,14 +44,18 @@ public class RobotContainer {
 
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
-        apriltag = AprilTagFactory.initialize(swerve);
-        objectDetection = ObjectDetectionFactory.initialize();
-        turret = TurretFactory.initialize(swerve);
+        // apriltag = AprilTagFactory.initialize(swerve);
+        // objectDetection = ObjectDetectionFactory.initialize();
+
         shooter = ShooterFactory.initialize();
+        turret = TurretFactory.initialize(swerve);
         hood = HoodFactory.initialize(swerve);
         indexer = IndexerFactory.initialize();
+
         intake = IntakeFactory.initialize();
         deploy = DeployFactory.initialize();
+
+        // climber = ClimberFactory.initialize();
 
         driverController = new CommandXboxController(kDriverControllerPort);
         operatorController = new CommandXboxController(kOperatorControllerPort);
@@ -67,23 +70,42 @@ public class RobotContainer {
         swerve.setDefaultCommand(new SwerveCommands()
                 .joystickDrive(
                         swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
-        turret.setDefaultCommand(turret.updateControl());
 
-        driverController
-                .rightBumper()
-                .whileTrue(new SwerveCommands()
-                        .joystickDrivePointToHub(swerve, driverController::getLeftY, driverController::getLeftX));
+        // <------- Experimental ------->
+        driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
 
-        driverController.start().onTrue(Commands.runOnce(swerve::resetGyro, swerve));
-        driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
-        driverController.rightTrigger().whileTrue(deploy.goToDistanceCommand(Inches.of(10)));
+        driverController.leftTrigger(0.5).whileTrue(shooter.runCommand());
+        driverController.leftBumper().whileTrue(indexer.runCommand());
 
-        operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
+        driverController.a().whileTrue(hood.setVoltageCommand(Volts.of(4)));
+        driverController.b().whileTrue(hood.setVoltageCommand(Volts.of(-4)));
+
+        driverController.x().whileTrue(deploy.setVoltageCommand(Volts.of(4)));
+        driverController.y().whileTrue(deploy.setVoltageCommand(Volts.of(-4)));
+
+        // <------- Driver Controller ------->
+        driverController.start().onTrue(swerve.resetGyroCommand());
+
+        // driverController.leftBumper().whileTrue(new PathfindCommands().pathfindToOppositeZone(swerve));
+        // driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
+
+        // <------- Operator Controller ------->
+        // operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
+        // operatorController
+        //         .rightTrigger()
+        //         .whileTrue(new SwerveCommands()
+        //                 .joystickDrivePointToHub(swerve, driverController::getLeftY, driverController::getLeftX));
+
+        // operatorController.leftTrigger().onTrue(new IntakeCommand(intake, deploy).withName("IntakeCommand"));
+        // operatorController.leftBumper().onTrue(new RetractIntakeCommand(intake, deploy).withName("RetractCommand"));
+        // operatorController.rightBumper().whileTrue(new ClimbCommand(climber, deploy).withName("ClimbCommand"));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */
     private void registerCommands() {
-        NamedCommands.registerCommand("ExampleCommand", Commands.none());
+        // NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, hood, indexer));
+        // NamedCommands.registerCommand("IntakeCommand", new RetractIntakeCommand(intake, deploy));
+        // NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
     }
 
     /** Select the command to run in autonomous mode. */
