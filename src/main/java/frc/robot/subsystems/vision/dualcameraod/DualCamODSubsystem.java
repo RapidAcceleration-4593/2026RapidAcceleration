@@ -1,23 +1,47 @@
 package frc.robot.subsystems.vision.dualcameraod;
 
 import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.objectdetection.ObjectDetectionIO;
+import frc.robot.subsystems.vision.objectdetection.ObjectDetectionInputsAutoLogged;
+import frc.robot.subsystems.vision.objectdetection.ObjectDetectionIO.TargetObservation;
 
 //A lot of the wanted code/protocols are already in the object detection package
 
-public class DualCamODSubsystem {
+public class DualCamODSubsystem extends SubsystemBase{
 	
 	//At this point, I have no idea whether this will work or not
 	
-	private final ObjectDetectionIO ioA;
-	private final ObjectDetectionIO ioB;
+	private final ObjectDetectionIO ioA, ioB;
+	private final ObjectDetectionInputsAutoLogged inputsA, inputsB;
 	final SwerveSubsystem swerve;
 
+	/**This code assumes a few other things that may not be true, namely that
+	* ioA's camera is, in PositionFromDualYaw, at least, assumed to be on the left.
+	* KEEP THIS RULE UP, otherwise we're screwed.
+	 */
 	public DualCamODSubsystem(ObjectDetectionIO ioA, ObjectDetectionIO ioB, SwerveSubsystem swerve) {
 		this.ioA = ioA;
 		this.ioB = ioB;
+		this.inputsA = new ObjectDetectionInputsAutoLogged();
+		this.inputsB = new ObjectDetectionInputsAutoLogged();
 		this.swerve = swerve;
+	}
+	
+	@Override
+	public void periodic(){
+		ioA.updateInputs(inputsA);
+		ioB.updateInputs(inputsB);
+	}
+
+	public void iterateInputs(){
+		//TODO: Oh no. we have to sort our inputs arrays by yaw and pitch to make this matching work. What's the least annoying way to do that?
+		for(TargetObservation input:inputsB.latestTargets){
+			if (input.yaw().getDegrees() >= DualCamODConstants.kSyncableCameras[0].yawEdge()){
+
+			}
+		}
 	}
 
 	/**This function uses the yaw of two cameras to determine the position of a target.
@@ -30,7 +54,7 @@ public class DualCamODSubsystem {
 		double scaleFactor = distanceBetweenCams/unscaledDistance;
 		//transform our distances from robot center based on robot pose
 		Pose2d posFromRobot = new Pose2d(
-			-(distanceBetweenCams/2 - Math.cos(a.yaw().getRadians()) * scaleFactor),
+			-(distanceBetweenCams/2 /*center*/ - Math.cos(a.yaw().getRadians()) * scaleFactor /*left edge*/),
 			Math.sin(a.yaw().getRadians()) * scaleFactor + DualCamODConstants.kSyncableCameras[0].robotToCamera().getY(),
 			Rotation2d.fromDegrees(0)
 			);
