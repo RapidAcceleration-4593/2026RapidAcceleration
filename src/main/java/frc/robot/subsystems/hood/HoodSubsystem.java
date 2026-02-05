@@ -29,7 +29,7 @@ public class HoodSubsystem extends SubsystemBase {
 
     private final PIDController controller;
 
-    private final AngleMechanism3D hood3d;
+    private final AngleMechanism3D hood3D;
 
     public HoodSubsystem(HoodIO io, Supplier<Pose2d> poseSupplier) {
         this.io = io;
@@ -45,7 +45,7 @@ public class HoodSubsystem extends SubsystemBase {
             controller.setSetpoint(kMinimumAngle.in(Degrees));
             io.resetEncoder();
         }));
-        hood3d = fAngleMechanism3D.find("Hood");
+        hood3D = fAngleMechanism3D.find("Hood");
     }
 
     @Override
@@ -53,7 +53,7 @@ public class HoodSubsystem extends SubsystemBase {
         io.updateInputs(inputs);
         Logger.processInputs("Hood", inputs);
 
-        hood3d.setAngle(inputs.angle);
+        hood3D.setAngle(inputs.angle);
     }
 
     public Command goToAngleCommand(Angle angle) {

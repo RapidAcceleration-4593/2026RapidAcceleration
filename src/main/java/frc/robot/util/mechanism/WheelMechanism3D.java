@@ -6,7 +6,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.Timer;
 
-public class WheelMechanism3D extends SimpleMechanism3D {
+public final class WheelMechanism3D extends SimpleMechanism3D {
     private double prevTimestamp;
     private AngularVelocity alpha;
     private double rotRadians;

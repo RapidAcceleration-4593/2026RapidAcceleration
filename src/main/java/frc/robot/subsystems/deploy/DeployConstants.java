@@ -24,8 +24,8 @@ public final class DeployConstants {
     public static final double kEncoderToDeployGearing = 1.0;
     public static final double kMotorToDeployGearing = kMotorToEncoderGearing * kEncoderToDeployGearing;
 
-    public static final Distance kMinimumDistance = Inches.zero();
-    public static final Distance kMaximumDistance = Inches.of(11);
+    public static final Distance kRetractedDistance = Inches.zero();
+    public static final Distance kExtendedDistance = Inches.of(11.195);
     public static final Distance kDistanceTolerance = Inches.of(0.5);
 
     public static final Distance kDrumRadius = Inches.of(0.71);
