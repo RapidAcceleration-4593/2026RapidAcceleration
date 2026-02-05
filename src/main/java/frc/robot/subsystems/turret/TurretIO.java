@@ -1,6 +1,7 @@
 package frc.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.turret.TurretConstants.kInitialAngle;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
@@ -11,7 +12,8 @@ public interface TurretIO {
 
     @AutoLog
     public static class TurretInputs {
-        public Angle angle = Degrees.zero();
+        public Angle angle = kInitialAngle;
+        public Angle targetAngle = kInitialAngle;
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();
@@ -19,6 +21,9 @@ public interface TurretIO {
 
     /** Fetches updates from sensors through the IO interface. */
     public default void updateInputs(TurretInputs inputs) {}
+
+    /** Sets the position of the turret motor. */
+    public default void setPosition(Angle angle) {}
 
     /** Sets the voltage of the turret motor. */
     public default void setVoltage(Voltage volts) {}

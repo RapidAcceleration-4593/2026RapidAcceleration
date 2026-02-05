@@ -3,29 +3,29 @@ package frc.robot.subsystems.turret;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.turret.TurretConstants.*;
 
+import com.revrobotics.sim.SparkMaxAlternateEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.util.IPhysicsSim;
 import frc.robot.util.PowerSim;
 
 public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
 
-    private final SingleJointedArmSim turret;
+    private final SingleJointedArmSim turretSim;
 
     private final SparkMaxSim motorSim;
-    private final EncoderSim encoderSim;
+    private final SparkMaxAlternateEncoderSim encoderSim;
 
     public TurretIOSim() {
         DCMotor gearbox = DCMotor.getNEO(1);
 
-        turret = new SingleJointedArmSim(
-                LinearSystemId.createSingleJointedArmSystem(gearbox, kTurretMOI.in(KilogramSquareMeters), kGearRatio),
+        turretSim = new SingleJointedArmSim(
                 gearbox,
-                kGearRatio,
+                kMotorToTurretGearing,
+                kTurretMOI.in(KilogramSquareMeters),
                 Units.inchesToMeters(10),
                 kMinimumAngle.in(Radians),
                 kMaximumAngle.in(Radians),
@@ -33,13 +33,14 @@ public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
                 kInitialAngle.in(Radians));
 
         motorSim = new SparkMaxSim(motor, gearbox);
-        encoderSim = new EncoderSim(encoder);
+        encoderSim = new SparkMaxAlternateEncoderSim(motor);
     }
 
     @Override
     public void updatePlantSim() {
-        turret.setInput(motorSim.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts));
-        turret.update(0.02);
+        turretSim.setInput(
+                motorSim.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts));
+        turretSim.update(0.02);
     }
 
     @Override
@@ -49,11 +50,10 @@ public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
 
     @Override
     public void updateIOSim() {
-        motorSim.iterate(
-                Units.radiansPerSecondToRotationsPerMinute(turret.getVelocityRadPerSec()),
-                PowerSim.getRailVoltage().in(Volts),
-                0.02);
-        encoderSim.setDistance(Units.radiansToDegrees(turret.getAngleRads()));
-        encoderSim.setRate(Units.radiansPerSecondToRotationsPerMinute(turret.getVelocityRadPerSec()));
+        AngularVelocity turretVelocity = RadiansPerSecond.of(turretSim.getVelocityRadPerSec());
+        AngularVelocity motorVelocity = turretVelocity.times(kMotorToTurretGearing);
+
+        motorSim.iterate(motorVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
+        encoderSim.setPosition(Degrees.convertFrom(turretSim.getAngleRads(), Radians));
     }
 }
