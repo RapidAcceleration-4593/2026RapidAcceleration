@@ -39,9 +39,8 @@ public final class FieldUtil {
     }
 
     public static FieldZones getCurrentZone(Pose2d pose) {
-        Distance xDistance = pose.getMeasureX();
-        if (xDistance.lt(kBlueAllianceBoundary)) return FieldZones.Blue_Zone;
-        if (xDistance.gt(kRedAllianceBoundary)) return FieldZones.Red_Zone;
+        if (pose.getMeasureX().lt(kBlueAllianceBoundary)) return FieldZones.Blue_Zone;
+        if (pose.getMeasureX().gt(kRedAllianceBoundary)) return FieldZones.Red_Zone;
         return FieldZones.Neutral_Zone;
     }
 

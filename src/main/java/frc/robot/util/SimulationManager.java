@@ -62,8 +62,7 @@ public final class SimulationManager {
     }
 
     public ChassisSpeeds getChassisSpeeds() {
-        return new ChassisSpeeds(
-                simulation.getLinearVelocity().x, simulation.getLinearVelocity().y, simulation.getAngularVelocity());
+        return simulation.getDriveTrainSimulatedChassisSpeedsFieldRelative();
     }
 
     /** Resets the robot and field state for autonomous. */

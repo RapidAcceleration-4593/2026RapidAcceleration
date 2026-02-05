@@ -73,6 +73,7 @@ public class RobotContainer {
 
         driverController.a().whileTrue(hood.setVoltageCommand(Volts.of(4)));
         driverController.b().whileTrue(hood.setVoltageCommand(Volts.of(-4)));
+
         driverController.x().whileTrue(deploy.setVoltageCommand(Volts.of(4)));
         driverController.y().whileTrue(deploy.setVoltageCommand(Volts.of(-4)));
 
