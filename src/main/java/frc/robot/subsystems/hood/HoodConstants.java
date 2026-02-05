@@ -17,13 +17,13 @@ public final class HoodConstants {
     public static final int kHoodLimitSwitchChannel = 0;
 
     public static final boolean kInvertHoodLS = false;
-    public static final boolean kInvertHoodEncoder = false;
+    public static final boolean kInvertHoodEncoder = true;
 
     public static final double kP = 0.0; // 0.1
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
-    public static final Angle kMinimumAngle = Degrees.of(20.0);
+    public static final Angle kMinimumAngle = Degrees.of(22.0);
     public static final Angle kMaximumAngle = Degrees.of(45.0);
     public static final Angle kAngleTolerance = Degrees.of(1.0);
     public static final AngularVelocity kCruiseVelocity = DegreesPerSecond.of(20.0);

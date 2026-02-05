@@ -38,7 +38,7 @@ public class HoodIOReal implements HoodIO {
                 new SparkMaxConfig().inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(60);
 
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
-                .inverted(false)
+                .inverted(kInvertHoodEncoder)
                 .countsPerRevolution(kCountsPerRotation)
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);

@@ -41,7 +41,7 @@ public class DeployIOReal implements DeployIO {
                 new SparkMaxConfig().inverted(false).idleMode(IdleMode.kCoast).smartCurrentLimit(60);
 
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
-                .inverted(false)
+                .inverted(kInvertDeployEncoder)
                 .countsPerRevolution(kCountsPerRotation)
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);

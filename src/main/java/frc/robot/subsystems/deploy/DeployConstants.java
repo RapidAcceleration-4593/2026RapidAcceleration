@@ -14,8 +14,8 @@ public final class DeployConstants {
     public static final int kRetractedLSChannel = 1;
     public static final int kExtendedLSChannel = 2;
 
-    public static final boolean kInvertInLS = false;
-    public static final boolean kInvertOutLS = false;
+    public static final boolean kInvertInLS = true;
+    public static final boolean kInvertOutLS = true;
     public static final boolean kInvertDeployEncoder = false;
 
     public static final double kP = 0.0; // 0.3

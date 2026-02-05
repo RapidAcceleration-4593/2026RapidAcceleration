@@ -9,6 +9,6 @@ public final class IndexerConstants {
     public static final int kSpindexerMotorID = 1;
     public static final int kFeederMotorID = 3;
 
-    public static final Voltage kSpindexerVolts = Volts.of(4);
+    public static final Voltage kSpindexerVolts = Volts.of(6);
     public static final Voltage kFeederVolts = Volts.of(10);
 }
