@@ -18,10 +18,16 @@ public class IndexerIOReal implements IndexerIO {
     protected final SparkMax feederMotor;
 
     public IndexerIOReal() {
-        SparkBaseConfig spindexerConfig =
-                new SparkMaxConfig().idleMode(IdleMode.kCoast).inverted(false);
-        SparkBaseConfig feederConfig =
-                new SparkMaxConfig().idleMode(IdleMode.kCoast).inverted(false);
+        SparkBaseConfig spindexerConfig = new SparkMaxConfig()
+                .idleMode(IdleMode.kCoast)
+                .inverted(false)
+                .smartCurrentLimit(60)
+                .voltageCompensation(12.0);
+        SparkBaseConfig feederConfig = new SparkMaxConfig()
+                .idleMode(IdleMode.kCoast)
+                .inverted(false)
+                .smartCurrentLimit(60)
+                .voltageCompensation(12.0);
 
         spindexerMotor = new SparkMax(kSpindexerMotorID, MotorType.kBrushless);
         spindexerMotor.configure(spindexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

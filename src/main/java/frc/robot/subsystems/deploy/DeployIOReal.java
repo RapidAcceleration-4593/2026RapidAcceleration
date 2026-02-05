@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.FeedForwardConfig;
 import com.revrobotics.spark.config.MAXMotionConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -37,8 +38,11 @@ public class DeployIOReal implements DeployIO {
         retractedLS = new DigitalInput(kRetractedLSChannel);
         extendedLS = new DigitalInput(kExtendedLSChannel);
 
-        SparkBaseConfig baseConfig =
-                new SparkMaxConfig().inverted(false).idleMode(IdleMode.kCoast).smartCurrentLimit(60);
+        SparkBaseConfig baseConfig = new SparkMaxConfig()
+                .inverted(false)
+                .idleMode(IdleMode.kCoast)
+                .smartCurrentLimit(60)
+                .voltageCompensation(12.0);
 
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
                 .inverted(kInvertDeployEncoder)
@@ -49,6 +53,7 @@ public class DeployIOReal implements DeployIO {
         ClosedLoopConfig controlConfig = new ClosedLoopConfig()
                 .pid(kP, kI, kD)
                 .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
+                .apply(new FeedForwardConfig().sv(kS, kV))
                 .apply(new MAXMotionConfig()
                         .cruiseVelocity(kCruiseVelocity.in(InchesPerSecond))
                         .maxAcceleration(kMaxAcceleration.in(InchesPerSecondPerSecond)));

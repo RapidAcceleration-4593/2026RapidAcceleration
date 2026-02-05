@@ -71,8 +71,8 @@ public class RobotContainer {
         // <------- Experimental ------->
         driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
 
-		driverController.leftTrigger(0.5).whileTrue(shooter.runCommand());
-		driverController.leftBumper().whileTrue(indexer.runCommand());
+        driverController.leftTrigger(0.5).whileTrue(shooter.runCommand());
+        driverController.leftBumper().whileTrue(indexer.runCommand());
 
         driverController.a().whileTrue(hood.setVoltageCommand(Volts.of(4)));
         driverController.b().whileTrue(hood.setVoltageCommand(Volts.of(-4)));

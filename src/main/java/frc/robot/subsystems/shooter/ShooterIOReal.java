@@ -34,6 +34,8 @@ public class ShooterIOReal implements ShooterIO {
         SparkBaseConfig config = new SparkMaxConfig()
                 .idleMode(IdleMode.kCoast)
                 .inverted(false)
+                .smartCurrentLimit(60)
+                .voltageCompensation(12.0)
                 .apply(new ClosedLoopConfig()
                         .pid(kP, kI, kD)
                         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)

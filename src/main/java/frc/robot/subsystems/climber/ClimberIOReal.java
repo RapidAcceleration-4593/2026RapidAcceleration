@@ -20,13 +20,22 @@ public class ClimberIOReal implements ClimberIO {
     protected final Encoder encoder;
 
     public ClimberIOReal() {
-        SparkBaseConfig config = new SparkMaxConfig().idleMode(IdleMode.kBrake);
+        SparkBaseConfig leftConfig = new SparkMaxConfig()
+                .idleMode(IdleMode.kBrake)
+                .inverted(false)
+                .smartCurrentLimit(60)
+                .voltageCompensation(12.0);
+        SparkBaseConfig rightConfig = new SparkMaxConfig()
+                .idleMode(IdleMode.kBrake)
+                .inverted(false)
+                .smartCurrentLimit(60)
+                .voltageCompensation(12.0);
 
         leftMotor = new SparkMax(kLeftClimberMotorID, MotorType.kBrushless);
         rightMotor = new SparkMax(kRightClimberMotorID, MotorType.kBrushless);
 
-        leftMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        rightMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        leftMotor.configure(leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        rightMotor.configure(rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         encoder = new Encoder(kClimberEncoderChannelA, kClimberEncoderChannelB);
         encoder.setDistancePerPulse(kInchesPerPulse);

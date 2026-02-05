@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.FeedForwardConfig;
 import com.revrobotics.spark.config.MAXMotionConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -34,8 +35,11 @@ public class HoodIOReal implements HoodIO {
         encoder = motor.getAlternateEncoder();
         limitswitch = new DigitalInput(kHoodLimitSwitchChannel);
 
-        SparkBaseConfig baseConfig =
-                new SparkMaxConfig().inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(60);
+        SparkBaseConfig baseConfig = new SparkMaxConfig()
+                .inverted(false)
+                .idleMode(IdleMode.kCoast)
+                .smartCurrentLimit(60)
+                .voltageCompensation(12.0);
 
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
                 .inverted(kInvertHoodEncoder)
@@ -46,6 +50,7 @@ public class HoodIOReal implements HoodIO {
         ClosedLoopConfig controlConfig = new ClosedLoopConfig()
                 .pid(kP, kI, kD)
                 .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
+                .apply(new FeedForwardConfig().sv(kS, kV))
                 .apply(new MAXMotionConfig()
                         .cruiseVelocity(kCruiseVelocity.in(DegreesPerSecond))
                         .maxAcceleration(kMaxAcceleration.in(DegreesPerSecondPerSecond)));
