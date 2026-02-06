@@ -74,11 +74,13 @@ public class RobotContainer {
         driverController.leftTrigger(0.5).whileTrue(shooter.runCommand());
         driverController.leftBumper().whileTrue(indexer.runCommand());
 
-        driverController.a().whileTrue(hood.setVoltageCommand(Volts.of(4)));
-        driverController.b().whileTrue(hood.setVoltageCommand(Volts.of(-4)));
+        driverController.povUp().whileTrue(hood.setVoltageCommand(Volts.of(4)));
+        driverController.povDown().whileTrue(hood.setVoltageCommand(Volts.of(-4)));
 
-        driverController.x().whileTrue(deploy.setVoltageCommand(Volts.of(4)));
-        driverController.y().whileTrue(deploy.setVoltageCommand(Volts.of(-4)));
+        driverController.a().whileTrue(intake.runCommand());
+
+        driverController.x().whileTrue(deploy.setVoltageCommand(Volts.of(9)));
+        driverController.y().whileTrue(deploy.setVoltageCommand(Volts.of(-9)));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());
