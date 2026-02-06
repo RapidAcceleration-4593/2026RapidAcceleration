@@ -1,5 +1,8 @@
 package frc.robot.subsystems.vision.dualcameraod;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -36,17 +39,16 @@ public class DualCamODSubsystem extends SubsystemBase{
 	}
 
 	public void iterateInputs(){
-		//TODO: Oh no. we have to sort our inputs arrays by yaw and pitch to make this matching work. What's the least annoying way to do that?
-		for(TargetObservation input:inputsB.latestTargets){
-			if (input.yaw().getDegrees() >= DualCamODConstants.kSyncableCameras[0].yawEdge()){
-
-			}
-		}
+		Stream<TargetObservation> bInputStream = Arrays.stream(inputsA.latestTargets);
+		//We don't want a single timestamp, but we need a way to split the poses we get into separate time stamps
+		//Ideally, we'd want to lower the timestamped data we store based on how long ago it was - the farther away, the less we need to keep
+		//otherwise, we filter each by what isn't on the edge of the cameras, sort by pitch, then yaw, and, from there, it's pretty easy to match targets and run positionfromyaw :)
 	}
 
 	/**This function uses the yaw of two cameras to determine the position of a target.
 	 * Right now, it returns a Pose2D, though we should eventually edit it to return a Pose3D.
-	 * TODO: right now, it requires both cameras to be exactly parallel, change that, I'm too lazy tonight)
+	 * TODO: right now, it requires both cameras to be exactly parallel, change that, I'm too lazy tonight
+	 * other TODO: currently assumes that targets were taken at exact moment of calculation, which they very much were not)
 	*/
 	public Pose2d positionFromDualYaw (ObjectDetectionIO.TargetObservation a, ObjectDetectionIO.TargetObservation b){
 		double distanceBetweenCams = DualCamODConstants.kSyncableCameras[0].robotToCamera().getX() - DualCamODConstants.kSyncableCameras[1].robotToCamera().getX();
