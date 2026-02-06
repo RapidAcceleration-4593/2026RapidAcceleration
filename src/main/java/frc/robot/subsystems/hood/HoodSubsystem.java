@@ -2,6 +2,7 @@ package frc.robot.subsystems.hood;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.hood.HoodConstants.*;
+import static frc.robot.util.mechanism.MechanismFinder.fAngleMechanism3D;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -13,11 +14,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.FieldUtil;
+import frc.robot.util.mechanism.AngleMechanism3D;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 public class HoodSubsystem extends SubsystemBase {
 
@@ -25,23 +24,18 @@ public class HoodSubsystem extends SubsystemBase {
     private final HoodInputsAutoLogged inputs;
     private final HoodIO io;
 
-    private final LoggedMechanism2d mechanism;
-    private final LoggedMechanismRoot2d root;
-    private final LoggedMechanismLigament2d hood;
-
     private Angle targetAngle = kMinimumAngle;
+
+    private final AngleMechanism3D hood3D;
 
     public HoodSubsystem(HoodIO io, Supplier<Pose2d> poseSupplier) {
         this.io = io;
         this.inputs = new HoodInputsAutoLogged();
         this.poseSupplier = poseSupplier;
 
-        mechanism = new LoggedMechanism2d(1.0, 1.0);
-        root = mechanism.getRoot("HoodRoot", 0.5, 0.5);
-        hood = root.append(new LoggedMechanismLigament2d("Hood", Inches.of(12), kMinimumAngle));
-
         Trigger limitSwitchTrigger = new Trigger(() -> inputs.limitswitch);
         limitSwitchTrigger.onTrue(Commands.runOnce(io::resetPosition));
+        hood3D = fAngleMechanism3D.find("Hood");
     }
 
     @Override
@@ -50,8 +44,7 @@ public class HoodSubsystem extends SubsystemBase {
         Logger.processInputs("Hood", inputs);
         targetAngle = inputs.targetAngle;
 
-        hood.setAngle(inputs.angle);
-        Logger.recordOutput("Mechanisms/Hood", mechanism);
+        hood3D.setAngle(inputs.angle);
         if (getCurrentCommand() != null) {
             Logger.recordOutput("Command", this.getCurrentCommand().getName());
         } else {
