@@ -13,7 +13,6 @@ public interface ShooterIO {
     public static class ShooterInputs {
         public AngularVelocity velocity = RPM.zero();
         public AngularVelocity targetVelocity = RPM.zero();
-        public boolean atTargetVelocity = false;
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();
@@ -24,6 +23,9 @@ public interface ShooterIO {
 
     /** Sets the velocity of the shooter motor. */
     public default void setVelocity(AngularVelocity velocity) {}
+
+    /** Sets the voltage of the shooter motor. */
+    public default void setVoltage(Voltage volts) {}
 
     /** Stops the shooter motor immediately. */
     public default void stop() {}

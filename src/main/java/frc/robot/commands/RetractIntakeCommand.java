@@ -5,9 +5,9 @@ import frc.robot.subsystems.deploy.DeployConstants;
 import frc.robot.subsystems.deploy.DeploySubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 
-public class IntakeCommand extends SequentialCommandGroup {
+public class RetractIntakeCommand extends SequentialCommandGroup {
 
-    public IntakeCommand(IntakeSubsystem intake, DeploySubsystem deploy) {
-        addCommands(deploy.goToDistanceCommand(DeployConstants.kMaximumDistance), intake.runCommand());
+    public RetractIntakeCommand(IntakeSubsystem intake, DeploySubsystem deploy) {
+        addCommands(intake.stopCommand(), deploy.goToDistanceCommand(DeployConstants.kMinimumDistance));
     }
 }

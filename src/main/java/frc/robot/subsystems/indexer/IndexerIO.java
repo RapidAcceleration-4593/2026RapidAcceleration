@@ -30,6 +30,9 @@ public interface IndexerIO {
     /** Sets the voltage of the feeder motor. */
     public default void setFeederVoltage(Voltage volts) {}
 
-    /** Stops the spindexer and feeder motors immediately. */
-    public default void stop() {}
+    /** Stops the spindexer motor immediately. */
+    public default void stopSpindexer() {}
+
+    /** Stops the feeder motor immediately. */
+    public default void stopFeeder() {}
 }

@@ -6,7 +6,6 @@ import static frc.robot.subsystems.hood.HoodConstants.kPhysicalOffset;
 import static frc.robot.subsystems.swerve.SwerveConstants.MAPLESIM_CONFIG;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -30,11 +29,10 @@ public final class SimulationManager {
     private final SimulatedArena arena = SimulatedArena.getInstance();
     private final List<IPhysicsSim> components;
 
-    private final Pose2d initialPose;
+    private boolean intakeExtended;
 
     private SimulationManager() {
-        initialPose = new Pose2d(Meters.of(3.0), Meters.of(3.0), new Rotation2d());
-        simulation = new SwerveDriveSimulation(MAPLESIM_CONFIG, initialPose);
+        simulation = new SwerveDriveSimulation(MAPLESIM_CONFIG, new Pose2d());
         arena.addDriveTrainSimulation(simulation);
         components = new ArrayList<>();
     }
@@ -64,12 +62,13 @@ public final class SimulationManager {
     }
 
     public ChassisSpeeds getChassisSpeeds() {
-        return new ChassisSpeeds(
-                simulation.getLinearVelocity().x, simulation.getLinearVelocity().y, simulation.getAngularVelocity());
+        return simulation.getDriveTrainSimulatedChassisSpeedsFieldRelative();
     }
 
     /** Resets the robot and field state for autonomous. */
     public void resetField() {
+        Pose2d initialPose = FieldUtil.getInitialPose();
+
         setPose(initialPose);
         arena.resetFieldForAuto();
     }
@@ -130,5 +129,13 @@ public final class SimulationManager {
     /** Retrieves the raw MapleSim drivetrain simulation. */
     public SwerveDriveSimulation getDriveSimulation() {
         return simulation;
+    }
+
+    public boolean isIntakeExtended() {
+        return intakeExtended;
+    }
+
+    public void setIntakeExtended(boolean extended) {
+        intakeExtended = extended;
     }
 }

@@ -27,16 +27,40 @@ public class IndexerSubsystem extends SubsystemBase {
         Logger.processInputs("Indexer", inputs);
 
         indexer3D.setAngularVelocity(inputs.spindexerVelocity);
+
+        if (getCurrentCommand() != null) {
+            Logger.recordOutput("Command", this.getCurrentCommand().getName());
+        } else {
+            Logger.recordOutput("Command", "none");
+        }
     }
 
+    /**
+     * Constructs a command to run both the spindexer and feeder motors.
+     *
+     * @return A command to run the spindexer and feeder motors and stop when complete.
+     */
     public Command runCommand() {
-        return runOnce(() -> {
-            io.setSpindexerVoltage(kSpindexerVolts);
-            io.setFeederVoltage(kFeederVolts);
-        });
+        return startEnd(
+                () -> {
+                    io.setSpindexerVoltage(kSpindexerVolts);
+                    io.setFeederVoltage(kFeederVolts);
+                },
+                () -> {
+                    io.stopSpindexer();
+                    io.stopFeeder();
+                });
     }
 
+    /**
+     * Constructs a command to stop both the spindexer and feeder motors.
+     *
+     * @return A command to stop the motors immediately.
+     */
     public Command stopCommand() {
-        return runOnce(io::stop);
+        return runOnce(() -> {
+            io.stopSpindexer();
+            io.stopFeeder();
+        });
     }
 }

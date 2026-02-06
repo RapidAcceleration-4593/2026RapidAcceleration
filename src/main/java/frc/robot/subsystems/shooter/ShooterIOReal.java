@@ -6,6 +6,7 @@ import static frc.robot.subsystems.shooter.ShooterConstants.*;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -17,37 +18,40 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 
 public class ShooterIOReal implements ShooterIO {
 
     protected final SparkMax motor;
     protected final RelativeEncoder encoder;
+
     private final SparkClosedLoopController controller;
 
-    private AngularVelocity targetVelocity = RPM.zero();
-
     public ShooterIOReal() {
+        motor = new SparkMax(kShooterMotorID, MotorType.kBrushless);
+        encoder = motor.getEncoder();
+
         SparkBaseConfig config = new SparkMaxConfig()
                 .idleMode(IdleMode.kCoast)
                 .inverted(false)
+                .smartCurrentLimit(60)
+                .voltageCompensation(12.0)
                 .apply(new ClosedLoopConfig()
                         .pid(kP, kI, kD)
-                        .apply(new FeedForwardConfig().kS(kS).kV(kV).kA(kA))
-                        .apply(new MAXMotionConfig()));
+                        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                        .apply(new FeedForwardConfig().sv(kS, kV))
+                        .apply(new MAXMotionConfig()
+                                .cruiseVelocity(kCruiseVelocity.in(RPM))
+                                .maxAcceleration(kMaxAcceleration.in(RPM.per(Second)))));
 
-        motor = new SparkMax(kShooterMotorID, MotorType.kBrushless);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        encoder = motor.getEncoder();
         controller = motor.getClosedLoopController();
     }
 
     @Override
     public void updateInputs(ShooterInputs inputs) {
         inputs.velocity = RPM.of(encoder.getVelocity());
-        inputs.targetVelocity = targetVelocity;
-        inputs.atTargetVelocity =
-                Math.abs(targetVelocity.in(RPM) - encoder.getVelocity()) <= kVelocityTolerance.in(RPM);
+        inputs.targetVelocity = RPM.of(controller.getSetpoint());
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
@@ -55,12 +59,16 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void setVelocity(AngularVelocity velocity) {
-        targetVelocity = velocity;
         controller.setSetpoint(velocity.in(RPM), ControlType.kMAXMotionVelocityControl);
     }
 
     @Override
+    public void setVoltage(Voltage volts) {
+        motor.setVoltage(volts);
+    }
+
+    @Override
     public void stop() {
-        setVelocity(RPM.zero());
+        motor.stopMotor();
     }
 }
