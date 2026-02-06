@@ -69,7 +69,6 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void stop() {
-        // this.setVelocity(kZeroVelocity);
         motor.stopMotor();
     }
 }

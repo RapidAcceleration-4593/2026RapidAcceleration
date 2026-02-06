@@ -45,7 +45,7 @@ public class ShooterIOSim extends ShooterIOReal implements IPhysicsSim {
     @Override
     public void updateIOSim() {
         motorSim.iterate(
-                flywheelSim.getAngularVelocityRPM(), PowerSim.getRailVoltage().in(Volts), 0.05);
+                flywheelSim.getAngularVelocityRPM(), PowerSim.getRailVoltage().in(Volts), 0.02);
         encoderSim.setVelocity(motorSim.getVelocity());
     }
 }
