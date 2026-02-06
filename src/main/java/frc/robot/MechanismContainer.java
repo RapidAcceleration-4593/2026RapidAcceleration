@@ -17,7 +17,7 @@ public class MechanismContainer {
         Node3D deployNode = new Node3D("Deploy", Pose3d.kZero);
         Node3D spindexerNode = new Node3D("Indexer", new Pose3d(0.034, 0, 0, Rotation3d.kZero));
         Node3D shooterBaseNode = new Node3D("ShooterBase", new Pose3d(-0.144, 0, 0, Rotation3d.kZero));
-        Node3D hoodNode = new Node3D("Hood2", new Pose3d(0.122, 0, 0.47, new Rotation3d(0, 0, 0)), shooterBaseNode);
+        Node3D hoodNode = new Node3D("Hood", new Pose3d(-0.022, 0, 0.47, new Rotation3d(0, 0, 0)), shooterBaseNode);
         hoodNode.setAngle(HoodConstants.kMinimumAngle, Axis.Y, false);
         Node3D climberNode = new Node3D("Climber", Pose3d.kZero);
 
