@@ -37,10 +37,8 @@ public final class DeployConstants {
     public static final double kEncoderToDeployGearing = 1.0;
     public static final double kMotorToDeployGearing = kMotorToEncoderGearing * kEncoderToDeployGearing;
 
-    public static final Distance kDrumRadius = Inches.of(0.71);
-    public static final double kInchesPerPulse =
-            2 * Math.PI * kDrumRadius.in(Inches) / kEncoderToDeployGearing / kCountsPerRotation;
     public static final Mass kCarriageMass = Pounds.of(13);
+    public static final Distance kDrumRadius = Inches.of(0.75);
 
     public static final double kPositionConversionFactor =
             2 * Math.PI * kDrumRadius.in(Inches) / kEncoderToDeployGearing;
