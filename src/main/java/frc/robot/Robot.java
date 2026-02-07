@@ -18,6 +18,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
 
     private Command autonomousCommand;
+    private MechanismContainer mechanismContainer;
     private RobotContainer robotContainer;
 
     public Robot() {
@@ -61,6 +62,7 @@ public class Robot extends LoggedRobot {
 
         // Initialize AdvantageKit Logger.
         Logger.start();
+        mechanismContainer = new MechanismContainer();
         robotContainer = new RobotContainer();
     }
 

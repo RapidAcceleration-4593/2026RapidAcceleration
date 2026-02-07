@@ -2,6 +2,7 @@ package frc.robot.subsystems.deploy;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.deploy.DeployConstants.*;
+import static frc.robot.util.mechanism.MechanismFinder.fLengthMechanism3D;
 
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
@@ -9,32 +10,26 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.mechanism.LengthMechanism3D;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 public class DeploySubsystem extends SubsystemBase {
 
     private final DeployInputsAutoLogged inputs;
     private final DeployIO io;
 
-    private final LoggedMechanism2d mechanism;
-    private final LoggedMechanismRoot2d root;
-    private final LoggedMechanismLigament2d deploy;
-
     private Distance targetDistance = kMinimumDistance;
+
+    private final LengthMechanism3D deploy3D;
 
     public DeploySubsystem(DeployIO io) {
         this.io = io;
         this.inputs = new DeployInputsAutoLogged();
 
-        mechanism = new LoggedMechanism2d(1.0, 1.0);
-        root = mechanism.getRoot("DeployRoot", 0.5, 0.5);
-        deploy = root.append(new LoggedMechanismLigament2d("Deploy", Inches.of(12), Degrees.zero()));
-
         Trigger lsTrigger = new Trigger(() -> (inputs.inLimitSwitch || inputs.outLimitSwitch));
         lsTrigger.onTrue(Commands.runOnce(io::resetPosition));
+
+        deploy3D = fLengthMechanism3D.find("Deploy");
     }
 
     @Override
@@ -43,8 +38,7 @@ public class DeploySubsystem extends SubsystemBase {
         Logger.processInputs("Deploy", inputs);
         targetDistance = inputs.targetDistance;
 
-        deploy.setLength(inputs.distance);
-        Logger.recordOutput("Mechanisms/Deploy", mechanism);
+        deploy3D.setLength(inputs.distance);
         if (getCurrentCommand() != null) {
             Logger.recordOutput("Command", this.getCurrentCommand().getName());
         } else {
@@ -57,7 +51,7 @@ public class DeploySubsystem extends SubsystemBase {
     }
 
     public Distance getTargetDistance() {
-        return inputs.targetDistance;
+        return targetDistance;
     }
 
     public boolean atTargetDistance() {

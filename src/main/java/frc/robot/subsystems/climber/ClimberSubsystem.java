@@ -2,6 +2,7 @@ package frc.robot.subsystems.climber;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.climber.ClimberConstants.*;
+import static frc.robot.util.mechanism.MechanismFinder.fLengthMechanism3D;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -9,33 +10,26 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.mechanism.LengthMechanism3D;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 public class ClimberSubsystem extends SubsystemBase {
 
     private final ClimberInputsAutoLogged inputs;
     private final ClimberIO io;
 
-    private final LoggedMechanism2d mechanism;
-    private final LoggedMechanismRoot2d root;
-    private final LoggedMechanismLigament2d climber;
-
     private final PIDController controller;
+
+    private final LengthMechanism3D climber3D;
 
     public ClimberSubsystem(ClimberIO io) {
         this.io = io;
         this.inputs = new ClimberInputsAutoLogged();
 
-        mechanism = new LoggedMechanism2d(1.0, 1.0);
-        root = mechanism.getRoot("ClimberRoot", 0.5, 0.5);
-        climber = root.append(new LoggedMechanismLigament2d("Climber", Inches.of(12), Degrees.zero()));
-
         controller = new PIDController(kP, kI, kD);
         controller.setTolerance(kDistanceTolerance.in(Inches));
+        climber3D = fLengthMechanism3D.find("Climber");
     }
 
     @Override
@@ -43,8 +37,7 @@ public class ClimberSubsystem extends SubsystemBase {
         io.updateInputs(inputs);
         Logger.processInputs("Climber", inputs);
 
-        climber.setLength(inputs.distance);
-        Logger.recordOutput("Mechanism/Climber", mechanism);
+        climber3D.setLength(inputs.distance);
     }
 
     private boolean shouldStop() {

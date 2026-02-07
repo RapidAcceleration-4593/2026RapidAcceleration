@@ -39,7 +39,7 @@ public class DeployIOReal implements DeployIO {
         extendedLS = new DigitalInput(kExtendedLSChannel);
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
-                .inverted(false)
+                .inverted(true)
                 .idleMode(IdleMode.kCoast)
                 .smartCurrentLimit(60)
                 .voltageCompensation(12.0);
