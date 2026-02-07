@@ -39,7 +39,22 @@ public class DualCamODSubsystem extends SubsystemBase{
 	}
 
 	public void iterateInputs(){
-		Stream<TargetObservation> bInputStream = Arrays.stream(inputsA.latestTargets);
+		Stream<TargetObservation> bInputArray = Arrays.stream(inputsB.latestTargets)
+			.filter(b -> b.yaw().getDegrees() < DualCamODConstants.kSyncableCameras[0].yawEdge())
+			.filter(b -> b.pitch().getDegrees() > DualCamODConstants.kSyncableCameras[0].pitchEdge())
+			.sorted((a, b) -> Double.compare(a.yaw().getDegrees(), b.yaw().getDegrees()));
+			/*I doubt that this is the best way to do it with a significant enough ambiguity.
+			Ideally, if ambiguity exceeds a specific level, the pitch should be what we sort it by.
+			Right now, however, pitch plays no part in our results, so yaw is probably good enough.*/
+		Stream<TargetObservation> aInputArray = Arrays.stream(inputsA.latestTargets)
+			.filter(a -> a.yaw().getDegrees() > DualCamODConstants.kSyncableCameras[0].yawEdge())
+			.filter(a -> a.pitch().getDegrees() > DualCamODConstants.kSyncableCameras[0].yawEdge())
+			.sorted((a, b) -> Double.compare(a.yaw().getDegrees(), b.yaw().getDegrees()));
+			//filter for current timestamp (probably eventually delete this line if we can change results to work MY WAY)
+			//filter out yaws greater than yawedge, or less for the alternative
+			//sort by pitch, then yaw
+			//map with others, run positionfromyaw - probably use a new array & a loop at this point, unless streams can make this easier
+		
 		//We don't want a single timestamp, but we need a way to split the poses we get into separate time stamps
 		//Ideally, we'd want to lower the timestamped data we store based on how long ago it was - the farther away, the less we need to keep
 		//otherwise, we filter each by what isn't on the edge of the cameras, sort by pitch, then yaw, and, from there, it's pretty easy to match targets and run positionfromyaw :)
@@ -51,7 +66,7 @@ public class DualCamODSubsystem extends SubsystemBase{
 	 * other TODO: currently assumes that targets were taken at exact moment of calculation, which they very much were not)
 	*/
 	public Pose2d positionFromDualYaw (ObjectDetectionIO.TargetObservation a, ObjectDetectionIO.TargetObservation b){
-		double distanceBetweenCams = DualCamODConstants.kSyncableCameras[0].robotToCamera().getX() - DualCamODConstants.kSyncableCameras[1].robotToCamera().getX();
+		double distanceBetweenCams = DualCamODConstants.kSyncableCameras[1].robotToCamera().getX() - DualCamODConstants.kSyncableCameras[0].robotToCamera().getX();
 		double unscaledDistance = (Math.cos(b.yaw().getRadians()) * Math.sin(a.yaw().getRadians())) / (Math.sin(b.yaw().getRadians())) + Math.cos(a.yaw().getRadians());
 		double scaleFactor = distanceBetweenCams/unscaledDistance;
 		//transform our distances from robot center based on robot pose

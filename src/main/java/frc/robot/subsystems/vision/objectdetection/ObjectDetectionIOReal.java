@@ -30,5 +30,8 @@ public class ObjectDetectionIOReal implements ObjectDetectionIO {
         }
 
         inputs.latestTargets = targets.toArray(new TargetObservation[0]);
+
+		/*right now, my program requires getting inputs from a single point in time. this is already how the sim version does it, 
+		though it's also COMPLETELY ACCURATE. However, I need some alternative method in the real version to do the same thing.*/
     }
 }
