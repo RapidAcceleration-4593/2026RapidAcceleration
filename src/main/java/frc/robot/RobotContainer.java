@@ -15,6 +15,7 @@ import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.turret.TurretSubsystem;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -25,6 +26,7 @@ public class RobotContainer {
     // public final ObjectDetectionSubsystem objectDetection;
 
     public final ShooterSubsystem shooter;
+    public final TurretSubsystem turret;
     public final HoodSubsystem hood;
     public final IndexerSubsystem indexer;
 
@@ -46,6 +48,7 @@ public class RobotContainer {
         // objectDetection = ObjectDetectionFactory.initialize();
 
         shooter = ShooterFactory.initialize();
+        turret = TurretFactory.initialize(swerve);
         hood = HoodFactory.initialize(swerve);
         indexer = IndexerFactory.initialize();
 
