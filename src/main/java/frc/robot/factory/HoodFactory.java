@@ -13,7 +13,7 @@ public final class HoodFactory {
     public static HoodSubsystem initialize(SwerveSubsystem swerve) {
         return switch (kCurrentMode) {
             case REAL -> initializeReal(swerve);
-            case SIM -> initializeSim(swerve);
+            case SIM -> initializeSim();
             case REPLAY -> initializeReplay(swerve);
         };
     }
@@ -22,7 +22,7 @@ public final class HoodFactory {
         return new HoodSubsystem(new HoodIOReal(), swerve::getPose);
     }
 
-    private static HoodSubsystem initializeSim(SwerveSubsystem swerve) {
+    private static HoodSubsystem initializeSim() {
         SimulationManager simulation = SimulationManager.getInstance();
         return new HoodSubsystem(new HoodIOSim(), simulation::getPose);
     }

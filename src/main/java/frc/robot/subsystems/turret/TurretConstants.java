@@ -22,15 +22,15 @@ public final class TurretConstants {
     public static final double kV = 0.0;
 
     public static final Angle kInitialAngle = Degrees.of(0.0);
-    public static final Angle kMinimumAngle = Degrees.of(-150.0);
-    public static final Angle kMaximumAngle = Degrees.of(150.0);
+    public static final Angle kMinimumAngle = Degrees.of(100.0);
+    public static final Angle kMaximumAngle = Degrees.of(-100.0);
     public static final Angle kAngleTolerance = Degrees.of(1.0);
     public static final AngularVelocity kCruiseVelocity = DegreesPerSecond.of(0.0);
     public static final AngularAcceleration kMaxAcceleration = DegreesPerSecondPerSecond.of(0.0);
 
     public static final int kCountsPerRotation = 8192;
-    public static final double kMotorToEncoderGearing = 1.0;
-    public static final double kEncoderToTurretGearing = 165 / 30;
+    public static final double kMotorToEncoderGearing = 30.0; // 3:2:5.
+    public static final double kEncoderToTurretGearing = 4.85294; // 165:34.
     public static final double kMotorToTurretGearing = kMotorToEncoderGearing * kEncoderToTurretGearing;
 
     public static final double kPositionConversionFactor = 360.0 / kEncoderToTurretGearing;

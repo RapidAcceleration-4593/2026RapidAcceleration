@@ -13,7 +13,7 @@ public final class TurretFactory {
     public static TurretSubsystem initialize(SwerveSubsystem swerve) {
         return switch (kCurrentMode) {
             case REAL -> initializeReal(swerve);
-            case SIM -> initializeSim(swerve);
+            case SIM -> initializeSim();
             case REPLAY -> initializeReplay(swerve);
         };
     }
@@ -22,7 +22,7 @@ public final class TurretFactory {
         return new TurretSubsystem(new TurretIOReal(), swerve::getPose);
     }
 
-    private static TurretSubsystem initializeSim(SwerveSubsystem swerve) {
+    private static TurretSubsystem initializeSim() {
         SimulationManager simulation = SimulationManager.getInstance();
         return new TurretSubsystem(new TurretIOSim(), simulation::getPose);
     }

@@ -20,7 +20,7 @@ public class TurretSubsystem extends SubsystemBase {
     private final TurretInputsAutoLogged inputs;
     private final TurretIO io;
 
-    private Angle targetAngle = kMinimumAngle;
+    private Angle targetAngle = kInitialAngle;
 
     public TurretSubsystem(TurretIO io, Supplier<Pose2d> robotPoseSupplier) {
         this.io = io;
@@ -46,7 +46,7 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     public Angle getTargetAngle() {
-        return targetAngle;
+        return inputs.targetAngle;
     }
 
     public boolean atTargetAngle() {
