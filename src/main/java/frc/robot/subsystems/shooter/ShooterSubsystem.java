@@ -60,7 +60,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return A command to run the motor at a velocity and stop when completed.
      */
     public Command runAtVelocityCommand(AngularVelocity velocity) {
-        return startEnd(() -> setVelocity(velocity), () -> setVelocity(kZeroVelocity));
+        return startEnd(() -> setVelocity(velocity), io::stop);
     }
 
     /**

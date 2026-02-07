@@ -13,8 +13,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
-import com.revrobotics.spark.config.FeedForwardConfig;
-import com.revrobotics.spark.config.MAXMotionConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -50,10 +48,7 @@ public class HoodIOReal implements HoodIO {
         ClosedLoopConfig controlConfig = new ClosedLoopConfig()
                 .pid(kP, kI, kD)
                 .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
-                .apply(new FeedForwardConfig().sv(kS, kV))
-                .apply(new MAXMotionConfig()
-                        .cruiseVelocity(kCruiseVelocity.in(DegreesPerSecond))
-                        .maxAcceleration(kMaxAcceleration.in(DegreesPerSecondPerSecond)));
+                .positionWrappingEnabled(false);
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
@@ -67,7 +62,7 @@ public class HoodIOReal implements HoodIO {
     @Override
     public void updateInputs(HoodInputs inputs) {
         inputs.angle = Degrees.of(encoder.getPosition()).plus(kMinimumAngle);
-        inputs.targetAngle = Degrees.of(controller.getSetpoint());
+        inputs.targetAngle = Degrees.of(controller.getSetpoint()).plus(kMinimumAngle);
 
         inputs.limitswitch = limitswitch.get() ^ kInvertHoodLS;
 
@@ -77,14 +72,13 @@ public class HoodIOReal implements HoodIO {
 
     @Override
     public void setPosition(Angle angle) {
-        controller.setSetpoint(angle.in(Degrees), ControlType.kMAXMotionPositionControl);
+        controller.setSetpoint(angle.minus(kMinimumAngle).in(Degrees), ControlType.kPosition);
     }
 
     @Override
     public void resetPosition() {
-        controller.setIAccum(0);
         encoder.setPosition(0);
-        controller.setSetpoint(encoder.getPosition(), ControlType.kMAXMotionPositionControl);
+        controller.setSetpoint(kMinimumAngle.in(Degrees), ControlType.kPosition);
     }
 
     @Override

@@ -13,7 +13,7 @@ public class ShootCommand extends ParallelCommandGroup {
     public ShootCommand(ShooterSubsystem shooter, HoodSubsystem hood, IndexerSubsystem indexer) {
         addCommands(
                 shooter.runAtVelocityCommand(kShootVelocity),
-                // hood.pointAtHubCommand(),
-                indexer.runCommand().onlyWhile(shooter::atTargetVelocity));
+                hood.pointAtHubCommand(),
+                indexer.runCommand().onlyWhile(shooter::atTargetVelocity).repeatedly());
     }
 }

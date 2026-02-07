@@ -13,18 +13,18 @@ public final class ShooterConstants {
 
     public static final Voltage kShooterVolts = Volts.of(9.75); // Only for experimental use.
 
-    public static final double kP = 0.0; // 0.0011
-    public static final double kI = 0.0; // 0.001
+    public static final double kP = 0.0; // 0.00005
+    public static final double kI = 0.0; // 0.0000003
     public static final double kD = 0.0;
 
-    public static final double kS = 0.39;
-    public static final double kV = 0.002316;
+    public static final double kS = 0.39; // 0.39
+    public static final double kV = 0.00216;
+    public static final double kA = 0.0002;
 
     public static final AngularVelocity kZeroVelocity = RPM.zero();
-    public static final AngularVelocity kShootVelocity = RPM.of(4200);
-    public static final AngularVelocity kVelocityTolerance = RPM.of(25);
-    public static final AngularVelocity kCruiseVelocity = RPM.of(4200);
-    public static final AngularAcceleration kMaxAcceleration = RPM.per(Second).of(3000);
+    public static final AngularVelocity kShootVelocity = RPM.of(4100);
+    public static final AngularVelocity kVelocityTolerance = RPM.of(300);
+    public static final AngularAcceleration kMaxAcceleration = RPM.per(Second).of(10000);
 
     public static final double kShooterGearing = 1.0;
     public static final MomentOfInertia kShooterMOI = KilogramSquareMeters.of(0.0008);

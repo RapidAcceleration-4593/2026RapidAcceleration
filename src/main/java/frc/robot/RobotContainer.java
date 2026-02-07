@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Controllers.*;
 
@@ -72,6 +73,7 @@ public class RobotContainer {
 
         // <------- Experimental ------->
         driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
+        driverController.rightBumper().whileTrue(hood.goToAngleCommand(Degrees.of(35)));
 
         driverController.leftTrigger(0.5).whileTrue(shooter.runCommand());
         driverController.leftBumper().whileTrue(indexer.runCommand());
