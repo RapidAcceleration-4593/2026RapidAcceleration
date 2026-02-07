@@ -12,3 +12,24 @@
   * Again, the challenge is mainly doing this all in 3D space rather than 2D space
 
 * from there, we just command the swerve module to run the motors according to our path (we might have to calculate the path manually, since we're in 3D space
+
+#### 3D Object Detection
+
+* **Make Well-Working 2D Object Detection**
+
+  * Get basic pose2D from two yaw positions ✅
+
+    * Modify records (or function itself) so this all works w/o cameras needing to be exactly parallel
+
+  * Get very simple iterate input function working ✅
+
+    * Find a better way to get target info split up by time
+
+      * Possibly also split up by target
+
+    * Improve comparisons and separations by assuming lower ambiguity to mean farther distance
+
+
+
+useful information: WSL stuff: password = "nokinubuntu"
+
