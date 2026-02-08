@@ -6,6 +6,7 @@ import static frc.robot.subsystems.hood.HoodConstants.kPhysicalOffset;
 import static frc.robot.subsystems.swerve.SwerveConstants.MAPLESIM_CONFIG;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -75,25 +76,27 @@ public final class SimulationManager {
     }
 
     /** Simulates an object being launched from the shooter mechanism. */
-    private void launchProjectile(Angle angle, AngularVelocity velocity) {
+    private void launchProjectile(Angle turretAngle, Angle hoodAngle, AngularVelocity velocity) {
         double avgWheelRadiusMeters =
                 Inches.of(1.25).in(Meters) / 2 + Inches.of(2.0).in(Meters) / 2;
         LinearVelocity linearVelocity = MetersPerSecond.of(velocity.in(RadiansPerSecond) * avgWheelRadiusMeters);
+        Rotation2d turretRotation = Rotation2d.fromRadians(turretAngle.in(Radians));
 
         RebuiltFuelOnFly projectile = new RebuiltFuelOnFly(
                 getPose().getTranslation(),
                 kPhysicalOffset.getTranslation(),
                 getChassisSpeeds(),
-                getPose().getRotation(), // Plus turret rotation.
+                getPose().getRotation().plus(turretRotation),
                 Inches.of(20.5),
                 linearVelocity,
-                Degrees.of(90.0).minus(angle));
+                Degrees.of(90.0).minus(hoodAngle));
 
         arena.addGamePieceProjectile(projectile);
     }
 
-    public Command launchProjectileCommand(Supplier<Angle> angle, Supplier<AngularVelocity> velocity) {
-        return Commands.runOnce(() -> launchProjectile(angle.get(), velocity.get()))
+    public Command launchProjectileCommand(
+            Supplier<Angle> turretAngle, Supplier<Angle> hoodAngle, Supplier<AngularVelocity> velocity) {
+        return Commands.runOnce(() -> launchProjectile(turretAngle.get(), hoodAngle.get(), velocity.get()))
                 .withTimeout(Seconds.of(0.4));
     }
 

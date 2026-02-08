@@ -44,6 +44,13 @@ public final class FieldUtil {
         return FieldZones.Neutral_Zone;
     }
 
+    public static boolean isInAllianceZone(Pose2d pose) {
+        FieldZones zone = getCurrentZone(pose);
+        Alliance alliance = getCurrentAlliance();
+        return (alliance == Alliance.Blue && zone == FieldZones.Blue_Zone)
+                || (alliance == Alliance.Red && zone == FieldZones.Red_Zone);
+    }
+
     public static Distance getFieldLength() {
         return Inches.of(651.2);
     }

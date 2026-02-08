@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CommandLogger;
@@ -62,7 +63,7 @@ public class TurretSubsystem extends SubsystemBase {
      */
     public Command setVoltageCommand(Voltage volts) {
         return startEnd(() -> io.setVoltage(volts), io::stop)
-                .until(() -> (inputs.angle.lt(kMinimumAngle) || inputs.angle.lt(kMaximumAngle)));
+                .until(() -> (inputs.angle.lt(kMinimumAngle) || inputs.angle.gt(kMaximumAngle)));
     }
 
     /**
@@ -80,11 +81,8 @@ public class TurretSubsystem extends SubsystemBase {
      *
      * @return A command to run the motor to the calculated Hub angle without stopping.
      */
-    public Command pointAtHubCommand() {
-        return runEnd(
-                () -> setPosition(calculateSafeAngle(
-                        getCurrentAngle(), calculateHubAngle().get())),
-                io::stop);
+    public Command controlAngleCommand() {
+        return runEnd(() -> setPosition(calculateSafeAngle()), io::stop);
     }
 
     /**
@@ -96,14 +94,23 @@ public class TurretSubsystem extends SubsystemBase {
         return runOnce(io::stop);
     }
 
+    /** Sets the angle of the closed-loop PID control. */
+    private void setPosition(Angle angle) {
+        Angle clampedAngle =
+                Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
+        targetAngle = clampedAngle;
+        io.setPosition(clampedAngle);
+    }
+
     /**
      * Calculates the angle based on the robot's rotation from the hub.
      *
      * @return An angle supplier from a linear regression equation.
      */
-    private Supplier<Angle> calculateHubAngle() {
-        return () -> {
-            Pose2d robotPose = poseSupplier.get().transformBy(kPhysicalOffset);
+    private Angle calculateTurretAngle() {
+        Pose2d robotPose = poseSupplier.get().transformBy(kPhysicalOffset);
+
+        if (FieldUtil.isInAllianceZone(robotPose)) {
             Pose2d targetPose = FieldUtil.getTargetHubPose();
             ChassisSpeeds chassisSpeeds = chassisSpeedsSupplier.get();
 
@@ -115,25 +122,29 @@ public class TurretSubsystem extends SubsystemBase {
 
             Angle fieldAngle = Radians.of(Math.atan2(dy.in(Meters), dx.in(Meters)));
             return robotPose.getRotation().getMeasure().minus(fieldAngle);
-        };
+        }
+
+        Angle fieldAngle = FieldUtil.getCurrentAlliance() == Alliance.Blue ? Degrees.of(180) : Degrees.zero();
+        return robotPose.getRotation().getMeasure().minus(fieldAngle);
     }
 
-    /** Sets the angle of the closed-loop PID control. */
-    private void setPosition(Angle angle) {
-        Angle clampedAngle =
-                Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
-        targetAngle = clampedAngle;
-        io.setPosition(clampedAngle);
-    }
+    /**
+     * Calculates a safe angle to run the turret to based on the current and desired angles.
+     *
+     * @return A safe angle that does not exceed the physical limits of the turret.
+     */
+    private Angle calculateSafeAngle() {
+        Angle current = getCurrentAngle();
+        Angle desired = calculateTurretAngle();
 
-    /** Calculates a safe angle based on the soft wrapping limits. */
-    private Angle calculateSafeAngle(Angle current, Angle desired) {
-        Angle safeRange = kMaximumAngle.minus(kMinimumAngle);
-        Angle errorRange = desired.minus(current);
+        Angle error = Degrees.of(MathUtil.inputModulus(desired.minus(current).in(Degrees), -180.0, 180.0));
 
-        Angle error = Degrees.of(
-                MathUtil.inputModulus(errorRange.in(Degrees), -safeRange.in(Degrees), safeRange.in(Degrees)));
         Angle candidate = current.plus(error);
+
+        if (candidate.lt(kMinimumAngle) || candidate.gt(kMaximumAngle)) {
+            return Degrees.of(
+                    MathUtil.clamp(desired.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
+        }
 
         return Degrees.of(MathUtil.clamp(candidate.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
     }
