@@ -1,6 +1,5 @@
 package frc.robot.subsystems.deploy;
 
-import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.deploy.DeployConstants.*;
 import static frc.robot.util.mechanism.MechanismFinder.fLengthMechanism3D;
 
@@ -10,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.CommandLogger;
 import frc.robot.util.mechanism.LengthMechanism3D;
 import org.littletonrobotics.junction.Logger;
 
@@ -39,11 +39,7 @@ public class DeploySubsystem extends SubsystemBase {
         targetDistance = inputs.targetDistance;
 
         deploy3D.setLength(inputs.distance);
-        if (getCurrentCommand() != null) {
-            Logger.recordOutput("Command", this.getCurrentCommand().getName());
-        } else {
-            Logger.recordOutput("Command", "none");
-        }
+        CommandLogger.logSubsystemCommand(this);
     }
 
     public Distance getCurrentDistance() {

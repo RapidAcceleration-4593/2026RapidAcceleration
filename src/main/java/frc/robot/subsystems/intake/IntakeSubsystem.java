@@ -4,6 +4,7 @@ import static frc.robot.subsystems.intake.IntakeConstants.kIntakeVolts;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.CommandLogger;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -21,11 +22,7 @@ public class IntakeSubsystem extends SubsystemBase {
         io.updateInputs(inputs);
         Logger.processInputs("Intake", inputs);
 
-        if (getCurrentCommand() != null) {
-            Logger.recordOutput("Command", this.getCurrentCommand().getName());
-        } else {
-            Logger.recordOutput("Command", "none");
-        }
+        CommandLogger.logSubsystemCommand(this);
     }
 
     /**

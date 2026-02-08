@@ -5,6 +5,7 @@ import static frc.robot.util.mechanism.MechanismFinder.fWheelMechanism3D;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.CommandLogger;
 import frc.robot.util.mechanism.WheelMechanism3D;
 import org.littletonrobotics.junction.Logger;
 
@@ -28,11 +29,7 @@ public class IndexerSubsystem extends SubsystemBase {
 
         indexer3D.setAngularVelocity(inputs.spindexerVelocity);
 
-        if (getCurrentCommand() != null) {
-            Logger.recordOutput("Command", this.getCurrentCommand().getName());
-        } else {
-            Logger.recordOutput("Command", "none");
-        }
+        CommandLogger.logSubsystemCommand(this);
     }
 
     /**

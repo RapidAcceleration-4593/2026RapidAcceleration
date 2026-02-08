@@ -5,6 +5,7 @@ import static frc.robot.subsystems.shooter.ShooterConstants.*;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.CommandLogger;
 import org.littletonrobotics.junction.Logger;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -25,11 +26,7 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.processInputs("Shooter", inputs);
         targetVelocity = inputs.targetVelocity;
 
-        if (getCurrentCommand() != null) {
-            Logger.recordOutput("Command", this.getCurrentCommand().getName());
-        } else {
-            Logger.recordOutput("Command", "none");
-        }
+        CommandLogger.logSubsystemCommand(this);
     }
 
     public AngularVelocity getCurrentVelocity() {

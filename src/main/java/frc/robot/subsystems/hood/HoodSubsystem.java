@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.CommandLogger;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.mechanism.AngleMechanism3D;
 import java.util.function.Supplier;
@@ -45,11 +46,7 @@ public class HoodSubsystem extends SubsystemBase {
         targetAngle = inputs.targetAngle;
 
         hood3D.setAngle(inputs.angle);
-        if (getCurrentCommand() != null) {
-            Logger.recordOutput("Command", this.getCurrentCommand().getName());
-        } else {
-            Logger.recordOutput("Command", "none");
-        }
+        CommandLogger.logSubsystemCommand(this);
     }
 
     public Angle getCurrentAngle() {
