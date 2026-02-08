@@ -105,7 +105,7 @@ public class TurretSubsystem extends SubsystemBase {
     /**
      * Calculates the angle based on the robot's rotation from the hub.
      *
-     * @return An angle supplier from a linear regression equation.
+     * @return An angle from a linear regression equation.
      */
     private Angle calculateTurretAngle() {
         Pose2d robotPose = poseSupplier.get().transformBy(kPhysicalOffset);
