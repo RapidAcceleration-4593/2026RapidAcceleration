@@ -51,7 +51,7 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
     public void updatePlantSim() {
         deploySim.setInput(motorSim.getAppliedOutput()
                 * SimulatedBattery.getBatteryVoltage().in(Volts)
-				* (kPositiveVoltageExtends ? 1 : -1));
+                * (kPositiveVoltageExtends ? 1 : -1));
         deploySim.update(0.02);
     }
 

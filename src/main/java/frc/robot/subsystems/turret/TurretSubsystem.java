@@ -1,15 +1,18 @@
 package frc.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.hood.HoodConstants.kPhysicalOffset;
 import static frc.robot.subsystems.turret.TurretConstants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.CommandLogger;
 import frc.robot.util.FieldUtil;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -17,15 +20,17 @@ import org.littletonrobotics.junction.Logger;
 public class TurretSubsystem extends SubsystemBase {
 
     private final Supplier<Pose2d> poseSupplier;
+    private final Supplier<ChassisSpeeds> chassisSpeedsSupplier;
     private final TurretInputsAutoLogged inputs;
     private final TurretIO io;
 
     private Angle targetAngle = kInitialAngle;
 
-    public TurretSubsystem(TurretIO io, Supplier<Pose2d> robotPoseSupplier) {
+    public TurretSubsystem(TurretIO io, Supplier<Pose2d> poseSupplier, Supplier<ChassisSpeeds> chassisSpeedsSupplier) {
         this.io = io;
         this.inputs = new TurretInputsAutoLogged();
-        this.poseSupplier = robotPoseSupplier;
+        this.poseSupplier = poseSupplier;
+        this.chassisSpeedsSupplier = chassisSpeedsSupplier;
     }
 
     @Override
@@ -34,11 +39,7 @@ public class TurretSubsystem extends SubsystemBase {
         Logger.processInputs("Turret", inputs);
         targetAngle = inputs.targetAngle;
 
-        if (getCurrentCommand() != null) {
-            Logger.recordOutput("Command", this.getCurrentCommand().getName());
-        } else {
-            Logger.recordOutput("Command", "none");
-        }
+        CommandLogger.logSubsystemCommand(this);
     }
 
     public Angle getCurrentAngle() {
@@ -102,17 +103,18 @@ public class TurretSubsystem extends SubsystemBase {
      */
     private Supplier<Angle> calculateHubAngle() {
         return () -> {
-            Pose2d robotPose = poseSupplier.get();
+            Pose2d robotPose = poseSupplier.get().transformBy(kPhysicalOffset);
             Pose2d targetPose = FieldUtil.getTargetHubPose();
+            ChassisSpeeds chassisSpeeds = chassisSpeedsSupplier.get();
 
-            Distance dx = targetPose.getMeasureX().minus(robotPose.getMeasureY());
-            Distance dy = targetPose.getMeasureY().minus(robotPose.getMeasureY());
+            Distance vx = Meters.of(chassisSpeeds.vxMetersPerSecond);
+            Distance vy = Meters.of(chassisSpeeds.vyMetersPerSecond);
 
-            double fieldAngle = Math.atan2(dy.in(Meters), dx.in(Meters));
-            double robotYaw = robotPose.getRotation().getRadians();
-            double turretAngle = fieldAngle - robotYaw;
+            Distance dx = targetPose.getMeasureX().minus(vx).minus(robotPose.getMeasureX());
+            Distance dy = targetPose.getMeasureY().minus(vy).minus(robotPose.getMeasureY());
 
-            return Radians.of(turretAngle);
+            Angle fieldAngle = Radians.of(Math.atan2(dy.in(Meters), dx.in(Meters)));
+            return robotPose.getRotation().getMeasure().minus(fieldAngle);
         };
     }
 

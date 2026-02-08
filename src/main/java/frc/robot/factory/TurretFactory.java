@@ -19,15 +19,15 @@ public final class TurretFactory {
     }
 
     private static TurretSubsystem initializeReal(SwerveSubsystem swerve) {
-        return new TurretSubsystem(new TurretIOReal(), swerve::getPose);
+        return new TurretSubsystem(new TurretIOReal(), swerve::getPose, swerve::getChassisSpeeds);
     }
 
     private static TurretSubsystem initializeSim() {
         SimulationManager simulation = SimulationManager.getInstance();
-        return new TurretSubsystem(new TurretIOSim(), simulation::getPose);
+        return new TurretSubsystem(new TurretIOSim(), simulation::getPose, simulation::getChassisSpeeds);
     }
 
     private static TurretSubsystem initializeReplay(SwerveSubsystem swerve) {
-        return new TurretSubsystem(new TurretIO() {}, swerve::getPose);
+        return new TurretSubsystem(new TurretIO() {}, swerve::getPose, swerve::getChassisSpeeds);
     }
 }

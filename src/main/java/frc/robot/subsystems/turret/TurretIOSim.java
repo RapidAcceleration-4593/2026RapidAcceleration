@@ -21,7 +21,7 @@ public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
     private final SparkMaxAlternateEncoderSim encoderSim;
 
     public TurretIOSim() {
-        DCMotor gearbox = DCMotor.getNEO(1);
+        DCMotor gearbox = DCMotor.getNeo550(1);
 
         turretSim = new SingleJointedArmSim(
                 gearbox,
