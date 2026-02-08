@@ -55,13 +55,15 @@ public class DeploySubsystem extends SubsystemBase {
         return inputs.distance.isNear(targetDistance, kDistanceTolerance);
     }
 
-	private boolean isDrivingIntoLS() {
-		if (kPositiveVoltageExtends) {
-			return (inputs.appliedVolts.in(Volts) > 0.1 && inputs.outLimitSwitch) || (inputs.appliedVolts.in(Volts) < -0.1 && inputs.inLimitSwitch);
-		} else {
-			return (inputs.appliedVolts.in(Volts) < -0.1 && inputs.outLimitSwitch) || (inputs.appliedVolts.in(Volts) > 0.1 && inputs.inLimitSwitch);
-		}
-	}
+    private boolean isDrivingIntoLS() {
+        if (kPositiveVoltageExtends) {
+            return (inputs.appliedVolts.in(Volts) > 0.1 && inputs.outLimitSwitch)
+                    || (inputs.appliedVolts.in(Volts) < -0.1 && inputs.inLimitSwitch);
+        } else {
+            return (inputs.appliedVolts.in(Volts) < -0.1 && inputs.outLimitSwitch)
+                    || (inputs.appliedVolts.in(Volts) > 0.1 && inputs.inLimitSwitch);
+        }
+    }
 
     /**
      * Constructs a command to run the deploy at a set voltage.
