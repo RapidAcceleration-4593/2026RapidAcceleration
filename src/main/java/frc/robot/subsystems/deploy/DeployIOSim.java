@@ -9,13 +9,14 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.util.IPhysicsSim;
-import frc.robot.util.PowerSim;
 import frc.robot.util.SimulationManager;
+import org.ironmaple.simulation.motorsims.SimulatedBattery;
 import org.littletonrobotics.junction.Logger;
 
 public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
@@ -48,14 +49,14 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
 
     @Override
     public void updatePlantSim() {
-        deploySim.setInput(
-                motorSim.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts));
+        deploySim.setInput(motorSim.getAppliedOutput()
+                * SimulatedBattery.getBatteryVoltage().in(Volts));
         deploySim.update(0.02);
     }
 
     @Override
-    public void updatePowerSim() {
-        PowerSim.addCurrentDraw(Amps.of(motorSim.getMotorCurrent()));
+    public Current getCurrentDraw() {
+        return Amps.of(motorSim.getMotorCurrent());
     }
 
     @Override
@@ -64,7 +65,8 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
         AngularVelocity drumVelocity =
                 RadiansPerSecond.of(carriageVelocity.in(MetersPerSecond) / kDrumRadius.in(Meters));
         AngularVelocity motorVelocity = drumVelocity.times(kMotorToDeployGearing);
-        motorSim.iterate(motorVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
+        motorSim.iterate(
+                motorVelocity.in(RPM), SimulatedBattery.getBatteryVoltage().in(Volts), 0.02);
 
         Distance deployDistance = Meters.of(deploySim.getPositionMeters());
         encoderSim.setPosition(deployDistance.in(Inches));

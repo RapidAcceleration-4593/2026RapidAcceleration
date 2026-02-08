@@ -8,9 +8,10 @@ import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.util.IPhysicsSim;
-import frc.robot.util.PowerSim;
+import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
 
@@ -38,14 +39,14 @@ public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
 
     @Override
     public void updatePlantSim() {
-        turretSim.setInput(
-                motorSim.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts));
+        turretSim.setInput(motorSim.getAppliedOutput()
+                * SimulatedBattery.getBatteryVoltage().in(Volts));
         turretSim.update(0.02);
     }
 
     @Override
-    public void updatePowerSim() {
-        PowerSim.addCurrentDraw(Amps.of(motorSim.getMotorCurrent()));
+    public Current getCurrentDraw() {
+        return Amps.of(motorSim.getMotorCurrent());
     }
 
     @Override
@@ -53,7 +54,8 @@ public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
         AngularVelocity turretVelocity = RadiansPerSecond.of(turretSim.getVelocityRadPerSec());
         AngularVelocity motorVelocity = turretVelocity.times(kMotorToTurretGearing);
 
-        motorSim.iterate(motorVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
+        motorSim.iterate(
+                motorVelocity.in(RPM), SimulatedBattery.getBatteryVoltage().in(Volts), 0.02);
         encoderSim.setPosition(Degrees.convertFrom(turretSim.getAngleRads(), Radians));
     }
 }

@@ -8,11 +8,12 @@ import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.util.IPhysicsSim;
-import frc.robot.util.PowerSim;
 import frc.robot.util.SimulationManager;
+import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
 
@@ -43,13 +44,14 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
 
     @Override
     public void updatePlantSim() {
-        hoodSim.setInput(motorSim.getAppliedOutput() * PowerSim.getRailVoltage().in(Volts));
+        hoodSim.setInput(motorSim.getAppliedOutput()
+                * SimulatedBattery.getBatteryVoltage().in(Volts));
         hoodSim.update(0.02);
     }
 
     @Override
-    public void updatePowerSim() {
-        PowerSim.addCurrentDraw(Amps.of(hoodSim.getCurrentDrawAmps()));
+    public Current getCurrentDraw() {
+        return Amps.of(hoodSim.getCurrentDrawAmps());
     }
 
     @Override
@@ -58,7 +60,8 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
         AngularVelocity encoderVelocity = hoodVelocity.times(kEncoderToHoodGearing);
         AngularVelocity motorVelocity = encoderVelocity.times(kMotorToEncoderGearing);
 
-        motorSim.iterate(motorVelocity.in(RPM), PowerSim.getRailVoltage().in(Volts), 0.02);
+        motorSim.iterate(
+                motorVelocity.in(RPM), SimulatedBattery.getBatteryVoltage().in(Volts), 0.02);
         encoderSim.setPosition(Degrees.convertFrom(hoodSim.getAngleRads(), Radians));
         limitSwitchSim.setValue(hoodSim.hasHitLowerLimit());
     }

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.motorsims.SimulatedBattery;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
 
@@ -102,16 +103,12 @@ public final class SimulationManager {
             component.updatePlantSim();
         }
 
-        for (var component : components) {
-            component.updatePowerSim();
-        }
+        arena.simulationPeriodic();
 
-        PowerSim.simulationPeriodic();
         for (var component : components) {
             component.updateIOSim();
         }
 
-        arena.simulationPeriodic();
         Logger.recordOutput("FieldSimulation/RobotPosition", getPose());
         Logger.recordOutput("FieldSimulation/Fuel", arena.getGamePiecesArrayByType("Fuel"));
     }
@@ -119,11 +116,7 @@ public final class SimulationManager {
     /** Registers a subsystem physics simulation. */
     public void addSimulatable(IPhysicsSim sim) {
         components.add(sim);
-    }
-
-    /** Removes a subsystem physics simulation. */
-    public void removeSimulatable(IPhysicsSim sim) {
-        components.remove(sim);
+        SimulatedBattery.addElectricalAppliances(sim::getCurrentDraw);
     }
 
     /** Retrieves the raw MapleSim drivetrain simulation. */
