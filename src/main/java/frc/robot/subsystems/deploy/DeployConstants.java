@@ -18,6 +18,9 @@ public final class DeployConstants {
     public static final boolean kInvertOutLS = true;
     public static final boolean kInvertDeployEncoder = false;
 
+	/** Does applying a positive voltage to the motor extend the deploy mechanism? */
+	public static final boolean kPositiveVoltageExtends = true;
+
     public static final double kP = 0.0; // 0.3
     public static final double kI = 0.0;
     public static final double kD = 0.0;

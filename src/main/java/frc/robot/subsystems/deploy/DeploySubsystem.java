@@ -1,5 +1,6 @@
 package frc.robot.subsystems.deploy;
 
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.deploy.DeployConstants.*;
 import static frc.robot.util.mechanism.MechanismFinder.fLengthMechanism3D;
 
@@ -54,6 +55,14 @@ public class DeploySubsystem extends SubsystemBase {
         return inputs.distance.isNear(targetDistance, kDistanceTolerance);
     }
 
+	private boolean isDrivingIntoLS() {
+		if (kPositiveVoltageExtends) {
+			return (inputs.appliedVolts.in(Volts) > 0.1 && inputs.outLimitSwitch) || (inputs.appliedVolts.in(Volts) < -0.1 && inputs.inLimitSwitch);
+		} else {
+			return (inputs.appliedVolts.in(Volts) < -0.1 && inputs.outLimitSwitch) || (inputs.appliedVolts.in(Volts) > 0.1 && inputs.inLimitSwitch);
+		}
+	}
+
     /**
      * Constructs a command to run the deploy at a set voltage.
      *
@@ -61,7 +70,7 @@ public class DeploySubsystem extends SubsystemBase {
      * @return A command to set the motor voltage and stop when complete.
      */
     public Command setVoltageCommand(Voltage volts) {
-        return startEnd(() -> io.setVoltage(volts), io::stop);
+        return startEnd(() -> io.setVoltage(volts), io::stop).until(this::isDrivingIntoLS);
     }
 
     /**

@@ -50,7 +50,8 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
     @Override
     public void updatePlantSim() {
         deploySim.setInput(motorSim.getAppliedOutput()
-                * SimulatedBattery.getBatteryVoltage().in(Volts));
+                * SimulatedBattery.getBatteryVoltage().in(Volts)
+				* (kPositiveVoltageExtends ? 1 : -1));
         deploySim.update(0.02);
     }
 
@@ -71,8 +72,8 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
         Distance deployDistance = Meters.of(deploySim.getPositionMeters());
         encoderSim.setPosition(deployDistance.in(Inches));
 
-        retractedLSSim.setValue(deploySim.hasHitLowerLimit());
-        extendedLSSim.setValue(deploySim.hasHitUpperLimit());
+        retractedLSSim.setValue(deploySim.hasHitLowerLimit() ^ kInvertInLS);
+        extendedLSSim.setValue(deploySim.hasHitUpperLimit() ^ kInvertOutLS);
         SimulationManager.getInstance().setIntakeExtended(deploySim.hasHitUpperLimit());
         Logger.recordOutput("DeploySimInches", Units.metersToInches(deploySim.getPositionMeters()));
     }
