@@ -29,11 +29,11 @@ public final class SwerveConstants {
     private static final Current kSlipCurrent = Amps.of(120.0);
 
     /** Theoretical Maximum Speed at 12V. */
-    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(3.0); // 4.5
+    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(4.5);
 
-    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(3.0); // 5.0
-    public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(270.0); // 540.0
-    public static final AngularAcceleration kAngularAcceleration = DegreesPerSecondPerSecond.of(360.0); // 720.0
+    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(5.0);
+    public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(540.0);
+    public static final AngularAcceleration kAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
 
     /** CANBus/CANivore that all modules are connected to. */
     public static final CANBus kCANBus = new CANBus("drivebase");
@@ -67,8 +67,8 @@ public final class SwerveConstants {
             .withKP(0.1)
             .withKI(0.0)
             .withKD(0.0)
-            .withKS(0.14574)
-            .withKV(0.62698);
+            .withKS(0.0) // 0.14574
+            .withKV(0.124); // 0.62698
 
     private static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
     private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.Voltage;

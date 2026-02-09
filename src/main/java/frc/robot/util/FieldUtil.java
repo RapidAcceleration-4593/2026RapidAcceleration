@@ -10,11 +10,13 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public final class FieldUtil {
 
-    private static final Distance kBlueAllianceBoundary = Inches.of(184.1);
-    private static final Distance kRedAllianceBoundary = Inches.of(467.1);
+    private static final Distance kFieldLength = Inches.of(651.2);
+    private static final Distance kFieldWidth = Inches.of(317.7);
 
-    private static final Pose2d kInitialBluePose = new Pose2d(Inches.of(118.11), Inches.of(158.85), new Rotation2d());
-    private static final Pose2d kInitialRedPose =
+    public static final Pose2d kInitialCenterPose =
+            new Pose2d(kFieldLength.div(2), kFieldWidth.div(2), new Rotation2d());
+    public static final Pose2d kInitialBluePose = new Pose2d(Inches.of(118.11), Inches.of(158.85), new Rotation2d());
+    public static final Pose2d kInitialRedPose =
             new Pose2d(Inches.of(533.09), Inches.of(158.85), Rotation2d.fromDegrees(180));
 
     private static final Pose2d kBlueHubPose = new Pose2d(Inches.of(182.1), Inches.of(158.85), new Rotation2d());
@@ -30,6 +32,10 @@ public final class FieldUtil {
         return DriverStation.getAlliance().orElse(Alliance.Red);
     }
 
+    public static boolean isRedAlliance() {
+        return getCurrentAlliance() == Alliance.Red;
+    }
+
     public static Pose2d getInitialPose() {
         return getCurrentAlliance() == Alliance.Blue ? kInitialBluePose : kInitialRedPose;
     }
@@ -39,8 +45,8 @@ public final class FieldUtil {
     }
 
     public static FieldZones getCurrentZone(Pose2d pose) {
-        if (pose.getMeasureX().lt(kBlueAllianceBoundary)) return FieldZones.Blue_Zone;
-        if (pose.getMeasureX().gt(kRedAllianceBoundary)) return FieldZones.Red_Zone;
+        if (pose.getMeasureX().lt(kBlueHubPose.getMeasureX())) return FieldZones.Blue_Zone;
+        if (pose.getMeasureX().gt(kRedHubPose.getMeasureX())) return FieldZones.Red_Zone;
         return FieldZones.Neutral_Zone;
     }
 
@@ -52,10 +58,10 @@ public final class FieldUtil {
     }
 
     public static Distance getFieldLength() {
-        return Inches.of(651.2);
+        return kFieldLength;
     }
 
     public static Distance getFieldWidth() {
-        return Inches.of(317.7);
+        return kFieldWidth;
     }
 }

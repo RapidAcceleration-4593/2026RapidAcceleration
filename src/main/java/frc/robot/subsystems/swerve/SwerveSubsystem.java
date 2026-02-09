@@ -26,13 +26,13 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import frc.robot.util.CommandLogger;
+import frc.robot.util.FieldUtil;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -99,7 +99,7 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
                 this::runVelocity,
                 new PPHolonomicDriveController(new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
                 PATHPLANNER_CONFIG,
-                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+                FieldUtil::isRedAlliance,
                 this);
 
         Pathfinding.setPathfinder(new LocalADStarAK());

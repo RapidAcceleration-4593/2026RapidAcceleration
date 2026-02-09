@@ -11,8 +11,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -37,28 +35,27 @@ public class SwerveCommands {
     private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Radians per Second.
     private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Radians per Squared Second.
 
-    private Translation2d getLinearVelocityFromJoysticks(double x, double y) {
+    private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
         // Apply Deadband and square for finer control.
         double magnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
-        magnitude = Math.pow(magnitude, 2);
+        magnitude *= magnitude;
 
         double angle = Math.atan2(y, x);
         return new Translation2d(magnitude * Math.cos(angle), magnitude * Math.sin(angle));
     }
 
-    private ChassisSpeeds fieldRelativeSpeeds(SwerveSubsystem swerve, Translation2d linear, double omega) {
-        boolean flipped = DriverStation.getAlliance().isPresent()
-                && DriverStation.getAlliance().get() == Alliance.Red;
+    private static ChassisSpeeds fieldRelativeSpeeds(SwerveSubsystem swerve, Translation2d linear, double omega) {
+        boolean flipped = FieldUtil.isRedAlliance();
+        Rotation2d robotRotation = flipped ? swerve.getRotation().plus(new Rotation2d(Math.PI)) : swerve.getRotation();
         return ChassisSpeeds.fromFieldRelativeSpeeds(
-                new ChassisSpeeds(
-                        linear.getX() * swerve.getMaxLinearSpeedMetersPerSec(),
-                        linear.getY() * swerve.getMaxLinearSpeedMetersPerSec(),
-                        omega),
-                flipped ? swerve.getRotation().plus(new Rotation2d(Math.PI)) : swerve.getRotation());
+                linear.getX() * swerve.getMaxLinearSpeedMetersPerSec(),
+                linear.getY() * swerve.getMaxLinearSpeedMetersPerSec(),
+                omega,
+                robotRotation);
     }
 
     /** Field relative drive command using two joysticks (controlling linear and angular velocities). */
-    public Command joystickDrive(
+    public static Command joystickDrive(
             SwerveSubsystem swerve, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
         return Commands.run(
                 () -> {
@@ -80,7 +77,8 @@ public class SwerveCommands {
      * Drive field-oriented with left joystick controlling translation, but the robot automatically rotates to face a
      * fixed target rotation.
      */
-    public Command joystickDrivePointToHub(SwerveSubsystem swerve, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    public static Command joystickDrivePointToHub(
+            SwerveSubsystem swerve, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
         ProfiledPIDController angleController = new ProfiledPIDController(
                 ANGLE_KP, 0.0, ANGLE_KD, new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
         angleController.enableContinuousInput(-Math.PI, Math.PI);

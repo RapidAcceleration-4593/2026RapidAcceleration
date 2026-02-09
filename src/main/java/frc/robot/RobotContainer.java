@@ -16,13 +16,14 @@ import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
 
     // Subsystem(s)
     public final SwerveSubsystem swerve;
-    // public final AprilTagSubsystem apriltag;
+    public final AprilTagSubsystem apriltag;
     // public final ObjectDetectionSubsystem objectDetection;
 
     public final ShooterSubsystem shooter;
@@ -44,7 +45,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
-        // apriltag = AprilTagFactory.initialize(swerve);
+        apriltag = AprilTagFactory.initialize(swerve);
         // objectDetection = ObjectDetectionFactory.initialize();
 
         shooter = ShooterFactory.initialize();
@@ -67,9 +68,8 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        swerve.setDefaultCommand(new SwerveCommands()
-                .joystickDrive(
-                        swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
+        swerve.setDefaultCommand(SwerveCommands.joystickDrive(
+                swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
         // turret.setDefaultCommand(turret.controlAngleCommand());
 
         // <------- Experimental ------->
@@ -97,8 +97,8 @@ public class RobotContainer {
         // operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
         // operatorController
         //         .rightTrigger()
-        //         .whileTrue(new SwerveCommands()
-        //                 .joystickDrivePointToHub(swerve, driverController::getLeftY, driverController::getLeftX));
+        //         .whileTrue(SwerveCommands.joystickDrivePointToHub(
+        //                 swerve, driverController::getLeftY, driverController::getLeftX));
 
         // operatorController.leftTrigger().onTrue(new IntakeCommand(intake, deploy).withName("IntakeCommand"));
         // operatorController.leftBumper().onTrue(new RetractIntakeCommand(intake, deploy).withName("RetractCommand"));

@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -69,17 +70,14 @@ public final class SimulationManager {
 
     /** Resets the robot and field state for autonomous. */
     public void resetField() {
-        Pose2d initialPose = FieldUtil.getInitialPose();
-
-        setPose(initialPose);
+        setPose(FieldUtil.getInitialPose());
         arena.resetFieldForAuto();
     }
 
     /** Simulates an object being launched from the shooter mechanism. */
     private void launchProjectile(Angle turretAngle, Angle hoodAngle, AngularVelocity velocity) {
-        double avgWheelRadiusMeters =
-                Inches.of(1.25).in(Meters) / 2 + Inches.of(2.0).in(Meters) / 2;
-        LinearVelocity linearVelocity = MetersPerSecond.of(velocity.in(RadiansPerSecond) * avgWheelRadiusMeters);
+        Distance wheelRadius = Inches.of(2.0);
+        LinearVelocity linearVelocity = MetersPerSecond.of(velocity.in(RadiansPerSecond) * wheelRadius.in(Meters));
         Rotation2d turretRotation = Rotation2d.fromRadians(turretAngle.in(Radians));
 
         RebuiltFuelOnFly projectile = new RebuiltFuelOnFly(
