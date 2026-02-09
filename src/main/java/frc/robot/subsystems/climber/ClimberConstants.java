@@ -22,7 +22,7 @@ public final class ClimberConstants {
     public static final Distance kDistanceTolerance = Inches.of(0.5);
 
     public static final int kCountsPerRotation = 8192;
-    public static final double kMotorToEncoderGearing = 10.0;
+    public static final double kMotorToEncoderGearing = 125.0;
     public static final double kEncoderToClimberGearing = 1.0;
     public static final double kMotorToClimberGearing = kMotorToEncoderGearing * kEncoderToClimberGearing;
 

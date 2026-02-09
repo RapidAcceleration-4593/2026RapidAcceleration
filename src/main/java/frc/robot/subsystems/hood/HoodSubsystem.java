@@ -58,7 +58,8 @@ public class HoodSubsystem extends SubsystemBase {
     }
 
     public boolean atTargetAngle() {
-        return inputs.angle.isNear(targetAngle, kAngleTolerance);
+        return inputs.angle.isNear(targetAngle, kAngleTolerance)
+                || (inputs.targetAngle == kMinimumAngle && inputs.limitswitch);
     }
 
     /**
@@ -79,7 +80,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @return A command to run the motor to an angle and stop when complete.
      */
     public Command goToAngleCommand(Angle angle) {
-        return startEnd(() -> setPosition(angle), io::stop).until(this::atTargetAngle);
+        return startEnd(() -> setPosition(() -> angle), io::stop).until(this::atTargetAngle);
     }
 
     /**
@@ -88,7 +89,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @return A command to run the motor to the calculated Hub angle without stopping.
      */
     public Command pointAtHubCommand() {
-        return runEnd(() -> setPosition(Degrees.of(30)), () -> setPosition(kMinimumAngle));
+        return runEnd(() -> setPosition(this::calculateHubAngle), () -> setPosition(() -> kMinimumAngle));
     }
 
     /**
@@ -101,22 +102,26 @@ public class HoodSubsystem extends SubsystemBase {
     }
 
     /**
-     * Calculates the angle based on the distance from the Hub.
+     * Calculates the hood angle based on the distance from the Hub.
      *
-     * @return An angle supplier from a linear regression equation.
+     * @return An angle from the linear regression equation.
      */
-    private Supplier<Angle> calculateHubAngle() {
-        return () -> {
-            Pose2d targetPose = FieldUtil.getTargetHubPose();
-            Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);
+    private Angle calculateHubAngle() {
+        Pose2d targetPose = FieldUtil.getTargetHubPose();
+        Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);
+        Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
 
-            Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
-            return Degrees.of(10.0 * distance.in(Meters));
-        };
+        // return Degrees.of(10.0 * distance.in(Meters));
+        return Degrees.of(30); // Experimental use only.
     }
 
-    /** Sets the angle of the closed-loop PID control. */
-    private void setPosition(Angle angle) {
+    /**
+     * Sets the angle of the closed-loop PID controller.
+     *
+     * @param angleSupplier The supplied angle to set as the hood position.
+     */
+    private void setPosition(Supplier<Angle> angleSupplier) {
+        Angle angle = angleSupplier.get();
         Angle clampedAngle =
                 Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
         targetAngle = clampedAngle;

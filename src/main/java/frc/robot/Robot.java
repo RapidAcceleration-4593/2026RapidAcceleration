@@ -87,7 +87,11 @@ public class Robot extends LoggedRobot {
 
     /** This function is called once when the robot is disabled. */
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        if (kCurrentMode == Mode.SIM) {
+            SimulationManager.getInstance().resetField();
+        }
+    }
 
     /** This function is called periodically when the robot is disabled. */
     @Override
@@ -136,9 +140,7 @@ public class Robot extends LoggedRobot {
 
     /** This function is called once when the robot is in simulation. */
     @Override
-    public void simulationInit() {
-        SimulationManager.getInstance().resetField();
-    }
+    public void simulationInit() {}
 
     /** This function is called periodically when in simulaiton. */
     @Override

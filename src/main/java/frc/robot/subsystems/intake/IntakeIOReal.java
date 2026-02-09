@@ -29,8 +29,6 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void updateInputs(IntakeInputs inputs) {
-        inputs.isIntaking = Math.abs(motor.get()) > 0;
-
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
     }

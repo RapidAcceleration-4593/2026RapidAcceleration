@@ -63,7 +63,7 @@ public class TurretSubsystem extends SubsystemBase {
      */
     public Command setVoltageCommand(Voltage volts) {
         return startEnd(() -> io.setVoltage(volts), io::stop)
-                .until(() -> (inputs.angle.lt(kMinimumAngle) || inputs.angle.gt(kMaximumAngle)));
+                .until(() -> (inputs.angle.lte(kMinimumAngle) || inputs.angle.gte(kMaximumAngle)));
     }
 
     /**
@@ -73,7 +73,7 @@ public class TurretSubsystem extends SubsystemBase {
      * @return A command to run the motor to an angle and stop when complete.
      */
     public Command goToAngleCommand(Angle angle) {
-        return startEnd(() -> setPosition(angle), io::stop).until(this::atTargetAngle);
+        return startEnd(() -> setPosition(() -> angle), io::stop).until(this::atTargetAngle);
     }
 
     /**
@@ -82,7 +82,7 @@ public class TurretSubsystem extends SubsystemBase {
      * @return A command to run the motor to the calculated Hub angle without stopping.
      */
     public Command controlAngleCommand() {
-        return runEnd(() -> setPosition(calculateSafeAngle()), io::stop);
+        return runEnd(() -> setPosition(this::calculateSafeAngle), io::stop);
     }
 
     /**
@@ -92,14 +92,6 @@ public class TurretSubsystem extends SubsystemBase {
      */
     public Command stopCommand() {
         return runOnce(io::stop);
-    }
-
-    /** Sets the angle of the closed-loop PID control. */
-    private void setPosition(Angle angle) {
-        Angle clampedAngle =
-                Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
-        targetAngle = clampedAngle;
-        io.setPosition(clampedAngle);
     }
 
     /**
@@ -147,5 +139,18 @@ public class TurretSubsystem extends SubsystemBase {
         }
 
         return Degrees.of(MathUtil.clamp(candidate.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
+    }
+
+    /**
+     * Sets the angle of the closed-loop PID controller.
+     *
+     * @param angleSupplier The supplied angle to set as the turret position.
+     */
+    private void setPosition(Supplier<Angle> angleSupplier) {
+        Angle angle = angleSupplier.get();
+        Angle clampedAngle =
+                Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
+        targetAngle = clampedAngle;
+        io.setPosition(clampedAngle);
     }
 }

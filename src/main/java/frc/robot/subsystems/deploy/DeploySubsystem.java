@@ -95,6 +95,12 @@ public class DeploySubsystem extends SubsystemBase {
     }
 
     /** Sets the distance of the closed-loop PID control. */
+
+    /**
+     * Sets the distance of the closed-loop PID controller.
+     *
+     * @param distance The distance to set as the deploy position.
+     */
     private void setPosition(Distance distance) {
         this.targetDistance = distance;
         io.setPosition(distance);

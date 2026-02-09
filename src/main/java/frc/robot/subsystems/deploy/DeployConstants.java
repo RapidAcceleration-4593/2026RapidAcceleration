@@ -36,8 +36,8 @@ public final class DeployConstants {
     public static final LinearAcceleration kMaxAcceleration = InchesPerSecondPerSecond.of(12);
 
     public static final int kCountsPerRotation = 8192;
-    public static final double kMotorToEncoderGearing = 20.0;
-    public static final double kEncoderToDeployGearing = 1.0;
+    public static final double kMotorToEncoderGearing = 60.0; // 5:4:3
+    public static final double kEncoderToDeployGearing = 1.0; // 24:24
     public static final double kMotorToDeployGearing = kMotorToEncoderGearing * kEncoderToDeployGearing;
 
     public static final Mass kCarriageMass = Pounds.of(13);

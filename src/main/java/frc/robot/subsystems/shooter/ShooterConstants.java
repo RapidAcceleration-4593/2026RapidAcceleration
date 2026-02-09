@@ -26,6 +26,6 @@ public final class ShooterConstants {
     public static final AngularVelocity kVelocityTolerance = RPM.of(300);
     public static final AngularAcceleration kMaxAcceleration = RPM.per(Second).of(10000);
 
-    public static final double kShooterGearing = 1.0;
+    public static final double kShooterGearing = 1.0; // V2: 15.0 / 15.0, might change to 15.0 / 14.0
     public static final MomentOfInertia kShooterMOI = KilogramSquareMeters.of(0.0008);
 }
