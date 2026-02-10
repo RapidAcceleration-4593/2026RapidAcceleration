@@ -1,13 +1,11 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Controllers.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.ShootCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
 import frc.robot.subsystems.deploy.DeploySubsystem;
@@ -73,8 +71,8 @@ public class RobotContainer {
         // turret.setDefaultCommand(turret.controlAngleCommand());
 
         // <------- Experimental ------->
-        driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
-        driverController.rightBumper().whileTrue(hood.goToAngleCommand(Degrees.of(35)));
+        // driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
+        // driverController.rightBumper().whileTrue(hood.goToAngleCommand(Degrees.of(35)));
 
         driverController.leftTrigger(0.5).whileTrue(shooter.runCommand());
         driverController.leftBumper().whileTrue(indexer.runCommand());
@@ -95,10 +93,10 @@ public class RobotContainer {
 
         // <------- Operator Controller ------->
         // operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
-        // operatorController
-        //         .rightTrigger()
-        //         .whileTrue(SwerveCommands.joystickDrivePointToHub(
-        //                 swerve, driverController::getLeftY, driverController::getLeftX));
+        driverController
+                .leftTrigger()
+                .whileTrue(SwerveCommands.joystickDrivePointToHub(
+                        swerve, driverController::getLeftY, driverController::getLeftX));
 
         // operatorController.leftTrigger().onTrue(new IntakeCommand(intake, deploy).withName("IntakeCommand"));
         // operatorController.leftBumper().onTrue(new RetractIntakeCommand(intake, deploy).withName("RetractCommand"));
