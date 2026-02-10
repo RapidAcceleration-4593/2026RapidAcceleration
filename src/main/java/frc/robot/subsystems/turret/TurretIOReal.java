@@ -56,8 +56,8 @@ public class TurretIOReal implements TurretIO {
 
     @Override
     public void updateInputs(TurretInputs inputs) {
-        inputs.angle = Degrees.of(encoder.getPosition()); // TODO: Account for kTurretEncoderOffset.
-        inputs.targetAngle = Degrees.of(controller.getSetpoint());
+        inputs.angle = Degrees.of(encoder.getPosition()).minus(kTurretEncoderOffset);
+        inputs.targetAngle = Degrees.of(controller.getSetpoint()).minus(kTurretEncoderOffset);
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
@@ -65,7 +65,7 @@ public class TurretIOReal implements TurretIO {
 
     @Override
     public void setPosition(Angle angle) {
-        controller.setSetpoint(angle.in(Degrees), ControlType.kPosition);
+        controller.setSetpoint(angle.plus(kTurretEncoderOffset).in(Degrees), ControlType.kPosition);
     }
 
     @Override

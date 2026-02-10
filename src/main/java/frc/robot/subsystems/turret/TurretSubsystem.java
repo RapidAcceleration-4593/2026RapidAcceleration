@@ -130,7 +130,6 @@ public class TurretSubsystem extends SubsystemBase {
         Angle desired = calculateTurretAngle();
 
         Angle error = Degrees.of(MathUtil.inputModulus(desired.minus(current).in(Degrees), -180.0, 180.0));
-
         Angle candidate = current.plus(error);
 
         if (candidate.lt(kMinimumAngle) || candidate.gt(kMaximumAngle)) {

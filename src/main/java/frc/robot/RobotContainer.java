@@ -6,6 +6,7 @@ import static frc.robot.Constants.Controllers.*;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.ShootCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
 import frc.robot.subsystems.deploy.DeploySubsystem;
@@ -71,19 +72,19 @@ public class RobotContainer {
         // turret.setDefaultCommand(turret.controlAngleCommand());
 
         // <------- Experimental ------->
-        // driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
-        // driverController.rightBumper().whileTrue(hood.goToAngleCommand(Degrees.of(35)));
+        driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
+        driverController
+                .leftTrigger()
+                .whileTrue(SwerveCommands.joystickDrivePointToHub(
+                        swerve, driverController::getLeftY, driverController::getLeftX));
 
-        driverController.leftTrigger(0.5).whileTrue(shooter.runCommand());
-        driverController.leftBumper().whileTrue(indexer.runCommand());
+        driverController.leftTrigger().whileTrue(intake.runCommand());
 
         driverController.povUp().whileTrue(hood.setVoltageCommand(Volts.of(4)));
         driverController.povDown().whileTrue(hood.setVoltageCommand(Volts.of(-4)));
 
-        driverController.a().whileTrue(intake.runCommand());
-
-        driverController.x().whileTrue(deploy.setVoltageCommand(Volts.of(9)));
-        driverController.y().whileTrue(deploy.setVoltageCommand(Volts.of(-9)));
+        driverController.povRight().whileTrue(deploy.setVoltageCommand(Volts.of(8)));
+        driverController.povLeft().whileTrue(deploy.setVoltageCommand(Volts.of(-8)));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());
@@ -93,10 +94,10 @@ public class RobotContainer {
 
         // <------- Operator Controller ------->
         // operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
-        driverController
-                .leftTrigger()
-                .whileTrue(SwerveCommands.joystickDrivePointToHub(
-                        swerve, driverController::getLeftY, driverController::getLeftX));
+        // operatorController
+        //         .leftTrigger()
+        //         .whileTrue(SwerveCommands.joystickDrivePointToHub(
+        //                 swerve, driverController::getLeftY, driverController::getLeftX));
 
         // operatorController.leftTrigger().onTrue(new IntakeCommand(intake, deploy).withName("IntakeCommand"));
         // operatorController.leftBumper().onTrue(new RetractIntakeCommand(intake, deploy).withName("RetractCommand"));
