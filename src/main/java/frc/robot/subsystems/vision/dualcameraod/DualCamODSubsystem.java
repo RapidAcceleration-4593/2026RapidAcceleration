@@ -19,6 +19,7 @@ public class DualCamODSubsystem extends SubsystemBase{
 	
 	private final ObjectDetectionIO ioA, ioB;
 	private final ObjectDetectionInputsAutoLogged inputsA, inputsB;
+	private final SyncableCameraConfig cameraA, cameraB;
 	List<Pose2d> TargetPoses;
 		//eventually create time focused data structure, or, at least a better structure than just this.
 	final SwerveSubsystem swerve;
@@ -33,6 +34,9 @@ public class DualCamODSubsystem extends SubsystemBase{
 		this.inputsA = new ObjectDetectionInputsAutoLogged();
 		this.inputsB = new ObjectDetectionInputsAutoLogged();
 		this.swerve = swerve;
+		this.cameraA = DualCamODConstants.kSyncableCameras[0];
+		this.cameraB = DualCamODConstants.kSyncableCameras[1];
+		//that makes code slightly more readable
 	}
 	
 	@Override
@@ -45,16 +49,16 @@ public class DualCamODSubsystem extends SubsystemBase{
 	public void iterateInputs(){
 		
 		List<TargetObservation> bInputList = Arrays.stream(inputsB.latestTargets)
-			.filter(b -> b.yaw().getDegrees() < DualCamODConstants.kSyncableCameras[0].yawEdge())
-			.filter(b -> b.pitch().getDegrees() > DualCamODConstants.kSyncableCameras[0].pitchEdge())
+			.filter(b -> b.yaw().getDegrees() < this.cameraB.getYawEdge())
+			.filter(b -> b.pitch().getDegrees() > this.cameraB.getPitchEdge())
 			.sorted((a, b) -> Double.compare(a.yaw().getDegrees(), b.yaw().getDegrees()))
 			.toList();
 			/*I doubt that this is the best way to do it with a significant enough ambiguity.
 			Ideally, if ambiguity exceeds a specific level, the pitch should be what we sort it by.
 			Right now, however, pitch plays no part in our results, so yaw is probably good enough.*/
 		List<TargetObservation> aInputList = Arrays.stream(inputsA.latestTargets)
-			.filter(a -> a.yaw().getDegrees() > DualCamODConstants.kSyncableCameras[0].yawEdge())
-			.filter(a -> a.pitch().getDegrees() > DualCamODConstants.kSyncableCameras[0].yawEdge())
+			.filter(a -> a.yaw().getDegrees() > this.cameraA.getYawEdge())
+			.filter(a -> a.pitch().getDegrees() > this.cameraA.getYawEdge())
 			.sorted((a, b) -> Double.compare(a.yaw().getDegrees(), b.yaw().getDegrees()))
 			.toList();
 		
@@ -69,17 +73,17 @@ public class DualCamODSubsystem extends SubsystemBase{
 
 	/**This function uses the yaw of two cameras to determine the position of a target.
 	 * Right now, it returns a Pose2D, though we should eventually edit it to return a Pose3D.
-	 * TODO: right now, it requires both cameras to be exactly parallel, change that, I'm too lazy tonight
+	 * TODO: fix this all to match how our sines and cosines really work, I only just realized that I'm doing this all wrong
 	 * other TODO: currently assumes that targets were taken at exact moment of calculation, which they very much were not)
 	*/
 	public Pose2d positionFromDualYaw (ObjectDetectionIO.TargetObservation a, ObjectDetectionIO.TargetObservation b){
-		double distanceBetweenCams = DualCamODConstants.kSyncableCameras[1].robotToCamera().getX() - DualCamODConstants.kSyncableCameras[0].robotToCamera().getX();
+		double distanceBetweenCams = this.cameraB.getRobotToCamera().getX() - this.cameraA.getRobotToCamera().getX();
 		double unscaledDistance = (Math.cos(b.yaw().getRadians()) * Math.sin(a.yaw().getRadians())) / (Math.sin(b.yaw().getRadians())) + Math.cos(a.yaw().getRadians());
 		double scaleFactor = distanceBetweenCams/unscaledDistance;
 		//transform our distances from robot center based on robot pose
 		Pose2d posFromRobot = new Pose2d(
 			-(distanceBetweenCams/2 /*center*/ - Math.cos(a.yaw().getRadians()) * scaleFactor /*left edge*/),
-			Math.sin(a.yaw().getRadians()) * scaleFactor + DualCamODConstants.kSyncableCameras[0].robotToCamera().getY(),
+			Math.sin(a.yaw().getRadians()) * scaleFactor + this.cameraA.getRobotToCamera().getY(),
 			Rotation2d.fromDegrees(0)
 			);
 		//now that it's robot to camera, I need to add that y
