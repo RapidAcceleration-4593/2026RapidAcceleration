@@ -19,17 +19,17 @@ import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 public final class SwerveConstants {
 
     // Robot Physical Properties.
-    public static final Mass kRobotMass = Pounds.of(100.0);
-    public static final MomentOfInertia kRobotMOI = KilogramSquareMeters.of(5.311);
+    public static final Mass kRobotMass = Pounds.of(115.0);
+    public static final MomentOfInertia kRobotMOI = KilogramSquareMeters.of(6.883);
 
-    private static final Distance kWheelRadius = Inches.of(1.910);
+    private static final Distance kWheelRadius = Inches.of(1.91);
     public static final double kWheelCOF = 1.2;
 
     /** Current at which the wheels start to slip. */
     private static final Current kSlipCurrent = Amps.of(120.0);
 
     /** Theoretical Maximum Speed at 12V. */
-    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(4.5);
+    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(5.76);
 
     public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(5.0);
     public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(540.0);
@@ -63,12 +63,8 @@ public final class SwerveConstants {
             .withKA(0.0)
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
-    private static final Slot0Configs kDriveGains = new Slot0Configs()
-            .withKP(0.1)
-            .withKI(0.0)
-            .withKD(0.0)
-            .withKS(0.0) // 0.14574
-            .withKV(0.124); // 0.62698
+    private static final Slot0Configs kDriveGains =
+            new Slot0Configs().withKP(0.1).withKI(0.0).withKD(0.0).withKS(0.0).withKV(0.124);
 
     private static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
     private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.Voltage;
@@ -244,7 +240,7 @@ public final class SwerveConstants {
                     kWheelRadius,
                     kLinearVelocity,
                     kWheelCOF,
-                    DCMotor.getKrakenX60Foc(1).withReduction(kDriveGearRatio),
+                    DCMotor.getKrakenX60(1).withReduction(kDriveGearRatio),
                     kSlipCurrent,
                     1),
             getModuleTranslations());
@@ -254,10 +250,10 @@ public final class SwerveConstants {
             .withCustomModuleTranslations(getModuleTranslations())
             .withGyro(COTS.ofPigeon2())
             .withSwerveModule(new SwerveModuleSimulationConfig(
-                    DCMotor.getKrakenX60Foc(1),
+                    DCMotor.getKrakenX60(1),
                     // Must be a Falcon motor for this version of MapleSim.
                     // MapleMotorSim should implement DCMotorSim in upcoming versions.
-                    DCMotor.getFalcon500Foc(1),
+                    DCMotor.getKrakenX60(1),
                     kDriveGearRatio,
                     kSteerGearRatio,
                     kDriveFrictionVoltage,

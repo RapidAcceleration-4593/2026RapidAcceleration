@@ -143,7 +143,8 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
 
         // Update odometry.
         double[] timestamps = modules[0].getOdometryTimestamps();
-        for (int i = 0; i < timestamps.length; i++) {
+        int sampleCount = timestamps.length;
+        for (int i = 0; i < sampleCount; i++) {
             // Read wheel positions and deltas from each module.
             SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
             SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
