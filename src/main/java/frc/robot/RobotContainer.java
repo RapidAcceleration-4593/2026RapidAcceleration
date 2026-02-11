@@ -74,7 +74,7 @@ public class RobotContainer {
         // <------- Experimental ------->
         driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
         driverController
-                .leftTrigger()
+                .rightBumper()
                 .whileTrue(SwerveCommands.joystickDrivePointToHub(
                         swerve, driverController::getLeftY, driverController::getLeftX));
 
@@ -83,8 +83,8 @@ public class RobotContainer {
         driverController.povUp().whileTrue(hood.setVoltageCommand(Volts.of(4)));
         driverController.povDown().whileTrue(hood.setVoltageCommand(Volts.of(-4)));
 
-        driverController.povRight().whileTrue(deploy.setVoltageCommand(Volts.of(8)));
-        driverController.povLeft().whileTrue(deploy.setVoltageCommand(Volts.of(-8)));
+        driverController.y().whileTrue(deploy.setVoltageCommand(Volts.of(8)));
+        driverController.a().whileTrue(deploy.setVoltageCommand(Volts.of(-8)));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());

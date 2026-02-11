@@ -20,7 +20,7 @@ public final class SwerveConstants {
 
     // Robot Physical Properties.
     public static final Mass kRobotMass = Pounds.of(115.0);
-    public static final MomentOfInertia kRobotMOI = KilogramSquareMeters.of(6.883);
+    public static final MomentOfInertia kRobotMOI = KilogramSquareMeters.of(6.10812);
 
     private static final Distance kWheelRadius = Inches.of(1.91);
     public static final double kWheelCOF = 1.2;
@@ -29,7 +29,7 @@ public final class SwerveConstants {
     private static final Current kSlipCurrent = Amps.of(120.0);
 
     /** Theoretical Maximum Speed at 12V. */
-    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(5.76);
+    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(5.5);
 
     public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(5.0);
     public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(540.0);
