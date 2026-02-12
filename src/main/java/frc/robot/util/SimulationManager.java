@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.*;
 import static frc.robot.subsystems.hood.HoodConstants.kPhysicalOffset;
 import static frc.robot.subsystems.swerve.SwerveConstants.MAPLESIM_CONFIG;
+import static frc.robot.subsystems.vision.apriltag.AprilTagConstants.kFieldLayout;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,21 +24,26 @@ import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.simulation.VisionSystemSim;
 
 public final class SimulationManager {
 
     private static SimulationManager instance;
 
-    private final SwerveDriveSimulation simulation;
+    private final SwerveDriveSimulation swerveSim;
     private final SimulatedArena arena = SimulatedArena.getInstance();
     private final List<IPhysicsSim> components;
+
+    private final VisionSystemSim visionSim;
 
     private boolean intakeExtended;
 
     private SimulationManager() {
-        simulation = new SwerveDriveSimulation(MAPLESIM_CONFIG, new Pose2d());
-        arena.addDriveTrainSimulation(simulation);
+        swerveSim = new SwerveDriveSimulation(MAPLESIM_CONFIG, new Pose2d());
+        arena.addDriveTrainSimulation(swerveSim);
         components = new ArrayList<>();
+        visionSim = new VisionSystemSim("main");
+        visionSim.addAprilTags(kFieldLayout);
     }
 
     /** Retrieves the SimulationManager instance during simulation. */
@@ -51,21 +57,21 @@ public final class SimulationManager {
 
     /** Sets the simulated robot pose. */
     public void setPose(Pose2d pose) {
-        simulation.setSimulationWorldPose(pose);
+        swerveSim.setSimulationWorldPose(pose);
     }
 
     /** Retrieves the current simulated robot pose. */
     public Pose2d getPose() {
-        return simulation.getSimulatedDriveTrainPose();
+        return swerveSim.getSimulatedDriveTrainPose();
     }
 
     public void setChassisSpeeds(ChassisSpeeds speeds) {
-        simulation.setAngularVelocity(speeds.omegaRadiansPerSecond);
-        simulation.setLinearVelocity(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+        swerveSim.setAngularVelocity(speeds.omegaRadiansPerSecond);
+        swerveSim.setLinearVelocity(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
     }
 
     public ChassisSpeeds getChassisSpeeds() {
-        return simulation.getDriveTrainSimulatedChassisSpeedsFieldRelative();
+        return swerveSim.getDriveTrainSimulatedChassisSpeedsFieldRelative();
     }
 
     /** Resets the robot and field state for autonomous. */
@@ -105,6 +111,7 @@ public final class SimulationManager {
         }
 
         arena.simulationPeriodic();
+        visionSim.update(swerveSim.getSimulatedDriveTrainPose());
 
         for (var component : components) {
             component.updateIOSim();
@@ -122,7 +129,7 @@ public final class SimulationManager {
 
     /** Retrieves the raw MapleSim drivetrain simulation. */
     public SwerveDriveSimulation getDriveSimulation() {
-        return simulation;
+        return swerveSim;
     }
 
     public boolean isIntakeExtended() {
@@ -131,5 +138,9 @@ public final class SimulationManager {
 
     public void setIntakeExtended(boolean extended) {
         intakeExtended = extended;
+    }
+
+    public VisionSystemSim getVisionSim() {
+        return visionSim;
     }
 }
