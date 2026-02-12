@@ -26,7 +26,7 @@ public final class HoodConstants {
     public static final Angle kAngleTolerance = Degrees.of(0.5);
 
     public static final int kCountsPerRotation = 8192;
-    public static final double kMotorToEncoderGearing = 125.0; // V2: 125.0 * (30.0 / 34.0)
+    public static final double kMotorToEncoderGearing = 125.0; // V2: (5.0 * 4.0 * 3.0) * (30.0 / 34.0)
     public static final double kEncoderToHoodGearing = 6.3125; // V2: 296.0 / 18.0
     public static final double kMotorToHoodGearing = kMotorToEncoderGearing * kEncoderToHoodGearing;
 

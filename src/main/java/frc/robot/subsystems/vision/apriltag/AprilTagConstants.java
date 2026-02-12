@@ -50,6 +50,6 @@ public final class AprilTagConstants {
     // Lower values mean the estimator trusts the vision more.
     // Higher values mean the estimator trusts the vision less, relying more on encoders/gyro.
     // Values too low will rapidly "jitter", while too high values update slowly but ignore inaccurate instances.
-    public static final double kLinearStdDevBaseline = 0.02; // Meters.
-    public static final double kAngularStdDevBaseline = 0.06; // Radians.
+    public static final double kLinearStdDevBaseline = 0.5; // Meters. 0.02.
+    public static final double kAngularStdDevBaseline = 0.5; // Radians. 0.06.
 }

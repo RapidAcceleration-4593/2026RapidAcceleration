@@ -112,7 +112,7 @@ public class HoodSubsystem extends SubsystemBase {
         Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
 
         // return Degrees.of(10.0 * distance.in(Meters));
-        return Degrees.of(30); // Experimental use only.
+        return Degrees.of(30);
     }
 
     /**
