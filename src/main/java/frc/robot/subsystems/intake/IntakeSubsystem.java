@@ -4,6 +4,7 @@ import static frc.robot.subsystems.intake.IntakeConstants.kIntakeVolts;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.CommandLogger;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -20,12 +21,24 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Intake", inputs);
+
+        CommandLogger.logSubsystemCommand(this);
     }
 
+    /**
+     * Constructs a command to run the intake motor.
+     *
+     * @return A command to run the intake motor and stop when complete.
+     */
     public Command runCommand() {
-        return runOnce(() -> io.setVoltage(kIntakeVolts));
+        return startEnd(() -> io.setVoltage(kIntakeVolts), io::stop);
     }
 
+    /**
+     * Constructs a command to stop the intake motor.
+     *
+     * @return A command to stop the motor immediately.
+     */
     public Command stopCommand() {
         return runOnce(io::stop);
     }

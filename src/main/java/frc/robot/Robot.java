@@ -18,6 +18,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
 
     private Command autonomousCommand;
+    private MechanismContainer mechanismContainer;
     private RobotContainer robotContainer;
 
     public Robot() {
@@ -61,10 +62,11 @@ public class Robot extends LoggedRobot {
 
         // Initialize AdvantageKit Logger.
         Logger.start();
+        mechanismContainer = new MechanismContainer();
         robotContainer = new RobotContainer();
     }
 
-    /** This function is called periodically during all modes. */
+    /** This function is called once during all modes. */
     @Override
     public void robotInit() {
         DriverStation.silenceJoystickConnectionWarning(true);

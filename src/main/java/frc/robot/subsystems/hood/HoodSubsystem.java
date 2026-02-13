@@ -1,26 +1,23 @@
 package frc.robot.subsystems.hood;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.Field.*;
 import static frc.robot.subsystems.hood.HoodConstants.*;
+import static frc.robot.util.mechanism.MechanismFinder.fAngleMechanism3D;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.CommandLogger;
+import frc.robot.util.FieldUtil;
+import frc.robot.util.mechanism.AngleMechanism3D;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 public class HoodSubsystem extends SubsystemBase {
 
@@ -28,96 +25,106 @@ public class HoodSubsystem extends SubsystemBase {
     private final HoodInputsAutoLogged inputs;
     private final HoodIO io;
 
-    private final LoggedMechanism2d mechanism;
-    private final LoggedMechanismRoot2d root;
-    private final LoggedMechanismLigament2d hood;
+    private Angle targetAngle = kMinimumAngle;
 
-    private final PIDController controller;
+    private final AngleMechanism3D hood3D;
 
     public HoodSubsystem(HoodIO io, Supplier<Pose2d> poseSupplier) {
         this.io = io;
         this.inputs = new HoodInputsAutoLogged();
         this.poseSupplier = poseSupplier;
 
-        mechanism = new LoggedMechanism2d(1.0, 1.0);
-        root = mechanism.getRoot("HoodRoot", 0.5, 0.5);
-        hood = root.append(new LoggedMechanismLigament2d("Hood", Inches.of(12), kMinimumAngle));
-
-        controller = new PIDController(kP, kI, kD);
-        controller.setTolerance(kAngleTolerance.in(Degrees));
-
-        Trigger lsTrigger = new Trigger(() -> inputs.limitswitch);
-        lsTrigger.onTrue(Commands.runOnce(() -> {
-            controller.reset();
-            controller.setSetpoint(kMinimumAngle.in(Degrees));
-            io.resetEncoder();
-        }));
+        Trigger limitSwitchTrigger = new Trigger(() -> inputs.limitswitch);
+        limitSwitchTrigger.onTrue(Commands.runOnce(io::resetPosition));
+        hood3D = fAngleMechanism3D.find("Hood");
     }
 
     @Override
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Hood", inputs);
+        targetAngle = inputs.targetAngle;
 
-        hood.setAngle(inputs.angle);
-        Logger.recordOutput("Mechanisms/Hood", mechanism);
-    }
-
-    public Command goToAngleCommand(Angle angle) {
-        return runOnce(() -> controller.setSetpoint(
-                        MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees))))
-                .andThen(run(() -> {
-                    double output = controller.calculate(inputs.angle.in(Degrees));
-                    output = MathUtil.clamp(output, -12.0, 12.0);
-
-                    io.setVoltage(Volts.of(output));
-                }))
-                .until(this::shouldStop)
-                .finallyDo(() -> {
-                    stop();
-                    controller.setSetpoint(inputs.angle.in(Degrees));
-                });
-    }
-
-    private boolean shouldStop() {
-        if (inputs.limitswitch) return true;
-        return controller.atSetpoint();
+        hood3D.setAngle(inputs.angle);
+        CommandLogger.logSubsystemCommand(this);
     }
 
     public Angle getCurrentAngle() {
         return inputs.angle;
     }
 
-    @AutoLogOutput(key = "Hood/TargetAngle")
     public Angle getTargetAngle() {
-        return Degrees.of(controller.getSetpoint());
+        return inputs.targetAngle;
     }
 
-    @AutoLogOutput(key = "Hood/AtTargetAngle")
     public boolean atTargetAngle() {
-        return controller.atSetpoint();
+        return inputs.angle.isNear(targetAngle, kAngleTolerance)
+                || (inputs.targetAngle == kMinimumAngle && inputs.limitswitch);
     }
 
+    /**
+     * Constructs a command to run the hood at a set voltage.
+     *
+     * @param volts The voltage to apply to the motor.
+     * @return A command to set the motor voltage and stop when complete.
+     */
+    public Command setVoltageCommand(Voltage volts) {
+        return startEnd(() -> io.setVoltage(volts), io::stop)
+                .until(() -> (inputs.limitswitch && inputs.appliedVolts.lt(Volts.zero())));
+    }
+
+    /**
+     * Constructs a command to run the hood to a set angle.
+     *
+     * @param angle The angle to apply to the closed-loop PID control.
+     * @return A command to run the motor to an angle and stop when complete.
+     */
+    public Command goToAngleCommand(Angle angle) {
+        return startEnd(() -> setPosition(() -> angle), io::stop).until(this::atTargetAngle);
+    }
+
+    /**
+     * Constructs a command to continuously run the hood to the calculated Hub angle.
+     *
+     * @return A command to run the motor to the calculated Hub angle without stopping.
+     */
+    public Command pointAtHubCommand() {
+        return runEnd(() -> setPosition(this::calculateHubAngle), () -> setPosition(() -> kMinimumAngle));
+    }
+
+    /**
+     * Constructs a command to stop the hood motor.
+     *
+     * @return A command to stop the motor immediately.
+     */
     public Command stopCommand() {
-        return runOnce(this::stop);
+        return runOnce(io::stop);
     }
 
-    private void stop() {
-        controller.reset();
-        io.stop();
-    }
-
-    public Command setAngleToHubCommand() {
-        return goToAngleCommand(calculateHubAngle());
-    }
-
+    /**
+     * Calculates the hood angle based on the distance from the Hub.
+     *
+     * @return An angle from the linear regression equation.
+     */
     private Angle calculateHubAngle() {
-        Pose2d targetPose =
-                DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? kBlueHubPose : kRedHubPose;
+        Pose2d targetPose = FieldUtil.getTargetHubPose();
         Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);
-
         Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
 
-        return Degrees.of(8.0 * distance.in(Meters));
+        // return Degrees.of(10.0 * distance.in(Meters));
+        return Degrees.of(30);
+    }
+
+    /**
+     * Sets the angle of the closed-loop PID controller.
+     *
+     * @param angleSupplier The supplied angle to set as the hood position.
+     */
+    private void setPosition(Supplier<Angle> angleSupplier) {
+        Angle angle = angleSupplier.get();
+        Angle clampedAngle =
+                Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
+        targetAngle = clampedAngle;
+        io.setPosition(clampedAngle);
     }
 }

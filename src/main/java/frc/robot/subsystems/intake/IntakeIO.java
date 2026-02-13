@@ -10,8 +10,6 @@ public interface IntakeIO {
 
     @AutoLog
     public static class IntakeInputs {
-        public boolean isIntaking = false;
-
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();
     }

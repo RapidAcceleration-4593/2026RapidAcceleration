@@ -15,14 +15,27 @@ import edu.wpi.first.wpilibj.Encoder;
 
 public class ClimberIOReal implements ClimberIO {
 
-    protected final SparkMax motor;
+    protected final SparkMax leftMotor;
+    protected final SparkMax rightMotor;
     protected final Encoder encoder;
 
     public ClimberIOReal() {
-        SparkBaseConfig config = new SparkMaxConfig().idleMode(IdleMode.kBrake);
+        SparkBaseConfig leftConfig = new SparkMaxConfig()
+                .idleMode(IdleMode.kBrake)
+                .inverted(false)
+                .smartCurrentLimit(60)
+                .voltageCompensation(12.0);
+        SparkBaseConfig rightConfig = new SparkMaxConfig()
+                .idleMode(IdleMode.kBrake)
+                .inverted(false)
+                .smartCurrentLimit(60)
+                .voltageCompensation(12.0);
 
-        motor = new SparkMax(kClimberMotorID, MotorType.kBrushless);
-        motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        leftMotor = new SparkMax(kLeftClimberMotorID, MotorType.kBrushless);
+        rightMotor = new SparkMax(kRightClimberMotorID, MotorType.kBrushless);
+
+        leftMotor.configure(leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        rightMotor.configure(rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         encoder = new Encoder(kClimberEncoderChannelA, kClimberEncoderChannelB);
         encoder.setDistancePerPulse(kInchesPerPulse);
@@ -32,17 +45,30 @@ public class ClimberIOReal implements ClimberIO {
     public void updateInputs(ClimberInputs inputs) {
         inputs.distance = Inches.of(encoder.getDistance());
 
-        inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
-        inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
+        inputs.leftAppliedVolts = Volts.of(leftMotor.getAppliedOutput() * leftMotor.getBusVoltage());
+        inputs.leftOutputCurrent = Amps.of(leftMotor.getOutputCurrent());
+
+        inputs.rightAppliedVolts = Volts.of(rightMotor.getAppliedOutput() * rightMotor.getBusVoltage());
+        inputs.rightOutputCurrent = Amps.of(rightMotor.getOutputCurrent());
     }
 
     @Override
-    public void setVoltage(Voltage volts) {
-        motor.setVoltage(volts);
+    public void setLeftVoltage(Voltage volts) {
+        leftMotor.setVoltage(volts);
     }
 
     @Override
-    public void stop() {
-        motor.stopMotor();
+    public void setRightVoltage(Voltage volts) {
+        rightMotor.setVoltage(volts);
+    }
+
+    @Override
+    public void stopLeft() {
+        leftMotor.stopMotor();
+    }
+
+    @Override
+    public void stopRight() {
+        rightMotor.stopMotor();
     }
 }

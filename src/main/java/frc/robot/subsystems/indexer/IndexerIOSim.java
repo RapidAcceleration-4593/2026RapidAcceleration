@@ -4,8 +4,8 @@ import static edu.wpi.first.units.Units.*;
 
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.Current;
 import frc.robot.util.IPhysicsSim;
-import frc.robot.util.PowerSim;
 import frc.robot.util.SimulationManager;
 
 public class IndexerIOSim extends IndexerIOReal implements IPhysicsSim {
@@ -29,9 +29,8 @@ public class IndexerIOSim extends IndexerIOReal implements IPhysicsSim {
     }
 
     @Override
-    public void updatePowerSim() {
-        PowerSim.addCurrentDraw(Amps.of(spindexerSim.getMotorCurrent()));
-        PowerSim.addCurrentDraw(Amps.of(feederSim.getMotorCurrent()));
+    public Current getCurrentDraw() {
+        return Amps.of(spindexerSim.getMotorCurrent() + feederSim.getMotorCurrent());
     }
 
     @Override

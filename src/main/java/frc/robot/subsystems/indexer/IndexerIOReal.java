@@ -18,10 +18,16 @@ public class IndexerIOReal implements IndexerIO {
     protected final SparkMax feederMotor;
 
     public IndexerIOReal() {
-        SparkBaseConfig spindexerConfig =
-                new SparkMaxConfig().idleMode(IdleMode.kCoast).inverted(false);
-        SparkBaseConfig feederConfig =
-                new SparkMaxConfig().idleMode(IdleMode.kCoast).inverted(false);
+        SparkBaseConfig spindexerConfig = new SparkMaxConfig()
+                .idleMode(IdleMode.kCoast)
+                .inverted(false)
+                .smartCurrentLimit(60)
+                .voltageCompensation(12.0);
+        SparkBaseConfig feederConfig = new SparkMaxConfig()
+                .idleMode(IdleMode.kCoast)
+                .inverted(false)
+                .smartCurrentLimit(60)
+                .voltageCompensation(12.0);
 
         spindexerMotor = new SparkMax(kSpindexerMotorID, MotorType.kBrushless);
         spindexerMotor.configure(spindexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -35,11 +41,11 @@ public class IndexerIOReal implements IndexerIO {
         inputs.spindexerVelocity = RPM.of(spindexerMotor.getEncoder().getVelocity());
         inputs.feederVelocity = RPM.of(feederMotor.getEncoder().getVelocity());
 
-        inputs.spindexerCurrent = Amps.of(spindexerMotor.getOutputCurrent());
-        inputs.feederCurrent = Amps.of(feederMotor.getOutputCurrent());
-
         inputs.spindexerVolts = Volts.of(spindexerMotor.getAppliedOutput() * spindexerMotor.getBusVoltage());
         inputs.feederVolts = Volts.of(feederMotor.getAppliedOutput() * feederMotor.getBusVoltage());
+
+        inputs.spindexerCurrent = Amps.of(spindexerMotor.getOutputCurrent());
+        inputs.feederCurrent = Amps.of(feederMotor.getOutputCurrent());
     }
 
     @Override
@@ -53,8 +59,12 @@ public class IndexerIOReal implements IndexerIO {
     }
 
     @Override
-    public void stop() {
+    public void stopSpindexer() {
         spindexerMotor.stopMotor();
+    }
+
+    @Override
+    public void stopFeeder() {
         feederMotor.stopMotor();
     }
 }

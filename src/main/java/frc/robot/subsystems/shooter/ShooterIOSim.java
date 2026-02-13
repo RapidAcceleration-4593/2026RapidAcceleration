@@ -7,11 +7,11 @@ import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.sim.SparkRelativeEncoderSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.util.IPhysicsSim;
-import frc.robot.util.PowerSim;
 import frc.robot.util.SimulationManager;
+import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 public class ShooterIOSim extends ShooterIOReal implements IPhysicsSim {
 
@@ -20,7 +20,7 @@ public class ShooterIOSim extends ShooterIOReal implements IPhysicsSim {
     private final FlywheelSim flywheelSim;
 
     public ShooterIOSim() {
-        DCMotor gearbox = DCMotor.getNEO(1);
+        DCMotor gearbox = DCMotor.getKrakenX60(1);
 
         motorSim = new SparkMaxSim(motor, gearbox);
         encoderSim = motorSim.getRelativeEncoderSim();
@@ -33,19 +33,22 @@ public class ShooterIOSim extends ShooterIOReal implements IPhysicsSim {
 
     @Override
     public void updatePlantSim() {
-        flywheelSim.setInput(motor.getAppliedOutput() * RobotController.getBatteryVoltage());
+        flywheelSim.setInput(
+                motor.getAppliedOutput() * SimulatedBattery.getBatteryVoltage().in(Volts));
         flywheelSim.update(0.02);
     }
 
     @Override
-    public void updatePowerSim() {
-        PowerSim.addCurrentDraw(Amps.of(flywheelSim.getCurrentDrawAmps()));
+    public Current getCurrentDraw() {
+        return Amps.of(flywheelSim.getCurrentDrawAmps());
     }
 
     @Override
     public void updateIOSim() {
         motorSim.iterate(
-                flywheelSim.getAngularVelocityRPM(), PowerSim.getRailVoltage().in(Volts), 0.05);
+                flywheelSim.getAngularVelocityRPM(),
+                SimulatedBattery.getBatteryVoltage().in(Volts),
+                0.02);
         encoderSim.setVelocity(motorSim.getVelocity());
     }
 }

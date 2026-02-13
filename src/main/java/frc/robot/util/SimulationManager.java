@@ -4,12 +4,14 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.*;
 import static frc.robot.subsystems.hood.HoodConstants.kPhysicalOffset;
 import static frc.robot.subsystems.swerve.SwerveConstants.MAPLESIM_CONFIG;
+import static frc.robot.subsystems.vision.apriltag.AprilTagConstants.kFieldLayout;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -19,24 +21,29 @@ import java.util.List;
 import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.motorsims.SimulatedBattery;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.simulation.VisionSystemSim;
 
 public final class SimulationManager {
 
     private static SimulationManager instance;
 
-    private final SwerveDriveSimulation simulation;
+    private final SwerveDriveSimulation swerveSim;
     private final SimulatedArena arena = SimulatedArena.getInstance();
     private final List<IPhysicsSim> components;
 
-    private final Pose2d initialPose;
+    private final VisionSystemSim visionSim;
+
+    private boolean intakeExtended;
 
     private SimulationManager() {
-        initialPose = new Pose2d(Meters.of(3.0), Meters.of(3.0), new Rotation2d());
-        simulation = new SwerveDriveSimulation(MAPLESIM_CONFIG, initialPose);
-        arena.addDriveTrainSimulation(simulation);
+        swerveSim = new SwerveDriveSimulation(MAPLESIM_CONFIG, new Pose2d());
+        arena.addDriveTrainSimulation(swerveSim);
         components = new ArrayList<>();
+        visionSim = new VisionSystemSim("main");
+        visionSim.addAprilTags(kFieldLayout);
     }
 
     /** Retrieves the SimulationManager instance during simulation. */
@@ -50,50 +57,50 @@ public final class SimulationManager {
 
     /** Sets the simulated robot pose. */
     public void setPose(Pose2d pose) {
-        simulation.setSimulationWorldPose(pose);
+        swerveSim.setSimulationWorldPose(pose);
     }
 
     /** Retrieves the current simulated robot pose. */
     public Pose2d getPose() {
-        return simulation.getSimulatedDriveTrainPose();
+        return swerveSim.getSimulatedDriveTrainPose();
     }
 
     public void setChassisSpeeds(ChassisSpeeds speeds) {
-        simulation.setAngularVelocity(speeds.omegaRadiansPerSecond);
-        simulation.setLinearVelocity(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+        swerveSim.setAngularVelocity(speeds.omegaRadiansPerSecond);
+        swerveSim.setLinearVelocity(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
     }
 
     public ChassisSpeeds getChassisSpeeds() {
-        return new ChassisSpeeds(
-                simulation.getLinearVelocity().x, simulation.getLinearVelocity().y, simulation.getAngularVelocity());
+        return swerveSim.getDriveTrainSimulatedChassisSpeedsFieldRelative();
     }
 
     /** Resets the robot and field state for autonomous. */
     public void resetField() {
-        setPose(initialPose);
+        setPose(FieldUtil.getInitialPose());
         arena.resetFieldForAuto();
     }
 
     /** Simulates an object being launched from the shooter mechanism. */
-    private void launchProjectile(Angle angle, AngularVelocity velocity) {
-        double avgWheelRadiusMeters =
-                Inches.of(1.25).in(Meters) / 2 + Inches.of(2.0).in(Meters) / 2;
-        LinearVelocity linearVelocity = MetersPerSecond.of(velocity.in(RadiansPerSecond) * avgWheelRadiusMeters);
+    private void launchProjectile(Angle turretAngle, Angle hoodAngle, AngularVelocity velocity) {
+        Distance wheelRadius = Inches.of(2.0);
+        LinearVelocity linearVelocity = MetersPerSecond.of(velocity.in(RadiansPerSecond) * wheelRadius.in(Meters));
+        Rotation2d turretRotation = Rotation2d.fromRadians(turretAngle.in(Radians));
 
         RebuiltFuelOnFly projectile = new RebuiltFuelOnFly(
                 getPose().getTranslation(),
                 kPhysicalOffset.getTranslation(),
                 getChassisSpeeds(),
-                getPose().getRotation(), // Plus turret rotation.
+                getPose().getRotation().plus(turretRotation),
                 Inches.of(20.5),
                 linearVelocity,
-                Degrees.of(90.0).minus(angle));
+                Degrees.of(90.0).minus(hoodAngle));
 
         arena.addGamePieceProjectile(projectile);
     }
 
-    public Command launchProjectileCommand(Supplier<Angle> angle, Supplier<AngularVelocity> velocity) {
-        return Commands.runOnce(() -> launchProjectile(angle.get(), velocity.get()))
+    public Command launchProjectileCommand(
+            Supplier<Angle> turretAngle, Supplier<Angle> hoodAngle, Supplier<AngularVelocity> velocity) {
+        return Commands.runOnce(() -> launchProjectile(turretAngle.get(), hoodAngle.get(), velocity.get()))
                 .withTimeout(Seconds.of(0.4));
     }
 
@@ -103,16 +110,13 @@ public final class SimulationManager {
             component.updatePlantSim();
         }
 
-        for (var component : components) {
-            component.updatePowerSim();
-        }
+        arena.simulationPeriodic();
+        visionSim.update(swerveSim.getSimulatedDriveTrainPose());
 
-        PowerSim.simulationPeriodic();
         for (var component : components) {
             component.updateIOSim();
         }
 
-        arena.simulationPeriodic();
         Logger.recordOutput("FieldSimulation/RobotPosition", getPose());
         Logger.recordOutput("FieldSimulation/Fuel", arena.getGamePiecesArrayByType("Fuel"));
     }
@@ -120,15 +124,23 @@ public final class SimulationManager {
     /** Registers a subsystem physics simulation. */
     public void addSimulatable(IPhysicsSim sim) {
         components.add(sim);
-    }
-
-    /** Removes a subsystem physics simulation. */
-    public void removeSimulatable(IPhysicsSim sim) {
-        components.remove(sim);
+        SimulatedBattery.addElectricalAppliances(sim::getCurrentDraw);
     }
 
     /** Retrieves the raw MapleSim drivetrain simulation. */
     public SwerveDriveSimulation getDriveSimulation() {
-        return simulation;
+        return swerveSim;
+    }
+
+    public boolean isIntakeExtended() {
+        return intakeExtended;
+    }
+
+    public void setIntakeExtended(boolean extended) {
+        intakeExtended = extended;
+    }
+
+    public VisionSystemSim getVisionSim() {
+        return visionSim;
     }
 }
