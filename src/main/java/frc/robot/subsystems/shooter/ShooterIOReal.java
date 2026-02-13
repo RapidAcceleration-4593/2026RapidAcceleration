@@ -37,7 +37,6 @@ public class ShooterIOReal implements ShooterIO {
                 .smartCurrentLimit(60)
                 .voltageCompensation(12.0)
                 .apply(new ClosedLoopConfig()
-                        .pid(kP, kI, kD)
                         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                         .apply(new FeedForwardConfig().sva(kS, kV, kA))
                         .apply(new MAXMotionConfig().maxAcceleration(kMaxAcceleration.in(RPM.per(Second)))));

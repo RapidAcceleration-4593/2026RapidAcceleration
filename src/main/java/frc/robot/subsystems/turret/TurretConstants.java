@@ -22,7 +22,7 @@ public final class TurretConstants {
     public static final Angle kAngleTolerance = Degrees.of(1.0);
 
     public static final int kCountsPerRotation = 8192;
-    public static final double kMotorToEncoderGearing = 30.0; // 3:2:5
+    public static final double kMotorToEncoderGearing = 60.0; // 5:4:3
     public static final double kEncoderToTurretGearing = 165.0 / 34.0;
     public static final double kMotorToTurretGearing = kMotorToEncoderGearing * kEncoderToTurretGearing;
 

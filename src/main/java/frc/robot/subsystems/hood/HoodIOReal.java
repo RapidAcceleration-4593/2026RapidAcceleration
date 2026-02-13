@@ -45,10 +45,8 @@ public class HoodIOReal implements HoodIO {
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 
-        ClosedLoopConfig controlConfig = new ClosedLoopConfig()
-                .pid(kP, kI, kD)
-                .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
-                .positionWrappingEnabled(false);
+        ClosedLoopConfig controlConfig =
+                new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
@@ -78,7 +76,7 @@ public class HoodIOReal implements HoodIO {
     @Override
     public void resetPosition() {
         encoder.setPosition(0);
-        controller.setSetpoint(kMinimumAngle.in(Degrees), ControlType.kPosition);
+        controller.setSetpoint(0, ControlType.kPosition);
     }
 
     @Override
