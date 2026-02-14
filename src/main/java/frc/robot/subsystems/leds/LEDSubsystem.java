@@ -4,8 +4,10 @@ import static frc.robot.subsystems.leds.LEDConstants.*;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.leds.LEDConstants.kColors;
 
 public class LEDSubsystem extends SubsystemBase {
 
@@ -15,12 +17,8 @@ public class LEDSubsystem extends SubsystemBase {
     private int patternIndex = 0;
     private double realIndex = 0.0;
 
-    private int baseR = 0;
-    private int baseG = 0;
-    private int baseB = 100;
-    private int gradientR = 0;
-    private int gradientG = 255;
-    private int gradientB = 0;
+    private Color baseColor = new Color(0, 0, 100);
+    private Color gradientColor = new Color(0, 255, 0);
 
     public LEDSubsystem() {
         led = new AddressableLED(kPWMChannel);
@@ -46,6 +44,10 @@ public class LEDSubsystem extends SubsystemBase {
         patternIndex = ((int) realIndex + kLEDCount) % kLEDCount;
     }
 
+	public void setLEDColor(int ledIndex, Color color) {
+		buffer.setRGB(ledIndex, (int) (color.red * 255.0), (int) (color.green * 255.0), (int) (color.blue * 255.0));
+	}
+
     public void setLEDRGB(int ledIndex, int r, int g, int b) {
         buffer.setRGB(ledIndex, r, g, b);
     }
@@ -68,20 +70,28 @@ public class LEDSubsystem extends SubsystemBase {
         fillLEDs(0, 0, 0);
     }
 
-    public void setBaseRGB(int r, int g, int b) {
-        this.baseR = r;
-        this.baseG = g;
-        this.baseB = b;
+    public void setBaseColor(Color color) {
+        this.baseColor = color;
     }
 
-    public void setGradientRGB(int r, int g, int b) {
-        this.gradientR = r;
-        this.gradientG = g;
-        this.gradientB = b;
+    public void setGradientColor(Color color) {
+        this.gradientColor = color;
     }
 
-    private int lerp(int a, int b, double t) {
-        return (int) (a + (b - a) * t);
+    private int lerpColorComponent(double start, double end, double t) {
+		return (int) ((start + (end - start) * t) * 255.0);
+	}
+
+    public Color getBaseColor() {
+        return this.baseColor;
+    }
+
+    public Color getGradientColor() {
+        return this.gradientColor;
+    }
+
+    public int getPatternIndex() {
+        return patternIndex;
     }
 
     /**
@@ -93,8 +103,8 @@ public class LEDSubsystem extends SubsystemBase {
      */
     public Command changeColorCommand(kColors baseColor, kColors gradientColor) {
         return runOnce(() -> {
-            setBaseRGB(baseColor.r, baseColor.g, baseColor.b);
-            setGradientRGB(gradientColor.r, gradientColor.g, gradientColor.b);
+            setBaseColor(baseColor.color);
+            setGradientColor(gradientColor.color);
         });
     }
 
@@ -116,9 +126,9 @@ public class LEDSubsystem extends SubsystemBase {
 
             double fadeRatio = Math.abs(1.0 - (2.0 * i / kLEDCount));
 
-            int r = lerp(baseR, gradientR, fadeRatio);
-            int g = lerp(baseG, gradientG, fadeRatio);
-            int b = lerp(baseB, gradientB, fadeRatio);
+            int r = lerpColorComponent(baseColor.red, gradientColor.red, fadeRatio);
+            int g = lerpColorComponent(baseColor.green, gradientColor.green, fadeRatio);
+            int b = lerpColorComponent(baseColor.blue, gradientColor.blue, fadeRatio);
 
             setLEDRGB(pos, r, g, b);
         }
@@ -148,9 +158,9 @@ public class LEDSubsystem extends SubsystemBase {
 
                 double fadeRatio = (double) i / kTrailSize;
 
-                int r = lerp(baseR, gradientR, fadeRatio);
-                int g = lerp(baseG, gradientG, fadeRatio);
-                int b = lerp(baseB, gradientB, fadeRatio);
+                int r = lerpColorComponent(baseColor.red, gradientColor.red, fadeRatio);
+                int g = lerpColorComponent(baseColor.green, gradientColor.green, fadeRatio);
+                int b = lerpColorComponent(baseColor.blue, gradientColor.blue, fadeRatio);
 
                 setLEDRGB(pos, r, g, b);
             }
@@ -161,7 +171,7 @@ public class LEDSubsystem extends SubsystemBase {
     public void movingBarsPattern() {
         for (int i = 0; i < kLEDCount; i++) {
             if (((i + patternIndex) / kBarSize) % 2 == 0) {
-                setLEDRGB(i, baseR, baseG, baseB);
+                setLEDColor(i, baseColor);
             }
         }
     }

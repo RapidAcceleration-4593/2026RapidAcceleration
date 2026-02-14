@@ -2,24 +2,24 @@ package frc.robot.subsystems.leds;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import edu.wpi.first.wpilibj.util.Color;
+
 public final class LEDConstants {
 
     public static final int kPWMChannel = 0;
     public static final int kLEDCount = 150;
 
     public static enum kColors {
-        RED(255, 0, 0),
-        GREEN(0, 255, 0),
-        BLUE(0, 0, 255),
-        YELLOW(255, 70, 0),
-        ORANGE(255, 30, 0),
-        PURPLE(255, 0, 255);
-        public final int r, g, b;
+        RED(new Color(255, 0, 0)),
+        GREEN(new Color(0, 255, 0)),
+        BLUE(new Color(0, 0, 255)),
+        YELLOW(new Color(255, 70, 0)),
+        ORANGE(new Color(255, 30, 0)),
+        PURPLE(new Color(255, 0, 255));
+        public final Color color;
 
-        kColors(int r, int g, int b) {
-            this.r = r;
-            this.g = g;
-            this.b = b;
+        kColors(Color color) {
+            this.color = color;
         }
 
         public static kColors getRandom() {
