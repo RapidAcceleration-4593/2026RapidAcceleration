@@ -1,8 +1,7 @@
 package frc.robot.subsystems.leds;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import edu.wpi.first.wpilibj.util.Color;
+import java.util.concurrent.ThreadLocalRandom;
 
 public final class LEDConstants {
 

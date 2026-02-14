@@ -44,9 +44,9 @@ public class LEDSubsystem extends SubsystemBase {
         patternIndex = ((int) realIndex + kLEDCount) % kLEDCount;
     }
 
-	public void setLEDColor(int ledIndex, Color color) {
-		buffer.setRGB(ledIndex, (int) (color.red * 255.0), (int) (color.green * 255.0), (int) (color.blue * 255.0));
-	}
+    public void setLEDColor(int ledIndex, Color color) {
+        buffer.setRGB(ledIndex, (int) (color.red * 255.0), (int) (color.green * 255.0), (int) (color.blue * 255.0));
+    }
 
     public void setLEDRGB(int ledIndex, int r, int g, int b) {
         buffer.setRGB(ledIndex, r, g, b);
@@ -79,8 +79,8 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     private int lerpColorComponent(double start, double end, double t) {
-		return (int) ((start + (end - start) * t) * 255.0);
-	}
+        return (int) ((start + (end - start) * t) * 255.0);
+    }
 
     public Color getBaseColor() {
         return this.baseColor;
