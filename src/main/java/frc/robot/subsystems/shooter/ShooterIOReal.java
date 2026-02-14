@@ -31,8 +31,8 @@ public class ShooterIOReal implements ShooterIO {
         encoder = motor.getEncoder();
 
         SparkBaseConfig config = new SparkMaxConfig()
-                .idleMode(IdleMode.kCoast)
                 .inverted(kInvertMotor)
+                .idleMode(IdleMode.kCoast)
                 .smartCurrentLimit(60)
                 .voltageCompensation(12.0)
                 .apply(new ClosedLoopConfig()
@@ -54,7 +54,7 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void setVelocity(AngularVelocity velocity) {
-        controller.setSetpoint(velocity.in(RPM), ControlType.kMAXMotionVelocityControl);
+        controller.setSetpoint(velocity.in(RPM), ControlType.kVelocity);
     }
 
     @Override

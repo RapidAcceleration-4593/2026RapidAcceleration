@@ -27,7 +27,7 @@ public class DeploySubsystem extends SubsystemBase {
         this.io = io;
         this.inputs = new DeployInputsAutoLogged();
 
-        Trigger lsTrigger = new Trigger(() -> (inputs.inLimitSwitch || inputs.outLimitSwitch));
+        Trigger lsTrigger = new Trigger(() -> inputs.retractedLS || inputs.extendedLS);
         lsTrigger.onTrue(Commands.runOnce(io::resetPosition));
 
         deploy3D = fLengthMechanism3D.find("Deploy");
@@ -57,11 +57,11 @@ public class DeploySubsystem extends SubsystemBase {
 
     private boolean isDrivingIntoLS() {
         if (kPositiveVoltageExtends) {
-            return (inputs.appliedVolts.in(Volts) > 0.1 && inputs.outLimitSwitch)
-                    || (inputs.appliedVolts.in(Volts) < -0.1 && inputs.inLimitSwitch);
+            return (inputs.appliedVolts.in(Volts) > 0.1 && inputs.extendedLS)
+                    || (inputs.appliedVolts.in(Volts) < -0.1 && inputs.retractedLS);
         } else {
-            return (inputs.appliedVolts.in(Volts) < -0.1 && inputs.outLimitSwitch)
-                    || (inputs.appliedVolts.in(Volts) > 0.1 && inputs.inLimitSwitch);
+            return (inputs.appliedVolts.in(Volts) < -0.1 && inputs.extendedLS)
+                    || (inputs.appliedVolts.in(Volts) > 0.1 && inputs.retractedLS);
         }
     }
 

@@ -9,7 +9,6 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 public final class DeployConstants {
 
     public static final int kMotorID = 6;
-
     public static final int kRetractedLSChannel = 1;
     public static final int kExtendedLSChannel = 2;
 
@@ -17,8 +16,6 @@ public final class DeployConstants {
     public static final boolean kInvertEncoder = false;
     public static final boolean kInvertInLS = true;
     public static final boolean kInvertOutLS = true;
-
-    /** Does applying a positive voltage to the motor extend the deploy mechanism? */
     public static final boolean kPositiveVoltageExtends = true;
 
     public static final double kP = 0.0;
@@ -35,7 +32,7 @@ public final class DeployConstants {
     public static final double kEncoderToDeployGearing = (24.0 / 24.0);
     public static final double kMotorToDeployGearing = kMotorToEncoderGearing * kEncoderToDeployGearing;
 
-    public static final Mass kCarriageMass = Pounds.of(13);
+    public static final Mass kCarriageMass = Kilograms.of(6);
     public static final Distance kDrumRadius = Inches.of(0.75);
 
     public static final double kPositionConversionFactor =

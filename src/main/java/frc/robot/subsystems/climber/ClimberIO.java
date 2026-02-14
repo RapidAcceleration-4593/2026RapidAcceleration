@@ -1,7 +1,7 @@
 package frc.robot.subsystems.climber;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.climber.ClimberConstants.*;
+import static frc.robot.subsystems.climber.ClimberConstants.kMinimumDistance;
 
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;

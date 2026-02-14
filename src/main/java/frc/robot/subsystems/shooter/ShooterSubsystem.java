@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CommandLogger;
@@ -46,8 +47,8 @@ public class ShooterSubsystem extends SubsystemBase {
      *
      * @return A command to set the motor voltage and stop when complete.
      */
-    public Command runAtVoltageCommand() {
-        return startEnd(() -> io.setVoltage(kShooterVolts), io::stop);
+    public Command runAtVoltageCommand(Voltage volts) {
+        return startEnd(() -> io.setVoltage(volts), io::stop);
     }
 
     /**
@@ -58,6 +59,15 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public Command runAtVelocityCommand(AngularVelocity velocity) {
         return startEnd(() -> setVelocity(velocity), io::stop);
+    }
+
+    /**
+     * Constructs a command to run the shooter at costant velocity.
+     *
+     * @return A command to run the shooter.
+     */
+    public Command runCommand() {
+        return startEnd(() -> setVelocity(kShootVelocity), io::stop);
     }
 
     /**

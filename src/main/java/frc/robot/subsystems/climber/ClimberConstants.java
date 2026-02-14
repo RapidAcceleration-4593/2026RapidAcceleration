@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
+import edu.wpi.first.units.measure.MomentOfInertia;
 
 public final class ClimberConstants {
 
@@ -31,4 +32,6 @@ public final class ClimberConstants {
     public static final double kPositionConversionFactor =
             2 * Math.PI * kDrumRadius.in(Inches) / kEncoderToClimberGearing;
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
+
+    public static final MomentOfInertia kClimberMOI = KilogramSquareMeters.of(0.0);
 }

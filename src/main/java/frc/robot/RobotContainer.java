@@ -71,10 +71,9 @@ public class RobotContainer {
     private void configureBindings() {
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
                 swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
-        // turret.setDefaultCommand(turret.controlAngleCommand());
 
         // <------- Experimental ------->
-        driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
+        driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, turret, hood, indexer));
         driverController
                 .rightBumper()
                 .whileTrue(SwerveCommands.joystickDrivePointToHub(

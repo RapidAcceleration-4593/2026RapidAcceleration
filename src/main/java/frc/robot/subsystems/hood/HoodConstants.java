@@ -11,7 +11,6 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 public final class HoodConstants {
 
     public static final int kMotorID = 8;
-
     public static final int kLSChannel = 0;
 
     public static final boolean kInvertMotor = false;

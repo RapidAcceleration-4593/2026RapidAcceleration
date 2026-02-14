@@ -34,8 +34,8 @@ public class HoodSubsystem extends SubsystemBase {
         this.inputs = new HoodInputsAutoLogged();
         this.poseSupplier = poseSupplier;
 
-        Trigger limitSwitchTrigger = new Trigger(() -> inputs.limitswitch);
-        limitSwitchTrigger.onTrue(Commands.runOnce(io::resetPosition));
+        Trigger lsTrigger = new Trigger(() -> inputs.bottomLS);
+        lsTrigger.onTrue(Commands.runOnce(io::resetPosition));
         hood3D = fAngleMechanism3D.find("Hood");
     }
 
@@ -59,7 +59,7 @@ public class HoodSubsystem extends SubsystemBase {
 
     public boolean atTargetAngle() {
         return inputs.angle.isNear(targetAngle, kAngleTolerance)
-                || (inputs.targetAngle == kMinimumAngle && inputs.limitswitch);
+                || (inputs.targetAngle == kMinimumAngle && inputs.bottomLS);
     }
 
     /**
@@ -70,7 +70,7 @@ public class HoodSubsystem extends SubsystemBase {
      */
     public Command setVoltageCommand(Voltage volts) {
         return startEnd(() -> io.setVoltage(volts), io::stop)
-                .until(() -> (inputs.limitswitch && inputs.appliedVolts.lt(Volts.zero())));
+                .until(() -> (inputs.bottomLS && inputs.appliedVolts.lt(Volts.zero())));
     }
 
     /**
@@ -88,7 +88,7 @@ public class HoodSubsystem extends SubsystemBase {
      *
      * @return A command to run the motor to the calculated Hub angle without stopping.
      */
-    public Command pointAtHubCommand() {
+    public Command runCommand() {
         return runEnd(() -> setPosition(this::calculateHubAngle), () -> setPosition(() -> kMinimumAngle));
     }
 
@@ -108,7 +108,7 @@ public class HoodSubsystem extends SubsystemBase {
      */
     private Angle calculateHubAngle() {
         Pose2d targetPose = FieldUtil.getTargetHubPose();
-        Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);
+        Pose2d shooterPose = poseSupplier.get().transformBy(kPhysicalOffset);
         Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
         return Degrees.of(10.0 * distance.in(Meters));
     }

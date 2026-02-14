@@ -24,6 +24,7 @@ public class DeployIOReal implements DeployIO {
 
     protected final SparkMax motor;
     protected final RelativeEncoder encoder;
+
     protected final DigitalInput retractedLS;
     protected final DigitalInput extendedLS;
 
@@ -65,8 +66,8 @@ public class DeployIOReal implements DeployIO {
         inputs.distance = Inches.of(encoder.getPosition());
         inputs.targetDistance = Inches.of(controller.getSetpoint());
 
-        inputs.inLimitSwitch = isAtRetracted();
-        inputs.outLimitSwitch = isAtExtended();
+        inputs.retractedLS = isRetracted();
+        inputs.extendedLS = isExtended();
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
@@ -74,20 +75,7 @@ public class DeployIOReal implements DeployIO {
 
     @Override
     public void setPosition(Distance distance) {
-        controller.setSetpoint(distance.in(Inches), ControlType.kMAXMotionPositionControl);
-    }
-
-    @Override
-    public void resetPosition() {
-        controller.setIAccum(0);
-
-        if (isAtRetracted()) {
-            encoder.setPosition(kMinimumDistance.in(Inches));
-        } else if (isAtExtended()) {
-            encoder.setPosition(kMaximumDistance.in(Inches));
-        }
-
-        setPosition(Inches.of(encoder.getPosition()));
+        controller.setSetpoint(distance.in(Inches), ControlType.kPosition);
     }
 
     @Override
@@ -96,15 +84,26 @@ public class DeployIOReal implements DeployIO {
     }
 
     @Override
+    public void resetPosition() {
+        if (isRetracted()) {
+            encoder.setPosition(kMinimumDistance.in(Inches));
+        } else if (isExtended()) {
+            encoder.setPosition(kMaximumDistance.in(Inches));
+        }
+
+		controller.setSetpoint(encoder.getPosition(), ControlType.kPosition);
+    }
+
+    @Override
     public void stop() {
         motor.stopMotor();
     }
 
-    private boolean isAtRetracted() {
+    private boolean isRetracted() {
         return retractedLS.get() ^ kInvertInLS;
     }
 
-    private boolean isAtExtended() {
+    private boolean isExtended() {
         return extendedLS.get() ^ kInvertOutLS;
     }
 }

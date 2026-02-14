@@ -62,7 +62,7 @@ public class HoodIOReal implements HoodIO {
         inputs.angle = Degrees.of(encoder.getPosition()).plus(kMinimumAngle);
         inputs.targetAngle = Degrees.of(controller.getSetpoint()).plus(kMinimumAngle);
 
-        inputs.limitswitch = limitswitch.get() ^ kInvertLS;
+        inputs.bottomLS = limitswitch.get() ^ kInvertLS;
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
@@ -74,14 +74,14 @@ public class HoodIOReal implements HoodIO {
     }
 
     @Override
-    public void resetPosition() {
-        encoder.setPosition(0);
-        controller.setSetpoint(0, ControlType.kPosition);
+    public void setVoltage(Voltage volts) {
+        motor.setVoltage(volts);
     }
 
     @Override
-    public void setVoltage(Voltage volts) {
-        motor.setVoltage(volts);
+    public void resetPosition() {
+        encoder.setPosition(0);
+        controller.setSetpoint(0, ControlType.kPosition);
     }
 
     @Override
