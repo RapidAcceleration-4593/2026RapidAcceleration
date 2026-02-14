@@ -27,9 +27,8 @@ public final class ClimberConstants {
 
     public static final Mass kCarriageMass = Kilograms.of(2);
     public static final Distance kDrumRadius = Inches.of(0.5);
-    public static final double kInchesPerPulse =
-            2 * Math.PI * kDrumRadius.in(Inches) / kEncoderToClimberGearing / kCountsPerRotation;
 
-    public static final double kPositionConversionFactor = 1.0;
-    public static final double kVelocityConversionFactor = 1.0;
+    public static final double kPositionConversionFactor =
+            2 * Math.PI * kDrumRadius.in(Inches) / kEncoderToClimberGearing;
+    public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 }

@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
+import edu.wpi.first.units.measure.MomentOfInertia;
 
 public final class DeployConstants {
 
@@ -40,4 +41,6 @@ public final class DeployConstants {
     public static final double kPositionConversionFactor =
             2 * Math.PI * kDrumRadius.in(Inches) / kEncoderToDeployGearing;
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
+
+    public static final MomentOfInertia kDeployMOI = KilogramSquareMeters.of(0.2555);
 }

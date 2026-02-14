@@ -1,7 +1,9 @@
 package frc.robot.subsystems.indexer;
 
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
 
 public final class IndexerConstants {
@@ -14,4 +16,10 @@ public final class IndexerConstants {
 
     public static final Voltage kSpindexerVolts = Volts.of(12);
     public static final Voltage kFeederVolts = Volts.of(12);
+
+    public static final double kSpindexerGearing = (5.0 * 4.0 * 3.0);
+    public static final double kFeederGearing = 5.0;
+
+    public static final MomentOfInertia kSpindexerMOI = KilogramSquareMeters.of(0.001);
+    public static final MomentOfInertia kFeederMOI = KilogramSquareMeters.of(0.001);
 }
