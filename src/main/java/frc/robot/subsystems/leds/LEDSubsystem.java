@@ -13,8 +13,8 @@ public class LEDSubsystem extends SubsystemBase {
     private final AddressableLEDBuffer buffer;
 
     private int patternIndex = 0;
-	private double realIndex = 0.0;
-	
+    private double realIndex = 0.0;
+
     private int baseR = 0;
     private int baseG = 0;
     private int baseB = 100;
@@ -42,7 +42,7 @@ public class LEDSubsystem extends SubsystemBase {
         gradientFillPattern();
 
         updateLEDs();
-		realIndex = (realIndex + kSpeedFactor) % kLEDCount;
+        realIndex = (realIndex + kSpeedFactor) % kLEDCount;
         patternIndex = ((int) realIndex + kLEDCount) % kLEDCount;
     }
 
@@ -80,9 +80,9 @@ public class LEDSubsystem extends SubsystemBase {
         this.gradientB = b;
     }
 
-	private int lerp(int a, int b, double t) {
-		return (int) (a + (b - a) * t);
-	}
+    private int lerp(int a, int b, double t) {
+        return (int) (a + (b - a) * t);
+    }
 
     /**
      * Constructs a command to change the base and gradient colors for color specific patterns.

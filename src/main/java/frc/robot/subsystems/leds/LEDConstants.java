@@ -8,13 +8,12 @@ public final class LEDConstants {
     public static final int kLEDCount = 150;
 
     public static enum kColors {
-        RED(255,0,0),
-		GREEN(0,255,0),
-		BLUE(0,0,255),
-		YELLOW(255,70,0),
-		ORANGE(255,30,0),
-		PURPLE(255,0,255);
-
+        RED(255, 0, 0),
+        GREEN(0, 255, 0),
+        BLUE(0, 0, 255),
+        YELLOW(255, 70, 0),
+        ORANGE(255, 30, 0),
+        PURPLE(255, 0, 255);
         public final int r, g, b;
 
         kColors(int r, int g, int b) {
@@ -29,8 +28,8 @@ public final class LEDConstants {
         }
     }
 
-	// General pattern config.
-	public static final double kSpeedFactor = 1.0;
+    // General pattern config.
+    public static final double kSpeedFactor = 1.0;
 
     // Moving bars pattern config.
     public static final int kBarSize = 5;
