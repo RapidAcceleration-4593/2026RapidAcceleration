@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.leds.LEDConstants.kColors;
 
 public class LEDSubsystem extends SubsystemBase {
 
@@ -15,6 +14,7 @@ public class LEDSubsystem extends SubsystemBase {
 
     private int patternIndex = 0;
 	private double realIndex = 0.0;
+	
     private int baseR = 0;
     private int baseG = 0;
     private int baseB = 100;

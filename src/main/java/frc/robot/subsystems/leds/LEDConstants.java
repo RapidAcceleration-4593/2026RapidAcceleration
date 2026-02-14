@@ -6,7 +6,6 @@ public final class LEDConstants {
 
     public static final int kPWMChannel = 0;
     public static final int kLEDCount = 150;
-	public static final double kSpeedFactor = 1.0;
 
     public static enum kColors {
         RED(255,0,0),
@@ -29,6 +28,9 @@ public final class LEDConstants {
             return values[ThreadLocalRandom.current().nextInt(values.length)];
         }
     }
+
+	// General pattern config.
+	public static final double kSpeedFactor = 1.0;
 
     // Moving bars pattern config.
     public static final int kBarSize = 5;
