@@ -46,7 +46,7 @@ public class ShooterSubsystem extends SubsystemBase {
      *
      * @return A command to set the motor voltage and stop when complete.
      */
-    public Command runCommand() {
+    public Command runAtVoltageCommand() {
         return startEnd(() -> io.setVoltage(kShooterVolts), io::stop);
     }
 

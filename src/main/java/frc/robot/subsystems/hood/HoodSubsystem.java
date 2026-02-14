@@ -110,9 +110,7 @@ public class HoodSubsystem extends SubsystemBase {
         Pose2d targetPose = FieldUtil.getTargetHubPose();
         Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);
         Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
-
-        // return Degrees.of(10.0 * distance.in(Meters));
-        return Degrees.of(30);
+        return Degrees.of(10.0 * distance.in(Meters));
     }
 
     /**

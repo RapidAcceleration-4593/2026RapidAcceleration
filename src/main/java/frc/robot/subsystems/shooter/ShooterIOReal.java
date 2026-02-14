@@ -13,7 +13,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.FeedForwardConfig;
-import com.revrobotics.spark.config.MAXMotionConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -28,18 +27,17 @@ public class ShooterIOReal implements ShooterIO {
     private final SparkClosedLoopController controller;
 
     public ShooterIOReal() {
-        motor = new SparkMax(kShooterMotorID, MotorType.kBrushless);
+        motor = new SparkMax(kMotorID, MotorType.kBrushless);
         encoder = motor.getEncoder();
 
         SparkBaseConfig config = new SparkMaxConfig()
                 .idleMode(IdleMode.kCoast)
-                .inverted(false)
+                .inverted(kInvertMotor)
                 .smartCurrentLimit(60)
                 .voltageCompensation(12.0)
                 .apply(new ClosedLoopConfig()
                         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                        .apply(new FeedForwardConfig().sva(kS, kV, kA))
-                        .apply(new MAXMotionConfig().maxAcceleration(kMaxAcceleration.in(RPM.per(Second)))));
+                        .apply(new FeedForwardConfig().sva(kS, kV, kA)));
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();

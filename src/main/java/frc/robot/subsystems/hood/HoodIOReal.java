@@ -29,18 +29,18 @@ public class HoodIOReal implements HoodIO {
     private final SparkClosedLoopController controller;
 
     public HoodIOReal() {
-        motor = new SparkMax(kHoodMotorID, MotorType.kBrushless);
+        motor = new SparkMax(kMotorID, MotorType.kBrushless);
         encoder = motor.getAlternateEncoder();
-        limitswitch = new DigitalInput(kHoodLimitSwitchChannel);
+        limitswitch = new DigitalInput(kLSChannel);
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
-                .inverted(false)
+                .inverted(kInvertMotor)
                 .idleMode(IdleMode.kCoast)
                 .smartCurrentLimit(60)
                 .voltageCompensation(12.0);
 
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
-                .inverted(kInvertHoodEncoder)
+                .inverted(kInvertEncoder)
                 .countsPerRevolution(kCountsPerRotation)
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
@@ -62,7 +62,7 @@ public class HoodIOReal implements HoodIO {
         inputs.angle = Degrees.of(encoder.getPosition()).plus(kMinimumAngle);
         inputs.targetAngle = Degrees.of(controller.getSetpoint()).plus(kMinimumAngle);
 
-        inputs.limitswitch = limitswitch.get() ^ kInvertHoodLS;
+        inputs.limitswitch = limitswitch.get() ^ kInvertLS;
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());

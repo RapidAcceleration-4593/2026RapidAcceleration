@@ -20,7 +20,7 @@ public final class SwerveConstants {
 
     // Robot Physical Properties.
     public static final Mass kRobotMass = Pounds.of(115.0);
-    public static final MomentOfInertia kRobotMOI = KilogramSquareMeters.of(6.10812);
+    public static final MomentOfInertia kRobotMOI = KilogramSquareMeters.of(6.490);
 
     private static final Distance kWheelRadius = Inches.of(1.91);
     public static final double kWheelCOF = 1.2;
@@ -31,6 +31,7 @@ public final class SwerveConstants {
     /** Theoretical Maximum Speed at 12V. */
     public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(5.5);
 
+    // Currently only used for PathPlanner.
     public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(5.0);
     public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(540.0);
     public static final AngularAcceleration kAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
@@ -211,10 +212,10 @@ public final class SwerveConstants {
                     kBackRightEncoderInverted);
 
     // Derived Values & Helpers
-    public static final double ODOMETRY_FREQUENCY =
+    public static final double kOdometryFrequency =
             new CANBus(DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
 
-    public static final double DRIVE_BASE_RADIUS = Math.max(
+    public static final double kDriveBaseRadius = Math.max(
             Math.max(
                     Math.hypot(FrontLeft.LocationX, FrontLeft.LocationY),
                     Math.hypot(FrontRight.LocationX, FrontRight.LocationY)),
@@ -233,7 +234,7 @@ public final class SwerveConstants {
     }
 
     // PathPlanner & Simulation Configurations.
-    public static final RobotConfig PATHPLANNER_CONFIG = new RobotConfig(
+    public static final RobotConfig kPathPlannerConfig = new RobotConfig(
             kRobotMass,
             kRobotMOI,
             new ModuleConfig(
@@ -245,7 +246,7 @@ public final class SwerveConstants {
                     1),
             getModuleTranslations());
 
-    public static final DriveTrainSimulationConfig MAPLESIM_CONFIG = DriveTrainSimulationConfig.Default()
+    public static final DriveTrainSimulationConfig kMapleSimConfig = DriveTrainSimulationConfig.Default()
             .withRobotMass(kRobotMass)
             .withCustomModuleTranslations(getModuleTranslations())
             .withGyro(COTS.ofPigeon2())

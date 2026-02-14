@@ -10,24 +10,25 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 
 public final class HoodConstants {
 
-    public static final int kHoodMotorID = 8;
+    public static final int kMotorID = 8;
 
-    public static final int kHoodLimitSwitchChannel = 0;
+    public static final int kLSChannel = 0;
 
-    public static final boolean kInvertHoodLS = true;
-    public static final boolean kInvertHoodEncoder = true;
+    public static final boolean kInvertMotor = false;
+    public static final boolean kInvertEncoder = true;
+    public static final boolean kInvertLS = true;
 
-    public static final double kP = 0.2;
+    public static final double kP = 0.0;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
-    public static final Angle kMinimumAngle = Degrees.of(22.0); // V2: 12.5 Degrees
-    public static final Angle kMaximumAngle = Degrees.of(45.0); // V2: 30.0 Degrees
+    public static final Angle kMinimumAngle = Degrees.of(12.5);
+    public static final Angle kMaximumAngle = Degrees.of(30.0);
     public static final Angle kAngleTolerance = Degrees.of(0.5);
 
     public static final int kCountsPerRotation = 8192;
-    public static final double kMotorToEncoderGearing = 125.0; // V2: (5.0 * 4.0 * 3.0) * (30.0 / 34.0)
-    public static final double kEncoderToHoodGearing = 6.3125; // V2: 296.0 / 18.0
+    public static final double kMotorToEncoderGearing = (5.0 * 4.0 * 3.0) * (32.0 / 34.0);
+    public static final double kEncoderToHoodGearing = (296.0 / 18.0);
     public static final double kMotorToHoodGearing = kMotorToEncoderGearing * kEncoderToHoodGearing;
 
     public static final double kPositionConversionFactor = 360.0 / kEncoderToHoodGearing;

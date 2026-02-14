@@ -9,12 +9,14 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.deploy.DeploySubsystem;
 import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -26,14 +28,14 @@ public class RobotContainer {
     // public final ObjectDetectionSubsystem objectDetection;
 
     public final ShooterSubsystem shooter;
-    // public final TurretSubsystem turret;
+    public final TurretSubsystem turret;
     public final HoodSubsystem hood;
     public final IndexerSubsystem indexer;
 
     public final IntakeSubsystem intake;
     public final DeploySubsystem deploy;
 
-    // public final ClimberSubsystem climber;
+    public final ClimberSubsystem climber;
 
     // Controller(s)
     private final CommandXboxController driverController;
@@ -48,14 +50,14 @@ public class RobotContainer {
         // objectDetection = ObjectDetectionFactory.initialize();
 
         shooter = ShooterFactory.initialize();
-        // turret = TurretFactory.initialize(swerve);
+        turret = TurretFactory.initialize(swerve);
         hood = HoodFactory.initialize(swerve);
         indexer = IndexerFactory.initialize();
 
         intake = IntakeFactory.initialize();
         deploy = DeployFactory.initialize();
 
-        // climber = ClimberFactory.initialize();
+        climber = ClimberFactory.initialize();
 
         driverController = new CommandXboxController(kDriverControllerPort);
         operatorController = new CommandXboxController(kOperatorControllerPort);

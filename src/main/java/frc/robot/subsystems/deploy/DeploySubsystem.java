@@ -94,8 +94,6 @@ public class DeploySubsystem extends SubsystemBase {
         return runOnce(io::stop);
     }
 
-    /** Sets the distance of the closed-loop PID control. */
-
     /**
      * Sets the distance of the closed-loop PID controller.
      *

@@ -3,12 +3,13 @@ package frc.robot.subsystems.climber;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.climber.ClimberConstants.*;
 
+import com.revrobotics.sim.SparkMaxAlternateEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import frc.robot.util.IPhysicsSim;
 import frc.robot.util.SimulationManager;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
@@ -16,13 +17,11 @@ import org.ironmaple.simulation.motorsims.SimulatedBattery;
 public class ClimberIOSim extends ClimberIOReal implements IPhysicsSim {
 
     private final ElevatorSim climberSim;
-
-    private final SparkMaxSim leftMotorSim;
-    private final SparkMaxSim rightMotorSim;
-    private final EncoderSim encoderSim;
+    private final SparkMaxSim motorSim;
+    private final SparkMaxAlternateEncoderSim encoderSim;
 
     public ClimberIOSim() {
-        DCMotor gearbox = DCMotor.getNEO(2);
+        DCMotor gearbox = DCMotor.getVex775Pro(1);
 
         climberSim = new ElevatorSim(
                 gearbox,
@@ -34,22 +33,17 @@ public class ClimberIOSim extends ClimberIOReal implements IPhysicsSim {
                 true,
                 kMinimumDistance.in(Meters));
 
-        leftMotorSim = new SparkMaxSim(leftMotor, gearbox);
-        rightMotorSim = new SparkMaxSim(rightMotor, gearbox);
-        encoderSim = new EncoderSim(encoder);
+        motorSim = new SparkMaxSim(motor, gearbox);
+        encoderSim = new SparkMaxAlternateEncoderSim(motor);
 
         SimulationManager.getInstance().addSimulatable(this);
     }
 
     @Override
     public void updatePlantSim() {
-        // TODO: Seperate left & right climber simulations.
-        double leftClimberInput = leftMotor.getAppliedOutput()
-                * SimulatedBattery.getBatteryVoltage().in(Volts);
-        double rightClimberInput = leftMotor.getAppliedOutput()
-                * SimulatedBattery.getBatteryVoltage().in(Volts);
-        climberSim.setInput(leftClimberInput + rightClimberInput);
-        climberSim.update(0.2);
+        climberSim.setInput(motorSim.getAppliedOutput()
+                * SimulatedBattery.getBatteryVoltage().in(Volts));
+        climberSim.update(0.02);
     }
 
     @Override
@@ -61,14 +55,11 @@ public class ClimberIOSim extends ClimberIOReal implements IPhysicsSim {
     public void updateIOSim() {
         var drumRadPS = climberSim.getVelocityMetersPerSecond() / kDrumRadius.in(Meters);
         AngularVelocity motorAngularVelocity = RadiansPerSecond.of(drumRadPS * kMotorToClimberGearing);
-        leftMotorSim.iterate(
+        motorSim.iterate(
                 motorAngularVelocity.in(RPM),
                 SimulatedBattery.getBatteryVoltage().in(Volts),
                 0.02);
-        rightMotorSim.iterate(
-                motorAngularVelocity.in(RPM),
-                SimulatedBattery.getBatteryVoltage().in(Volts),
-                0.02);
-        encoderSim.setDistance(climberSim.getPositionMeters());
+        Distance climberDistance = Meters.of(climberSim.getPositionMeters());
+        encoderSim.setPosition(climberDistance.in(Inches));
     }
 }
