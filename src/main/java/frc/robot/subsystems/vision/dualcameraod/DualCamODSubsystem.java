@@ -73,16 +73,17 @@ public class DualCamODSubsystem extends SubsystemBase{
 
 	/**This function uses the yaw of two cameras to determine the position of a target.
 	 * Right now, it returns a Pose2D, though we should eventually edit it to return a Pose3D.
-	 * TODO: fix this all to match how our sines and cosines really work, I only just realized that I'm doing this all wrong
 	 * other TODO: currently assumes that targets were taken at exact moment of calculation, which they very much were not)
 	*/
 	public Pose2d positionFromDualYaw (ObjectDetectionIO.TargetObservation a, ObjectDetectionIO.TargetObservation b){
-		double distanceBetweenCams = this.cameraB.getRobotToCamera().getX() - this.cameraA.getRobotToCamera().getX();
-		double unscaledDistance = (Math.cos(b.yaw().getRadians()) * Math.sin(a.yaw().getRadians())) / (Math.sin(b.yaw().getRadians())) + Math.cos(a.yaw().getRadians());
+		double distanceBetweenCams = this.cameraB.getRobotToCamera().getX() - this.cameraA.getAdjustedX(cameraB, a);
+		double unscaledDistance = (Math.cos(this.cameraB.getAdjustedRadians(b)) * Math.sin(this.cameraA.getAdjustedRadians(a)))
+			/	(Math.sin(this.cameraB.getAdjustedRadians(b)))
+			+	Math.cos(this.cameraA.getAdjustedRadians(a));
 		double scaleFactor = distanceBetweenCams/unscaledDistance;
 		//transform our distances from robot center based on robot pose
 		Pose2d posFromRobot = new Pose2d(
-			-(distanceBetweenCams/2 /*center*/ - Math.cos(a.yaw().getRadians()) * scaleFactor /*left edge*/),
+			-(this.cameraA.getAdjustedX(cameraA, b) + Math.cos(this.cameraA.getAdjustedRadians(a)) * scaleFactor /*left edge*/),
 			Math.sin(a.yaw().getRadians()) * scaleFactor + this.cameraA.getRobotToCamera().getY(),
 			Rotation2d.fromDegrees(0)
 			);
