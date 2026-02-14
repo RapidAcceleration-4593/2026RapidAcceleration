@@ -102,7 +102,7 @@ public class LEDSubsystem extends SubsystemBase {
                 case BLUE -> setBaseRGB(0, 0, 255);
                 case YELLOW -> setBaseRGB(255, 70, 0);
                 case ORANGE -> setBaseRGB(255, 30, 0);
-				case PURPLE -> setBaseRGB(255, 0, 255);
+                case PURPLE -> setBaseRGB(255, 0, 255);
             }
             switch (gradientColor) {
                 case RED -> setGradientRGB(255, 0, 0);
@@ -110,7 +110,7 @@ public class LEDSubsystem extends SubsystemBase {
                 case BLUE -> setGradientRGB(0, 0, 255);
                 case YELLOW -> setGradientRGB(255, 70, 0);
                 case ORANGE -> setGradientRGB(255, 30, 0);
-				case PURPLE -> setBaseRGB(255, 0, 255);
+                case PURPLE -> setBaseRGB(255, 0, 255);
             }
         });
     }

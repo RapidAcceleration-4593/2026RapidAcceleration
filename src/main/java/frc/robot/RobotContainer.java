@@ -94,7 +94,7 @@ public class RobotContainer {
         driverController.y().whileTrue(deploy.setVoltageCommand(Volts.of(8)));
         driverController.a().whileTrue(deploy.setVoltageCommand(Volts.of(-8)));
 
-        driverController.b().onTrue(leds.changeColorCommand(kColors.YELLOW, kColors.RED));
+        driverController.b().onTrue(leds.changeColorCommand(kColors.getRandom(), kColors.getRandom()));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());

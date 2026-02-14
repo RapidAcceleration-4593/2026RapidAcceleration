@@ -1,5 +1,7 @@
 package frc.robot.subsystems.leds;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public final class LEDConstants {
 
     public static final int kPWMChannel = 0;
@@ -11,7 +13,12 @@ public final class LEDConstants {
         BLUE,
         YELLOW,
         ORANGE,
-		PURPLE
+        PURPLE;
+
+        public static kColors getRandom() {
+            kColors[] values = kColors.values();
+            return values[ThreadLocalRandom.current().nextInt(values.length)];
+        }
     }
 
     // Moving bars pattern config.
