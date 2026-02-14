@@ -8,11 +8,14 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.leds.LEDConstants.kColors;
+import frc.robot.subsystems.leds.patterns.*;
 
 public class LEDSubsystem extends SubsystemBase {
 
     private final AddressableLED led;
     private final AddressableLEDBuffer buffer;
+
+    private Runnable currentPattern;
 
     private int patternIndex = 0;
     private double realIndex = 0.0;
@@ -27,17 +30,17 @@ public class LEDSubsystem extends SubsystemBase {
         led.setLength(kLEDCount);
         led.setData(buffer);
         led.start();
+
+        currentPattern = new GradientFillPattern(this);
     }
 
     @Override
     public void periodic() {
         clearLeds();
 
-        // movingBarsPattern();
-        // gradientTrailPattern();
-        // rainbowGradientTrailPattern();
-        // movingRainbowFillPattern();
-        gradientFillPattern();
+        if (currentPattern != null) {
+            currentPattern.run();
+        }
 
         updateLEDs();
         realIndex = (realIndex + kSpeedFactor) % kLEDCount;
@@ -78,7 +81,16 @@ public class LEDSubsystem extends SubsystemBase {
         this.gradientColor = color;
     }
 
-    private int lerpColorComponent(double start, double end, double t) {
+    /**
+     * Linearly interpolates between two color doubles from 0.0-1.0 based on a ratio t and converts them to integers
+     * from 0-255.
+     *
+     * @param start The starting color component value (0.0-1.0).
+     * @param end The ending color component value (0.0-1.0).
+     * @param t The interpolation ratio (0.0-1.0).
+     * @return The interpolated integer value (0-255).
+     */
+    public int lerpColorComponent(double start, double end, double t) {
         return (int) ((start + (end - start) * t) * 255.0);
     }
 
@@ -91,7 +103,7 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     public int getPatternIndex() {
-        return patternIndex;
+        return this.patternIndex;
     }
 
     /**
@@ -106,73 +118,5 @@ public class LEDSubsystem extends SubsystemBase {
             setBaseColor(baseColor.color);
             setGradientColor(gradientColor.color);
         });
-    }
-
-    /** Fills every LED with a moving rainbow pattern. */
-    public void movingRainbowFillPattern() {
-        for (int i = 0; i < kLEDCount; i++) {
-            double progress = (double) i / kLEDCount;
-
-            int hue = (int) ((progress + (double) patternIndex / kLEDCount) * 180.0 * kRainbowFactor) % 180;
-
-            setLEDHSV(i, hue, 255, 255);
-        }
-    }
-
-    /** Fills the LEDs with a continuous gradient pattern. */
-    public void gradientFillPattern() {
-        for (int i = 0; i < kTrailSize; i++) {
-            int pos = (patternIndex - i + kLEDCount) % kLEDCount;
-
-            double fadeRatio = Math.abs(1.0 - (2.0 * i / kLEDCount));
-
-            int r = lerpColorComponent(baseColor.red, gradientColor.red, fadeRatio);
-            int g = lerpColorComponent(baseColor.green, gradientColor.green, fadeRatio);
-            int b = lerpColorComponent(baseColor.blue, gradientColor.blue, fadeRatio);
-
-            setLEDRGB(pos, r, g, b);
-        }
-    }
-
-    /** Makes individual rainbow trails. */
-    public void rainbowGradientTrailPattern() {
-        for (int current_trail = 0; current_trail < kLEDCount; current_trail += kLEDCount / kTrailCount) {
-            for (int i = 0; i < kTrailSize; i++) {
-                int pos = (patternIndex + current_trail - i + kLEDCount) % kLEDCount;
-
-                double progress = (double) pos / kLEDCount;
-
-                int hue = (int) (progress * 180.0 * kRainbowFactor) % 180;
-                int brightness = (int) (255 * (1.0 - (double) i / (double) kTrailSize));
-
-                setLEDHSV(pos, hue, 255, brightness);
-            }
-        }
-    }
-
-    /** Makes individual gradient trails. */
-    public void gradientTrailPattern() {
-        for (int current_trail = 0; current_trail < kLEDCount; current_trail += kLEDCount / kTrailCount) {
-            for (int i = 0; i < kTrailSize; i++) {
-                int pos = (patternIndex + current_trail - i + kLEDCount) % kLEDCount;
-
-                double fadeRatio = (double) i / kTrailSize;
-
-                int r = lerpColorComponent(baseColor.red, gradientColor.red, fadeRatio);
-                int g = lerpColorComponent(baseColor.green, gradientColor.green, fadeRatio);
-                int b = lerpColorComponent(baseColor.blue, gradientColor.blue, fadeRatio);
-
-                setLEDRGB(pos, r, g, b);
-            }
-        }
-    }
-
-    /** Makes moving solid bars equally spaced apart of one specific color. */
-    public void movingBarsPattern() {
-        for (int i = 0; i < kLEDCount; i++) {
-            if (((i + patternIndex) / kBarSize) % 2 == 0) {
-                setLEDColor(i, baseColor);
-            }
-        }
     }
 }

@@ -1,0 +1,26 @@
+package frc.robot.subsystems.leds.patterns;
+
+import static frc.robot.subsystems.leds.LEDConstants.*;
+
+import frc.robot.subsystems.leds.LEDSubsystem;
+
+public class MovingRainbowFillPattern implements Runnable {
+
+    private final LEDSubsystem subsystem;
+
+    public MovingRainbowFillPattern(LEDSubsystem subsystem) {
+        this.subsystem = subsystem;
+    }
+
+    @Override
+    public void run() {
+        for (int i = 0; i < kLEDCount; i++) {
+            double progress = (double) i / kLEDCount;
+
+            int hue = (int) ((progress + (double) subsystem.getPatternIndex() / kLEDCount) * 180.0 * kRainbowFactor)
+                    % 180;
+
+            subsystem.setLEDHSV(i, hue, 255, 255);
+        }
+    }
+}
