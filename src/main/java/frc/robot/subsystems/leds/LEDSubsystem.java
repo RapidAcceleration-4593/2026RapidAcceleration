@@ -14,12 +14,13 @@ public class LEDSubsystem extends SubsystemBase {
     private final AddressableLEDBuffer buffer;
 
     private int patternIndex = 0;
-    public int baseR = 0;
-    public int baseG = 0;
-    public int baseB = 100;
-    public int gradientR = 0;
-    public int gradientG = 255;
-    public int gradientB = 0;
+	private double realIndex = 0.0;
+    private int baseR = 0;
+    private int baseG = 0;
+    private int baseB = 100;
+    private int gradientR = 0;
+    private int gradientG = 255;
+    private int gradientB = 0;
 
     public LEDSubsystem() {
         led = new AddressableLED(kPWMChannel);
@@ -41,7 +42,8 @@ public class LEDSubsystem extends SubsystemBase {
         gradientFillPattern();
 
         updateLEDs();
-        patternIndex = (patternIndex + 1) % kLEDCount;
+		realIndex = (realIndex + kSpeedFactor) % kLEDCount;
+        patternIndex = ((int) realIndex + kLEDCount) % kLEDCount;
     }
 
     public void setLEDRGB(int ledIndex, int r, int g, int b) {
@@ -52,25 +54,16 @@ public class LEDSubsystem extends SubsystemBase {
         buffer.setHSV(ledIndex, h, s, v);
     }
 
-    /**
-     * Sets all LED's RGB values to a specified color.
-     *
-     * @param r Red.
-     * @param g Green.
-     * @param b Blue.
-     */
     public void fillLEDs(int r, int g, int b) {
         for (int i = 0; i < kLEDCount; i++) {
             setLEDRGB(i, r, g, b);
         }
     }
 
-    /** Updates all LEDs. */
     public void updateLEDs() {
         led.setData(buffer);
     }
 
-    /** Sets all LEDs' RGB values to zero. */
     public void clearLeds() {
         fillLEDs(0, 0, 0);
     }
@@ -87,6 +80,10 @@ public class LEDSubsystem extends SubsystemBase {
         this.gradientB = b;
     }
 
+	private int lerp(int a, int b, double t) {
+		return (int) (a + (b - a) * t);
+	}
+
     /**
      * Constructs a command to change the base and gradient colors for color specific patterns.
      *
@@ -96,22 +93,8 @@ public class LEDSubsystem extends SubsystemBase {
      */
     public Command changeColorCommand(kColors baseColor, kColors gradientColor) {
         return runOnce(() -> {
-            switch (baseColor) {
-                case RED -> setBaseRGB(255, 0, 0);
-                case GREEN -> setBaseRGB(0, 255, 0);
-                case BLUE -> setBaseRGB(0, 0, 255);
-                case YELLOW -> setBaseRGB(255, 70, 0);
-                case ORANGE -> setBaseRGB(255, 30, 0);
-                case PURPLE -> setBaseRGB(255, 0, 255);
-            }
-            switch (gradientColor) {
-                case RED -> setGradientRGB(255, 0, 0);
-                case GREEN -> setGradientRGB(0, 255, 0);
-                case BLUE -> setGradientRGB(0, 0, 255);
-                case YELLOW -> setGradientRGB(255, 70, 0);
-                case ORANGE -> setGradientRGB(255, 30, 0);
-                case PURPLE -> setBaseRGB(255, 0, 255);
-            }
+            setBaseRGB(baseColor.r, baseColor.g, baseColor.b);
+            setGradientRGB(gradientColor.r, gradientColor.g, gradientColor.b);
         });
     }
 
@@ -119,7 +102,9 @@ public class LEDSubsystem extends SubsystemBase {
     public void movingRainbowFillPattern() {
         for (int i = 0; i < kLEDCount; i++) {
             double progress = (double) i / kLEDCount;
+
             int hue = (int) ((progress + (double) patternIndex / kLEDCount) * 180.0 * kRainbowFactor) % 180;
+
             setLEDHSV(i, hue, 255, 255);
         }
     }
@@ -127,14 +112,13 @@ public class LEDSubsystem extends SubsystemBase {
     /** Fills the LEDs with a continuous gradient pattern. */
     public void gradientFillPattern() {
         for (int i = 0; i < kTrailSize; i++) {
-            int pos = (patternIndex - i) % kLEDCount;
+            int pos = (patternIndex - i + kLEDCount) % kLEDCount;
 
-            double t = Math.abs(1.0 - (2.0 * i / kLEDCount));
-            double blend = 1.0 - t;
+            double fadeRatio = Math.abs(1.0 - (2.0 * i / kLEDCount));
 
-            int r = (int) (baseR * t + gradientR * blend);
-            int g = (int) (baseG * t + gradientG * blend);
-            int b = (int) (baseB * t + gradientB * blend);
+            int r = lerp(baseR, gradientR, fadeRatio);
+            int g = lerp(baseG, gradientG, fadeRatio);
+            int b = lerp(baseB, gradientB, fadeRatio);
 
             setLEDRGB(pos, r, g, b);
         }
@@ -144,9 +128,9 @@ public class LEDSubsystem extends SubsystemBase {
     public void rainbowGradientTrailPattern() {
         for (int current_trail = 0; current_trail < kLEDCount; current_trail += kLEDCount / kTrailCount) {
             for (int i = 0; i < kTrailSize; i++) {
-                int pos = (patternIndex + current_trail - i) % kLEDCount;
+                int pos = (patternIndex + current_trail - i + kLEDCount) % kLEDCount;
 
-                double progress = (float) pos / kLEDCount;
+                double progress = (double) pos / kLEDCount;
 
                 int hue = (int) (progress * 180.0 * kRainbowFactor) % 180;
                 int brightness = (int) (255 * (1.0 - (double) i / (double) kTrailSize));
@@ -160,14 +144,13 @@ public class LEDSubsystem extends SubsystemBase {
     public void gradientTrailPattern() {
         for (int current_trail = 0; current_trail < kLEDCount; current_trail += kLEDCount / kTrailCount) {
             for (int i = 0; i < kTrailSize; i++) {
-                int pos = (patternIndex + current_trail - i) % kLEDCount;
+                int pos = (patternIndex + current_trail - i + kLEDCount) % kLEDCount;
 
-                double t = (double) i / kTrailSize;
-                double invT = 1.0 - t;
+                double fadeRatio = (double) i / kTrailSize;
 
-                int r = (int) (baseR * invT + gradientR * t);
-                int g = (int) (baseG * invT + gradientG * t);
-                int b = (int) (baseB * invT + gradientB * t);
+                int r = lerp(baseR, gradientR, fadeRatio);
+                int g = lerp(baseG, gradientG, fadeRatio);
+                int b = lerp(baseB, gradientB, fadeRatio);
 
                 setLEDRGB(pos, r, g, b);
             }
