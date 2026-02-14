@@ -91,7 +91,7 @@ public class DeployIOReal implements DeployIO {
             encoder.setPosition(kMaximumDistance.in(Inches));
         }
 
-		controller.setSetpoint(encoder.getPosition(), ControlType.kPosition);
+        controller.setSetpoint(encoder.getPosition(), ControlType.kPosition);
     }
 
     @Override

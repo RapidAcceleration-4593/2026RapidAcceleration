@@ -52,7 +52,9 @@ public class DeploySubsystem extends SubsystemBase {
     }
 
     public boolean atTargetDistance() {
-        return inputs.distance.isNear(targetDistance, kDistanceTolerance);
+        return inputs.distance.isNear(targetDistance, kDistanceTolerance)
+                || (inputs.targetDistance == kMinimumDistance && inputs.retractedLS)
+                || (inputs.targetDistance == kMaximumDistance && inputs.extendedLS);
     }
 
     private boolean isDrivingIntoLS() {

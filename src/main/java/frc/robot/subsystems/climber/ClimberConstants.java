@@ -8,7 +8,7 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 
 public final class ClimberConstants {
 
-    public static final int kMotorID = 0;
+    public static final int kMotorID = 2;
 
     public static final boolean kInvertMotor = false;
     public static final boolean kInvertEncoder = false;
