@@ -14,8 +14,8 @@ import frc.robot.subsystems.deploy.DeploySubsystem;
 import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.leds.LEDSubsystem;
 import frc.robot.subsystems.leds.LEDConstants.kColors;
+import frc.robot.subsystems.leds.LEDSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
@@ -39,7 +39,7 @@ public class RobotContainer {
 
     public final ClimberSubsystem climber;
 
-	public final LEDSubsystem leds;
+    public final LEDSubsystem leds;
 
     // Controller(s)
     private final CommandXboxController driverController;
@@ -63,7 +63,7 @@ public class RobotContainer {
 
         climber = ClimberFactory.initialize();
 
-		leds = new LEDSubsystem();
+        leds = new LEDSubsystem();
 
         driverController = new CommandXboxController(kDriverControllerPort);
         operatorController = new CommandXboxController(kOperatorControllerPort);
@@ -94,7 +94,7 @@ public class RobotContainer {
         driverController.y().whileTrue(deploy.setVoltageCommand(Volts.of(8)));
         driverController.a().whileTrue(deploy.setVoltageCommand(Volts.of(-8)));
 
-		driverController.b().onTrue(leds.changeColorCommand(kColors.YELLOW, kColors.RED));
+        driverController.b().onTrue(leds.changeColorCommand(kColors.YELLOW, kColors.RED));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());

@@ -1,19 +1,20 @@
 package frc.robot.subsystems.leds;
 
 public final class LEDConstants {
-	
-	public static final int kPWMChannel = 0;
-	public static final int kLEDCount = 150;
 
-	public static enum kColors {
-		RED,
-		GREEN,
-		BLUE,
-		YELLOW,
-		ORANGE
-	}
+    public static final int kPWMChannel = 0;
+    public static final int kLEDCount = 150;
 
-	// Moving bars pattern config.
+    public static enum kColors {
+        RED,
+        GREEN,
+        BLUE,
+        YELLOW,
+        ORANGE,
+		PURPLE
+    }
+
+    // Moving bars pattern config.
     public static final int kBarSize = 5;
 
     // Gradient trail pattern config.
