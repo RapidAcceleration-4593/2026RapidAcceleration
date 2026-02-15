@@ -12,7 +12,6 @@ public class LEDSubsystem extends SubsystemBase {
     private final AddressableLED led;
     private final AddressableLEDBuffer buffer;
 
-    // General pattern config.
     private int patternIndex = 0;
     public int baseR = 0;
     public int baseG = 0;
@@ -39,11 +38,11 @@ public class LEDSubsystem extends SubsystemBase {
         gradientFillPattern();
     }
 
-    public void setLedRgb(int ledIndex, int r, int g, int b) {
+    public void setLEDRGB(int ledIndex, int r, int g, int b) {
         buffer.setRGB(ledIndex, r, g, b);
     }
 
-    public void setLedHsv(int ledIndex, int h, int s, int v) {
+    public void setLEDHSV(int ledIndex, int h, int s, int v) {
         buffer.setHSV(ledIndex, h, s, v);
     }
 
@@ -53,40 +52,56 @@ public class LEDSubsystem extends SubsystemBase {
 	 * @param g Green.
 	 * @param b Blue.
 	 */
-    public void fillLeds(int r, int g, int b) {
+    public void fillLEDs(int r, int g, int b) {
         for(int i = 0; i < kLEDCount; i++) {
-            setLedRgb(i, r, g, b);
+            setLEDRGB(i, r, g, b);
         }
     }
 
     /** Updates all LEDs. */
-    public void updateLeds() {
+    public void updateLEDs() {
         led.setData(buffer);
     }
 
     /** Sets all LEDs' RGB values to zero. */
     public void clearLeds() {
-		fillLeds(0, 0, 0);
+		fillLEDs(0, 0, 0);
     }
+
+	public void setBaseRGB(int r, int g, int b) {
+		this.baseR = r;
+		this.baseG = g;
+		this.baseB = b;
+	}
+
+	public void setGradientRGB(int r, int g, int b) {
+		this.gradientR = r;
+		this.gradientG = g;
+		this.gradientB = b;
+	}
 
     /** Constructs a command to change the base and gradient colors for color specific patterns.
 	 * 
-	 * @param baseR The base red value.
-	 * @param baseG The base green value.
-	 * @param baseB The base blue value.
-	 * @param gradientR The gradient red value.
-	 * @param gradientG The gradient green value.
-	 * @param gradientB The gradient blue value.
+	 * @param baseColor The base color.
+	 * @param gradientColor The gradient color.
 	 * @return A commmand to change the base and gradient colors.
 	 */
-    public Command changeColorCommand(int baseR, int baseG, int baseB, int gradientR, int gradientG, int gradientB) {
+    public Command changeColorCommand(kColors baseColor, kColors gradientColor) {
         return runOnce(() -> {
-            this.baseR = baseR;
-            this.baseG = baseG;
-            this.baseB = baseB;
-            this.gradientR = gradientR;
-            this.gradientG = gradientG;
-            this.gradientB = gradientB;
+			switch (baseColor) {
+				case RED -> setBaseRGB(255, 0, 0);
+				case GREEN -> setBaseRGB(0, 255, 0);
+				case BLUE -> setBaseRGB(0, 0, 255);
+				case YELLOW -> setBaseRGB(255, 70, 0);
+				case ORANGE -> setBaseRGB(255, 30, 0);
+			}
+			switch (gradientColor) {
+				case RED -> setGradientRGB(255, 0, 0);
+				case GREEN -> setGradientRGB(0, 255, 0);
+				case BLUE -> setGradientRGB(0, 0, 255);
+				case YELLOW -> setGradientRGB(255, 70, 0);
+				case ORANGE -> setGradientRGB(255, 30, 0);
+			}
         });
     }
 
@@ -96,9 +111,9 @@ public class LEDSubsystem extends SubsystemBase {
         for(int i = 0; i < kLEDCount; i++) {
             double progress = (double)i / kLEDCount;
             int hue = (int)((progress + (double)patternIndex / kLEDCount) * 180.0 * kRainbowFactor) % 180;
-            setLedHsv(i, hue, 255, 255);
+            setLEDHSV(i, hue, 255, 255);
         }
-        updateLeds();
+        updateLEDs();
         patternIndex = (patternIndex + 1) % kLEDCount;
     }
 
@@ -113,9 +128,9 @@ public class LEDSubsystem extends SubsystemBase {
             r += (int)(gradientR * (Math.abs(1.0 - (double)i / kLEDCount * 2.0) * -1.0 + 1.0));
             g += (int)(gradientG * (Math.abs(1.0 - (double)i / kLEDCount * 2.0) * -1.0 + 1.0));
             b += (int)(gradientB * (Math.abs(1.0 - (double)i / kLEDCount * 2.0) * -1.0 + 1.0));
-            setLedRgb(pos, r, g, b);
+            setLEDRGB(pos, r, g, b);
         }
-        updateLeds();
+        updateLEDs();
         patternIndex = (patternIndex + 1) % kLEDCount;
     }
 
@@ -128,10 +143,10 @@ public class LEDSubsystem extends SubsystemBase {
                 double progress = (float)pos / kLEDCount;
                 int hue = (int)(progress * 180.0 * kRainbowFactor) % 180;
                 int brightness = (int)(255 * (1.0 - (double)i / (double)kTrailSize));
-                setLedHsv(pos, hue, 255, brightness);
+                setLEDHSV(pos, hue, 255, brightness);
             }
         }
-        updateLeds();
+        updateLEDs();
         patternIndex = (patternIndex + 1) % kLEDCount;
     }
 
@@ -147,10 +162,10 @@ public class LEDSubsystem extends SubsystemBase {
                 r += (int)(gradientR * ((double)i / (double)kTrailSize));
                 g += (int)(gradientG * ((double)i / (double)kTrailSize));
                 b += (int)(gradientB * ((double)i / (double)kTrailSize));
-                setLedRgb(pos, r, g, b);
+                setLEDRGB(pos, r, g, b);
             }
         }
-        updateLeds();
+        updateLEDs();
         patternIndex = (patternIndex + 1) % kLEDCount;
     }
 
@@ -159,10 +174,10 @@ public class LEDSubsystem extends SubsystemBase {
         clearLeds();
         for(int i = 0; i < kLEDCount; i++) {
             if(((i + patternIndex) / kBarSize) % 2 == 0) {
-                setLedRgb(i, baseR, baseG, baseB);
+                setLEDRGB(i, baseR, baseG, baseB);
             }
         }
-        updateLeds();
+        updateLEDs();
         patternIndex = (patternIndex + 1) % kLEDCount;
     }
 }

@@ -15,6 +15,7 @@ import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.leds.LEDSubsystem;
+import frc.robot.subsystems.leds.LEDConstants.kColors;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
@@ -92,6 +93,8 @@ public class RobotContainer {
 
         driverController.y().whileTrue(deploy.setVoltageCommand(Volts.of(8)));
         driverController.a().whileTrue(deploy.setVoltageCommand(Volts.of(-8)));
+
+		driverController.b().onTrue(leds.changeColorCommand(kColors.YELLOW, kColors.RED));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());

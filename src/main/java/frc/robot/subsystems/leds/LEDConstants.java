@@ -5,6 +5,14 @@ public final class LEDConstants {
 	public static final int kPWMChannel = 0;
 	public static final int kLEDCount = 150;
 
+	public static enum kColors {
+		RED,
+		GREEN,
+		BLUE,
+		YELLOW,
+		ORANGE
+	}
+
 	// Moving bars pattern config.
     public static final int kBarSize = 5;
 
