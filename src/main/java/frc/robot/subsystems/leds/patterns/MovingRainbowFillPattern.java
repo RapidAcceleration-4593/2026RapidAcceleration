@@ -17,7 +17,7 @@ public class MovingRainbowFillPattern implements RunnableLEDPattern {
         for (int i = 0; i < kLEDCount; i++) {
             double progress = (double) i / kLEDCount;
 
-            int hue = (int) ((progress + (double) subsystem.getPatternIndex() / kLEDCount) * 180.0 * kRainbowFactor)
+            int hue = (int) ((progress + (double) subsystem.getAnimationFrame() / kLEDCount) * 180.0 * kRainbowFactor)
                     % 180;
 
             subsystem.setLEDHSV(i, hue, 255, 255);

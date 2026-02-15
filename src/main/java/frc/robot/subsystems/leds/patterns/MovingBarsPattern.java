@@ -15,7 +15,7 @@ public class MovingBarsPattern implements RunnableLEDPattern {
     @Override
     public void run() {
         for (int i = 0; i < kLEDCount; i++) {
-            if (((i + subsystem.getPatternIndex()) / kBarSize) % 2 == 0) {
+            if (((i + subsystem.getAnimationFrame()) / kBarSize) % 2 == 0) {
                 subsystem.setLEDColor(i, subsystem.getBaseColor());
             }
         }

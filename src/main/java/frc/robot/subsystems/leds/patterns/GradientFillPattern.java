@@ -15,7 +15,7 @@ public class GradientFillPattern implements RunnableLEDPattern {
     @Override
     public void run() {
         for (int i = 0; i < kTrailSize; i++) {
-            int pos = (subsystem.getPatternIndex() - i + kLEDCount) % kLEDCount;
+            int pos = (subsystem.getAnimationFrame() - i + kLEDCount) % kLEDCount;
 
             double fadeRatio = Math.abs(1.0 - (2.0 * i / kLEDCount));
 

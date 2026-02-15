@@ -16,7 +16,7 @@ public class GradientTrailPattern implements RunnableLEDPattern {
     public void run() {
         for (int current_trail = 0; current_trail < kLEDCount; current_trail += kLEDCount / kTrailCount) {
             for (int i = 0; i < kTrailSize; i++) {
-                int pos = (subsystem.getPatternIndex() + current_trail - i + kLEDCount) % kLEDCount;
+                int pos = (subsystem.getAnimationFrame() + current_trail - i + kLEDCount) % kLEDCount;
 
                 double fadeRatio = (double) i / kTrailSize;
 

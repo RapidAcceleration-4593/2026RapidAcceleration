@@ -17,6 +17,7 @@ public class LEDSubsystem extends SubsystemBase {
     private final AddressableLEDBuffer buffer;
 
     private RunnableLEDPattern currentPattern;
+    private int currentPatternIndex = 0;
     private List<RunnableLEDPattern> patterns = List.of(
             new GradientFillPattern(this),
             new GradientTrailPattern(this),
@@ -24,8 +25,8 @@ public class LEDSubsystem extends SubsystemBase {
             new MovingRainbowFillPattern(this),
             new RainbowGradientTrailPattern(this));
 
-    private int patternIndex = 0;
-    private double realIndex = 0.0;
+    private int animationFrame = 0;
+    private double realFrame = 0.0;
 
     private Color baseColor = new Color(0, 0, 100);
     private Color gradientColor = new Color(0, 255, 0);
@@ -38,7 +39,7 @@ public class LEDSubsystem extends SubsystemBase {
         led.setData(buffer);
         led.start();
 
-        currentPattern = new GradientFillPattern(this);
+        currentPattern = patterns.get(currentPatternIndex);
     }
 
     @Override
@@ -50,8 +51,8 @@ public class LEDSubsystem extends SubsystemBase {
         }
 
         updateLEDs();
-        realIndex = (realIndex + kSpeedFactor) % kLEDCount;
-        patternIndex = ((int) realIndex + kLEDCount) % kLEDCount;
+        realFrame = (realFrame + kSpeedFactor) % kLEDCount;
+        animationFrame = ((int) realFrame + kLEDCount) % kLEDCount;
     }
 
     public void setLEDColor(int ledIndex, Color color) {
@@ -88,6 +89,18 @@ public class LEDSubsystem extends SubsystemBase {
         this.gradientColor = color;
     }
 
+    public Color getBaseColor() {
+        return this.baseColor;
+    }
+
+    public Color getGradientColor() {
+        return this.gradientColor;
+    }
+
+    public int getAnimationFrame() {
+        return this.animationFrame;
+    }
+
     /**
      * Linearly interpolates between two color doubles from 0.0-1.0 based on a ratio t and converts them to integers
      * from 0-255.
@@ -101,18 +114,6 @@ public class LEDSubsystem extends SubsystemBase {
         return (int) ((start + (end - start) * t) * 255.0);
     }
 
-    public Color getBaseColor() {
-        return this.baseColor;
-    }
-
-    public Color getGradientColor() {
-        return this.gradientColor;
-    }
-
-    public int getPatternIndex() {
-        return this.patternIndex;
-    }
-
     /**
      * Constructs a command to change the base and gradient colors for color specific patterns.
      *
@@ -124,6 +125,18 @@ public class LEDSubsystem extends SubsystemBase {
         return runOnce(() -> {
             setBaseColor(baseColor.color);
             setGradientColor(gradientColor.color);
+        });
+    }
+
+    /**
+     * Constructs a command to switch to the next pattern in the list of patterns.
+     *
+     * @return A command to switch to the next pattern in the list of patterns.
+     */
+    public Command nextPatternCommand() {
+        return runOnce(() -> {
+            currentPatternIndex = (currentPatternIndex + 1) % patterns.size();
+            currentPattern = patterns.get(currentPatternIndex);
         });
     }
 }
