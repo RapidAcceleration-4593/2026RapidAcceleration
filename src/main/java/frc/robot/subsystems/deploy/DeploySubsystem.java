@@ -27,7 +27,7 @@ public class DeploySubsystem extends SubsystemBase {
         this.io = io;
         this.inputs = new DeployInputsAutoLogged();
 
-        Trigger lsTrigger = new Trigger(() -> inputs.retractedLS || inputs.extendedLS);
+        Trigger lsTrigger = new Trigger(() -> inputs.retractedLS);
         lsTrigger.onTrue(Commands.runOnce(io::resetPosition));
 
         deploy3D = fLengthMechanism3D.find("Deploy");
@@ -53,18 +53,7 @@ public class DeploySubsystem extends SubsystemBase {
 
     public boolean atTargetDistance() {
         return inputs.distance.isNear(targetDistance, kDistanceTolerance)
-                || (inputs.targetDistance == kMinimumDistance && inputs.retractedLS)
-                || (inputs.targetDistance == kMaximumDistance && inputs.extendedLS);
-    }
-
-    private boolean isDrivingIntoLS() {
-        if (kPositiveVoltageExtends) {
-            return (inputs.appliedVolts.in(Volts) > 0.1 && inputs.extendedLS)
-                    || (inputs.appliedVolts.in(Volts) < -0.1 && inputs.retractedLS);
-        } else {
-            return (inputs.appliedVolts.in(Volts) < -0.1 && inputs.extendedLS)
-                    || (inputs.appliedVolts.in(Volts) > 0.1 && inputs.retractedLS);
-        }
+                || (inputs.targetDistance == kMinimumDistance && inputs.retractedLS);
     }
 
     /**
@@ -74,7 +63,7 @@ public class DeploySubsystem extends SubsystemBase {
      * @return A command to set the motor voltage and stop when complete.
      */
     public Command setVoltageCommand(Voltage volts) {
-        return startEnd(() -> io.setVoltage(volts), io::stop).until(this::isDrivingIntoLS);
+        return startEnd(() -> io.setVoltage(volts), io::stop).until(() -> Math.abs(inputs.appliedVolts.in(Volts)) > 0.1 && inputs.retractedLS);
     }
 
     /**

@@ -25,7 +25,6 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
     private final SparkMaxSim motorSim;
     private final SparkMaxAlternateEncoderSim encoderSim;
     private final DIOSim retractedLSSim;
-    private final DIOSim extendedLSSim;
 
     public DeployIOSim() {
         DCMotor gearbox = DCMotor.getNeo550(1);
@@ -42,7 +41,6 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
         motorSim = new SparkMaxSim(motor, gearbox);
         encoderSim = new SparkMaxAlternateEncoderSim(motor);
         retractedLSSim = new DIOSim(retractedLS);
-        extendedLSSim = new DIOSim(extendedLS);
 
         SimulationManager.getInstance().addSimulatable(this);
     }
@@ -50,8 +48,7 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
     @Override
     public void updatePlantSim() {
         deploySim.setInput(motorSim.getAppliedOutput()
-                * SimulatedBattery.getBatteryVoltage().in(Volts)
-                * (kPositiveVoltageExtends ? 1 : -1));
+                * SimulatedBattery.getBatteryVoltage().in(Volts));
         deploySim.update(0.02);
     }
 
@@ -67,15 +64,14 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
                 RadiansPerSecond.of(carriageVelocity.in(MetersPerSecond) / kDrumRadius.in(Meters));
         AngularVelocity motorVelocity = drumVelocity.times(kMotorToDeployGearing);
         motorSim.iterate(
-                motorVelocity.in(RPM) * (kPositiveVoltageExtends ? 1 : -1),
+                motorVelocity.in(RPM),
                 SimulatedBattery.getBatteryVoltage().in(Volts),
                 0.02);
 
         Distance deployDistance = Meters.of(deploySim.getPositionMeters());
         encoderSim.setPosition(deployDistance.in(Inches));
 
-        retractedLSSim.setValue(deploySim.hasHitLowerLimit() ^ kInvertInLS);
-        extendedLSSim.setValue(deploySim.hasHitUpperLimit() ^ kInvertOutLS);
+        retractedLSSim.setValue(deploySim.hasHitLowerLimit() ^ kInvertRetractedLS);
         SimulationManager.getInstance().setIntakeExtended(deploySim.hasHitUpperLimit());
         Logger.recordOutput("DeploySimInches", Units.metersToInches(deploySim.getPositionMeters()));
     }

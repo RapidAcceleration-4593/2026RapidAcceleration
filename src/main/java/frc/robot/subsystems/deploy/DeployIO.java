@@ -16,7 +16,6 @@ public interface DeployIO {
         public Distance targetDistance = kMinimumDistance;
 
         public boolean retractedLS = false;
-        public boolean extendedLS = false;
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();

@@ -26,7 +26,6 @@ public class DeployIOReal implements DeployIO {
     protected final RelativeEncoder encoder;
 
     protected final DigitalInput retractedLS;
-    protected final DigitalInput extendedLS;
 
     private final SparkClosedLoopController controller;
 
@@ -35,7 +34,6 @@ public class DeployIOReal implements DeployIO {
         encoder = motor.getAlternateEncoder();
 
         retractedLS = new DigitalInput(kRetractedLSChannel);
-        extendedLS = new DigitalInput(kExtendedLSChannel);
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
                 .inverted(kInvertMotor)
@@ -66,8 +64,7 @@ public class DeployIOReal implements DeployIO {
         inputs.distance = Inches.of(encoder.getPosition());
         inputs.targetDistance = Inches.of(controller.getSetpoint());
 
-        inputs.retractedLS = isRetracted();
-        inputs.extendedLS = isExtended();
+        inputs.retractedLS = retractedLS.get() ^ kInvertRetractedLS;
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
@@ -85,25 +82,12 @@ public class DeployIOReal implements DeployIO {
 
     @Override
     public void resetPosition() {
-        if (isRetracted()) {
-            encoder.setPosition(kMinimumDistance.in(Inches));
-        } else if (isExtended()) {
-            encoder.setPosition(kMaximumDistance.in(Inches));
-        }
-
+        encoder.setPosition(kMinimumDistance.in(Inches));
         controller.setSetpoint(encoder.getPosition(), ControlType.kPosition);
     }
 
     @Override
     public void stop() {
         motor.stopMotor();
-    }
-
-    private boolean isRetracted() {
-        return retractedLS.get() ^ kInvertInLS;
-    }
-
-    private boolean isExtended() {
-        return extendedLS.get() ^ kInvertOutLS;
     }
 }
