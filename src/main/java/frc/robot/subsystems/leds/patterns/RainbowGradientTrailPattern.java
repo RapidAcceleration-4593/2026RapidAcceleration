@@ -4,7 +4,7 @@ import static frc.robot.subsystems.leds.LEDConstants.*;
 
 import frc.robot.subsystems.leds.LEDSubsystem;
 
-public class RainbowGradientTrailPattern implements Runnable {
+public class RainbowGradientTrailPattern implements RunnableLEDPattern {
 
     private final LEDSubsystem subsystem;
 

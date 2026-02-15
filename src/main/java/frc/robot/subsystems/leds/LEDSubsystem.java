@@ -9,13 +9,20 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.leds.LEDConstants.kColors;
 import frc.robot.subsystems.leds.patterns.*;
+import java.util.List;
 
 public class LEDSubsystem extends SubsystemBase {
 
     private final AddressableLED led;
     private final AddressableLEDBuffer buffer;
 
-    private Runnable currentPattern;
+    private RunnableLEDPattern currentPattern;
+    private List<RunnableLEDPattern> patterns = List.of(
+            new GradientFillPattern(this),
+            new GradientTrailPattern(this),
+            new MovingBarsPattern(this),
+            new MovingRainbowFillPattern(this),
+            new RainbowGradientTrailPattern(this));
 
     private int patternIndex = 0;
     private double realIndex = 0.0;
@@ -59,9 +66,9 @@ public class LEDSubsystem extends SubsystemBase {
         buffer.setHSV(ledIndex, h, s, v);
     }
 
-    public void fillLEDs(int r, int g, int b) {
+    public void fillLEDs(Color color) {
         for (int i = 0; i < kLEDCount; i++) {
-            setLEDRGB(i, r, g, b);
+            setLEDColor(i, color);
         }
     }
 
@@ -70,7 +77,7 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     public void clearLeds() {
-        fillLEDs(0, 0, 0);
+        fillLEDs(new Color(0, 0, 0));
     }
 
     public void setBaseColor(Color color) {

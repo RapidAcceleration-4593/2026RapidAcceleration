@@ -4,7 +4,7 @@ import static frc.robot.subsystems.leds.LEDConstants.*;
 
 import frc.robot.subsystems.leds.LEDSubsystem;
 
-public class MovingBarsPattern implements Runnable {
+public class MovingBarsPattern implements RunnableLEDPattern {
 
     private final LEDSubsystem subsystem;
 
