@@ -2,6 +2,7 @@ package frc.robot.subsystems.leds.patterns;
 
 import static frc.robot.subsystems.leds.LEDConstants.*;
 
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.subsystems.leds.LEDSubsystem;
 
 public class GradientFillPattern implements RunnableLEDPattern {
@@ -19,14 +20,9 @@ public class GradientFillPattern implements RunnableLEDPattern {
 
             double fadeRatio = Math.abs(1.0 - (2.0 * i / kLEDCount));
 
-            int r = subsystem.lerpColorComponent(
-                    subsystem.getBaseColor().red, subsystem.getGradientColor().red, fadeRatio);
-            int g = subsystem.lerpColorComponent(
-                    subsystem.getBaseColor().green, subsystem.getGradientColor().green, fadeRatio);
-            int b = subsystem.lerpColorComponent(
-                    subsystem.getBaseColor().blue, subsystem.getGradientColor().blue, fadeRatio);
+            Color color = Color.lerpRGB(subsystem.getBaseColor(), subsystem.getGradientColor(), fadeRatio);
 
-            subsystem.setLEDRGB(pos, r, g, b);
+            subsystem.setLEDColor(pos, color);
         }
     }
 }

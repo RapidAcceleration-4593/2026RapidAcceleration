@@ -2,6 +2,7 @@ package frc.robot.subsystems.leds.patterns;
 
 import static frc.robot.subsystems.leds.LEDConstants.*;
 
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.subsystems.leds.LEDSubsystem;
 
 public class RainbowGradientTrailPattern implements RunnableLEDPattern {
@@ -21,9 +22,9 @@ public class RainbowGradientTrailPattern implements RunnableLEDPattern {
                 double progress = (double) pos / kLEDCount;
 
                 int hue = (int) (progress * 180.0 * kRainbowFactor) % 180;
-                int brightness = (int) (255 * (1.0 - (double) i / (double) kTrailSize));
+                int brightness = (int) (255.0 * (1.0 - (double) i / (double) kTrailSize));
 
-                subsystem.setLEDHSV(pos, hue, 255, brightness);
+                subsystem.setLEDColor(pos, Color.fromHSV(hue, 255, brightness));
             }
         }
     }

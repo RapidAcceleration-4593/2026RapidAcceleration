@@ -2,6 +2,7 @@ package frc.robot.subsystems.leds.patterns;
 
 import static frc.robot.subsystems.leds.LEDConstants.*;
 
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.subsystems.leds.LEDSubsystem;
 
 public class MovingRainbowFillPattern implements RunnableLEDPattern {
@@ -20,7 +21,7 @@ public class MovingRainbowFillPattern implements RunnableLEDPattern {
             int hue = (int) ((progress + (double) subsystem.getAnimationFrame() / kLEDCount) * 180.0 * kRainbowFactor)
                     % 180;
 
-            subsystem.setLEDHSV(i, hue, 255, 255);
+            subsystem.setLEDColor(i, Color.fromHSV(hue, 255, 255));
         }
     }
 }

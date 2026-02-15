@@ -4,6 +4,7 @@ import static frc.robot.subsystems.leds.LEDConstants.*;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -56,21 +57,11 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     public void setLEDColor(int ledIndex, Color color) {
-        buffer.setRGB(ledIndex, (int) (color.red * 255.0), (int) (color.green * 255.0), (int) (color.blue * 255.0));
-    }
-
-    public void setLEDRGB(int ledIndex, int r, int g, int b) {
-        buffer.setRGB(ledIndex, r, g, b);
-    }
-
-    public void setLEDHSV(int ledIndex, int h, int s, int v) {
-        buffer.setHSV(ledIndex, h, s, v);
+        buffer.setLED(ledIndex, color);
     }
 
     public void fillLEDs(Color color) {
-        for (int i = 0; i < kLEDCount; i++) {
-            setLEDColor(i, color);
-        }
+        LEDPattern.solid(color).applyTo(buffer);
     }
 
     public void updateLEDs() {
@@ -78,15 +69,7 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     public void clearLeds() {
-        fillLEDs(new Color(0, 0, 0));
-    }
-
-    public void setBaseColor(Color color) {
-        this.baseColor = color;
-    }
-
-    public void setGradientColor(Color color) {
-        this.gradientColor = color;
+        fillLEDs(Color.kBlack);
     }
 
     public Color getBaseColor() {
@@ -102,19 +85,6 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     /**
-     * Linearly interpolates between two color doubles from 0.0-1.0 based on a ratio t and converts them to integers
-     * from 0-255.
-     *
-     * @param start The starting color component value (0.0-1.0).
-     * @param end The ending color component value (0.0-1.0).
-     * @param t The interpolation ratio (0.0-1.0).
-     * @return The interpolated integer value (0-255).
-     */
-    public int lerpColorComponent(double start, double end, double t) {
-        return (int) ((start + (end - start) * t) * 255.0);
-    }
-
-    /**
      * Constructs a command to change the base and gradient colors for color specific patterns.
      *
      * @param baseColor The base color.
@@ -123,8 +93,8 @@ public class LEDSubsystem extends SubsystemBase {
      */
     public Command changeColorCommand(kColors baseColor, kColors gradientColor) {
         return runOnce(() -> {
-            setBaseColor(baseColor.color);
-            setGradientColor(gradientColor.color);
+            this.baseColor = baseColor.color;
+            this.gradientColor = gradientColor.color;
         });
     }
 
