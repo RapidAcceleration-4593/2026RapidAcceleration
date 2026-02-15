@@ -64,6 +64,10 @@ public class LEDSubsystem extends SubsystemBase {
         LEDPattern.solid(color).applyTo(buffer);
     }
 
+    public void applyPattern(LEDPattern pattern) {
+        pattern.applyTo(buffer);
+    }
+
     public void updateLEDs() {
         led.setData(buffer);
     }

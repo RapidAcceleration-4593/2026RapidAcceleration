@@ -2,7 +2,8 @@ package frc.robot.subsystems.leds.patterns;
 
 import static frc.robot.subsystems.leds.LEDConstants.*;
 
-import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import frc.robot.subsystems.leds.LEDSubsystem;
 
 public class GradientFillPattern implements RunnableLEDPattern {
@@ -15,14 +16,18 @@ public class GradientFillPattern implements RunnableLEDPattern {
 
     @Override
     public void run() {
-        for (int i = 0; i < kTrailSize; i++) {
-            int pos = (subsystem.getAnimationFrame() - i + kLEDCount) % kLEDCount;
+        subsystem.applyPattern(
+                LEDPattern.gradient(GradientType.kContinuous, subsystem.getBaseColor(), subsystem.getGradientColor())
+                        .offsetBy(subsystem.getAnimationFrame()));
 
-            double fadeRatio = Math.abs(1.0 - (2.0 * i / kLEDCount));
+        // for (int i = 0; i < kTrailSize; i++) {
+        //     int pos = (subsystem.getAnimationFrame() - i + kLEDCount) % kLEDCount;
 
-            Color color = Color.lerpRGB(subsystem.getBaseColor(), subsystem.getGradientColor(), fadeRatio);
+        //     double fadeRatio = Math.abs(1.0 - (2.0 * i / kLEDCount));
 
-            subsystem.setLEDColor(pos, color);
-        }
+        //     Color color = Color.lerpRGB(subsystem.getBaseColor(), subsystem.getGradientColor(), fadeRatio);
+
+        //     subsystem.setLEDColor(pos, color);
+        // }
     }
 }
