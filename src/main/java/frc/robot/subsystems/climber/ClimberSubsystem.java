@@ -1,8 +1,10 @@
 package frc.robot.subsystems.climber;
 
+import static edu.wpi.first.units.Units.Inches;
 import static frc.robot.subsystems.climber.ClimberConstants.*;
 import static frc.robot.util.mechanism.MechanismFinder.fLengthMechanism3D;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -74,7 +76,7 @@ public class ClimberSubsystem extends SubsystemBase {
      *
      * @return A command to stop the motor immediately.
      */
-    public Command stopMotor() {
+    public Command stopCommand() {
         return runOnce(io::stop);
     }
 
@@ -84,7 +86,9 @@ public class ClimberSubsystem extends SubsystemBase {
      * @param distance The distance to set as the climber position.
      */
     private void setPosition(Distance distance) {
-        this.targetDistance = distance;
-        io.setPosition(distance);
+        Distance clampedDistance = Inches.of(
+                MathUtil.clamp(distance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches)));
+        targetDistance = clampedDistance;
+        io.setPosition(clampedDistance);
     }
 }

@@ -26,7 +26,6 @@ public class IndexerSubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Indexer", inputs);
-
         indexer3D.setAngularVelocity(inputs.spindexerVelocity);
 
         CommandLogger.logSubsystemCommand(this);

@@ -82,11 +82,11 @@ public class RobotContainer {
 
         driverController.leftTrigger().whileTrue(intake.runCommand());
 
-		driverController.povLeft().whileTrue(turret.setVoltageCommand(Volts.of(-4)));
-		driverController.povRight().whileTrue(turret.setVoltageCommand(Volts.of(4)));
+        driverController.povLeft().whileTrue(turret.setVoltageCommand(Volts.of(-4)));
+        driverController.povRight().whileTrue(turret.setVoltageCommand(Volts.of(4)));
 
-		driverController.x().whileTrue(climber.setVoltageCommand(Volts.of(6)));
-		driverController.b().whileTrue(climber.setVoltageCommand(Volts.of(-6)));
+        driverController.x().whileTrue(climber.setVoltageCommand(Volts.of(6)));
+        driverController.b().whileTrue(climber.setVoltageCommand(Volts.of(-6)));
 
         driverController.povUp().whileTrue(hood.setVoltageCommand(Volts.of(4)));
         driverController.povDown().whileTrue(hood.setVoltageCommand(Volts.of(-4)));

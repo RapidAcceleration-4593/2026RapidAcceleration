@@ -47,7 +47,7 @@ public class ShooterSubsystem extends SubsystemBase {
      *
      * @return A command to set the motor voltage and stop when complete.
      */
-    public Command runAtVoltageCommand(Voltage volts) {
+    public Command setVoltageCommand(Voltage volts) {
         return startEnd(() -> io.setVoltage(volts), io::stop);
     }
 
@@ -79,7 +79,11 @@ public class ShooterSubsystem extends SubsystemBase {
         return runOnce(io::stop);
     }
 
-    /** Sets the velocity of the closed-loop PID control. */
+    /**
+     * Sets the velocity of the closed-loop feedforward controller.
+     *
+     * @param velocity The velocity to set as the shooter velocity.
+     */
     private void setVelocity(AngularVelocity velocity) {
         targetVelocity = velocity;
         io.setVelocity(velocity);

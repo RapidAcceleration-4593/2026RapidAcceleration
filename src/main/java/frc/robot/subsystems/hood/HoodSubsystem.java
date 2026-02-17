@@ -68,8 +68,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @return A command to set the motor voltage and stop when complete.
      */
     public Command setVoltageCommand(Voltage volts) {
-        return startEnd(() -> io.setVoltage(volts), io::stop)
-                .until(() -> (inputs.bottomLS && inputs.appliedVolts.lt(Volts.zero())));
+        return startEnd(() -> io.setVoltage(volts), io::stop).unless(() -> inputs.bottomLS);
     }
 
     /**

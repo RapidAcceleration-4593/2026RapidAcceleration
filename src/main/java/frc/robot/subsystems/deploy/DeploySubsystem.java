@@ -1,9 +1,10 @@
 package frc.robot.subsystems.deploy;
 
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.Inches;
 import static frc.robot.subsystems.deploy.DeployConstants.*;
 import static frc.robot.util.mechanism.MechanismFinder.fLengthMechanism3D;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -52,8 +53,7 @@ public class DeploySubsystem extends SubsystemBase {
     }
 
     public boolean atTargetDistance() {
-        return inputs.distance.isNear(targetDistance, kDistanceTolerance)
-                || (inputs.targetDistance == kMinimumDistance && inputs.retractedLS);
+        return inputs.distance.isNear(targetDistance, kDistanceTolerance);
     }
 
     /**
@@ -63,8 +63,7 @@ public class DeploySubsystem extends SubsystemBase {
      * @return A command to set the motor voltage and stop when complete.
      */
     public Command setVoltageCommand(Voltage volts) {
-        return startEnd(() -> io.setVoltage(volts), io::stop)
-                .until(() -> Math.abs(inputs.appliedVolts.in(Volts)) > 0.1 && inputs.retractedLS);
+        return startEnd(() -> io.setVoltage(volts), io::stop).unless(() -> inputs.retractedLS);
     }
 
     /**
@@ -92,7 +91,9 @@ public class DeploySubsystem extends SubsystemBase {
      * @param distance The distance to set as the deploy position.
      */
     private void setPosition(Distance distance) {
-        this.targetDistance = distance;
+        Distance clampedDistance = Inches.of(
+                MathUtil.clamp(distance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches)));
+        targetDistance = clampedDistance;
         io.setPosition(distance);
     }
 }
