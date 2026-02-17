@@ -64,9 +64,7 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
                 RadiansPerSecond.of(carriageVelocity.in(MetersPerSecond) / kDrumRadius.in(Meters));
         AngularVelocity motorVelocity = drumVelocity.times(kMotorToDeployGearing);
         motorSim.iterate(
-                motorVelocity.in(RPM),
-                SimulatedBattery.getBatteryVoltage().in(Volts),
-                0.02);
+                motorVelocity.in(RPM), SimulatedBattery.getBatteryVoltage().in(Volts), 0.02);
 
         Distance deployDistance = Meters.of(deploySim.getPositionMeters());
         encoderSim.setPosition(deployDistance.in(Inches));

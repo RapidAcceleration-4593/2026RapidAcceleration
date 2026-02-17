@@ -71,7 +71,7 @@ public class RobotContainer {
     private void configureBindings() {
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
                 swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
-        turret.setDefaultCommand(turret.controlAngleCommand());
+        // turret.setDefaultCommand(turret.controlAngleCommand());
 
         // <------- Experimental ------->
         driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, turret, hood, indexer));
@@ -81,6 +81,12 @@ public class RobotContainer {
                         swerve, driverController::getLeftY, driverController::getLeftX));
 
         driverController.leftTrigger().whileTrue(intake.runCommand());
+
+		driverController.povLeft().whileTrue(turret.setVoltageCommand(Volts.of(-4)));
+		driverController.povRight().whileTrue(turret.setVoltageCommand(Volts.of(4)));
+
+		driverController.x().whileTrue(climber.setVoltageCommand(Volts.of(6)));
+		driverController.b().whileTrue(climber.setVoltageCommand(Volts.of(-6)));
 
         driverController.povUp().whileTrue(hood.setVoltageCommand(Volts.of(4)));
         driverController.povDown().whileTrue(hood.setVoltageCommand(Volts.of(-4)));

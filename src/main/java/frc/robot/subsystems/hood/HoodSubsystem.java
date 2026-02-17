@@ -58,8 +58,7 @@ public class HoodSubsystem extends SubsystemBase {
     }
 
     public boolean atTargetAngle() {
-        return inputs.angle.isNear(targetAngle, kAngleTolerance)
-                || (inputs.targetAngle == kMinimumAngle && inputs.bottomLS);
+        return inputs.angle.isNear(targetAngle, kAngleTolerance);
     }
 
     /**

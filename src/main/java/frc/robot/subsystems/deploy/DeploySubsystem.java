@@ -63,7 +63,8 @@ public class DeploySubsystem extends SubsystemBase {
      * @return A command to set the motor voltage and stop when complete.
      */
     public Command setVoltageCommand(Voltage volts) {
-        return startEnd(() -> io.setVoltage(volts), io::stop).until(() -> Math.abs(inputs.appliedVolts.in(Volts)) > 0.1 && inputs.retractedLS);
+        return startEnd(() -> io.setVoltage(volts), io::stop)
+                .until(() -> Math.abs(inputs.appliedVolts.in(Volts)) > 0.1 && inputs.retractedLS);
     }
 
     /**
