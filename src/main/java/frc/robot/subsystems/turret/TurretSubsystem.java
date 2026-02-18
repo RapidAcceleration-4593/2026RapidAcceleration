@@ -138,11 +138,11 @@ public class TurretSubsystem extends SubsystemBase {
             Distance dy = targetPose.getMeasureY().minus(robotPose.getMeasureY()); // .minus(vy);
 
             Angle fieldAngle = Radians.of(Math.atan2(dy.in(Meters), dx.in(Meters)));
-            return robotPose.getRotation().getMeasure().minus(fieldAngle);
+            return fieldAngle.minus(robotPose.getRotation().getMeasure());
         }
 
         Angle fieldAngle = FieldUtil.getCurrentAlliance() == Alliance.Blue ? Degrees.of(180) : Degrees.zero();
-        return robotPose.getRotation().getMeasure().minus(fieldAngle);
+        return fieldAngle.minus(robotPose.getRotation().getMeasure());
     }
 
     /**
