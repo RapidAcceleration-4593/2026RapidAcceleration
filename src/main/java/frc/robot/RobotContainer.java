@@ -50,8 +50,8 @@ public class RobotContainer {
         // objectDetection = ObjectDetectionFactory.initialize();
 
         shooter = ShooterFactory.initialize();
-        turret = TurretFactory.initialize(swerve);
         hood = HoodFactory.initialize(swerve);
+        turret = TurretFactory.initialize(swerve, shooter, hood);
         indexer = IndexerFactory.initialize();
 
         intake = IntakeFactory.initialize();

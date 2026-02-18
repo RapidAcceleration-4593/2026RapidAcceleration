@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -22,16 +23,25 @@ public class TurretSubsystem extends SubsystemBase {
 
     private final Supplier<Pose2d> poseSupplier;
     private final Supplier<ChassisSpeeds> chassisSpeedsSupplier;
+    private final Supplier<AngularVelocity> shooterVelocitySupplier;
+    private final Supplier<Angle> hoodAngleSupplier;
     private final TurretInputsAutoLogged inputs;
     private final TurretIO io;
 
     private Angle targetAngle = kInitialAngle;
 
-    public TurretSubsystem(TurretIO io, Supplier<Pose2d> poseSupplier, Supplier<ChassisSpeeds> chassisSpeedsSupplier) {
+    public TurretSubsystem(
+            TurretIO io,
+            Supplier<Pose2d> poseSupplier,
+            Supplier<ChassisSpeeds> chassisSpeedsSupplier,
+            Supplier<AngularVelocity> shooterVelocitySupplier,
+            Supplier<Angle> hoodAngleSupplier) {
         this.io = io;
         this.inputs = new TurretInputsAutoLogged();
         this.poseSupplier = poseSupplier;
         this.chassisSpeedsSupplier = chassisSpeedsSupplier;
+        this.shooterVelocitySupplier = shooterVelocitySupplier;
+        this.hoodAngleSupplier = hoodAngleSupplier;
     }
 
     @Override
@@ -105,12 +115,29 @@ public class TurretSubsystem extends SubsystemBase {
         if (FieldUtil.isInAllianceZone(robotPose)) {
             Pose2d targetPose = FieldUtil.getTargetHubPose();
             // ChassisSpeeds chassisSpeeds = chassisSpeedsSupplier.get();
+            // AngularVelocity shooterVelocity = shooterVelocitySupplier.get();
+            // Angle hoodAngle = hoodAngleSupplier.get();
 
-            // Distance vx = Meters.of(chassisSpeeds.vxMetersPerSecond);
-            // Distance vy = Meters.of(chassisSpeeds.vyMetersPerSecond);
+            // Distance initialHeight = Inches.of(20.0);
+            // Distance finalHeight = Inches.of(72.0);
+            // LinearVelocity initialVelocity =
+            //         MetersPerSecond.of(0.5 * shooterVelocity.in(RadiansPerSecond) * Math.cos(hoodAngle.in(Radians)));
+            // LinearAcceleration gravityConstant = MetersPerSecondPerSecond.of(-9.81);
 
-            Distance dx = targetPose.getMeasureX().minus(robotPose.getMeasureX()); // minus(vx)
-            Distance dy = targetPose.getMeasureY().minus(robotPose.getMeasureY()); // minus(vy)
+            // Time timeOfFlight = Seconds.of((-initialVelocity.in(MetersPerSecond)
+            //                 - Math.sqrt(Math.pow(initialVelocity.in(MetersPerSecond), 2)
+            //                         - 2
+            //                                 * gravityConstant.in(MetersPerSecondPerSecond)
+            //                                 * (initialHeight.in(Meters) - finalHeight.in(Meters))))
+            //         / gravityConstant.in(MetersPerSecondPerSecond));
+
+            // Distance vx = Meters.of(chassisSpeeds.vxMetersPerSecond).times(timeOfFlight.in(Seconds));
+            // Distance vy = Meters.of(chassisSpeeds.vyMetersPerSecond).times(timeOfFlight.in(Seconds));
+
+            Distance dx =
+                    targetPose.getMeasureX().minus(robotPose.getMeasureX()); // .minus(vx)
+            Distance dy =
+                    targetPose.getMeasureY().minus(robotPose.getMeasureY()); // .minus(vy);
 
             Angle fieldAngle = Radians.of(Math.atan2(dy.in(Meters), dx.in(Meters)));
             return robotPose.getRotation().getMeasure().minus(fieldAngle);
