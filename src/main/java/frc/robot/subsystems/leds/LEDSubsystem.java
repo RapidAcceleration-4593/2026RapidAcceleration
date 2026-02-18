@@ -22,7 +22,6 @@ public class LEDSubsystem extends SubsystemBase {
     private List<RunnableLEDPattern> patterns = List.of(
             new GradientFillPattern(this),
             new GradientTrailPattern(this),
-            new MovingBarsPattern(this),
             new MovingRainbowFillPattern(this),
             new RainbowGradientTrailPattern(this));
 

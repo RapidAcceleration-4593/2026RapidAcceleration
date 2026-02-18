@@ -2,7 +2,6 @@ package frc.robot.subsystems.leds.patterns;
 
 import static frc.robot.subsystems.leds.LEDConstants.*;
 
-import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.subsystems.leds.LEDSubsystem;
 
@@ -16,7 +15,8 @@ public class MovingRainbowFillPattern implements RunnableLEDPattern {
 
     @Override
     public void run() {
-		// subsystem.applyPattern(LEDPattern.rainbow(255, 255).offsetBy(subsystem.getAnimationFrame() * kRainbowFactor));
+        // subsystem.applyPattern(LEDPattern.rainbow(255, 255).offsetBy(subsystem.getAnimationFrame() *
+        // kRainbowFactor));
         for (int i = 0; i < kLEDCount; i++) {
             double progress = (double) i / kLEDCount;
 
