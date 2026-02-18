@@ -7,7 +7,7 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 
 public final class TurretConstants {
 
-    public static final int kMotorID = 4;
+    public static final int kMotorID = 5;
 
     public static final boolean kInvertMotor = false;
     public static final boolean kInvertEncoder = false;

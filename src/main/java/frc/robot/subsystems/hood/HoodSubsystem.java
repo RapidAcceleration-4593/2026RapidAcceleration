@@ -7,14 +7,12 @@ import static frc.robot.util.mechanism.MechanismFinder.fAngleMechanism3D;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.CommandLogger;
-import frc.robot.util.FieldUtil;
 import frc.robot.util.mechanism.AngleMechanism3D;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -105,10 +103,11 @@ public class HoodSubsystem extends SubsystemBase {
      * @return An angle from the linear regression equation.
      */
     private Angle calculateHubAngle() {
-        Pose2d targetPose = FieldUtil.getTargetHubPose();
-        Pose2d shooterPose = poseSupplier.get().transformBy(kPhysicalOffset);
-        Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
-        return Degrees.of(10.0 * distance.in(Meters));
+        // Pose2d targetPose = FieldUtil.getTargetHubPose();
+        // Pose2d shooterPose = poseSupplier.get().transformBy(kPhysicalOffset);
+        // Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
+        // return Degrees.of(10.0 * distance.in(Meters));
+        return Degrees.of(20.0);
     }
 
     /**

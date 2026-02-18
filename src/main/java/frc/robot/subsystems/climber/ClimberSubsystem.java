@@ -44,7 +44,7 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     public Distance getTargetDistance() {
-        return targetDistance;
+        return inputs.targetDistance;
     }
 
     public boolean atTargetDistance() {

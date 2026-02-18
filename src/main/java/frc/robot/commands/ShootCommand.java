@@ -13,7 +13,7 @@ public class ShootCommand extends ParallelCommandGroup {
     public ShootCommand(
             ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood, IndexerSubsystem indexer) {
         BooleanSupplier readySupplier =
-                () -> shooter.atTargetVelocity() && turret.atTargetAngle() && hood.atTargetAngle();
+                () -> shooter.atTargetVelocity() && hood.atTargetAngle(); // && turret.atTargetAngle()
         addCommands(
                 shooter.runCommand(),
                 hood.runCommand(),

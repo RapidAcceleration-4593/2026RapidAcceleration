@@ -1,6 +1,6 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Controllers.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -82,17 +82,21 @@ public class RobotContainer {
 
         driverController.leftTrigger().whileTrue(intake.runCommand());
 
+        driverController.y().onTrue(turret.goToAngleCommand(Degrees.of(0.0)));
+        driverController.x().onTrue(turret.goToAngleCommand(Degrees.of(-45.0)));
+        driverController.b().onTrue(turret.goToAngleCommand(Degrees.of(45.0)));
+
         driverController.povLeft().whileTrue(turret.setVoltageCommand(Volts.of(-4)));
         driverController.povRight().whileTrue(turret.setVoltageCommand(Volts.of(4)));
 
-        driverController.x().whileTrue(climber.setVoltageCommand(Volts.of(6)));
-        driverController.b().whileTrue(climber.setVoltageCommand(Volts.of(-6)));
+        driverController.povUp().whileTrue(deploy.setVoltageCommand(Volts.of(8)));
+        driverController.povDown().whileTrue(deploy.setVoltageCommand(Volts.of(-8)));
 
-        driverController.povUp().whileTrue(hood.setVoltageCommand(Volts.of(4)));
-        driverController.povDown().whileTrue(hood.setVoltageCommand(Volts.of(-4)));
+        operatorController.povUp().whileTrue(climber.setVoltageCommand(Volts.of(6)));
+        operatorController.povDown().whileTrue(climber.setVoltageCommand(Volts.of(-6)));
 
-        driverController.y().whileTrue(deploy.setVoltageCommand(Volts.of(8)));
-        driverController.a().whileTrue(deploy.setVoltageCommand(Volts.of(-8)));
+        operatorController.y().whileTrue(hood.setVoltageCommand(Volts.of(4)));
+        operatorController.a().whileTrue(hood.setVoltageCommand(Volts.of(-4)));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());
