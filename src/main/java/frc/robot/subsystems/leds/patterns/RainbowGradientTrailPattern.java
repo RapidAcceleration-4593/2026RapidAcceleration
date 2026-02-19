@@ -22,7 +22,7 @@ public class RainbowGradientTrailPattern implements RunnableLEDPattern {
                 double progress = (double) pos / kLEDCount;
 
                 int hue = (int) (progress * 180.0 * kRainbowFactor) % 180;
-                int brightness = (int) (255.0 * (1.0 - (double) i / (double) kTrailSize));
+                int brightness = (int) (255.0 * Math.pow((1.0 - (double) i / (double) kTrailSize), 2.0));
 
                 subsystem.setLEDColor(pos, Color.fromHSV(hue, 255, brightness));
             }

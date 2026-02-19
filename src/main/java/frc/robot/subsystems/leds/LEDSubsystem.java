@@ -102,6 +102,20 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     /**
+     * Constructs a command to change the base and gradient colors for color specific patterns.
+     *
+     * @param baseColor The base color.
+     * @param gradientColor The gradient color.
+     * @return A commmand to change the base and gradient colors.
+     */
+    public Command randomColorCommand() {
+        return runOnce(() -> {
+            this.baseColor = kColors.getRandom().color;
+            this.gradientColor = kColors.getRandom().color;
+        });
+    }
+
+    /**
      * Constructs a command to switch to the next pattern in the list of patterns.
      *
      * @return A command to switch to the next pattern in the list of patterns.
