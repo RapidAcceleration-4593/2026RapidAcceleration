@@ -4,14 +4,14 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.deploy.DeployConstants.*;
 
 import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.AlternateEncoderConfig;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -23,27 +23,26 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class DeployIOReal implements DeployIO {
 
     protected final SparkMax motor;
-    protected final RelativeEncoder encoder;
-
+    protected final SparkAbsoluteEncoder encoder;
     protected final DigitalInput retractedLS;
 
     private final SparkClosedLoopController controller;
 
     public DeployIOReal() {
         motor = new SparkMax(kMotorID, MotorType.kBrushless);
-        encoder = motor.getAlternateEncoder();
+        encoder = motor.getAbsoluteEncoder();
 
         retractedLS = new DigitalInput(kRetractedLSChannel);
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
                 .inverted(kInvertMotor)
                 .idleMode(IdleMode.kCoast)
-                .smartCurrentLimit(60)
+                .smartCurrentLimit(30)
                 .voltageCompensation(12.0);
 
-        AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
+        AbsoluteEncoderConfig altEncoderConfig = new AbsoluteEncoderConfig()
                 .inverted(kInvertEncoder)
-                .countsPerRevolution(kCountsPerRotation)
+				.zeroOffset(kEncoderOffset.in(Inches))
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 
@@ -82,7 +81,7 @@ public class DeployIOReal implements DeployIO {
 
     @Override
     public void resetPosition() {
-        encoder.setPosition(kMinimumDistance.in(Inches));
+        // encoder.setPosition(kMinimumDistance.in(Inches));
         controller.setSetpoint(encoder.getPosition(), ControlType.kPosition);
     }
 

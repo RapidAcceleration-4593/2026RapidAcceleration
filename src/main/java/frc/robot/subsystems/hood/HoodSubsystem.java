@@ -67,7 +67,7 @@ public class HoodSubsystem extends SubsystemBase {
      */
     public Command setVoltageCommand(Voltage volts) {
         return startEnd(() -> io.setVoltage(volts), io::stop)
-                .until(() -> inputs.bottomLS ^ kInvertLS && inputs.appliedVolts.lt(Volts.of(-3.0)));
+                .until(() -> inputs.bottomLS && inputs.appliedVolts.lt(Volts.of(-3.0)));
     }
 
     /**

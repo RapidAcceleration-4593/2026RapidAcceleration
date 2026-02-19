@@ -2,6 +2,9 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.MomentOfInertia;
 
@@ -11,10 +14,14 @@ public final class ShooterConstants {
 
     public static final boolean kInvertMotor = false;
 
-    // For Neo 1.0: kS = 0.39; kV = 0.00216; kA = 0.0002
-    public static final double kS = 0.2;
-    public static final double kV = 0.11;
-    public static final double kA = 0.0;
+	public static final Slot0Configs kShooterGains = new Slot0Configs()
+			.withKS(0.1) // Voltage to overcome static friction.
+            .withKV(0.11) // Voltage per RPS to maintain the target velocity.
+            .withKA(0.0) // Voltage per RPS/s to accelerate the shooter.
+            .withKP(0.0) // Error correction, often minimal.
+            .withKI(0.0) // Often not necessary for shooters.
+            .withKD(0.0) // Use sparingly to dampen overshoots.
+            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
     public static final AngularVelocity kZeroVelocity = RPM.zero();
     public static final AngularVelocity kShootVelocity = RPM.of(4000);

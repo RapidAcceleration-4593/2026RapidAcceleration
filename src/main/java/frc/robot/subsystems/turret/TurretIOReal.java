@@ -4,14 +4,14 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.turret.TurretConstants.*;
 
 import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.AlternateEncoderConfig;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -22,13 +22,13 @@ import edu.wpi.first.units.measure.Voltage;
 public class TurretIOReal implements TurretIO {
 
     protected final SparkMax motor;
-    protected final RelativeEncoder encoder;
+    protected final SparkAbsoluteEncoder encoder;
 
     private final SparkClosedLoopController controller;
 
     public TurretIOReal() {
         motor = new SparkMax(kMotorID, MotorType.kBrushless);
-        encoder = motor.getAlternateEncoder();
+        encoder = motor.getAbsoluteEncoder();
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
                 .inverted(kInvertMotor)
@@ -36,9 +36,10 @@ public class TurretIOReal implements TurretIO {
                 .smartCurrentLimit(30)
                 .voltageCompensation(12.0);
 
-        AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
+        AbsoluteEncoderConfig altEncoderConfig = new AbsoluteEncoderConfig()
                 .inverted(kInvertEncoder)
-                .countsPerRevolution(kCountsPerRotation)
+				.zeroCentered(true)
+				.zeroOffset(kEncoderOffset.in(Degrees))
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 
@@ -56,8 +57,8 @@ public class TurretIOReal implements TurretIO {
 
     @Override
     public void updateInputs(TurretInputs inputs) {
-        inputs.angle = Degrees.of(encoder.getPosition()).minus(kEncoderOffset);
-        inputs.targetAngle = Degrees.of(controller.getSetpoint()).minus(kEncoderOffset);
+        inputs.angle = Degrees.of(encoder.getPosition());
+        inputs.targetAngle = Degrees.of(controller.getSetpoint());
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());

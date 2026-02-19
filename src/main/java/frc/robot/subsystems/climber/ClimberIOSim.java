@@ -3,7 +3,7 @@ package frc.robot.subsystems.climber;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.climber.ClimberConstants.*;
 
-import com.revrobotics.sim.SparkMaxAlternateEncoderSim;
+import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -17,8 +17,9 @@ import org.ironmaple.simulation.motorsims.SimulatedBattery;
 public class ClimberIOSim extends ClimberIOReal implements IPhysicsSim {
 
     private final ElevatorSim climberSim;
+
     private final SparkMaxSim motorSim;
-    private final SparkMaxAlternateEncoderSim encoderSim;
+    private final SparkAbsoluteEncoderSim encoderSim;
 
     public ClimberIOSim() {
         DCMotor gearbox = DCMotor.getVex775Pro(1);
@@ -34,7 +35,7 @@ public class ClimberIOSim extends ClimberIOReal implements IPhysicsSim {
                 kMinimumDistance.in(Meters));
 
         motorSim = new SparkMaxSim(motor, gearbox);
-        encoderSim = new SparkMaxAlternateEncoderSim(motor);
+        encoderSim = new SparkAbsoluteEncoderSim(motor);
 
         SimulationManager.getInstance().addSimulatable(this);
     }
