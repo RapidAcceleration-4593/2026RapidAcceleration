@@ -12,7 +12,7 @@ public final class ClimberConstants {
 
     public static final boolean kInvertMotor = false;
     public static final boolean kInvertEncoder = false;
-	public static final Distance kEncoderOffset = Inches.of(0.0);
+    public static final Distance kEncoderOffset = Inches.of(0.0);
 
     public static final double kP = 0.0;
     public static final double kI = 0.0;

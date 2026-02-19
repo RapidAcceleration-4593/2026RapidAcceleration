@@ -10,7 +10,6 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -22,9 +21,9 @@ public class ShooterIOReal implements ShooterIO {
     private final VelocityVoltage velocityControl = new VelocityVoltage(0).withUpdateFreqHz(0);
     private final VoltageOut voltageControl = new VoltageOut(0).withUpdateFreqHz(0);
 
-	private final StatusSignal<AngularVelocity> velocitySignal;
-	private final StatusSignal<Voltage> voltageSignal;
-	private final StatusSignal<Current> currentSignal;
+    private final StatusSignal<AngularVelocity> velocitySignal;
+    private final StatusSignal<Voltage> voltageSignal;
+    private final StatusSignal<Current> currentSignal;
 
     public ShooterIOReal() {
         motor = new TalonFX(kMotorID);
@@ -37,16 +36,16 @@ public class ShooterIOReal implements ShooterIO {
 
         motor.getConfigurator().apply(config);
 
-		velocitySignal = motor.getVelocity();
-		voltageSignal = motor.getMotorVoltage();
-		currentSignal = motor.getSupplyCurrent();
+        velocitySignal = motor.getVelocity();
+        voltageSignal = motor.getMotorVoltage();
+        currentSignal = motor.getSupplyCurrent();
 
-		BaseStatusSignal.setUpdateFrequencyForAll(100, velocitySignal, voltageSignal, currentSignal);
+        BaseStatusSignal.setUpdateFrequencyForAll(100, velocitySignal, voltageSignal, currentSignal);
     }
 
     @Override
     public void updateInputs(ShooterInputs inputs) {
-		BaseStatusSignal.waitForAll(0.02, velocitySignal, voltageSignal, currentSignal);
+        BaseStatusSignal.waitForAll(0.02, velocitySignal, voltageSignal, currentSignal);
 
         inputs.velocity = velocitySignal.getValue();
         inputs.targetVelocity = velocityControl.getVelocityMeasure();

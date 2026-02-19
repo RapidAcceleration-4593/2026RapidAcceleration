@@ -22,7 +22,7 @@ import org.littletonrobotics.junction.Logger;
 public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
 
     private final ElevatorSim deploySim;
-	
+
     private final SparkMaxSim motorSim;
     private final SparkAbsoluteEncoderSim encoderSim;
     private final DIOSim retractedLSSim;

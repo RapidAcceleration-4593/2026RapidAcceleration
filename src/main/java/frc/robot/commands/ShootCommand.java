@@ -12,11 +12,13 @@ public class ShootCommand extends ParallelCommandGroup {
     /** Points the hood at the hub, spins up the shooter, and runs the indexer until this Command is canceled. */
     public ShootCommand(
             ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood, IndexerSubsystem indexer) {
+        // TODO: Implement distance sensor.
+
         BooleanSupplier readySupplier =
                 () -> shooter.atTargetVelocity() && hood.atTargetAngle(); // && turret.atTargetAngle()
         addCommands(
                 shooter.runCommand(),
                 // hood.runCommand(),
-                indexer.runCommand().repeatedly());
+                indexer.runCommand().repeatedly()); // .onlyWhile(readySupplier)
     }
 }

@@ -38,7 +38,7 @@ public class ClimberIOReal implements ClimberIO {
 
         AbsoluteEncoderConfig altEncoderConfig = new AbsoluteEncoderConfig()
                 .inverted(kInvertEncoder)
-				.zeroOffset(kEncoderOffset.in(Inches))
+                .zeroOffset(kEncoderOffset.in(Inches))
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 
@@ -49,6 +49,9 @@ public class ClimberIOReal implements ClimberIO {
         config.apply(baseConfig);
         config.apply(altEncoderConfig);
         config.apply(controlConfig);
+
+        config.softLimit.reverseSoftLimitEnabled(true).reverseSoftLimit(kMinimumDistance.in(Inches));
+        config.softLimit.forwardSoftLimitEnabled(true).forwardSoftLimit(kMaximumDistance.in(Inches));
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();

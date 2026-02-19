@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
-
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.MomentOfInertia;
 
@@ -14,8 +13,8 @@ public final class ShooterConstants {
 
     public static final boolean kInvertMotor = false;
 
-	public static final Slot0Configs kShooterGains = new Slot0Configs()
-			.withKS(0.1) // Voltage to overcome static friction.
+    public static final Slot0Configs kShooterGains = new Slot0Configs()
+            .withKS(0.1) // Voltage to overcome static friction.
             .withKV(0.11) // Voltage per RPS to maintain the target velocity.
             .withKA(0.0) // Voltage per RPS/s to accelerate the shooter.
             .withKP(0.0) // Error correction, often minimal.

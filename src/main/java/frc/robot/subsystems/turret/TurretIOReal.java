@@ -38,8 +38,8 @@ public class TurretIOReal implements TurretIO {
 
         AbsoluteEncoderConfig altEncoderConfig = new AbsoluteEncoderConfig()
                 .inverted(kInvertEncoder)
-				.zeroCentered(true)
-				.zeroOffset(kEncoderOffset.in(Degrees))
+                .zeroCentered(true)
+                .zeroOffset(kEncoderOffset.in(Degrees))
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 
@@ -50,6 +50,9 @@ public class TurretIOReal implements TurretIO {
         config.apply(baseConfig);
         config.apply(altEncoderConfig);
         config.apply(controlConfig);
+
+        config.softLimit.reverseSoftLimitEnabled(true).reverseSoftLimit(kMinimumAngle.in(Degrees));
+        config.softLimit.forwardSoftLimitEnabled(true).forwardSoftLimit(kMaximumAngle.in(Degrees));
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();

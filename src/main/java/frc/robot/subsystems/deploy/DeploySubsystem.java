@@ -1,6 +1,6 @@
 package frc.robot.subsystems.deploy;
 
-import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.deploy.DeployConstants.*;
 import static frc.robot.util.mechanism.MechanismFinder.fLengthMechanism3D;
 
@@ -63,7 +63,7 @@ public class DeploySubsystem extends SubsystemBase {
      * @return A command to set the motor voltage and stop when complete.
      */
     public Command setVoltageCommand(Voltage volts) {
-        return startEnd(() -> io.setVoltage(volts), io::stop).unless(() -> inputs.retractedLS);
+        return startEnd(() -> setVoltage(volts), io::stop);
     }
 
     /**
@@ -91,9 +91,26 @@ public class DeploySubsystem extends SubsystemBase {
      * @param distance The distance to set as the deploy position.
      */
     private void setPosition(Distance distance) {
+        if (inputs.retractedLS && distance.lte(kMinimumDistance)) {
+            distance = kMinimumDistance;
+        }
+
         Distance clampedDistance = Inches.of(
                 MathUtil.clamp(distance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches)));
         targetDistance = clampedDistance;
         io.setPosition(distance);
+    }
+
+    /**
+     * Sets the voltage of the motor.
+     *
+     * @param volts The voltage to apply to the hood motor.
+     */
+    private void setVoltage(Voltage volts) {
+        if (inputs.retractedLS && volts.lt(Volts.zero())) {
+            io.stop();
+        } else {
+            io.setVoltage(volts);
+        }
     }
 }

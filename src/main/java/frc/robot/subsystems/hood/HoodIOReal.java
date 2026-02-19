@@ -41,7 +41,7 @@ public class HoodIOReal implements HoodIO {
 
         AbsoluteEncoderConfig altEncoderConfig = new AbsoluteEncoderConfig()
                 .inverted(kInvertEncoder)
-				.zeroOffset(kEncoderOffset.in(Degrees))
+                .zeroOffset(kEncoderOffset.in(Degrees))
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 
@@ -52,6 +52,9 @@ public class HoodIOReal implements HoodIO {
         config.apply(baseConfig);
         config.apply(altEncoderConfig);
         config.apply(controlConfig);
+
+        config.softLimit.reverseSoftLimitEnabled(true).reverseSoftLimit(kMinimumAngle.in(Degrees));
+        config.softLimit.forwardSoftLimitEnabled(true).forwardSoftLimit(kMaximumAngle.in(Degrees));
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();
