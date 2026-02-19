@@ -73,8 +73,7 @@ public class TurretSubsystem extends SubsystemBase {
      * @return A command to set the motor voltage and stop when complete.
      */
     public Command setVoltageCommand(Voltage volts) {
-        return startEnd(() -> io.setVoltage(volts), io::stop)
-                .until(() -> inputs.angle.lte(kMinimumAngle) || inputs.angle.gte(kMaximumAngle));
+        return startEnd(() -> io.setVoltage(volts), io::stop);
     }
 
     /**

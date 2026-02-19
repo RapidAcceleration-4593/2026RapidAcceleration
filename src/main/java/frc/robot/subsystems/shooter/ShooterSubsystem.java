@@ -62,16 +62,6 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /**
-     * Constructs a command to run the shooter at costant velocity.
-     *
-     * @return A command to run the shooter.
-     */
-    public Command runCommand() {
-        return startEnd(() -> setVelocity(kShootVelocity), io::stop);
-        // return startEnd(() -> io.setVoltage(Volts.of(9.0)), io::stop);
-    }
-
-    /**
      * Constructs a command to stop the shooter motor.
      *
      * @return A command to stop the motor immediately.

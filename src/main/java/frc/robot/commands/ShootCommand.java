@@ -5,6 +5,7 @@ import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
+import frc.robot.subsystems.shooter.ShooterConstants;
 import java.util.function.BooleanSupplier;
 
 public class ShootCommand extends ParallelCommandGroup {
@@ -12,13 +13,11 @@ public class ShootCommand extends ParallelCommandGroup {
     /** Points the hood at the hub, spins up the shooter, and runs the indexer until this Command is canceled. */
     public ShootCommand(
             ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood, IndexerSubsystem indexer) {
-        // TODO: Implement distance sensor.
-
         BooleanSupplier readySupplier =
-                () -> shooter.atTargetVelocity() && hood.atTargetAngle(); // && turret.atTargetAngle()
+                () -> shooter.atTargetVelocity(); // && hood.atTargetAngle() && turret.atTargetAngle()
         addCommands(
-                shooter.runCommand(),
+                shooter.runAtVelocityCommand(ShooterConstants.kShootVelocity),
                 // hood.runCommand(),
-                indexer.runCommand().repeatedly()); // .onlyWhile(readySupplier)
+                indexer.runCommand().onlyWhile(readySupplier).repeatedly());
     }
 }
