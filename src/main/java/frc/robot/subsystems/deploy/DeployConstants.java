@@ -9,7 +9,7 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 public final class DeployConstants {
 
     public static final int kMotorID = 6;
-    public static final int kRetractedLSChannel = 1;
+    public static final int kRetractedLSChannel = 0;
 
     public static final boolean kInvertMotor = true;
     public static final boolean kInvertEncoder = false;

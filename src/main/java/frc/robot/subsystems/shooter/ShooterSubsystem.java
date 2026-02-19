@@ -1,6 +1,5 @@
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -68,8 +67,8 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return A command to run the shooter.
      */
     public Command runCommand() {
-        // return startEnd(() -> setVelocity(kShootVelocity), io::stop);
-        return startEnd(() -> io.setVoltage(Volts.of(9.0)), io::stop);
+        return startEnd(() -> setVelocity(kShootVelocity), io::stop);
+        // return startEnd(() -> io.setVoltage(Volts.of(9.0)), io::stop);
     }
 
     /**

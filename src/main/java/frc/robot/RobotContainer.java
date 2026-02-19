@@ -82,21 +82,21 @@ public class RobotContainer {
 
         driverController.leftTrigger().whileTrue(intake.runCommand());
 
-        driverController.y().onTrue(turret.goToAngleCommand(Degrees.of(0.0)));
-        driverController.x().onTrue(turret.goToAngleCommand(Degrees.of(-45.0)));
-        driverController.b().onTrue(turret.goToAngleCommand(Degrees.of(45.0)));
+        // driverController.y().onTrue(turret.goToAngleCommand(Degrees.of(0.0)));
+        // driverController.x().onTrue(turret.goToAngleCommand(Degrees.of(-45.0)));
+        // driverController.b().onTrue(turret.goToAngleCommand(Degrees.of(45.0)));
 
         driverController.povLeft().whileTrue(turret.setVoltageCommand(Volts.of(-4)));
         driverController.povRight().whileTrue(turret.setVoltageCommand(Volts.of(4)));
 
-        driverController.povUp().whileTrue(deploy.setVoltageCommand(Volts.of(8)));
-        driverController.povDown().whileTrue(deploy.setVoltageCommand(Volts.of(-8)));
+        driverController.povUp().whileTrue(climber.setVoltageCommand(Volts.of(12)));
+        driverController.povDown().whileTrue(climber.setVoltageCommand(Volts.of(-12)));
 
-        operatorController.povUp().whileTrue(climber.setVoltageCommand(Volts.of(6)));
-        operatorController.povDown().whileTrue(climber.setVoltageCommand(Volts.of(-6)));
+        driverController.y().whileTrue(deploy.setVoltageCommand(Volts.of(8)));
+        driverController.a().whileTrue(deploy.setVoltageCommand(Volts.of(-8)));
 
-        operatorController.y().whileTrue(hood.setVoltageCommand(Volts.of(4)));
-        operatorController.a().whileTrue(hood.setVoltageCommand(Volts.of(-4)));
+        driverController.x().whileTrue(hood.setVoltageCommand(Volts.of(4)));
+        driverController.b().whileTrue(hood.setVoltageCommand(Volts.of(-4)));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());

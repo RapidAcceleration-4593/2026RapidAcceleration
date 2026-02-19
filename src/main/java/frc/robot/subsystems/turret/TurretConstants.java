@@ -18,9 +18,9 @@ public final class TurretConstants {
     public static final double kD = 0.0;
 
     public static final Angle kInitialAngle = Degrees.of(0.0);
-    public static final Angle kMinimumAngle = Degrees.of(-100.0);
-    public static final Angle kMaximumAngle = Degrees.of(100.0);
-    public static final Angle kAngleTolerance = Degrees.of(1.0);
+    public static final Angle kMinimumAngle = Degrees.of(-30.0);
+    public static final Angle kMaximumAngle = Degrees.of(30.0);
+    public static final Angle kAngleTolerance = Degrees.of(0.5);
 
     public static final int kCountsPerRotation = 8192;
     public static final double kMotorToEncoderGearing = (5.0 * 4.0 * 3.0);

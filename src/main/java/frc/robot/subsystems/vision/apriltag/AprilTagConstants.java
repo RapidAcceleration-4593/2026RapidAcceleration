@@ -23,16 +23,16 @@ public final class AprilTagConstants {
                         Inches.of(9.75),
                         Inches.of(16.75),
                         new Rotation3d(Degrees.zero(), Degrees.of(0.0), Degrees.of(165.0))),
-                1.0),
+                1.0)
         // Back Right Camera
-        new CameraConfig(
-                "OV9782_2",
-                new Transform3d(
-                        Inches.of(-7.9),
-                        Inches.of(-9.75),
-                        Inches.of(16.75),
-                        new Rotation3d(Degrees.zero(), Degrees.of(0.0), Degrees.of(195.0))),
-                1.0),
+        // new CameraConfig(
+        //         "OV9782_2",
+        //         new Transform3d(
+        //                 Inches.of(-7.9),
+        //                 Inches.of(-9.75),
+        //                 Inches.of(16.75),
+        //                 new Rotation3d(Degrees.zero(), Degrees.of(0.0), Degrees.of(195.0))),
+        //         1.0),
         // Front Camera
         // new CameraConfig(
         //         "OV9782_3",

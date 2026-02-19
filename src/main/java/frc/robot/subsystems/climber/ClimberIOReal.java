@@ -43,7 +43,7 @@ public class ClimberIOReal implements ClimberIO {
                 .velocityConversionFactor(kVelocityConversionFactor);
 
         ClosedLoopConfig controlConfig =
-                new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
+                new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);

@@ -24,7 +24,7 @@ public class TurretIOReal implements TurretIO {
     protected final SparkMax motor;
     protected final RelativeEncoder encoder;
 
-    // private final SparkClosedLoopController controller;
+    private final SparkClosedLoopController controller;
 
     public TurretIOReal() {
         motor = new SparkMax(kMotorID, MotorType.kBrushless);
@@ -47,18 +47,17 @@ public class TurretIOReal implements TurretIO {
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
-        // config.apply(altEncoderConfig);
-        // config.apply(controlConfig);
+        config.apply(altEncoderConfig);
+        config.apply(controlConfig);
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        // controller = motor.getClosedLoopController();
+        controller = motor.getClosedLoopController();
     }
 
     @Override
     public void updateInputs(TurretInputs inputs) {
         inputs.angle = Degrees.of(encoder.getPosition()).minus(kEncoderOffset);
-        // inputs.targetAngle = Degrees.of(controller.getSetpoint()).minus(kEncoderOffset);
-		inputs.targetAngle = Degrees.of(0);
+        inputs.targetAngle = Degrees.of(controller.getSetpoint()).minus(kEncoderOffset);
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
@@ -66,7 +65,7 @@ public class TurretIOReal implements TurretIO {
 
     @Override
     public void setPosition(Angle angle) {
-        // controller.setSetpoint(angle.plus(kEncoderOffset).in(Degrees), ControlType.kPosition);
+        controller.setSetpoint(angle.plus(kEncoderOffset).in(Degrees), ControlType.kPosition);
     }
 
     @Override
