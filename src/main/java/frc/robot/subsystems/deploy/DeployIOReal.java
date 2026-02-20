@@ -47,7 +47,7 @@ public class DeployIOReal implements DeployIO {
                 .velocityConversionFactor(kVelocityConversionFactor);
 
         ClosedLoopConfig controlConfig =
-                new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
+                new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);

@@ -83,8 +83,8 @@ public class RobotContainer {
         driverController.leftTrigger().whileTrue(intake.runCommand());
 
         // driverController.y().onTrue(turret.goToAngleCommand(Degrees.of(0.0)));
-        // driverController.x().onTrue(turret.goToAngleCommand(Degrees.of(-45.0)));
-        // driverController.b().onTrue(turret.goToAngleCommand(Degrees.of(45.0)));
+        // driverController.x().onTrue(turret.goToAngleCommand(Degrees.of(-25.0)));
+        // driverController.b().onTrue(turret.goToAngleCommand(Degrees.of(25.0)));
 
         driverController.povLeft().whileTrue(turret.setVoltageCommand(Volts.of(-4)));
         driverController.povRight().whileTrue(turret.setVoltageCommand(Volts.of(4)));

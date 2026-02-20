@@ -118,9 +118,9 @@ public class HoodSubsystem extends SubsystemBase {
     private void setPosition(Supplier<Angle> angleSupplier) {
         Angle angle = angleSupplier.get();
 
-        if (inputs.bottomLS && angle.lte(kMinimumAngle)) {
-            angle = kMinimumAngle;
-        }
+        // if (inputs.bottomLS && angle.lte(kMinimumAngle)) {
+        //     angle = kMinimumAngle;
+        // }
 
         Angle clampedAngle =
                 Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
@@ -134,10 +134,10 @@ public class HoodSubsystem extends SubsystemBase {
      * @param volts The voltage to apply to the hood motor.
      */
     private void setVoltage(Voltage volts) {
-        if (inputs.bottomLS && volts.lt(Volts.zero())) {
-            io.stop();
-        } else {
-            io.setVoltage(volts);
-        }
+        // if (inputs.bottomLS && volts.lt(Volts.zero())) {
+        //     io.stop();
+        // } else {
+        io.setVoltage(volts);
+        // }
     }
 }
