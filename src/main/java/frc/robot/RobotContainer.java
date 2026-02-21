@@ -75,7 +75,7 @@ public class RobotContainer {
         // turret.setDefaultCommand(turret.controlAngleCommand());
 
         // <------- Experimental ------->
-        driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, turret, hood, indexer));
+        driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, turret, hood, indexer, deploy, intake));
         driverController
                 .rightBumper()
                 .whileTrue(SwerveCommands.joystickDrivePointToHub(

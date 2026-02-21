@@ -80,9 +80,10 @@ public class DeployIOReal implements DeployIO {
 
     @Override
     public void resetPosition() {
-        System.out.println("Position Reset!");
         encoder.setPosition(kMinimumDistance.in(Inches));
-        controller.setSetpoint(encoder.getPosition(), ControlType.kPosition);
+        if (motor.getAppliedOutput() < 0.0) {
+            controller.setSetpoint(encoder.getPosition(), ControlType.kPosition);
+        }
     }
 
     @Override
