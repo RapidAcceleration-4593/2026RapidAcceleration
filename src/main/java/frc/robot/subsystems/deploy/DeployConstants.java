@@ -16,12 +16,12 @@ public final class DeployConstants {
     public static final boolean kInvertRetractedLS = true;
     public static final Distance kEncoderOffset = Inches.of(0.0);
 
-    public static final double kP = 0.0;
+    public static final double kP = 0.15;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
     public static final Distance kMinimumDistance = Inches.zero();
-    public static final Distance kAgitationDistance = Inches.of(6.0);
+    public static final Distance kAgitationDistance = Inches.of(8.0);
     public static final Distance kMaximumDistance = Inches.of(11.195);
     public static final Distance kDistanceTolerance = Inches.of(0.5);
 

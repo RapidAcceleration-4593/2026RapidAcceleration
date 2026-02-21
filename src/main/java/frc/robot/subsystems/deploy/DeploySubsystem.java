@@ -42,6 +42,10 @@ public class DeploySubsystem extends SubsystemBase {
 
         deploy3D.setLength(inputs.distance);
         CommandLogger.logSubsystemCommand(this);
+
+        if (inputs.retractedLS) {
+            io.resetPosition();
+        }
     }
 
     public Distance getCurrentDistance() {

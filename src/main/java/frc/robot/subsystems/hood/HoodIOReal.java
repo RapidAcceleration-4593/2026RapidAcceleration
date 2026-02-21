@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.FeedForwardConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -47,6 +48,10 @@ public class HoodIOReal implements HoodIO {
 
         ClosedLoopConfig controlConfig =
                 new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
+
+        FeedForwardConfig ffConfig = new FeedForwardConfig().kS(kS);
+
+        controlConfig.apply(ffConfig);
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
@@ -83,8 +88,8 @@ public class HoodIOReal implements HoodIO {
 
     @Override
     public void resetPosition() {
-        encoder.setPosition(kMinimumAngle.in(Rotations));
-        controller.setSetpoint(0, ControlType.kPosition);
+        encoder.setPosition(kMinimumAngle.in(Degrees));
+        controller.setSetpoint(kMinimumAngle.in(Degrees), ControlType.kPosition);
     }
 
     @Override

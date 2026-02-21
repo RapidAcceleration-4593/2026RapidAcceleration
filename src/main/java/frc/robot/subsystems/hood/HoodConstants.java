@@ -14,17 +14,18 @@ public final class HoodConstants {
     public static final int kLSChannel = 1;
 
     public static final boolean kInvertMotor = true;
-    public static final boolean kInvertEncoder = false;
+    public static final boolean kInvertEncoder = true;
     public static final boolean kInvertLS = true;
     public static final double kEncoderOffset = 0.0; // Offset to 12.5 Degrees (kMinimumAngle).
 
-    public static final double kP = 0.0001;
+    public static final double kP = 0.03;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
+    public static final double kS = 0.135;
 
-    public static final Angle kMinimumAngle = Degrees.of(0.0); // 12.5
-    public static final Angle kMaximumAngle = Degrees.of(17.5); // 30.0
-    public static final Angle kAngleTolerance = Degrees.of(0.5);
+    public static final Angle kMinimumAngle = Degrees.of(12.5);
+    public static final Angle kMaximumAngle = Degrees.of(30);
+    public static final Angle kAngleTolerance = Degrees.of(0.1);
 
     public static final int kCountsPerRotation = 8192;
     public static final double kMotorToEncoderGearing = (5.0 * 4.0 * 3.0) * (32.0 / 34.0);
