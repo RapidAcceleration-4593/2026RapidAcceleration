@@ -83,7 +83,7 @@ public class HoodIOReal implements HoodIO {
 
     @Override
     public void resetPosition() {
-        // encoder.setPosition(0);
+        encoder.setPosition(kMinimumAngle.in(Rotations));
         controller.setSetpoint(0, ControlType.kPosition);
     }
 

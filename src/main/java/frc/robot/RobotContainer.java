@@ -81,6 +81,7 @@ public class RobotContainer {
                         swerve, driverController::getLeftY, driverController::getLeftX));
 
         driverController.leftTrigger().whileTrue(intake.runCommand());
+        driverController.leftBumper().onTrue(hood.goToAngleCommand(Degrees.of(20)));
 
         // driverController.y().onTrue(turret.goToAngleCommand(Degrees.of(0.0)));
         // driverController.x().onTrue(turret.goToAngleCommand(Degrees.of(-25.0)));

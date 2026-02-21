@@ -4,14 +4,14 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.deploy.DeployConstants.*;
 
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -23,14 +23,14 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class DeployIOReal implements DeployIO {
 
     protected final SparkMax motor;
-    protected final SparkAbsoluteEncoder encoder;
+    protected final RelativeEncoder encoder;
     protected final DigitalInput retractedLS;
 
     private final SparkClosedLoopController controller;
 
     public DeployIOReal() {
         motor = new SparkMax(kMotorID, MotorType.kBrushless);
-        encoder = motor.getAbsoluteEncoder();
+        encoder = motor.getAlternateEncoder();
 
         retractedLS = new DigitalInput(kRetractedLSChannel);
 
@@ -40,22 +40,18 @@ public class DeployIOReal implements DeployIO {
                 .smartCurrentLimit(30)
                 .voltageCompensation(12.0);
 
-        AbsoluteEncoderConfig altEncoderConfig = new AbsoluteEncoderConfig()
+        AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
                 .inverted(kInvertEncoder)
-                .zeroOffset(kEncoderOffset.in(Inches))
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 
         ClosedLoopConfig controlConfig =
-                new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+                new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
         config.apply(altEncoderConfig);
         config.apply(controlConfig);
-
-        config.softLimit.reverseSoftLimitEnabled(true).reverseSoftLimit(kMinimumDistance.in(Inches));
-        config.softLimit.forwardSoftLimitEnabled(true).forwardSoftLimit(kMaximumDistance.in(Inches));
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();
@@ -84,7 +80,7 @@ public class DeployIOReal implements DeployIO {
 
     @Override
     public void resetPosition() {
-        // encoder.setPosition(kMinimumDistance.in(Inches));
+        encoder.setPosition(kMinimumDistance.in(Inches));
         controller.setSetpoint(encoder.getPosition(), ControlType.kPosition);
     }
 
