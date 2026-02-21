@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -30,13 +31,14 @@ public class DeployIOReal implements DeployIO {
 
     public DeployIOReal() {
         motor = new SparkMax(kMotorID, MotorType.kBrushless);
+
         encoder = motor.getAlternateEncoder();
 
         retractedLS = new DigitalInput(kRetractedLSChannel);
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
                 .inverted(kInvertMotor)
-                .idleMode(IdleMode.kCoast)
+                .idleMode(IdleMode.kBrake)
                 .smartCurrentLimit(30)
                 .voltageCompensation(12.0);
 
@@ -48,10 +50,15 @@ public class DeployIOReal implements DeployIO {
         ClosedLoopConfig controlConfig =
                 new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
 
+        SoftLimitConfig limitConfig = new SoftLimitConfig()
+                .forwardSoftLimit(kMaximumDistance.in(Inches))
+                .forwardSoftLimitEnabled(true);
+
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
         config.apply(altEncoderConfig);
         config.apply(controlConfig);
+        config.apply(limitConfig);
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();

@@ -16,7 +16,7 @@ public class ShakeDeployCommand extends ParallelCommandGroup {
                 deploy.goToDistanceCommand(kAgitationDistance.plus(Inches.of(2.0)))
                         .withTimeout(0.5),
                 Commands.waitSeconds(0.25),
-                deploy.goToDistanceCommand(kAgitationDistance.minus(Inches.of(2.0)))
+                deploy.goToDistanceCommand(kAgitationDistance.minus(Inches.of(3.0)))
                         .withTimeout(0.5),
                 Commands.waitSeconds(0.25)));
     }
