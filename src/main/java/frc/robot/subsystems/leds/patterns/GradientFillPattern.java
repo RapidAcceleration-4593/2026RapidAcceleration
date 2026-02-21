@@ -15,10 +15,6 @@ public class GradientFillPattern implements RunnableLEDPattern {
 
     @Override
     public void run() {
-        // subsystem.applyPattern(
-        //         LEDPattern.gradient(GradientType.kContinuous, subsystem.getBaseColor(), subsystem.getGradientColor())
-        //                 .offsetBy(subsystem.getAnimationFrame()));
-
         for (int i = 0; i < kLEDCount; i++) {
             int pos = (subsystem.getAnimationFrame() - i + kLEDCount) % kLEDCount;
 

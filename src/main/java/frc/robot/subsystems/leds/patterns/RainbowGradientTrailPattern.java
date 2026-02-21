@@ -15,9 +15,10 @@ public class RainbowGradientTrailPattern implements RunnableLEDPattern {
 
     @Override
     public void run() {
-        for (int current_trail = 0; current_trail < kLEDCount; current_trail += kLEDCount / kTrailCount) {
+        for (int current_trail = 0; current_trail < kTrailCount; current_trail += 1) {
             for (int i = 0; i < kTrailSize; i++) {
-                int pos = (subsystem.getAnimationFrame() + current_trail - i + kLEDCount) % kLEDCount;
+                int pos = (subsystem.getAnimationFrame() + (current_trail * kLEDCount / kTrailCount) - i + kLEDCount)
+                        % kLEDCount;
 
                 double progress = (double) pos / kLEDCount;
 
