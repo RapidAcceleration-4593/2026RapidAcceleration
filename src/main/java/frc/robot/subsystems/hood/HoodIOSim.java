@@ -3,7 +3,7 @@ package frc.robot.subsystems.hood;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.hood.HoodConstants.*;
 
-import com.revrobotics.sim.SparkAbsoluteEncoderSim;
+import com.revrobotics.sim.SparkMaxAlternateEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -20,7 +20,7 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
     private final SingleJointedArmSim hoodSim;
 
     private final SparkMaxSim motorSim;
-    private final SparkAbsoluteEncoderSim encoderSim;
+    private final SparkMaxAlternateEncoderSim encoderSim;
     private final DIOSim limitSwitchSim;
 
     public HoodIOSim() {
@@ -37,7 +37,7 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
                 kMinimumAngle.in(Radians));
 
         motorSim = new SparkMaxSim(motor, gearbox);
-        encoderSim = new SparkAbsoluteEncoderSim(motor);
+        encoderSim = new SparkMaxAlternateEncoderSim(motor);
         limitSwitchSim = new DIOSim(limitswitch);
 
         SimulationManager.getInstance().addSimulatable(this);

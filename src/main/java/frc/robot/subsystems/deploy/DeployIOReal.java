@@ -31,9 +31,7 @@ public class DeployIOReal implements DeployIO {
 
     public DeployIOReal() {
         motor = new SparkMax(kMotorID, MotorType.kBrushless);
-
         encoder = motor.getAlternateEncoder();
-
         retractedLS = new DigitalInput(kRetractedLSChannel);
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
@@ -44,6 +42,7 @@ public class DeployIOReal implements DeployIO {
 
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
                 .inverted(kInvertEncoder)
+                .countsPerRevolution(kCountsPerRotation)
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 

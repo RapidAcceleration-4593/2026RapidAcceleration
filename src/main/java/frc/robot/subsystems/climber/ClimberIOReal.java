@@ -4,14 +4,14 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.climber.ClimberConstants.*;
 
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -22,13 +22,13 @@ import edu.wpi.first.units.measure.Voltage;
 public class ClimberIOReal implements ClimberIO {
 
     protected final SparkMax motor;
-    protected final SparkAbsoluteEncoder encoder;
+    protected final RelativeEncoder encoder;
 
     private final SparkClosedLoopController controller;
 
     public ClimberIOReal() {
         motor = new SparkMax(kMotorID, MotorType.kBrushed);
-        encoder = motor.getAbsoluteEncoder();
+        encoder = motor.getAlternateEncoder();
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
                 .inverted(kInvertMotor)
@@ -36,14 +36,15 @@ public class ClimberIOReal implements ClimberIO {
                 .smartCurrentLimit(60)
                 .voltageCompensation(12.0);
 
-        AbsoluteEncoderConfig altEncoderConfig = new AbsoluteEncoderConfig()
+        AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
                 .inverted(kInvertEncoder)
-                .zeroOffset(kEncoderOffset.in(Inches))
+                .countsPerRevolution(kCountsPerRotation)
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 
-        ClosedLoopConfig controlConfig =
-                new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        ClosedLoopConfig controlConfig = new ClosedLoopConfig()
+                .pid(kP, kI, kD)
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder); // FeedbackSEnsor.kAlternateOrExternalEncoder
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);

@@ -16,7 +16,6 @@ public final class HoodConstants {
     public static final boolean kInvertMotor = true;
     public static final boolean kInvertEncoder = true;
     public static final boolean kInvertLS = true;
-    public static final double kEncoderOffset = 0.0; // Offset to 12.5 Degrees (kMinimumAngle).
 
     public static final double kP = 0.03;
     public static final double kI = 0.0;

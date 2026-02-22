@@ -3,7 +3,7 @@ package frc.robot.subsystems.deploy;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.deploy.DeployConstants.*;
 
-import com.revrobotics.sim.SparkAbsoluteEncoderSim;
+import com.revrobotics.sim.SparkMaxAlternateEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -24,7 +24,7 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
     private final ElevatorSim deploySim;
 
     private final SparkMaxSim motorSim;
-    private final SparkAbsoluteEncoderSim encoderSim;
+    private final SparkMaxAlternateEncoderSim encoderSim;
     private final DIOSim retractedLSSim;
 
     public DeployIOSim() {
@@ -40,7 +40,7 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
                 kMinimumDistance.in(Meters));
 
         motorSim = new SparkMaxSim(motor, gearbox);
-        encoderSim = new SparkAbsoluteEncoderSim(motor);
+        encoderSim = new SparkMaxAlternateEncoderSim(motor);
         retractedLSSim = new DIOSim(retractedLS);
 
         SimulationManager.getInstance().addSimulatable(this);

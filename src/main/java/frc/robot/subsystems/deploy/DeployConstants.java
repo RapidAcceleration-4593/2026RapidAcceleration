@@ -14,7 +14,6 @@ public final class DeployConstants {
     public static final boolean kInvertMotor = true;
     public static final boolean kInvertEncoder = false;
     public static final boolean kInvertRetractedLS = true;
-    public static final Distance kEncoderOffset = Inches.of(0.0);
 
     public static final double kP = 0.15;
     public static final double kI = 0.0;
@@ -26,17 +25,15 @@ public final class DeployConstants {
     public static final Distance kDistanceTolerance = Inches.of(0.5);
 
     public static final int kCountsPerRotation = 8192;
-    public static final double kMotorToEncoderGearing = (5.0 * 4.0 * 24.0 / 22.0);
+    public static final double kMotorToEncoderGearing = (5.0 * 4.0) * (24.0 / 22.0);
     public static final double kEncoderToDeployGearing = 1.0;
     public static final double kMotorToDeployGearing = kMotorToEncoderGearing * kEncoderToDeployGearing;
-    public static final double kDistanceCompensationFactor =
-            0.67; // Random number we threw in because our result was wrong before :).
 
-    public static final Mass kCarriageMass = Kilograms.of(6);
+    public static final Mass kCarriageMass = Kilograms.of(6.0);
     public static final Distance kDrumRadius = Inches.of(0.7);
 
     public static final double kPositionConversionFactor =
-            2.0 * Math.PI * kDrumRadius.in(Inches) / kEncoderToDeployGearing * kDistanceCompensationFactor;
+            2.0 * Math.PI * kDrumRadius.in(Inches) / kEncoderToDeployGearing;
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final MomentOfInertia kDeployMOI = KilogramSquareMeters.of(0.2555);

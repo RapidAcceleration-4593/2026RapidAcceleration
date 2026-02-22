@@ -39,15 +39,11 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void updateInputs(ShooterInputs inputs) {
-        var velocity = motor.getVelocity().asSupplier().get();
-        var voltage = motor.getMotorVoltage().asSupplier().get();
-        var current = motor.getSupplyCurrent().asSupplier().get();
-
-        inputs.velocity = velocity;
+        inputs.velocity = motor.getVelocity().asSupplier().get();
         inputs.targetVelocity = RotationsPerSecond.of(velocityControl.Velocity);
 
-        inputs.appliedVolts = voltage;
-        inputs.outputCurrent = current;
+        inputs.appliedVolts = motor.getMotorVoltage().asSupplier().get();
+        inputs.outputCurrent = motor.getSupplyCurrent().asSupplier().get();
     }
 
     @Override
