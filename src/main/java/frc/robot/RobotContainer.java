@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.RetractIntakeCommand;
 import frc.robot.commands.ShakeDeployCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.swerve.SwerveCommands;
@@ -78,14 +79,10 @@ public class RobotContainer {
         // turret.setDefaultCommand(turret.controlAngleCommand());
 
         // <------- Experimental ------->
-        driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, turret, hood, indexer, deploy, intake));
         driverController
-                .rightBumper()
-                .whileTrue(SwerveCommands.joystickDrivePointToHub(
-                        swerve, driverController::getLeftY, driverController::getLeftX));
-
-        driverController.leftTrigger().whileTrue(intake.runCommand());
-        driverController.leftBumper().whileTrue(new ShakeDeployCommand(deploy, intake));
+                .rightTrigger(0.5)
+                .whileTrue(new ShootCommand(shooter, turret, hood, indexer)
+                        .alongWith(new ShakeDeployCommand(intake, deploy)));
 
         // driverController.y().onTrue(turret.goToAngleCommand(Degrees.of(0.0)));
         // driverController.x().onTrue(turret.goToAngleCommand(Degrees.of(-25.0)));
@@ -97,9 +94,6 @@ public class RobotContainer {
         driverController.povUp().whileTrue(climber.setVoltageCommand(Volts.of(12)));
         driverController.povDown().whileTrue(climber.setVoltageCommand(Volts.of(-12)));
 
-        driverController.y().whileTrue(deploy.setVoltageCommand(Volts.of(8)));
-        driverController.a().whileTrue(deploy.setVoltageCommand(Volts.of(-8)));
-
         driverController.x().whileTrue(hood.setVoltageCommand(Volts.of(4)));
         driverController.b().whileTrue(hood.setVoltageCommand(Volts.of(-4)));
 
@@ -110,22 +104,22 @@ public class RobotContainer {
         // driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
 
         // <------- Operator Controller ------->
-        // operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
-        // operatorController
-        //         .leftTrigger()
-        //         .whileTrue(SwerveCommands.joystickDrivePointToHub(
-        //                 swerve, driverController::getLeftY, driverController::getLeftX));
+        operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, turret, hood, indexer));
 
-        // operatorController.leftTrigger().onTrue(new IntakeCommand(intake, deploy).withName("IntakeCommand"));
-        // operatorController.leftBumper().onTrue(new RetractIntakeCommand(intake, deploy).withName("RetractCommand"));
-        // operatorController.rightBumper().whileTrue(new ClimbCommand(climber, deploy).withName("ClimbCommand"));
+        operatorController.leftTrigger().onTrue(new IntakeCommand(intake, deploy));
+        operatorController.leftBumper().onTrue(new RetractIntakeCommand(intake, deploy));
+        operatorController
+                .rightBumper()
+                .whileTrue(new ClimbCommand(climber).alongWith(new RetractIntakeCommand(intake, deploy)));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */
     private void registerCommands() {
-        NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, turret, hood, indexer, deploy, intake));
+        NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, turret, hood, indexer));
         NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
-        NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
+        NamedCommands.registerCommand("RetractIntakeCommand", new RetractIntakeCommand(intake, deploy));
+        NamedCommands.registerCommand(
+                "ClimbCommand", new ClimbCommand(climber).alongWith(new RetractIntakeCommand(intake, deploy)));
     }
 
     /** Select the command to run in autonomous mode. */
