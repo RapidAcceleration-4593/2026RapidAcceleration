@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.FeedForwardConfig;
+import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -36,7 +37,7 @@ public class HoodIOReal implements HoodIO {
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
                 .inverted(kInvertMotor)
-                .idleMode(IdleMode.kCoast)
+                .idleMode(IdleMode.kBrake)
                 .smartCurrentLimit(30)
                 .voltageCompensation(12.0);
 
@@ -46,20 +47,22 @@ public class HoodIOReal implements HoodIO {
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 
-        ClosedLoopConfig controlConfig =
-                new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
+        ClosedLoopConfig controlConfig = new ClosedLoopConfig()
+                .pid(kP, kI, kD)
+                .apply(new FeedForwardConfig().kS(kS))
+                .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
 
-        FeedForwardConfig ffConfig = new FeedForwardConfig().kS(kS);
-
-        controlConfig.apply(ffConfig);
+        SoftLimitConfig limitConfig = new SoftLimitConfig()
+                .reverseSoftLimit(kMinimumAngle.in(Degrees))
+                .reverseSoftLimitEnabled(true)
+                .forwardSoftLimit(kMaximumAngle.in(Degrees))
+                .forwardSoftLimitEnabled(true);
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
         config.apply(altEncoderConfig);
         config.apply(controlConfig);
-
-        // config.softLimit.reverseSoftLimitEnabled(true).reverseSoftLimit(kMinimumAngle.in(Degrees));
-        // config.softLimit.forwardSoftLimitEnabled(true).forwardSoftLimit(kMaximumAngle.in(Degrees));
+        config.apply(limitConfig);
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();

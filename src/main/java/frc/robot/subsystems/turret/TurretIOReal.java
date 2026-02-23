@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -32,7 +33,7 @@ public class TurretIOReal implements TurretIO {
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
                 .inverted(kInvertMotor)
-                .idleMode(IdleMode.kCoast)
+                .idleMode(IdleMode.kBrake)
                 .smartCurrentLimit(30)
                 .voltageCompensation(12.0);
 
@@ -45,13 +46,17 @@ public class TurretIOReal implements TurretIO {
         ClosedLoopConfig controlConfig =
                 new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
 
+        SoftLimitConfig limitConfig = new SoftLimitConfig()
+                .reverseSoftLimit(kMinimumAngle.in(Degrees))
+                .reverseSoftLimitEnabled(true)
+                .forwardSoftLimit(kMaximumAngle.in(Degrees))
+                .forwardSoftLimitEnabled(true);
+
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
         config.apply(altEncoderConfig);
         config.apply(controlConfig);
-
-        // config.softLimit.reverseSoftLimitEnabled(true).reverseSoftLimit(kMinimumAngle.in(Degrees));
-        // config.softLimit.forwardSoftLimitEnabled(true).forwardSoftLimit(kMaximumAngle.in(Degrees));
+        // config.apply(limitConfig);
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();
@@ -59,7 +64,7 @@ public class TurretIOReal implements TurretIO {
 
     @Override
     public void updateInputs(TurretInputs inputs) {
-        inputs.angle = Degrees.of(encoder.getPosition()).minus(kEncoderOffset);
+        inputs.angle = Degrees.of(encoder.getPosition());
         inputs.targetAngle = Degrees.of(controller.getSetpoint());
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());

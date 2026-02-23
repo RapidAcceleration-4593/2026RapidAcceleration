@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -46,10 +47,17 @@ public class ClimberIOReal implements ClimberIO {
                 .pid(kP, kI, kD)
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder); // FeedbackSEnsor.kAlternateOrExternalEncoder
 
+        SoftLimitConfig limitConfig = new SoftLimitConfig()
+                .reverseSoftLimit(kMinimumDistance.in(Inches))
+                .reverseSoftLimitEnabled(true)
+                .forwardSoftLimit(kMaximumDistance.in(Inches))
+                .forwardSoftLimitEnabled(true);
+
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
         config.apply(altEncoderConfig);
         config.apply(controlConfig);
+        config.apply(limitConfig);
 
         config.softLimit.reverseSoftLimitEnabled(true).reverseSoftLimit(kMinimumDistance.in(Inches));
         config.softLimit.forwardSoftLimitEnabled(true).forwardSoftLimit(kMaximumDistance.in(Inches));
