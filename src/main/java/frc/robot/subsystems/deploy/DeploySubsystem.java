@@ -17,12 +17,11 @@ import org.littletonrobotics.junction.Logger;
 
 public class DeploySubsystem extends SubsystemBase {
 
-    private final DeployInputsAutoLogged inputs;
     private final DeployIO io;
+    private final DeployInputsAutoLogged inputs;
+    private final LengthMechanism3D deploy3D;
 
     private Distance targetDistance = kMinimumDistance;
-
-    private final LengthMechanism3D deploy3D;
 
     public DeploySubsystem(DeployIO io) {
         this.io = io;
@@ -31,8 +30,9 @@ public class DeploySubsystem extends SubsystemBase {
         Trigger lsTrigger = new Trigger(() -> inputs.retractedLS);
         lsTrigger.onTrue(Commands.runOnce(io::resetPosition));
 
-		Trigger softLimitTrigger = new Trigger(() -> this.inputs.distance.in(Inches) > kMaximumDistance.in(Inches));
-		softLimitTrigger.onTrue(setVoltageCommand(Volts.of(-0.1)).withTimeout(0.3).andThen(stopCommand()));
+        Trigger softLimitTrigger = new Trigger(() -> inputs.distance.gt(kMaximumDistance));
+        softLimitTrigger.onTrue(
+                setVoltageCommand(Volts.of(-0.1)).withTimeout(0.3).andThen(stopCommand()));
 
         deploy3D = fLengthMechanism3D.find("Deploy");
     }
@@ -49,7 +49,6 @@ public class DeploySubsystem extends SubsystemBase {
         if (inputs.retractedLS) {
             io.resetPosition();
         }
-
     }
 
     public Distance getCurrentDistance() {

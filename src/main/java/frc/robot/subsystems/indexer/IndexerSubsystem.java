@@ -11,9 +11,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class IndexerSubsystem extends SubsystemBase {
 
-    private final IndexerInputsAutoLogged inputs;
     private final IndexerIO io;
-
+    private final IndexerInputsAutoLogged inputs;
     private final WheelMechanism3D indexer3D;
 
     public IndexerSubsystem(IndexerIO io) {

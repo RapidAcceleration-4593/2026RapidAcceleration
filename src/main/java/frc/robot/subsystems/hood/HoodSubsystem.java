@@ -19,13 +19,12 @@ import org.littletonrobotics.junction.Logger;
 
 public class HoodSubsystem extends SubsystemBase {
 
-    private final Supplier<Pose2d> poseSupplier;
-    private final HoodInputsAutoLogged inputs;
     private final HoodIO io;
+    private final HoodInputsAutoLogged inputs;
+    private final Supplier<Pose2d> poseSupplier;
+    private final AngleMechanism3D hood3D;
 
     private Angle targetAngle = kMinimumAngle;
-
-    private final AngleMechanism3D hood3D;
 
     public HoodSubsystem(HoodIO io, Supplier<Pose2d> poseSupplier) {
         this.io = io;

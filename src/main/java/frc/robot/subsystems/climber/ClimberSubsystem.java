@@ -15,12 +15,11 @@ import org.littletonrobotics.junction.Logger;
 
 public class ClimberSubsystem extends SubsystemBase {
 
-    private final ClimberInputsAutoLogged inputs;
     private final ClimberIO io;
+    private final ClimberInputsAutoLogged inputs;
+    private final LengthMechanism3D climber3D;
 
     private Distance targetDistance = kMinimumDistance;
-
-    private final LengthMechanism3D climber3D;
 
     public ClimberSubsystem(ClimberIO io) {
         this.io = io;

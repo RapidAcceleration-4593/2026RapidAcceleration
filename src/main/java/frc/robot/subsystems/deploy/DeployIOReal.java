@@ -35,7 +35,7 @@ public class DeployIOReal implements DeployIO {
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
                 .inverted(kInvertMotor)
-                .idleMode(IdleMode.kBrake)
+                .idleMode(IdleMode.kCoast)
                 .smartCurrentLimit(30)
                 .voltageCompensation(12.0);
 

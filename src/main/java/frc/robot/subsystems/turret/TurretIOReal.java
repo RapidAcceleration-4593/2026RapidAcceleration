@@ -56,7 +56,7 @@ public class TurretIOReal implements TurretIO {
         config.apply(baseConfig);
         config.apply(altEncoderConfig);
         config.apply(controlConfig);
-        // config.apply(limitConfig);
+        config.apply(limitConfig);
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();

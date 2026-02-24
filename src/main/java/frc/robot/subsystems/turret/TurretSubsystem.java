@@ -6,9 +6,7 @@ import static frc.robot.subsystems.turret.TurretConstants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -21,27 +19,16 @@ import org.littletonrobotics.junction.Logger;
 
 public class TurretSubsystem extends SubsystemBase {
 
-    private final Supplier<Pose2d> poseSupplier;
-    private final Supplier<ChassisSpeeds> chassisSpeedsSupplier;
-    private final Supplier<AngularVelocity> shooterVelocitySupplier;
-    private final Supplier<Angle> hoodAngleSupplier;
-    private final TurretInputsAutoLogged inputs;
     private final TurretIO io;
+    private final TurretInputsAutoLogged inputs;
+    private final Supplier<Pose2d> poseSupplier;
 
     private Angle targetAngle = kInitialAngle;
 
-    public TurretSubsystem(
-            TurretIO io,
-            Supplier<Pose2d> poseSupplier,
-            Supplier<ChassisSpeeds> chassisSpeedsSupplier,
-            Supplier<AngularVelocity> shooterVelocitySupplier,
-            Supplier<Angle> hoodAngleSupplier) {
+    public TurretSubsystem(TurretIO io, Supplier<Pose2d> poseSupplier) {
         this.io = io;
         this.inputs = new TurretInputsAutoLogged();
         this.poseSupplier = poseSupplier;
-        this.chassisSpeedsSupplier = chassisSpeedsSupplier;
-        this.shooterVelocitySupplier = shooterVelocitySupplier;
-        this.hoodAngleSupplier = hoodAngleSupplier;
     }
 
     @Override

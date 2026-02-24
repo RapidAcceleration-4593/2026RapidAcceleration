@@ -30,7 +30,6 @@ public class RobotContainer {
     // Subsystem(s)
     public final SwerveSubsystem swerve;
     public final AprilTagSubsystem apriltag;
-    // public final ObjectDetectionSubsystem objectDetection;
 
     public final ShooterSubsystem shooter;
     public final TurretSubsystem turret;
@@ -52,11 +51,10 @@ public class RobotContainer {
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
         apriltag = AprilTagFactory.initialize(swerve);
-        // objectDetection = ObjectDetectionFactory.initialize();
 
         shooter = ShooterFactory.initialize();
         hood = HoodFactory.initialize(swerve);
-        turret = TurretFactory.initialize(swerve, shooter, hood);
+        turret = TurretFactory.initialize(swerve);
         indexer = IndexerFactory.initialize();
 
         intake = IntakeFactory.initialize();
@@ -84,18 +82,15 @@ public class RobotContainer {
                 .whileTrue(new ShootCommand(shooter, turret, hood, indexer)
                         .alongWith(new ShakeDeployCommand(intake, deploy)));
 
-        // driverController.y().onTrue(turret.goToAngleCommand(Degrees.of(0.0)));
-        // driverController.x().onTrue(turret.goToAngleCommand(Degrees.of(-25.0)));
-        // driverController.b().onTrue(turret.goToAngleCommand(Degrees.of(25.0)));
+        driverController.y().onTrue(turret.goToAngleCommand(Degrees.of(0.0)));
+        driverController.x().onTrue(turret.goToAngleCommand(Degrees.of(-25.0)));
+        driverController.b().onTrue(turret.goToAngleCommand(Degrees.of(25.0)));
 
         driverController.povLeft().whileTrue(turret.setVoltageCommand(Volts.of(-4)));
         driverController.povRight().whileTrue(turret.setVoltageCommand(Volts.of(4)));
 
         driverController.povUp().whileTrue(climber.setVoltageCommand(Volts.of(12)));
         driverController.povDown().whileTrue(climber.setVoltageCommand(Volts.of(-12)));
-
-        driverController.x().whileTrue(hood.setVoltageCommand(Volts.of(4)));
-        driverController.b().whileTrue(hood.setVoltageCommand(Volts.of(-4)));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());
@@ -118,8 +113,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, turret, hood, indexer));
         NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
         NamedCommands.registerCommand("RetractIntakeCommand", new RetractIntakeCommand(intake, deploy));
-        NamedCommands.registerCommand(
-                "ClimbCommand", new ClimbCommand(climber).alongWith(new RetractIntakeCommand(intake, deploy)));
+        NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
     }
 
     /** Select the command to run in autonomous mode. */

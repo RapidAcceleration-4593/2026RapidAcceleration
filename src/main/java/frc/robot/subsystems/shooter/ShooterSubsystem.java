@@ -11,8 +11,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-    private final ShooterInputsAutoLogged inputs;
     private final ShooterIO io;
+    private final ShooterInputsAutoLogged inputs;
 
     private AngularVelocity targetVelocity = kZeroVelocity;
 

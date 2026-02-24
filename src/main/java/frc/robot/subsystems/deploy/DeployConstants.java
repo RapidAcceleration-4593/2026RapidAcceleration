@@ -26,7 +26,7 @@ public final class DeployConstants {
     public static final Distance kDistanceTolerance = Inches.of(0.5);
 
     public static final int kCountsPerRotation = 8192;
-    public static final double kMotorToEncoderGearing = (5.0 * 4.0) * (24.0 / 22.0);
+    public static final double kMotorToEncoderGearing = (5.0 * 5.0) * (22.0 / 24.0);
     public static final double kEncoderToDeployGearing = 1.0;
     public static final double kMotorToDeployGearing = kMotorToEncoderGearing * kEncoderToDeployGearing;
 
