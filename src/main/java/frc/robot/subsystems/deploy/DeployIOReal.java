@@ -49,15 +49,10 @@ public class DeployIOReal implements DeployIO {
         ClosedLoopConfig controlConfig =
                 new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
 
-        SoftLimitConfig limitConfig = new SoftLimitConfig()
-                .forwardSoftLimit(kMaximumDistance.in(Inches))
-                .forwardSoftLimitEnabled(true);
-
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
         config.apply(altEncoderConfig);
         config.apply(controlConfig);
-        config.apply(limitConfig);
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();

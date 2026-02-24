@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -31,6 +32,9 @@ public class DeploySubsystem extends SubsystemBase {
         Trigger lsTrigger = new Trigger(() -> inputs.retractedLS);
         lsTrigger.onTrue(Commands.runOnce(io::resetPosition));
 
+		Trigger softLimitTrigger = new Trigger(() -> this.inputs.distance.in(Inches) > kMaximumDistance.in(Inches));
+		softLimitTrigger.onTrue(setVoltageCommand(Volts.of(-0.1)).withTimeout(0.3).andThen(stopCommand()));
+
         deploy3D = fLengthMechanism3D.find("Deploy");
     }
 
@@ -46,6 +50,7 @@ public class DeploySubsystem extends SubsystemBase {
         if (inputs.retractedLS) {
             io.resetPosition();
         }
+
     }
 
     public Distance getCurrentDistance() {
