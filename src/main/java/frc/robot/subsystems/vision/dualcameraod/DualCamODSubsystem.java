@@ -45,7 +45,8 @@ public class DualCamODSubsystem extends SubsystemBase{
 		ioB.updateInputs(inputsB);
 	}
 
-	/**Adds poses from current inputs to target poses list, TODO: set it to split things up by timestamp and delete lists that aren't needed*/
+	/**Adds poses from current inputs to target poses list.
+	 *  TODO: Set it to split things up by timestamp and delete lists that aren't needed*/
 	public void iterateInputs(){
 		
 		List<TargetObservation> bInputList = Arrays.stream(inputsB.latestTargets)

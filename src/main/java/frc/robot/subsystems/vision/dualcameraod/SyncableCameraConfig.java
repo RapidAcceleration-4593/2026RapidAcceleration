@@ -12,11 +12,10 @@ public class SyncableCameraConfig {
 	 * Allows positionFromDualYaw to work without cameras being parallel
 	 * @param otra Other robot (Otra means other in Spanish)
 	*/
-
-	//TODO: Make sure that object detection angles actually match sin, cos, tan assumed angles
 	public double getAdjustedRadians(ObjectDetectionIO.TargetObservation observation){
 		double ourAngle = this.robotToCamera.getRotation().getMeasureZ().in(Radians);
 		return ourAngle + observation.yaw().getRadians();
+		//TODO: Make sure that object detection angles actually match sin, cos, tan assumed angles
 	}
 	public double getAdjustedX(SyncableCameraConfig otra, ObjectDetectionIO.TargetObservation observation){
 		double yDifference = otra.getRobotToCamera().getY() - this.robotToCamera.getY();
