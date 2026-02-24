@@ -140,7 +140,10 @@ public class SwerveCommands {
                                 swerve)
                         .finallyDo(() -> {
                             int n = velocitySamples.size();
-                            double sumX = 0.0, sumY = 0.0, sumXY = 0.0, sumX2 = 0.0;
+                            double sumX = 0.0;
+                            double sumY = 0.0;
+                            double sumXY = 0.0;
+                            double sumX2 = 0.0;
                             for (int i = 0; i < n; i++) {
                                 double v = velocitySamples.get(i);
                                 double u = voltageSamples.get(i);
@@ -203,7 +206,7 @@ public class SwerveCommands {
                                     for (int i = 0; i < 4; i++) {
                                         wheelDelta += Math.abs(positions[i] - state.positions[i]) / 4.0;
                                     }
-                                    double wheelRadius = (state.gyroDelta * DRIVE_BASE_RADIUS) / wheelDelta;
+                                    double wheelRadius = (state.gyroDelta * kDriveBaseRadius) / wheelDelta;
 
                                     NumberFormat formatter = new DecimalFormat("#0.000");
                                     System.out.println("********** Wheel Radius Characterization Results **********");

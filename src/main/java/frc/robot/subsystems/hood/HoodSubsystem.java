@@ -7,14 +7,12 @@ import static frc.robot.util.mechanism.MechanismFinder.fAngleMechanism3D;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.CommandLogger;
-import frc.robot.util.FieldUtil;
 import frc.robot.util.mechanism.AngleMechanism3D;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -34,8 +32,8 @@ public class HoodSubsystem extends SubsystemBase {
         this.inputs = new HoodInputsAutoLogged();
         this.poseSupplier = poseSupplier;
 
-        Trigger limitSwitchTrigger = new Trigger(() -> inputs.limitswitch);
-        limitSwitchTrigger.onTrue(Commands.runOnce(io::resetPosition));
+        Trigger lsTrigger = new Trigger(() -> inputs.bottomLS);
+        lsTrigger.onTrue(Commands.runOnce(io::resetPosition));
         hood3D = fAngleMechanism3D.find("Hood");
     }
 
@@ -47,6 +45,10 @@ public class HoodSubsystem extends SubsystemBase {
 
         hood3D.setAngle(inputs.angle);
         CommandLogger.logSubsystemCommand(this);
+
+        if (inputs.bottomLS) {
+            io.resetPosition();
+        }
     }
 
     public Angle getCurrentAngle() {
@@ -58,8 +60,7 @@ public class HoodSubsystem extends SubsystemBase {
     }
 
     public boolean atTargetAngle() {
-        return inputs.angle.isNear(targetAngle, kAngleTolerance)
-                || (inputs.targetAngle == kMinimumAngle && inputs.limitswitch);
+        return inputs.angle.isNear(targetAngle, kAngleTolerance);
     }
 
     /**
@@ -69,8 +70,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @return A command to set the motor voltage and stop when complete.
      */
     public Command setVoltageCommand(Voltage volts) {
-        return startEnd(() -> io.setVoltage(volts), io::stop)
-                .until(() -> (inputs.limitswitch && inputs.appliedVolts.lt(Volts.zero())));
+        return startEnd(() -> setVoltage(volts), io::stop);
     }
 
     /**
@@ -88,7 +88,7 @@ public class HoodSubsystem extends SubsystemBase {
      *
      * @return A command to run the motor to the calculated Hub angle without stopping.
      */
-    public Command pointAtHubCommand() {
+    public Command runCommand() {
         return runEnd(() -> setPosition(this::calculateHubAngle), () -> setPosition(() -> kMinimumAngle));
     }
 
@@ -107,12 +107,11 @@ public class HoodSubsystem extends SubsystemBase {
      * @return An angle from the linear regression equation.
      */
     private Angle calculateHubAngle() {
-        Pose2d targetPose = FieldUtil.getTargetHubPose();
-        Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);
-        Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
-
+        // Pose2d targetPose = FieldUtil.getTargetHubPose();
+        // Pose2d shooterPose = poseSupplier.get().transformBy(kPhysicalOffset);
+        // Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
         // return Degrees.of(10.0 * distance.in(Meters));
-        return Degrees.of(30);
+        return Degrees.of(25.0);
     }
 
     /**
@@ -122,9 +121,27 @@ public class HoodSubsystem extends SubsystemBase {
      */
     private void setPosition(Supplier<Angle> angleSupplier) {
         Angle angle = angleSupplier.get();
+
+        // if (inputs.bottomLS && angle.lte(kMinimumAngle)) {
+        //     angle = kMinimumAngle;
+        // }
+
         Angle clampedAngle =
                 Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
         targetAngle = clampedAngle;
         io.setPosition(clampedAngle);
+    }
+
+    /**
+     * Sets the voltage of the motor.
+     *
+     * @param volts The voltage to apply to the hood motor.
+     */
+    private void setVoltage(Voltage volts) {
+        // if (inputs.bottomLS && volts.lt(Volts.zero())) {
+        //     io.stop();
+        // } else {
+        io.setVoltage(volts);
+        // }
     }
 }

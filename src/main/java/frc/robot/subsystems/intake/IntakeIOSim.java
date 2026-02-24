@@ -30,8 +30,7 @@ public class IntakeIOSim extends IntakeIOReal implements IPhysicsSim {
                 "Fuel", drivetrain, Inches.of(26.5), Inches.of(11), IntakeSimulation.IntakeSide.FRONT, kMaxCapacity);
 
         flywheelSim = new FlywheelSim(
-                LinearSystemId.createFlywheelSystem(
-                        gearbox, kIntakeMOI.in(KilogramSquareMeters), kMotorToIntakeGearing),
+                LinearSystemId.createFlywheelSystem(gearbox, kIntakeMOI.in(KilogramSquareMeters), kIntakeGearing),
                 gearbox);
 
         SimulationManager.getInstance().addSimulatable(this);
@@ -51,7 +50,7 @@ public class IntakeIOSim extends IntakeIOReal implements IPhysicsSim {
     @Override
     public void updateIOSim() {
         motorSim.iterate(
-                flywheelSim.getAngularVelocityRPM() * kMotorToIntakeGearing,
+                flywheelSim.getAngularVelocityRPM() * kIntakeGearing,
                 SimulatedBattery.getBatteryVoltage().in(Volts),
                 0.02);
         if (SimulationManager.getInstance().isIntakeExtended()

@@ -3,7 +3,7 @@ package frc.robot.util;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.*;
 import static frc.robot.subsystems.hood.HoodConstants.kPhysicalOffset;
-import static frc.robot.subsystems.swerve.SwerveConstants.MAPLESIM_CONFIG;
+import static frc.robot.subsystems.swerve.SwerveConstants.kMapleSimConfig;
 import static frc.robot.subsystems.vision.apriltag.AprilTagConstants.kFieldLayout;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -39,7 +39,7 @@ public final class SimulationManager {
     private boolean intakeExtended;
 
     private SimulationManager() {
-        swerveSim = new SwerveDriveSimulation(MAPLESIM_CONFIG, new Pose2d());
+        swerveSim = new SwerveDriveSimulation(kMapleSimConfig, new Pose2d());
         arena.addDriveTrainSimulation(swerveSim);
         components = new ArrayList<>();
         visionSim = new VisionSystemSim("main");

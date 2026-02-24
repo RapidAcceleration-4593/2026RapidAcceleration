@@ -4,71 +4,89 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.climber.ClimberConstants.*;
 
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.AlternateEncoderConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.Encoder;
 
 public class ClimberIOReal implements ClimberIO {
 
-    protected final SparkMax leftMotor;
-    protected final SparkMax rightMotor;
-    protected final Encoder encoder;
+    protected final SparkMax motor;
+    protected final RelativeEncoder encoder;
+
+    private final SparkClosedLoopController controller;
 
     public ClimberIOReal() {
-        SparkBaseConfig leftConfig = new SparkMaxConfig()
+        motor = new SparkMax(kMotorID, MotorType.kBrushed);
+        encoder = motor.getAlternateEncoder();
+
+        SparkBaseConfig baseConfig = new SparkMaxConfig()
+                .inverted(kInvertMotor)
                 .idleMode(IdleMode.kBrake)
-                .inverted(false)
                 .smartCurrentLimit(60)
                 .voltageCompensation(12.0);
-        SparkBaseConfig rightConfig = new SparkMaxConfig()
-                .idleMode(IdleMode.kBrake)
-                .inverted(false)
-                .smartCurrentLimit(60)
-                .voltageCompensation(12.0);
 
-        leftMotor = new SparkMax(kLeftClimberMotorID, MotorType.kBrushless);
-        rightMotor = new SparkMax(kRightClimberMotorID, MotorType.kBrushless);
+        AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
+                .inverted(kInvertEncoder)
+                .countsPerRevolution(kCountsPerRotation)
+                .positionConversionFactor(kPositionConversionFactor)
+                .velocityConversionFactor(kVelocityConversionFactor);
 
-        leftMotor.configure(leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        rightMotor.configure(rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        ClosedLoopConfig controlConfig = new ClosedLoopConfig()
+                .pid(kP, kI, kD)
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder); // FeedbackSEnsor.kAlternateOrExternalEncoder
 
-        encoder = new Encoder(kClimberEncoderChannelA, kClimberEncoderChannelB);
-        encoder.setDistancePerPulse(kInchesPerPulse);
+        SoftLimitConfig limitConfig = new SoftLimitConfig()
+                .reverseSoftLimit(kMinimumDistance.in(Inches))
+                .reverseSoftLimitEnabled(true)
+                .forwardSoftLimit(kMaximumDistance.in(Inches))
+                .forwardSoftLimitEnabled(true);
+
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.apply(baseConfig);
+        config.apply(altEncoderConfig);
+        config.apply(controlConfig);
+        config.apply(limitConfig);
+
+        config.softLimit.reverseSoftLimitEnabled(true).reverseSoftLimit(kMinimumDistance.in(Inches));
+        config.softLimit.forwardSoftLimitEnabled(true).forwardSoftLimit(kMaximumDistance.in(Inches));
+
+        motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        controller = motor.getClosedLoopController();
     }
 
     @Override
     public void updateInputs(ClimberInputs inputs) {
-        inputs.distance = Inches.of(encoder.getDistance());
+        inputs.distance = Inches.of(encoder.getPosition());
+        inputs.targetDistance = Inches.of(controller.getSetpoint());
 
-        inputs.leftAppliedVolts = Volts.of(leftMotor.getAppliedOutput() * leftMotor.getBusVoltage());
-        inputs.leftOutputCurrent = Amps.of(leftMotor.getOutputCurrent());
-
-        inputs.rightAppliedVolts = Volts.of(rightMotor.getAppliedOutput() * rightMotor.getBusVoltage());
-        inputs.rightOutputCurrent = Amps.of(rightMotor.getOutputCurrent());
+        inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
+        inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
     }
 
     @Override
-    public void setLeftVoltage(Voltage volts) {
-        leftMotor.setVoltage(volts);
+    public void setPosition(Distance distance) {
+        controller.setSetpoint(distance.in(Inches), ControlType.kPosition);
     }
 
     @Override
-    public void setRightVoltage(Voltage volts) {
-        rightMotor.setVoltage(volts);
+    public void setVoltage(Voltage volts) {
+        motor.setVoltage(volts);
     }
 
     @Override
-    public void stopLeft() {
-        leftMotor.stopMotor();
-    }
-
-    @Override
-    public void stopRight() {
-        rightMotor.stopMotor();
+    public void stop() {
+        motor.stopMotor();
     }
 }

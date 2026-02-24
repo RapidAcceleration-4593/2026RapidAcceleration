@@ -19,13 +19,14 @@ public class IndexerIOReal implements IndexerIO {
 
     public IndexerIOReal() {
         SparkBaseConfig spindexerConfig = new SparkMaxConfig()
+                .inverted(kInvertSpindexerMotor)
                 .idleMode(IdleMode.kCoast)
-                .inverted(false)
                 .smartCurrentLimit(60)
                 .voltageCompensation(12.0);
+
         SparkBaseConfig feederConfig = new SparkMaxConfig()
+                .inverted(kInvertFeederMotor)
                 .idleMode(IdleMode.kCoast)
-                .inverted(false)
                 .smartCurrentLimit(60)
                 .voltageCompensation(12.0);
 

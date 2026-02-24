@@ -1,20 +1,27 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Controllers.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.ClimbCommand;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.RetractIntakeCommand;
+import frc.robot.commands.ShakeDeployCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.deploy.DeploySubsystem;
 import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -26,14 +33,14 @@ public class RobotContainer {
     // public final ObjectDetectionSubsystem objectDetection;
 
     public final ShooterSubsystem shooter;
-    // public final TurretSubsystem turret;
+    public final TurretSubsystem turret;
     public final HoodSubsystem hood;
     public final IndexerSubsystem indexer;
 
     public final IntakeSubsystem intake;
     public final DeploySubsystem deploy;
 
-    // public final ClimberSubsystem climber;
+    public final ClimberSubsystem climber;
 
     // Controller(s)
     private final CommandXboxController driverController;
@@ -48,14 +55,14 @@ public class RobotContainer {
         // objectDetection = ObjectDetectionFactory.initialize();
 
         shooter = ShooterFactory.initialize();
-        // turret = TurretFactory.initialize(swerve);
         hood = HoodFactory.initialize(swerve);
+        turret = TurretFactory.initialize(swerve, shooter, hood);
         indexer = IndexerFactory.initialize();
 
         intake = IntakeFactory.initialize();
         deploy = DeployFactory.initialize();
 
-        // climber = ClimberFactory.initialize();
+        climber = ClimberFactory.initialize();
 
         driverController = new CommandXboxController(kDriverControllerPort);
         operatorController = new CommandXboxController(kOperatorControllerPort);
@@ -72,19 +79,23 @@ public class RobotContainer {
         // turret.setDefaultCommand(turret.controlAngleCommand());
 
         // <------- Experimental ------->
-        driverController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
         driverController
-                .rightBumper()
-                .whileTrue(SwerveCommands.joystickDrivePointToHub(
-                        swerve, driverController::getLeftY, driverController::getLeftX));
+                .rightTrigger(0.5)
+                .whileTrue(new ShootCommand(shooter, turret, hood, indexer)
+                        .alongWith(new ShakeDeployCommand(intake, deploy)));
 
-        driverController.leftTrigger().whileTrue(intake.runCommand());
+        // driverController.y().onTrue(turret.goToAngleCommand(Degrees.of(0.0)));
+        // driverController.x().onTrue(turret.goToAngleCommand(Degrees.of(-25.0)));
+        // driverController.b().onTrue(turret.goToAngleCommand(Degrees.of(25.0)));
 
-        driverController.povUp().whileTrue(hood.setVoltageCommand(Volts.of(4)));
-        driverController.povDown().whileTrue(hood.setVoltageCommand(Volts.of(-4)));
+        driverController.povLeft().whileTrue(turret.setVoltageCommand(Volts.of(-4)));
+        driverController.povRight().whileTrue(turret.setVoltageCommand(Volts.of(4)));
 
-        driverController.y().whileTrue(deploy.setVoltageCommand(Volts.of(8)));
-        driverController.a().whileTrue(deploy.setVoltageCommand(Volts.of(-8)));
+        driverController.povUp().whileTrue(climber.setVoltageCommand(Volts.of(12)));
+        driverController.povDown().whileTrue(climber.setVoltageCommand(Volts.of(-12)));
+
+        driverController.x().whileTrue(hood.setVoltageCommand(Volts.of(4)));
+        driverController.b().whileTrue(hood.setVoltageCommand(Volts.of(-4)));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());
@@ -93,22 +104,22 @@ public class RobotContainer {
         // driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
 
         // <------- Operator Controller ------->
-        // operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer));
-        // operatorController
-        //         .leftTrigger()
-        //         .whileTrue(SwerveCommands.joystickDrivePointToHub(
-        //                 swerve, driverController::getLeftY, driverController::getLeftX));
+        operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, turret, hood, indexer));
 
-        // operatorController.leftTrigger().onTrue(new IntakeCommand(intake, deploy).withName("IntakeCommand"));
-        // operatorController.leftBumper().onTrue(new RetractIntakeCommand(intake, deploy).withName("RetractCommand"));
-        // operatorController.rightBumper().whileTrue(new ClimbCommand(climber, deploy).withName("ClimbCommand"));
+        operatorController.leftTrigger().onTrue(new IntakeCommand(intake, deploy));
+        operatorController.leftBumper().onTrue(new RetractIntakeCommand(intake, deploy));
+        operatorController
+                .rightBumper()
+                .whileTrue(new ClimbCommand(climber).alongWith(new RetractIntakeCommand(intake, deploy)));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */
     private void registerCommands() {
-        // NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, hood, indexer));
-        // NamedCommands.registerCommand("IntakeCommand", new RetractIntakeCommand(intake, deploy));
-        // NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
+        NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, turret, hood, indexer));
+        NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
+        NamedCommands.registerCommand("RetractIntakeCommand", new RetractIntakeCommand(intake, deploy));
+        NamedCommands.registerCommand(
+                "ClimbCommand", new ClimbCommand(climber).alongWith(new RetractIntakeCommand(intake, deploy)));
     }
 
     /** Select the command to run in autonomous mode. */

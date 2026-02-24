@@ -101,9 +101,9 @@ public class PhoenixOdometryThread extends Thread {
             signalsLock.lock();
             try {
                 if (isCANFD && phoenixSignals.length > 0) {
-                    BaseStatusSignal.waitForAll(2.0 / ODOMETRY_FREQUENCY, phoenixSignals);
+                    BaseStatusSignal.waitForAll(2.0 / kOdometryFrequency, phoenixSignals);
                 } else {
-                    Thread.sleep((long) (1000.0 / ODOMETRY_FREQUENCY));
+                    Thread.sleep((long) (1000.0 / kOdometryFrequency));
                     if (phoenixSignals.length > 0) BaseStatusSignal.refreshAll(phoenixSignals);
                 }
             } catch (InterruptedException e) {

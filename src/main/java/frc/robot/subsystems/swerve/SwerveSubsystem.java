@@ -98,7 +98,7 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
                 this::getChassisSpeeds,
                 this::runVelocity,
                 new PPHolonomicDriveController(new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
-                PATHPLANNER_CONFIG,
+                kPathPlannerConfig,
                 FieldUtil::isRedAlliance,
                 this);
 
@@ -313,6 +313,6 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
 
     /** Returns the maximum angular speed in radians per second. */
     public double getMaxAngularSpeedRadPerSec() {
-        return getMaxLinearSpeedMetersPerSec() / DRIVE_BASE_RADIUS;
+        return getMaxLinearSpeedMetersPerSec() / kDriveBaseRadius;
     }
 }

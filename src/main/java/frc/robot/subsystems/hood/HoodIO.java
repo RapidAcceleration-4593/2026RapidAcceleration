@@ -15,7 +15,7 @@ public interface HoodIO {
         public Angle angle = kMinimumAngle;
         public Angle targetAngle = kMinimumAngle;
 
-        public boolean limitswitch = false;
+        public boolean bottomLS = false;
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();
@@ -27,11 +27,11 @@ public interface HoodIO {
     /** Sets the position of the hood motor. */
     public default void setPosition(Angle angle) {}
 
-    /** Resets the closed-loop error, encoder, and setpoint. */
-    public default void resetPosition() {}
-
     /** Sets the voltage of the hood motor. */
     public default void setVoltage(Voltage volts) {}
+
+    /** Resets the closed-loop error, encoder, and setpoint. */
+    public default void resetPosition() {}
 
     /** Stops the hood motor immediately. */
     public default void stop() {}

@@ -13,6 +13,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.FeedForwardConfig;
+import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -29,29 +31,38 @@ public class HoodIOReal implements HoodIO {
     private final SparkClosedLoopController controller;
 
     public HoodIOReal() {
-        motor = new SparkMax(kHoodMotorID, MotorType.kBrushless);
+        motor = new SparkMax(kMotorID, MotorType.kBrushless);
         encoder = motor.getAlternateEncoder();
-        limitswitch = new DigitalInput(kHoodLimitSwitchChannel);
+        limitswitch = new DigitalInput(kLSChannel);
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
-                .inverted(false)
-                .idleMode(IdleMode.kCoast)
-                .smartCurrentLimit(60)
+                .inverted(kInvertMotor)
+                .idleMode(IdleMode.kBrake)
+                .smartCurrentLimit(30)
                 .voltageCompensation(12.0);
 
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
-                .inverted(kInvertHoodEncoder)
+                .inverted(kInvertEncoder)
                 .countsPerRevolution(kCountsPerRotation)
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 
-        ClosedLoopConfig controlConfig =
-                new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
+        ClosedLoopConfig controlConfig = new ClosedLoopConfig()
+                .pid(kP, kI, kD)
+                .apply(new FeedForwardConfig().kS(kS))
+                .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
+
+        SoftLimitConfig limitConfig = new SoftLimitConfig()
+                .reverseSoftLimit(kMinimumAngle.in(Degrees))
+                .reverseSoftLimitEnabled(true)
+                .forwardSoftLimit(kMaximumAngle.in(Degrees))
+                .forwardSoftLimitEnabled(true);
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
         config.apply(altEncoderConfig);
         config.apply(controlConfig);
+        config.apply(limitConfig);
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();
@@ -59,10 +70,10 @@ public class HoodIOReal implements HoodIO {
 
     @Override
     public void updateInputs(HoodInputs inputs) {
-        inputs.angle = Degrees.of(encoder.getPosition()).plus(kMinimumAngle);
-        inputs.targetAngle = Degrees.of(controller.getSetpoint()).plus(kMinimumAngle);
+        inputs.angle = Degrees.of(encoder.getPosition());
+        inputs.targetAngle = Degrees.of(controller.getSetpoint());
 
-        inputs.limitswitch = limitswitch.get() ^ kInvertHoodLS;
+        inputs.bottomLS = limitswitch.get() ^ kInvertLS;
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
@@ -70,18 +81,18 @@ public class HoodIOReal implements HoodIO {
 
     @Override
     public void setPosition(Angle angle) {
-        controller.setSetpoint(angle.minus(kMinimumAngle).in(Degrees), ControlType.kPosition);
-    }
-
-    @Override
-    public void resetPosition() {
-        encoder.setPosition(0);
-        controller.setSetpoint(0, ControlType.kPosition);
+        controller.setSetpoint(angle.in(Degrees), ControlType.kPosition);
     }
 
     @Override
     public void setVoltage(Voltage volts) {
         motor.setVoltage(volts);
+    }
+
+    @Override
+    public void resetPosition() {
+        encoder.setPosition(kMinimumAngle.in(Degrees));
+        controller.setSetpoint(kMinimumAngle.in(Degrees), ControlType.kPosition);
     }
 
     @Override

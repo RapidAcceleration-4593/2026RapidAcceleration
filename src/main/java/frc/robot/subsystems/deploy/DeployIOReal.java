@@ -13,8 +13,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
-import com.revrobotics.spark.config.FeedForwardConfig;
-import com.revrobotics.spark.config.MAXMotionConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -27,36 +25,28 @@ public class DeployIOReal implements DeployIO {
     protected final SparkMax motor;
     protected final RelativeEncoder encoder;
     protected final DigitalInput retractedLS;
-    protected final DigitalInput extendedLS;
 
     private final SparkClosedLoopController controller;
 
     public DeployIOReal() {
-        motor = new SparkMax(kDeployMotorID, MotorType.kBrushless);
+        motor = new SparkMax(kMotorID, MotorType.kBrushless);
         encoder = motor.getAlternateEncoder();
-
         retractedLS = new DigitalInput(kRetractedLSChannel);
-        extendedLS = new DigitalInput(kExtendedLSChannel);
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
-                .inverted(true)
-                .idleMode(IdleMode.kCoast)
-                .smartCurrentLimit(60)
+                .inverted(kInvertMotor)
+                .idleMode(IdleMode.kBrake)
+                .smartCurrentLimit(30)
                 .voltageCompensation(12.0);
 
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
-                .inverted(kInvertDeployEncoder)
+                .inverted(kInvertEncoder)
                 .countsPerRevolution(kCountsPerRotation)
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 
-        ClosedLoopConfig controlConfig = new ClosedLoopConfig()
-                .pid(kP, kI, kD)
-                .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
-                .apply(new FeedForwardConfig().sv(kS, kV))
-                .apply(new MAXMotionConfig()
-                        .cruiseVelocity(kCruiseVelocity.in(InchesPerSecond))
-                        .maxAcceleration(kMaxAcceleration.in(InchesPerSecondPerSecond)));
+        ClosedLoopConfig controlConfig =
+                new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
@@ -72,8 +62,7 @@ public class DeployIOReal implements DeployIO {
         inputs.distance = Inches.of(encoder.getPosition());
         inputs.targetDistance = Inches.of(controller.getSetpoint());
 
-        inputs.inLimitSwitch = isAtRetracted();
-        inputs.outLimitSwitch = isAtExtended();
+        inputs.retractedLS = retractedLS.get() ^ kInvertRetractedLS;
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
@@ -81,20 +70,7 @@ public class DeployIOReal implements DeployIO {
 
     @Override
     public void setPosition(Distance distance) {
-        controller.setSetpoint(distance.in(Inches), ControlType.kMAXMotionPositionControl);
-    }
-
-    @Override
-    public void resetPosition() {
-        controller.setIAccum(0);
-
-        if (isAtRetracted()) {
-            encoder.setPosition(kMinimumDistance.in(Inches));
-        } else if (isAtExtended()) {
-            encoder.setPosition(kMaximumDistance.in(Inches));
-        }
-
-        setPosition(Inches.of(encoder.getPosition()));
+        controller.setSetpoint(distance.in(Inches), ControlType.kPosition);
     }
 
     @Override
@@ -103,15 +79,15 @@ public class DeployIOReal implements DeployIO {
     }
 
     @Override
+    public void resetPosition() {
+        encoder.setPosition(kMinimumDistance.in(Inches));
+        if (motor.getAppliedOutput() < 0.0) {
+            controller.setSetpoint(encoder.getPosition(), ControlType.kPosition);
+        }
+    }
+
+    @Override
     public void stop() {
         motor.stopMotor();
-    }
-
-    private boolean isAtRetracted() {
-        return retractedLS.get() ^ kInvertInLS;
-    }
-
-    private boolean isAtExtended() {
-        return extendedLS.get() ^ kInvertOutLS;
     }
 }

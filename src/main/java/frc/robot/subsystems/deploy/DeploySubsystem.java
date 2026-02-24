@@ -1,9 +1,10 @@
 package frc.robot.subsystems.deploy;
 
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.deploy.DeployConstants.*;
 import static frc.robot.util.mechanism.MechanismFinder.fLengthMechanism3D;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,8 +28,11 @@ public class DeploySubsystem extends SubsystemBase {
         this.io = io;
         this.inputs = new DeployInputsAutoLogged();
 
-        Trigger lsTrigger = new Trigger(() -> (inputs.inLimitSwitch || inputs.outLimitSwitch));
+        Trigger lsTrigger = new Trigger(() -> inputs.retractedLS);
         lsTrigger.onTrue(Commands.runOnce(io::resetPosition));
+
+		Trigger softLimitTrigger = new Trigger(() -> this.inputs.distance.in(Inches) > kMaximumDistance.in(Inches));
+		softLimitTrigger.onTrue(setVoltageCommand(Volts.of(-0.1)).withTimeout(0.3).andThen(stopCommand()));
 
         deploy3D = fLengthMechanism3D.find("Deploy");
     }
@@ -41,6 +45,11 @@ public class DeploySubsystem extends SubsystemBase {
 
         deploy3D.setLength(inputs.distance);
         CommandLogger.logSubsystemCommand(this);
+
+        if (inputs.retractedLS) {
+            io.resetPosition();
+        }
+
     }
 
     public Distance getCurrentDistance() {
@@ -48,21 +57,11 @@ public class DeploySubsystem extends SubsystemBase {
     }
 
     public Distance getTargetDistance() {
-        return targetDistance;
+        return inputs.targetDistance;
     }
 
     public boolean atTargetDistance() {
         return inputs.distance.isNear(targetDistance, kDistanceTolerance);
-    }
-
-    private boolean isDrivingIntoLS() {
-        if (kPositiveVoltageExtends) {
-            return (inputs.appliedVolts.in(Volts) > 0.1 && inputs.outLimitSwitch)
-                    || (inputs.appliedVolts.in(Volts) < -0.1 && inputs.inLimitSwitch);
-        } else {
-            return (inputs.appliedVolts.in(Volts) < -0.1 && inputs.outLimitSwitch)
-                    || (inputs.appliedVolts.in(Volts) > 0.1 && inputs.inLimitSwitch);
-        }
     }
 
     /**
@@ -72,7 +71,7 @@ public class DeploySubsystem extends SubsystemBase {
      * @return A command to set the motor voltage and stop when complete.
      */
     public Command setVoltageCommand(Voltage volts) {
-        return startEnd(() -> io.setVoltage(volts), io::stop).until(this::isDrivingIntoLS);
+        return startEnd(() -> setVoltage(volts), io::stop);
     }
 
     /**
@@ -94,15 +93,32 @@ public class DeploySubsystem extends SubsystemBase {
         return runOnce(io::stop);
     }
 
-    /** Sets the distance of the closed-loop PID control. */
-
     /**
      * Sets the distance of the closed-loop PID controller.
      *
      * @param distance The distance to set as the deploy position.
      */
     private void setPosition(Distance distance) {
-        this.targetDistance = distance;
+        if (inputs.retractedLS && distance.lte(kMinimumDistance)) {
+            distance = kMinimumDistance;
+        }
+
+        Distance clampedDistance = Inches.of(
+                MathUtil.clamp(distance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches)));
+        targetDistance = clampedDistance;
         io.setPosition(distance);
+    }
+
+    /**
+     * Sets the voltage of the motor.
+     *
+     * @param volts The voltage to apply to the hood motor.
+     */
+    private void setVoltage(Voltage volts) {
+        if (inputs.retractedLS && volts.lt(Volts.zero())) {
+            io.stop();
+        } else {
+            io.setVoltage(volts);
+        }
     }
 }

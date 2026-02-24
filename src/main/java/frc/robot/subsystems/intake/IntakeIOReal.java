@@ -18,12 +18,12 @@ public class IntakeIOReal implements IntakeIO {
 
     public IntakeIOReal() {
         SparkBaseConfig intakeConfig = new SparkMaxConfig()
+                .inverted(kInvertMotor)
                 .idleMode(IdleMode.kBrake)
-                .inverted(true)
                 .smartCurrentLimit(60)
                 .voltageCompensation(12.0);
 
-        motor = new SparkMax(kIntakeMotorID, MotorType.kBrushless);
+        motor = new SparkMax(kMotorID, MotorType.kBrushless);
         motor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 

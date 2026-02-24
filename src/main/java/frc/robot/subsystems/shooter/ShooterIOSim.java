@@ -3,8 +3,7 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
-import com.revrobotics.sim.SparkMaxSim;
-import com.revrobotics.sim.SparkRelativeEncoderSim;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Current;
@@ -15,15 +14,13 @@ import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 public class ShooterIOSim extends ShooterIOReal implements IPhysicsSim {
 
-    private final SparkMaxSim motorSim;
-    private final SparkRelativeEncoderSim encoderSim;
+    private final TalonFXSimState motorSim;
     private final FlywheelSim flywheelSim;
 
     public ShooterIOSim() {
         DCMotor gearbox = DCMotor.getKrakenX60(1);
 
-        motorSim = new SparkMaxSim(motor, gearbox);
-        encoderSim = motorSim.getRelativeEncoderSim();
+        motorSim = motor.getSimState();
         flywheelSim = new FlywheelSim(
                 LinearSystemId.createFlywheelSystem(gearbox, kShooterMOI.in(KilogramSquareMeters), kShooterGearing),
                 gearbox);
@@ -33,8 +30,8 @@ public class ShooterIOSim extends ShooterIOReal implements IPhysicsSim {
 
     @Override
     public void updatePlantSim() {
-        flywheelSim.setInput(
-                motor.getAppliedOutput() * SimulatedBattery.getBatteryVoltage().in(Volts));
+        motorSim.setSupplyVoltage(SimulatedBattery.getBatteryVoltage().in(Volts));
+        flywheelSim.setInput(motorSim.getMotorVoltage());
         flywheelSim.update(0.02);
     }
 
@@ -45,10 +42,6 @@ public class ShooterIOSim extends ShooterIOReal implements IPhysicsSim {
 
     @Override
     public void updateIOSim() {
-        motorSim.iterate(
-                flywheelSim.getAngularVelocityRPM(),
-                SimulatedBattery.getBatteryVoltage().in(Volts),
-                0.02);
-        encoderSim.setVelocity(motorSim.getVelocity());
+        motorSim.setRotorVelocity(flywheelSim.getAngularVelocity());
     }
 }
