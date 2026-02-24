@@ -8,114 +8,121 @@ import java.util.function.IntFunction;
 import org.littletonrobotics.junction.Logger;
 
 /**
- * A class wrapping the calculations concerning the dynamics of projectiles, including drag. For more information on the
- * mathematics see https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/flight-equations-with-drag/.
+ * A class wrapping the calculations concerning the dynamics of projectiles, including drag.
+ *
+ * <p>Drag is modeled as quadratic (F_drag = -k|v|v, k = 0.5 * rho * Cd * A), which couples the x and y axes through the
+ * total speed. There is no closed-form solution, so positions and velocities are computed with a 4th-order Runge-Kutta
+ * (RK4) integrator.
  */
 public class ProjectilePhysics {
+    private String name;
     private double projectileMassKg;
-    private double crossSectAreaSqMeter;
-    private double dragCoefficient;
+    private double dragConstant;
 
-    private double terminalVelocity; // Meters per second
+    /** RK4 internal time-step in seconds. Smaller = more accurate but slower. */
+    private double rk4Step = 0.1;
 
     private static double gravity = 9.8; // Meters per second squared
     private static double airDensity = 1.225; // Kg per cubic meter
+    private static IntFunction<Translation2d[]> arrayGenerator = (size) -> new Translation2d[size];
 
-    public static final ProjectilePhysics kFuelPhysics = new ProjectilePhysics(0.2257, 0.01767, 0.47);
+    public static final ProjectilePhysics kFuelPhysics = new ProjectilePhysics("Fuel", 0.2257, 0.01767, 0.47, 0.1);
 
-    public ProjectilePhysics(double projectileMassKg, double crossSectAreaSqMeter, double dragCoefficient) {
+    public ProjectilePhysics(
+            String name, double projectileMassKg, double crossSectAreaSqMeter, double dragCoefficient, double rk4Step) {
         this.projectileMassKg = projectileMassKg;
-        this.crossSectAreaSqMeter = crossSectAreaSqMeter;
-        this.dragCoefficient = dragCoefficient;
+        this.rk4Step = rk4Step;
+        this.name = name;
+        dragConstant = 0.5 * airDensity * dragCoefficient * crossSectAreaSqMeter;
+    }
 
-        terminalVelocity =
-                Math.sqrt((2 * projectileMassKg * gravity) / (dragCoefficient * airDensity * crossSectAreaSqMeter));
+    public String getName() {
+        return name;
     }
 
     /**
-     * Calculates the y velocity of this projectile, assuming it was launched {@code time} seconds ago with a velocity
-     * {@code initialVelocity} in the y axis.
+     * State vector layout: [x, vx, y, vy]
      *
-     * @param initialVelocity The initial y velocity of the projectile, in meters per second.
-     * @param time How long ago this projectile was launched, in seconds.
-     * @return The velocity of the projectile along the y axis, in meters per second.
+     * <p>Returns the time-derivative of the state under quadratic drag and gravity.
      */
-    private double calculateVY(double initialVelocity, double time) {
-        return terminalVelocity
-                * (initialVelocity - terminalVelocity * Math.tan(gravity * time / terminalVelocity))
-                / (terminalVelocity + initialVelocity * Math.tan(gravity * time / terminalVelocity));
+    private double[] derivatives(double[] s) {
+        double vx = s[1];
+        double vy = s[3];
+        double speed = Math.sqrt(vx * vx + vy * vy);
+        double ax = -(dragConstant / projectileMassKg) * speed * vx;
+        double ay = -gravity - (dragConstant / projectileMassKg) * speed * vy;
+        return new double[] {vx, ax, vy, ay};
     }
 
-    /**
-     * Calculates the y position of the projectile, assuming it was launched {@code time} seconds ago with a velocity of
-     * {@code initialVelocity} in the y axis at a height of {@code initialHeight}.
-     *
-     * @param initialHeight The initial height of the projectile, in meters.
-     * @param initialVelocity The initial y velocity of the projectile, in meters per second.
-     * @param time How long ago this projectile was launched, in seconds.
-     * @return The height of the projectile, in meters.
-     */
-    private double calculateY(double initialHeight, double initialVelocity, double time) {
-        double vY = calculateVY(initialVelocity, time);
-        return Math.pow(terminalVelocity, 2)
-                        / (2 * gravity)
-                        * Math.log((Math.pow(initialVelocity, 2) + Math.pow(terminalVelocity, 2))
-                                / (Math.pow(vY, 2) + Math.pow(terminalVelocity, 2)))
-                + initialHeight;
-    }
+    /** Advances the state vector by {@code dt} seconds using a single RK4 step. */
+    private double[] rk4Step(double[] s, double dt) {
+        double[] k1 = scaleArr(derivatives(s), dt);
+        double[] k2 = scaleArr(derivatives(addArr(s, scaleArr(k1, 0.5))), dt);
+        double[] k3 = scaleArr(derivatives(addArr(s, scaleArr(k2, 0.5))), dt);
+        double[] k4 = scaleArr(derivatives(addArr(s, k3)), dt);
 
-    /**
-     * Calculates the x velocity of this projectile, assuming it was launched {@code time} seconds ago with a velocity
-     * {@code initialVelocity} in the x axis.
-     *
-     * @param initialVelocity The initial x velocity of the projectile, in meters per second.
-     * @param time How long ago this projectile was launched, in seconds.
-     * @return The velocity of the projectile, along the x axis, in meters per second.
-     */
-    private double calculateVX(double initialVelocity, double time) {
-        return (Math.pow(terminalVelocity, 2) * initialVelocity)
-                / (Math.pow(terminalVelocity, 2) + (gravity * initialVelocity * time));
-    }
-
-    /**
-     * Calculates the x position of the projectile, assuming it was launched {@code time} seconds ago with a velocity of
-     * {@code initialVelocity} in the x axis at a position of {@code initialPosition}.
-     *
-     * @param initialHeight The initial position of the projectile, in meters.
-     * @param initialVelocity The initial x velocity of the projectile, in meters per second.
-     * @param time How long ago this projectile was launched, in seconds.
-     * @return The position of the projectile, in meters.
-     */
-    private double calculateX(double initialPosition, double initialVelocity, double time) {
-        return (Math.pow(terminalVelocity, 2) / gravity)
-                        * Math.log((Math.pow(terminalVelocity, 2) + (gravity * initialVelocity * time))
-                                / Math.pow(terminalVelocity, 2))
-                + initialPosition;
-    }
-
-    public List<Translation2d> calculateTrajectory(
-            Translation2d initialPosition, double angle, double initialVelocity, double duration, double timestep) {
-        List<Translation2d> points = new ArrayList<>();
-        double time = 0;
-        double initialVelocityX = initialVelocity * Math.cos(angle);
-        double initialVelocityY = initialVelocity * Math.sin(angle);
-
-        while (time < duration) {
-            double x = calculateX(initialPosition.getX(), initialVelocityX, time);
-            double y = calculateY(initialPosition.getY(), initialVelocityY, time);
-            points.add(new Translation2d(x, y));
-            time += timestep;
+        double[] result = new double[4];
+        for (int i = 0; i < 4; i++) {
+            result[i] = s[i] + (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) / 6.0;
         }
+        return result;
+    }
+
+    private double[] integrateState(double[] currentState, double timeStep) {
+        assert currentState.length == 4 : "The state array must have a length of 4.";
+        double[] state = currentState;
+        double t = 0;
+        while (t < timeStep) {
+            double dt = Math.min(rk4Step, timeStep - t);
+            state = rk4Step(state, dt);
+            t += dt;
+        }
+        return state;
+    }
+
+    /**
+     * Calculates the flight trajectory of the projectile, finishing when the y position of the projectile falls beneath
+     * 0.
+     *
+     * @param initialPosition The initial position of the projectile at time 0.
+     * @param angle The angle the projectile is launched at.
+     * @param initialSpeed The initial speed the projectile is launched with.
+     * @param timestep The amount of time that should pass in between each point which is logged.
+     * @return A {@link List} of {@link Translation2d}s which represent the position of the projectile at each
+     *     successive timestep, starting at time 0 and finishing with the final value with a positive y value.
+     */
+    public List<Translation2d> calculateTrajectory(
+            Translation2d initialPosition, double angle, double initialSpeed, double timestep) {
+        List<Translation2d> points = new ArrayList<>();
+        double initialVelocityX = initialSpeed * Math.cos(angle);
+        double initialVelocityY = initialSpeed * Math.sin(angle);
+
+        double[] state =
+                new double[] {initialPosition.getX(), initialVelocityX, initialPosition.getY(), initialVelocityY};
+        points.add(new Translation2d(state[0], state[2]));
+
+        while (state[2] >= 0) {
+            state = integrateState(state, timestep);
+            points.add(new Translation2d(state[0], state[2]));
+        }
+
         return points;
     }
 
-    private Translation2d[] foo(int size) {
-        return new Translation2d[size];
+    public void runSimulation() {
+        var points = calculateTrajectory(Translation2d.kZero, Units.degreesToRadians(45), 8, 0.1);
+        Logger.recordOutput(name + "TrajectorySim", points.toArray(arrayGenerator));
     }
 
-    public void runSimulation() {
-        var points = calculateTrajectory(Translation2d.kZero, Units.degreesToRadians(45), 100, 10, 0.1);
-        IntFunction<Translation2d[]> generator = (size) -> new Translation2d[size];
-        Logger.recordOutput("TrajectorySim", points.toArray(generator));
+    private static double[] addArr(double[] a, double[] b) {
+        double[] r = new double[a.length];
+        for (int i = 0; i < a.length; i++) r[i] = a[i] + b[i];
+        return r;
+    }
+
+    private static double[] scaleArr(double[] a, double s) {
+        double[] r = new double[a.length];
+        for (int i = 0; i < a.length; i++) r[i] = a[i] * s;
+        return r;
     }
 }
