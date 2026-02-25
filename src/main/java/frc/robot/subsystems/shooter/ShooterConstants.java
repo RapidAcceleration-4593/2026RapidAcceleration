@@ -28,5 +28,5 @@ public final class ShooterConstants {
 
     public static final Distance kShooterHeight = Inches.of(18.0);
     public static final Transform2d kPhysicalOffset =
-            new Transform2d(new Translation2d(Inches.of(-5.375), Inches.zero()), new Rotation2d());
+            new Transform2d(new Translation2d(Inches.of(-5.557), Inches.zero()), new Rotation2d());
 }

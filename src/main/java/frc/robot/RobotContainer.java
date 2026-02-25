@@ -74,17 +74,18 @@ public class RobotContainer {
     private void configureBindings() {
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
                 swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
-        // turret.setDefaultCommand(turret.controlAngleCommand());
+        turret.setDefaultCommand(turret.controlAngleCommand());
 
         // <------- Experimental ------->
-        driverController
-                .rightTrigger(0.5)
-                .whileTrue(new ShootCommand(shooter, turret, hood, indexer)
-                        .alongWith(new ShakeDeployCommand(intake, deploy)));
+        driverController.rightTrigger(0.5).whileTrue(new ShakeDeployCommand(intake, deploy));
+        // .whileTrue(new ShootCommand(shooter, turret, hood, indexer)
+        // .alongWith(new ShakeDeployCommand(intake, deploy)));
 
         driverController.y().onTrue(turret.goToAngleCommand(Degrees.of(0.0)));
-        driverController.x().onTrue(turret.goToAngleCommand(Degrees.of(-25.0)));
-        driverController.b().onTrue(turret.goToAngleCommand(Degrees.of(25.0)));
+        driverController.x().onTrue(turret.goToAngleCommand(Degrees.of(-45.0)));
+        driverController.b().onTrue(turret.goToAngleCommand(Degrees.of(45.0)));
+
+        driverController.leftTrigger(0.5).whileTrue(new IntakeCommand(intake, deploy));
 
         driverController.povLeft().whileTrue(turret.setVoltageCommand(Volts.of(-4)));
         driverController.povRight().whileTrue(turret.setVoltageCommand(Volts.of(4)));

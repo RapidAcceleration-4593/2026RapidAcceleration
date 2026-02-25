@@ -88,7 +88,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @return A command to run the motor to the calculated Hub angle without stopping.
      */
     public Command runCommand() {
-        return runEnd(() -> setPosition(this::calculateHubAngle), () -> setPosition(() -> kMinimumAngle));
+        return runEnd(() -> setPosition(() -> Degrees.of(25.0)), () -> setPosition(() -> kMinimumAngle));
     }
 
     /**

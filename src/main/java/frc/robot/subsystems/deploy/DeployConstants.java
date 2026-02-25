@@ -26,15 +26,16 @@ public final class DeployConstants {
     public static final Distance kDistanceTolerance = Inches.of(0.5);
 
     public static final int kCountsPerRotation = 8192;
-    public static final double kMotorToEncoderGearing = (5.0 * 5.0) * (22.0 / 24.0);
+    public static final double kMotorToEncoderGearing = (5.0 * 5.0) * (24.0 / 22.0); // 22/24?
     public static final double kEncoderToDeployGearing = 1.0;
     public static final double kMotorToDeployGearing = kMotorToEncoderGearing * kEncoderToDeployGearing;
+    public static final double kDistanceCompensationFactor = 0.67; // Testing
 
     public static final Mass kCarriageMass = Kilograms.of(6.0);
     public static final Distance kDrumRadius = Inches.of(0.7);
 
     public static final double kPositionConversionFactor =
-            2.0 * Math.PI * kDrumRadius.in(Inches) / kEncoderToDeployGearing;
+            2.0 * Math.PI * kDrumRadius.in(Inches) / kEncoderToDeployGearing * kDistanceCompensationFactor;
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final MomentOfInertia kDeployMOI = KilogramSquareMeters.of(0.2555);
