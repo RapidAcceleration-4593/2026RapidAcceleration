@@ -68,6 +68,7 @@ public class ProjectilePhysics {
         return result;
     }
 
+	/** Advances the {@code currentState} vector by {@code timeStep} and returns the new vector. */
     private double[] integrateState(double[] currentState, double timeStep) {
         assert currentState.length == 4 : "The state array must have a length of 4.";
         double[] state = currentState;
