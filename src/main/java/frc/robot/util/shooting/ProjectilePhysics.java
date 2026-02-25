@@ -1,4 +1,4 @@
-package frc.robot.util;
+package frc.robot.util.shooting;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;

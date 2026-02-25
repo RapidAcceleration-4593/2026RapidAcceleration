@@ -1,6 +1,7 @@
 package frc.robot.util;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,8 +11,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public final class FieldUtil {
 
-    private static final Distance kFieldLength = Inches.of(651.2);
-    private static final Distance kFieldWidth = Inches.of(317.7);
+    public static final Distance kFieldLength = Inches.of(651.2);
+    public static final Distance kFieldWidth = Inches.of(317.7);
+
+    public static final Distance kHubHeight = Inches.of(72.0);
 
     public static final Pose2d kInitialCenterPose =
             new Pose2d(kFieldLength.div(2), kFieldWidth.div(2), new Rotation2d());
@@ -44,24 +47,22 @@ public final class FieldUtil {
         return getCurrentAlliance() == Alliance.Blue ? kBlueHubPose : kRedHubPose;
     }
 
-    public static FieldZones getCurrentZone(Pose2d pose) {
-        if (pose.getMeasureX().lt(kBlueHubPose.getMeasureX())) return FieldZones.Blue_Zone;
-        if (pose.getMeasureX().gt(kRedHubPose.getMeasureX())) return FieldZones.Red_Zone;
+    public static Distance getDistanceToHub(Pose2d robotPose) {
+        Pose2d hubPose = getTargetHubPose();
+        Pose2d shooterPose = robotPose.transformBy(kPhysicalOffset);
+        return Meters.of(shooterPose.getTranslation().getDistance(hubPose.getTranslation()));
+    }
+
+    public static FieldZones getCurrentZone(Pose2d robotPose) {
+        if (robotPose.getMeasureX().lt(kBlueHubPose.getMeasureX())) return FieldZones.Blue_Zone;
+        if (robotPose.getMeasureX().gt(kRedHubPose.getMeasureX())) return FieldZones.Red_Zone;
         return FieldZones.Neutral_Zone;
     }
 
-    public static boolean isInAllianceZone(Pose2d pose) {
-        FieldZones zone = getCurrentZone(pose);
+    public static boolean isInAllianceZone(Pose2d robotPose) {
+        FieldZones zone = getCurrentZone(robotPose);
         Alliance alliance = getCurrentAlliance();
         return (alliance == Alliance.Blue && zone == FieldZones.Blue_Zone)
                 || (alliance == Alliance.Red && zone == FieldZones.Red_Zone);
-    }
-
-    public static Distance getFieldLength() {
-        return kFieldLength;
-    }
-
-    public static Distance getFieldWidth() {
-        return kFieldWidth;
     }
 }

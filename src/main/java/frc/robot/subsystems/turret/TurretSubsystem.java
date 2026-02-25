@@ -1,7 +1,7 @@
 package frc.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.hood.HoodConstants.kPhysicalOffset;
+import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 import static frc.robot.subsystems.turret.TurretConstants.*;
 
 import edu.wpi.first.math.MathUtil;

@@ -2,9 +2,6 @@ package frc.robot.subsystems.hood;
 
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MomentOfInertia;
 
@@ -34,7 +31,5 @@ public final class HoodConstants {
     public static final double kPositionConversionFactor = 360.0 / kEncoderToHoodGearing;
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final Transform2d kPhysicalOffset =
-            new Transform2d(new Translation2d(Inches.of(-5.375), Inches.zero()), new Rotation2d());
     public static final MomentOfInertia kHoodMOI = KilogramSquareMeters.of(0.04);
 }
