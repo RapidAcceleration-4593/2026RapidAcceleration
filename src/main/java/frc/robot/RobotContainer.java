@@ -23,6 +23,7 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
+import frc.robot.util.shooting.ProjectilePhysics;
 import frc.robot.util.shooting.ShotCalculator;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -39,7 +40,6 @@ public class RobotContainer {
 
     public final IntakeSubsystem intake;
     public final DeploySubsystem deploy;
-
     public final ClimberSubsystem climber;
 
     public final ShotCalculator calculator;
@@ -62,10 +62,9 @@ public class RobotContainer {
 
         intake = IntakeFactory.initialize();
         deploy = DeployFactory.initialize();
-
         climber = ClimberFactory.initialize();
 
-        calculator = new ShotCalculator(swerve::getPose, swerve::getChassisSpeeds);
+        calculator = new ShotCalculator(ProjectilePhysics.kFuelPhysics, swerve::getPose, swerve::getChassisSpeeds);
 
         driverController = new CommandXboxController(kDriverControllerPort);
         operatorController = new CommandXboxController(kOperatorControllerPort);

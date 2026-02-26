@@ -85,7 +85,7 @@ public class SwerveCommands {
 
         return Commands.defer(
                 () -> {
-                    Pose2d targetPose = FieldUtil.getTargetHubPose();
+                    Pose2d targetPose = FieldUtil.getTargetHubPose().toPose2d();
                     angleController.reset(swerve.getRotation().getRadians());
 
                     return Commands.run(

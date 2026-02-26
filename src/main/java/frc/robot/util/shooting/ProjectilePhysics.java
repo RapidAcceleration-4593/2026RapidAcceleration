@@ -15,6 +15,7 @@ import org.littletonrobotics.junction.Logger;
  * (RK4) integrator.
  */
 public class ProjectilePhysics {
+
     private String name;
     private double projectileMassKg;
     private double dragConstant;
@@ -22,7 +23,7 @@ public class ProjectilePhysics {
     /** RK4 internal time-step in seconds. Smaller = more accurate but slower. */
     private double rk4Step = 0.1;
 
-    private static double gravity = 9.8; // Meters per second squared
+    private static double gravity = 9.81; // Meters per second squared
     private static double airDensity = 1.225; // Kg per cubic meter
     private static IntFunction<Translation2d[]> arrayGenerator = (size) -> new Translation2d[size];
 

@@ -4,19 +4,24 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import frc.robot.util.FieldUtil;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class ShotCalculator {
 
+    private final ProjectilePhysics physics;
     private final Supplier<Pose2d> poseSupplier;
     private final Supplier<ChassisSpeeds> chassisSpeedsSupplier;
 
-    public ShotCalculator(Supplier<Pose2d> poseSupplier, Supplier<ChassisSpeeds> chassisSpeedsSupplier) {
+    public ShotCalculator(
+            ProjectilePhysics physics, Supplier<Pose2d> poseSupplier, Supplier<ChassisSpeeds> chassisSpeedsSupplier) {
+        this.physics = physics;
         this.poseSupplier = poseSupplier;
         this.chassisSpeedsSupplier = chassisSpeedsSupplier;
     }
@@ -44,7 +49,7 @@ public class ShotCalculator {
 
     private Angle calculateTurret(
             Pose2d robotPose, Distance distance, AngularVelocity shooterVelocity, Angle hoodAngle) {
-        Pose2d targetPose = FieldUtil.getTargetHubPose();
+        Pose2d targetPose = FieldUtil.getTargetHubPose().toPose2d();
 
         // if (!FieldUtil.isInAllianceZone(robotPose)) {
         //     Angle fieldAngle = FieldUtil.getCurrentAlliance() == Alliance.Blue ? Degrees.of(180) : Degrees.zero();
@@ -65,6 +70,18 @@ public class ShotCalculator {
 
         Angle fieldAngle = Radians.of(Math.atan2(dy.in(Meters), dx.in(Meters)));
         return robotPose.getRotation().getMeasure().minus(fieldAngle);
+    }
+
+    /**
+     * Calculates the distance between the {@code target} point and the closest point lying on the {@code trajectory}.
+     * Linearly interpolates between the {@link Translation2d}s describing the trajectory.
+     *
+     * @param trajectory The trajectory to be used in the calculation.
+     * @param target The target to be used in the calculation.
+     * @return The closest distance between the {@code trajectory} and the {@code target}.
+     */
+    private Distance calculateTrajectoryError(List<Translation2d> trajectory, Translation2d target) {
+        return null;
     }
 
     public record ShotCalculation(Angle turretAngle, Angle hoodAngle, AngularVelocity shooterVelocity, boolean valid) {}
