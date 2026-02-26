@@ -123,8 +123,4 @@ public class DeploySubsystem extends SubsystemBase {
             io.setVoltage(volts);
         }
     }
-
-    private boolean isExceedingSoftLimit() {
-        return inputs.distance.gt(kMaximumDistance);
-    }
 }
