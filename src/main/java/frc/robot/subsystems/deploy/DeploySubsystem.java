@@ -73,7 +73,8 @@ public class DeploySubsystem extends SubsystemBase {
 	 * @return True if limit switch is pressed or max distance is exceeded, false if not
 	*/
 	public boolean drivingIntoLimit(){
-		return inputs.retractedLS || inputs.distance.gt(kMaximumDistance);
+		return (inputs.retractedLS && inputs.appliedVolts.lt(Volts.zero()))
+			||	(inputs.distance.gt(kMaximumDistance) && inputs.appliedVolts.gt(Volts.zero()));
 	}
 
     /**
