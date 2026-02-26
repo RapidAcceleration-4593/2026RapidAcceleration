@@ -30,10 +30,6 @@ public class DeploySubsystem extends SubsystemBase {
         Trigger lsTrigger = new Trigger(() -> inputs.retractedLS);
         lsTrigger.onTrue(Commands.runOnce(io::resetPosition));
 
-        Trigger softLimitTrigger = new Trigger(() -> inputs.distance.gt(kMaximumDistance));
-        softLimitTrigger.onTrue(
-                setVoltageCommand(Volts.of(-0.1)).withTimeout(0.3).andThen(stopCommand()));
-
         deploy3D = fLengthMechanism3D.find("Deploy");
     }
 
@@ -119,5 +115,9 @@ public class DeploySubsystem extends SubsystemBase {
         } else {
             io.setVoltage(volts);
         }
+    }
+
+    private boolean isExceedingSoftLimit() {
+        return inputs.distance.gt(kMaximumDistance);
     }
 }
