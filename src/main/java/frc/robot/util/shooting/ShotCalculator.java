@@ -8,9 +8,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.util.FieldUtil;
 import java.util.function.Supplier;
 
@@ -42,29 +39,29 @@ public class ShotCalculator {
 
     private AngularVelocity calculateShooter(Distance distance) {
         // return RPM.of(distance.in(Meters) * 750.0);
-        return RPM.of(4000.0);
+        return RPM.of(3500.0);
     }
 
     private Angle calculateTurret(
             Pose2d robotPose, Distance distance, AngularVelocity shooterVelocity, Angle hoodAngle) {
         Pose2d targetPose = FieldUtil.getTargetHubPose();
 
-        if (!FieldUtil.isInAllianceZone(robotPose)) {
-            Angle fieldAngle = FieldUtil.getCurrentAlliance() == Alliance.Blue ? Degrees.of(180) : Degrees.zero();
-            return robotPose.getRotation().getMeasure().minus(fieldAngle);
-        }
+        // if (!FieldUtil.isInAllianceZone(robotPose)) {
+        //     Angle fieldAngle = FieldUtil.getCurrentAlliance() == Alliance.Blue ? Degrees.of(180) : Degrees.zero();
+        //     return robotPose.getRotation().getMeasure().minus(fieldAngle);
+        // }
 
-        ChassisSpeeds chassisSpeeds = chassisSpeedsSupplier.get();
-        LinearVelocity initialVelocity =
-                MetersPerSecond.of(0.5 * shooterVelocity.in(RadiansPerSecond) * Math.cos(hoodAngle.in(Radians)));
-        Time timeOfFlight = Seconds.of(
-                distance.in(Meters) / (initialVelocity.in(MetersPerSecond) * Math.sin(hoodAngle.in(Radians))));
+        // ChassisSpeeds chassisSpeeds = chassisSpeedsSupplier.get();
+        // LinearVelocity initialVelocity =
+        //         MetersPerSecond.of(0.5 * shooterVelocity.in(RadiansPerSecond) * Math.cos(hoodAngle.in(Radians)));
+        // Time timeOfFlight = Seconds.of(
+        //         distance.in(Meters) / (initialVelocity.in(MetersPerSecond) * Math.sin(hoodAngle.in(Radians))));
 
-        Distance vx = Meters.of(chassisSpeeds.vxMetersPerSecond).times(timeOfFlight.in(Seconds));
-        Distance vy = Meters.of(chassisSpeeds.vyMetersPerSecond).times(timeOfFlight.in(Seconds));
+        // Distance vx = Meters.of(chassisSpeeds.vxMetersPerSecond).times(1.25);
+        // Distance vy = Meters.of(chassisSpeeds.vyMetersPerSecond).times(1.25);
 
-        Distance dx = targetPose.getMeasureX().minus(robotPose.getMeasureX()).minus(vx);
-        Distance dy = targetPose.getMeasureY().minus(robotPose.getMeasureY()).minus(vy);
+        Distance dx = targetPose.getMeasureX().minus(robotPose.getMeasureX()); // .plus(vx);
+        Distance dy = targetPose.getMeasureY().minus(robotPose.getMeasureY()); // .plus(vy);
 
         Angle fieldAngle = Radians.of(Math.atan2(dy.in(Meters), dx.in(Meters)));
         return robotPose.getRotation().getMeasure().minus(fieldAngle);
