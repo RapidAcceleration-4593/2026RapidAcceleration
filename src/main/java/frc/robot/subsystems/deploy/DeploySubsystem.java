@@ -63,11 +63,19 @@ public class DeploySubsystem extends SubsystemBase {
      * Constructs a command to run the deploy at a set voltage.
      *
      * @param volts The voltage to apply to the motor.
-     * @return A command to set the motor voltage and stop when complete.
+     * @return A command to set the motor voltage and stop when complete (command will self interrupt if it hits a limit).
      */
     public Command setVoltageCommand(Voltage volts) {
-        return startEnd(() -> setVoltage(volts), io::stop);
+        return startEnd(() -> setVoltage(volts), io::stop).until(this::drivingIntoLimit);
     }
+
+	/**
+	 * @return True if limit switch is pressed or max distance is exceeded, false if not
+	*/
+	public boolean drivingIntoLimit(){
+		return (inputs.retractedLS && inputs.appliedVolts.lt(Volts.zero()))
+			||	(inputs.distance.gt(kMaximumDistance) && inputs.appliedVolts.gt(Volts.zero()));
+	}
 
     /**
      * Constructs a command to run the deploy to a set distance.
@@ -115,9 +123,5 @@ public class DeploySubsystem extends SubsystemBase {
         } else {
             io.setVoltage(volts);
         }
-    }
-
-    private boolean isExceedingSoftLimit() {
-        return inputs.distance.gt(kMaximumDistance);
     }
 }
