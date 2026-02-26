@@ -5,7 +5,6 @@ import static frc.robot.subsystems.hood.HoodConstants.*;
 import static frc.robot.util.mechanism.MechanismFinder.fAngleMechanism3D;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,15 +20,13 @@ public class HoodSubsystem extends SubsystemBase {
 
     private final HoodIO io;
     private final HoodInputsAutoLogged inputs;
-    private final Supplier<Pose2d> poseSupplier;
     private final AngleMechanism3D hood3D;
 
     private Angle targetAngle = kMinimumAngle;
 
-    public HoodSubsystem(HoodIO io, Supplier<Pose2d> poseSupplier) {
+    public HoodSubsystem(HoodIO io) {
         this.io = io;
         this.inputs = new HoodInputsAutoLogged();
-        this.poseSupplier = poseSupplier;
 
         Trigger lsTrigger = new Trigger(() -> inputs.bottomLS);
         lsTrigger.onTrue(Commands.runOnce(io::resetPosition));
@@ -83,12 +80,13 @@ public class HoodSubsystem extends SubsystemBase {
     }
 
     /**
-     * Constructs a command to continuously run the hood to the calculated Hub angle.
+     * Constructs a command to run the hood continuously to a set angle.
      *
-     * @return A command to run the motor to the calculated Hub angle without stopping.
+     * @param angle The angle to apply to the closed-loop PID control.
+     * @return A command to run the motor to an angle without stopping.
      */
-    public Command runCommand() {
-        return runEnd(() -> setPosition(() -> Degrees.of(25.0)), () -> setPosition(() -> kMinimumAngle));
+    public Command runToAngleCommand(Angle angle) {
+        return runEnd(() -> setPosition(() -> angle), () -> setPosition(() -> kMinimumAngle));
     }
 
     /**
@@ -98,19 +96,6 @@ public class HoodSubsystem extends SubsystemBase {
      */
     public Command stopCommand() {
         return runOnce(io::stop);
-    }
-
-    /**
-     * Calculates the hood angle based on the distance from the Hub.
-     *
-     * @return An angle from the linear regression equation.
-     */
-    private Angle calculateHubAngle() {
-        // Pose2d targetPose = FieldUtil.getTargetHubPose();
-        // Pose2d shooterPose = poseSupplier.get().transformBy(kPhysicalOffset);
-        // Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
-        // return Degrees.of(10.0 * distance.in(Meters));
-        return Degrees.of(25.0);
     }
 
     /**

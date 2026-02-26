@@ -3,31 +3,28 @@ package frc.robot.factory;
 import static frc.robot.Constants.*;
 
 import frc.robot.subsystems.hood.*;
-import frc.robot.subsystems.swerve.SwerveSubsystem;
-import frc.robot.util.SimulationManager;
 
 public final class HoodFactory {
 
     private HoodFactory() {}
 
-    public static HoodSubsystem initialize(SwerveSubsystem swerve) {
+    public static HoodSubsystem initialize() {
         return switch (kCurrentMode) {
-            case REAL -> initializeReal(swerve);
+            case REAL -> initializeReal();
             case SIM -> initializeSim();
-            case REPLAY -> initializeReplay(swerve);
+            case REPLAY -> initializeReplay();
         };
     }
 
-    private static HoodSubsystem initializeReal(SwerveSubsystem swerve) {
-        return new HoodSubsystem(new HoodIOReal(), swerve::getPose);
+    private static HoodSubsystem initializeReal() {
+        return new HoodSubsystem(new HoodIOReal());
     }
 
     private static HoodSubsystem initializeSim() {
-        SimulationManager simulation = SimulationManager.getInstance();
-        return new HoodSubsystem(new HoodIOSim(), simulation::getPose);
+        return new HoodSubsystem(new HoodIOSim());
     }
 
-    private static HoodSubsystem initializeReplay(SwerveSubsystem swerve) {
-        return new HoodSubsystem(new HoodIO() {}, swerve::getPose);
+    private static HoodSubsystem initializeReplay() {
+        return new HoodSubsystem(new HoodIO() {});
     }
 }

@@ -23,6 +23,7 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
+import frc.robot.util.shooting.ShotCalculator;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -41,6 +42,8 @@ public class RobotContainer {
 
     public final ClimberSubsystem climber;
 
+    public final ShotCalculator calculator;
+
     // Controller(s)
     private final CommandXboxController driverController;
     private final CommandXboxController operatorController;
@@ -53,14 +56,16 @@ public class RobotContainer {
         apriltag = AprilTagFactory.initialize(swerve);
 
         shooter = ShooterFactory.initialize();
-        hood = HoodFactory.initialize(swerve);
-        turret = TurretFactory.initialize(swerve);
+        hood = HoodFactory.initialize();
+        turret = TurretFactory.initialize();
         indexer = IndexerFactory.initialize();
 
         intake = IntakeFactory.initialize();
         deploy = DeployFactory.initialize();
 
         climber = ClimberFactory.initialize();
+
+        calculator = new ShotCalculator(swerve::getPose, swerve::getChassisSpeeds);
 
         driverController = new CommandXboxController(kDriverControllerPort);
         operatorController = new CommandXboxController(kOperatorControllerPort);
@@ -74,16 +79,13 @@ public class RobotContainer {
     private void configureBindings() {
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
                 swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
-        turret.setDefaultCommand(turret.controlAngleCommand());
+        turret.setDefaultCommand(turret.runToAngleCommand(calculator.calculate().turretAngle()));
 
         // <------- Experimental ------->
-        driverController.rightTrigger(0.5).whileTrue(new ShakeDeployCommand(intake, deploy));
-        // .whileTrue(new ShootCommand(shooter, turret, hood, indexer)
-        // .alongWith(new ShakeDeployCommand(intake, deploy)));
-
-        driverController.y().onTrue(turret.goToAngleCommand(Degrees.of(0.0)));
-        driverController.x().onTrue(turret.goToAngleCommand(Degrees.of(-45.0)));
-        driverController.b().onTrue(turret.goToAngleCommand(Degrees.of(45.0)));
+        driverController
+                .rightTrigger(0.5)
+                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
+                        .alongWith(new ShakeDeployCommand(intake, deploy)));
 
         driverController.leftTrigger(0.5).whileTrue(new IntakeCommand(intake, deploy));
 
@@ -100,7 +102,7 @@ public class RobotContainer {
         // driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
 
         // <------- Operator Controller ------->
-        operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, turret, hood, indexer));
+        operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer, calculator));
 
         operatorController.leftTrigger().onTrue(new IntakeCommand(intake, deploy));
         operatorController.leftBumper().onTrue(new RetractIntakeCommand(intake, deploy));
@@ -111,7 +113,7 @@ public class RobotContainer {
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */
     private void registerCommands() {
-        NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, turret, hood, indexer));
+        NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, hood, indexer, calculator));
         NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
         NamedCommands.registerCommand("RetractIntakeCommand", new RetractIntakeCommand(intake, deploy));
         NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
