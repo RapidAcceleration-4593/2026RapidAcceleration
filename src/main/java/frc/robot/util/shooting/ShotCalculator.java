@@ -54,26 +54,23 @@ public class ShotCalculator {
 
     private AngularVelocity calculateShooter(
             Translation3d start, Angle hoodAngle, Distance targetDistance, Distance targetHeight) {
-        double low = 1.0;
-        double high = 30.0;
+        // double low = 1.0;
+        // double high = 30.0;
 
-        for (int i = 0; i < 30; i++) {
-            double mid = (low + high) / 2.0;
-            double error = simulateHeightError(start, hoodAngle, mid, targetDistance, targetHeight);
+        // for (int i = 0; i < 30; i++) {
+        //     double mid = (low + high) / 2.0;
+        //     double error = simulateHeightError(start, hoodAngle, mid, targetDistance, targetHeight);
 
-            if (error > 0) {
-                high = mid;
-            } else {
-                low = mid;
-            }
-        }
+        //     if (error > 0) {
+        //         high = mid;
+        //     } else {
+        //         low = mid;
+        //     }
+        // }
 
-        LinearVelocity velocity = MetersPerSecond.of((low + high) / 2.0);
-        AngularVelocity omega =
-                RadiansPerSecond.of(velocity.in(MetersPerSecond) / (kExitVelocityFactor * kWheelRadius.in(Meters)));
-
-        return omega;
-        // return RPM.of(3500.0);
+        // LinearVelocity velocity = MetersPerSecond.of((low + high) / 2.0);
+        // return RadiansPerSecond.of(velocity.in(MetersPerSecond) / (kExitVelocityFactor * kWheelRadius.in(Meters)));
+        return RPM.of(3500.0);
     }
 
     private double simulateHeightError(

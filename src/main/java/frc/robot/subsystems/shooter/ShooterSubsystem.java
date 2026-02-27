@@ -7,6 +7,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CommandLogger;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -57,8 +58,8 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param velocity The velocity to apply to the closed-loop PID control.
      * @return A command to run the motor at a velocity and stop when completed.
      */
-    public Command runAtVelocityCommand(AngularVelocity velocity) {
-        return startEnd(() -> setVelocity(velocity), io::stop);
+    public Command runAtVelocityCommand(Supplier<AngularVelocity> velocitySupplier) {
+        return startEnd(() -> setVelocity(velocitySupplier), io::stop);
     }
 
     /**
@@ -75,7 +76,8 @@ public class ShooterSubsystem extends SubsystemBase {
      *
      * @param velocity The velocity to set as the shooter velocity.
      */
-    private void setVelocity(AngularVelocity velocity) {
+    private void setVelocity(Supplier<AngularVelocity> velocitySupplier) {
+        AngularVelocity velocity = velocitySupplier.get();
         targetVelocity = velocity;
         io.setVelocity(velocity);
     }

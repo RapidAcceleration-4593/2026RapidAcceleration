@@ -20,7 +20,7 @@ public final class DeployConstants {
     public static final double kD = 0.0;
 
     public static final Distance kMinimumDistance = Inches.zero();
-    public static final Distance kMaximumDistance = Inches.of(9.75);
+    public static final Distance kMaximumDistance = Inches.of(10.5);
     public static final Distance kAgitationInDistance = Inches.of(5.5);
     public static final Distance kAgitationOutDistance = Inches.of(10.5);
     public static final Distance kDistanceTolerance = Inches.of(0.5);

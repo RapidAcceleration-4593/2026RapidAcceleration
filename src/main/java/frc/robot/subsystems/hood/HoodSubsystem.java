@@ -85,8 +85,8 @@ public class HoodSubsystem extends SubsystemBase {
      * @param angle The angle to apply to the closed-loop PID control.
      * @return A command to run the motor to an angle without stopping.
      */
-    public Command runToAngleCommand(Angle angle) {
-        return runEnd(() -> setPosition(() -> angle), () -> setPosition(() -> kMinimumAngle));
+    public Command runToAngleCommand(Supplier<Angle> angle) {
+        return runEnd(() -> setPosition(angle), () -> setPosition(() -> kMinimumAngle));
     }
 
     /**
