@@ -5,6 +5,7 @@ import static frc.robot.Constants.Controllers.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ClimbCommand;
@@ -76,6 +77,8 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
+        SmartDashboard.putNumber("HoodDegrees", 20);
+        SmartDashboard.putNumber("ShootRPM", 4000);
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
                 swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
         turret.setDefaultCommand(
@@ -92,8 +95,8 @@ public class RobotContainer {
         driverController.povLeft().whileTrue(turret.setVoltageCommand(Volts.of(-4)));
         driverController.povRight().whileTrue(turret.setVoltageCommand(Volts.of(4)));
 
-        driverController.povUp().whileTrue(climber.setVoltageCommand(Volts.of(12)));
-        driverController.povDown().whileTrue(climber.setVoltageCommand(Volts.of(-12)));
+        driverController.povUp().whileTrue(hood.setVoltageCommand(Volts.of(3)));
+        driverController.povDown().whileTrue(hood.setVoltageCommand(Volts.of(-3)));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());

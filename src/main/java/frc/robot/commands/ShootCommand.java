@@ -1,5 +1,10 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
@@ -15,8 +20,9 @@ public class ShootCommand extends ParallelCommandGroup {
         BooleanSupplier readySupplier =
                 () -> shooter.atTargetVelocity() && hood.atTargetAngle(); // && turret.atTargetAngle()
         addCommands(
-                shooter.runAtVelocityCommand(() -> calculator.calculate().shooterVelocity()),
-                hood.runToAngleCommand(() -> calculator.calculate().hoodAngle()),
-                indexer.runCommand().onlyWhile(readySupplier).repeatedly());
+                shooter.runAtVelocityCommand(() -> RPM.of(SmartDashboard.getNumber("ShootRPM", 4000))),
+                hood.runToAngleCommand(() -> Degrees.of(SmartDashboard.getNumber("HoodDegrees", 20))),
+                indexer.runCommand().onlyWhile(readySupplier).repeatedly(),
+                Commands.run(() -> calculator.calculate()));
     }
 }

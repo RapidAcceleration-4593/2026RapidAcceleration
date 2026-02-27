@@ -14,6 +14,7 @@ import edu.wpi.first.units.measure.Distance;
 import frc.robot.util.FieldUtil;
 import java.util.List;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class ShotCalculator {
 
@@ -36,6 +37,7 @@ public class ShotCalculator {
         Translation3d target3D = ShotCalculatorConstants.kTarget;
 
         Distance horizontalDistance = FieldUtil.getDistanceToHub(robotPose);
+        Logger.recordOutput("ShooterDistance", horizontalDistance);
 
         Angle hoodAngle = calculateHood(horizontalDistance);
 
