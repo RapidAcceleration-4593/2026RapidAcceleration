@@ -62,11 +62,13 @@ public class ShotCalculator {
             return robotPose.getRotation().getMeasure().minus(fieldAngle);
         }
 
-        ChassisSpeeds chassisSpeeds = chassisSpeedsSupplier.get();
+        ChassisSpeeds robotRelative = chassisSpeedsSupplier.get();
+		ChassisSpeeds fieldRelative = ChassisSpeeds.fromRobotRelativeSpeeds(robotRelative, robotPose.getRotation());
+
         Time tof = ProjectilePhysics.calculateTime(launchSpeed, hoodAngle, horizontalDistance);
 
-        Distance robotDx = Meters.of(chassisSpeeds.vxMetersPerSecond).times(tof.in(Seconds));
-        Distance robotDy = Meters.of(chassisSpeeds.vyMetersPerSecond).times(tof.in(Seconds));
+        Distance robotDx = Meters.of(fieldRelative.vxMetersPerSecond).times(tof.in(Seconds));
+        Distance robotDy = Meters.of(fieldRelative.vyMetersPerSecond).times(tof.in(Seconds));
 
         Distance predictedX = robotPose.getMeasureX().plus(robotDx);
         Distance predictedY = robotPose.getMeasureY().plus(robotDy);
