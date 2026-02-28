@@ -12,15 +12,14 @@ import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 public class SimplePathCommand extends DeferredCommand {
 
-    public SimplePathCommand(SwerveSubsystem swerve, Supplier<Pose2d> targetPoseSupplier) {
+    public SimplePathCommand(SwerveSubsystem swerve, Pose2d targetPoseSupplier) {
         super(
                 () -> {
                     Pose2d startPose = swerve.getPose();
-                    Pose2d endPose = targetPoseSupplier.get();
+                    Pose2d endPose = targetPoseSupplier;
                     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(startPose, endPose);
 
                     PathConstraints constraints = new PathConstraints(
@@ -29,7 +28,7 @@ public class SimplePathCommand extends DeferredCommand {
                     PathPlannerPath path = new PathPlannerPath(waypoints, constraints, null, endState);
 
                     path.preventFlipping = true;
-                    return AutoBuilder.followPath(null);
+                    return AutoBuilder.followPath(path);
                 },
                 Set.of(swerve));
     }
