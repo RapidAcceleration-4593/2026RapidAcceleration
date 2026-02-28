@@ -73,7 +73,7 @@ public class RobotContainer {
         networkTableInstance = NetworkTableInstance.getDefault();
         NetworkTableEntry entry =
                 networkTableInstance.getTable("AccelerationStation").getEntry("SelectedAuto");
-        entry.setString("DoNothing");
+        entry.setString("CenterDoNothing");
 
         registerCommands();
         configureBindings();
@@ -113,7 +113,7 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         NetworkTableEntry entry =
                 networkTableInstance.getTable("AccelerationStation").getEntry("SelectedAuto");
-        String auto = entry.getString("DoNothing");
+        String auto = entry.getString("CenterDoNothing");
         return AutoBuilder.buildAuto(auto);
     }
 }
