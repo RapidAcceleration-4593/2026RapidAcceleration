@@ -5,6 +5,8 @@ import static frc.robot.Constants.Controllers.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ClimbCommand;
@@ -25,7 +27,6 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import frc.robot.util.shooting.ShotCalculator;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
 
@@ -48,8 +49,8 @@ public class RobotContainer {
     private final CommandXboxController driverController;
     private final CommandXboxController operatorController;
 
-    // Autonomous Chooser
-    private final LoggedDashboardChooser<Command> autonomousChooser;
+    // Autonomous NetworkTable Instance
+    private final NetworkTableInstance networkTableInstance;
 
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
@@ -69,7 +70,11 @@ public class RobotContainer {
         driverController = new CommandXboxController(kDriverControllerPort);
         operatorController = new CommandXboxController(kOperatorControllerPort);
 
-        autonomousChooser = new LoggedDashboardChooser<>("Autonomous Routine", AutoBuilder.buildAutoChooser());
+        networkTableInstance = NetworkTableInstance.getDefault();
+		NetworkTableEntry entry = networkTableInstance
+			.getTable("AccelerationStation")
+			.getEntry("SelectedAuto");
+		entry.setString("DoNothing");
 
         registerCommands();
         configureBindings();
@@ -105,6 +110,9 @@ public class RobotContainer {
 
     /** Select the command to run in autonomous mode. */
     public Command getAutonomousCommand() {
-        return autonomousChooser.get();
+        NetworkTableEntry entry =
+                networkTableInstance.getTable("AccelerationStation").getEntry("SelectedAuto");
+        String auto = entry.getString("DoNothing");
+        return AutoBuilder.buildAuto(auto);
     }
 }
