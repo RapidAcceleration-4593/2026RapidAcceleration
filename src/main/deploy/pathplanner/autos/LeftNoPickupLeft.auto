@@ -5,12 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "ShootCommand"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "LeftLeft"
