@@ -6,7 +6,7 @@ import java.util.Random;
 public final class LEDConstants {
 
     public static final int kPWMChannel = 0;
-    public static final int kLEDCount = 300;
+    public static final int kLEDCount = 100;
 
     public static enum kColors {
         RED(Color.kRed),
@@ -32,7 +32,7 @@ public final class LEDConstants {
     }
 
     // General pattern config.
-    public static final double kSpeedFactor = 5.0;
+    public static final double kSpeedFactor = 1.0;
 
     // Trail pattern config.
     public static final int kTrailCount = 1;
