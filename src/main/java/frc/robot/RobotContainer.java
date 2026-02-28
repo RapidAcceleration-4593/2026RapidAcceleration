@@ -1,12 +1,12 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Controllers.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ClimbCommand;
@@ -71,41 +71,42 @@ public class RobotContainer {
         operatorController = new CommandXboxController(kOperatorControllerPort);
 
         networkTableInstance = NetworkTableInstance.getDefault();
-		NetworkTableEntry entry = networkTableInstance
-			.getTable("AccelerationStation")
-			.getEntry("SelectedAuto");
-		entry.setString("DoNothing");
+        NetworkTableEntry entry =
+                networkTableInstance.getTable("AccelerationStation").getEntry("SelectedAuto");
+        entry.setString("DoNothing");
 
         registerCommands();
         configureBindings();
     }
 
     private void configureBindings() {
+        SmartDashboard.putNumber("ExitVelocityFactor", 0.35);
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
                 swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
         turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle));
 
-        // <------- Experimental ------->
-        driverController.leftBumper().whileTrue(new PathfindCommands().pathfindUnderNearestTrench(swerve));
-
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());
 
-        // <------- Operator Controller ------->
-        operatorController
+        driverController
                 .rightTrigger(0.5)
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new ShakeDeployCommand(intake, deploy)));
 
-        operatorController.leftTrigger(0.5).whileTrue(new IntakeCommand(intake, deploy));
+        driverController.leftTrigger(0.5).whileTrue(new IntakeCommand(intake, deploy));
+        driverController.leftBumper().whileTrue(new PathfindCommands().pathfindUnderNearestTrench(swerve));
+
+        // <------- Operator Controller ------->
+        // TODO: Manual control commands.
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */
     private void registerCommands() {
-        NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, hood, indexer, calculator));
-        NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
-        NamedCommands.registerCommand("RetractIntakeCommand", new RetractIntakeCommand(intake, deploy));
-        NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
+        NamedCommands.registerCommand(
+                "ShootCommand", new ShootCommand(shooter, hood, indexer, calculator).withTimeout(5));
+        NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy).withTimeout(5));
+        NamedCommands.registerCommand("RetractIntakeCommand", new RetractIntakeCommand(intake, deploy).withTimeout(5));
+        NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber).withTimeout(5));
     }
 
     /** Select the command to run in autonomous mode. */

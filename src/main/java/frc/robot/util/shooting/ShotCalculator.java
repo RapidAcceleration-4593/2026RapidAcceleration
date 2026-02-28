@@ -12,8 +12,10 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.FieldUtil;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class ShotCalculator {
 
@@ -32,13 +34,14 @@ public class ShotCalculator {
         Distance horizontalDistance = FieldUtil.getDistanceToHub(robotPose);
         Distance verticalDistance = FieldUtil.getTargetHubPose().getMeasureZ().minus(kShooterHeight);
 
-        Angle hoodAngle = calculateHood(horizontalDistance);
+        Logger.recordOutput("ShooterDistance", horizontalDistance);
 
+        Angle hoodAngle = calculateHood(horizontalDistance);
         LinearVelocity launchSpeed =
                 ProjectilePhysics.calculateLaunchSpeed(hoodAngle, horizontalDistance, verticalDistance);
-        AngularVelocity shooterVelocity = calculateShooter(launchSpeed, horizontalDistance);
 
         Angle turretAngle = calculateTurret(robotPose, targetPose, launchSpeed, hoodAngle, horizontalDistance);
+        AngularVelocity shooterVelocity = calculateShooter(launchSpeed, horizontalDistance, turretAngle);
 
         return new ShotCalculation(turretAngle, hoodAngle, shooterVelocity, true);
     }
@@ -47,8 +50,9 @@ public class ShotCalculator {
         return Degrees.of(distance.in(Meters) * 3.57 + 7.145);
     }
 
-    private AngularVelocity calculateShooter(LinearVelocity launchSpeed, Distance distance) {
-        double kExitVelocityFactor = distance.in(Meters) * -0.032 + 0.4129;
+    private AngularVelocity calculateShooter(LinearVelocity launchSpeed, Distance distance, Angle turretAngle) {
+        double kExitVelocityFactor = SmartDashboard.getNumber("ExitVelocityFactor", 0.35);
+        // double kExitVelocityFactor = ProjectilePhysics.getExitFactor(distance, turretAngle);
         return RadiansPerSecond.of(launchSpeed.in(MetersPerSecond) / (kWheelRadius.in(Meters) * kExitVelocityFactor));
     }
 
