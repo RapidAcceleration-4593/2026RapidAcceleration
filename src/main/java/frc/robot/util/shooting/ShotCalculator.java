@@ -36,7 +36,7 @@ public class ShotCalculator {
 
         LinearVelocity launchSpeed =
                 ProjectilePhysics.calculateLaunchSpeed(hoodAngle, horizontalDistance, verticalDistance);
-        AngularVelocity shooterVelocity = calculateShooter(launchSpeed);
+        AngularVelocity shooterVelocity = calculateShooter(launchSpeed, horizontalDistance);
 
         Angle turretAngle = calculateTurret(robotPose, targetPose, launchSpeed, hoodAngle, horizontalDistance);
 
@@ -47,7 +47,8 @@ public class ShotCalculator {
         return Degrees.of(distance.in(Meters) * 3.57 + 7.145);
     }
 
-    private AngularVelocity calculateShooter(LinearVelocity launchSpeed) {
+    private AngularVelocity calculateShooter(LinearVelocity launchSpeed, Distance distance) {
+        double kExitVelocityFactor = distance.in(Meters) * -0.032 + 0.4129;
         return RadiansPerSecond.of(launchSpeed.in(MetersPerSecond) / (kWheelRadius.in(Meters) * kExitVelocityFactor));
     }
 

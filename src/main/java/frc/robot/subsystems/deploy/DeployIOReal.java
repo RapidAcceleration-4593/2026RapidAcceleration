@@ -41,7 +41,7 @@ public class DeployIOReal implements DeployIO {
 
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
                 .inverted(kInvertEncoder)
-                // .countsPerRevolution(kCountsPerRotation)
+                .countsPerRevolution(kCountsPerRotation)
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 

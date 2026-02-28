@@ -81,35 +81,18 @@ public class RobotContainer {
         turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle));
 
         // <------- Experimental ------->
-        driverController
-                .rightTrigger(0.5)
-                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new ShakeDeployCommand(intake, deploy)));
-
-        driverController.leftTrigger(0.5).whileTrue(new IntakeCommand(intake, deploy));
-
         driverController.leftBumper().whileTrue(new PathfindCommands().pathfindUnderNearestTrench(swerve));
-
-        driverController.povLeft().whileTrue(turret.setVoltageCommand(Volts.of(-4)));
-        driverController.povRight().whileTrue(turret.setVoltageCommand(Volts.of(4)));
-
-        driverController.povUp().whileTrue(hood.setVoltageCommand(Volts.of(3)));
-        driverController.povDown().whileTrue(hood.setVoltageCommand(Volts.of(-3)));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());
 
-        // driverController.leftBumper().whileTrue(new PathfindCommands().pathfindToOppositeZone(swerve));
-        // driverController.leftTrigger(0.5).whileTrue(new DriveToClusterCommand(swerve, objectDetection));
-
         // <------- Operator Controller ------->
-        operatorController.rightTrigger(0.5).whileTrue(new ShootCommand(shooter, hood, indexer, calculator));
-
-        operatorController.leftTrigger().onTrue(new IntakeCommand(intake, deploy));
-        operatorController.leftBumper().onTrue(new RetractIntakeCommand(intake, deploy));
         operatorController
-                .rightBumper()
-                .whileTrue(new ClimbCommand(climber).alongWith(new RetractIntakeCommand(intake, deploy)));
+                .rightTrigger(0.5)
+                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
+                        .alongWith(new ShakeDeployCommand(intake, deploy)));
+
+        operatorController.leftTrigger(0.5).whileTrue(new IntakeCommand(intake, deploy));
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */

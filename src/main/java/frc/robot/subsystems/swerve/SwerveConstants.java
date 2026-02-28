@@ -29,10 +29,11 @@ public final class SwerveConstants {
     private static final Current kSlipCurrent = Amps.of(120.0);
 
     /** Theoretical Maximum Speed at 12V. */
-    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(5.5);
+    public static final LinearVelocity kMaxVelocity = MetersPerSecond.of(5.5);
 
     // Currently only used for PathPlanner.
-    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(5.0);
+    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(2.5);
+    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(2.5);
     public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(540.0);
     public static final AngularAcceleration kAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
 
@@ -108,7 +109,7 @@ public final class SwerveConstants {
                     .withSteerMotorClosedLoopOutput(kSteerClosedLoopOutput)
                     .withDriveMotorClosedLoopOutput(kDriveClosedLoopOutput)
                     .withSlipCurrent(kSlipCurrent)
-                    .withSpeedAt12Volts(kLinearVelocity)
+                    .withSpeedAt12Volts(kMaxVelocity)
                     .withDriveMotorType(kDriveMotorType)
                     .withSteerMotorType(kSteerMotorType)
                     .withFeedbackSource(kSteerFeedbackType)
@@ -239,7 +240,7 @@ public final class SwerveConstants {
             kRobotMOI,
             new ModuleConfig(
                     kWheelRadius,
-                    kLinearVelocity,
+                    kMaxVelocity,
                     kWheelCOF,
                     DCMotor.getKrakenX60(1).withReduction(kDriveGearRatio),
                     kSlipCurrent,
