@@ -5,7 +5,6 @@ import static frc.robot.Constants.Controllers.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ClimbCommand;
@@ -13,6 +12,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.RetractIntakeCommand;
 import frc.robot.commands.ShakeDeployCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.swerve.PathfindCommands;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
 import frc.robot.subsystems.climber.ClimberSubsystem;
@@ -76,8 +76,6 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        SmartDashboard.putNumber("HoodDegrees", 20);
-        SmartDashboard.putNumber("ShootRPM", 4000);
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
                 swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
         turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle));
@@ -89,6 +87,8 @@ public class RobotContainer {
                         .alongWith(new ShakeDeployCommand(intake, deploy)));
 
         driverController.leftTrigger(0.5).whileTrue(new IntakeCommand(intake, deploy));
+
+        driverController.leftBumper().whileTrue(new PathfindCommands().pathfindUnderNearestTrench(swerve));
 
         driverController.povLeft().whileTrue(turret.setVoltageCommand(Volts.of(-4)));
         driverController.povRight().whileTrue(turret.setVoltageCommand(Volts.of(4)));

@@ -63,7 +63,7 @@ public class ShotCalculator {
         }
 
         ChassisSpeeds robotRelative = chassisSpeedsSupplier.get();
-		ChassisSpeeds fieldRelative = ChassisSpeeds.fromRobotRelativeSpeeds(robotRelative, robotPose.getRotation());
+        ChassisSpeeds fieldRelative = ChassisSpeeds.fromRobotRelativeSpeeds(robotRelative, robotPose.getRotation());
 
         Time tof = ProjectilePhysics.calculateTime(launchSpeed, hoodAngle, horizontalDistance);
 

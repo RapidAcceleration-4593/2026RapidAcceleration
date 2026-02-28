@@ -29,19 +29,13 @@ public final class PathfindCommands {
     private static final Pose2d kRightRedAlliance = new Pose2d(Meters.of(13.33), Meters.of(7.425), new Rotation2d());
     private static final Pose2d kRightRedNeutral = new Pose2d(Meters.of(10.5), Meters.of(7.425), new Rotation2d());
 
-    private static final List<Pose2d> kAllTrenchPoses = List.of(
-            kLeftBlueAlliance,
-            kLeftBlueNeutral,
-            kRightBlueAlliance,
-            kRightBlueNeutral,
-            kLeftRedAlliance,
-            kLeftRedNeutral,
-            kRightRedAlliance,
-            kRightRedNeutral);
-    private static final List<Pose2d> kBlueTrenchPoses =
-            List.of(kLeftBlueAlliance, kLeftBlueNeutral, kRightBlueAlliance, kRightBlueNeutral);
-    private static final List<Pose2d> kRedTrenchPoses =
-            List.of(kLeftRedAlliance, kLeftRedNeutral, kRightRedAlliance, kRightRedNeutral);
+    private record Trench(Pose2d allianceSide, Pose2d neutralSide) {}
+
+    private static final List<Trench> kBlueTrenches =
+            List.of(new Trench(kLeftBlueAlliance, kLeftBlueNeutral), new Trench(kRightBlueAlliance, kRightBlueNeutral));
+
+    private static final List<Trench> kRedTrenches =
+            List.of(new Trench(kLeftRedAlliance, kLeftRedNeutral), new Trench(kRightRedAlliance, kRightRedNeutral));
 
     private static final PathConstraints kConstraints =
             new PathConstraints(kLinearVelocity, kLinearAcceleration, kAngularVelocity, kAngularAcceleration);
@@ -58,29 +52,54 @@ public final class PathfindCommands {
     public Command pathfindUnderNearestTrench(SwerveSubsystem swerve) {
         return Commands.defer(
                 () -> {
-                    Pose2d initialPose = findClosest(swerve.getPose());
-                    Pose2d finalPose = findNext(initialPose);
+                    Pose2d robotPose = swerve.getPose();
+                    Trench trench = findClosestTrench(robotPose);
+
+                    Pose2d entrance = getEntrance(robotPose, trench);
+                    Pose2d exit = getExit(entrance, trench);
+
+                    Rotation2d snapped = snapRotation(robotPose.getRotation());
+                    Pose2d entranceWithRotation = new Pose2d(entrance.getTranslation(), snapped);
+                    Pose2d exitWithRotation = new Pose2d(exit.getTranslation(), snapped);
+
                     return Commands.sequence(
-                            AutoBuilder.pathfindToPose(initialPose, kConstraints, 0.0),
-                            AutoBuilder.pathfindToPose(finalPose, kConstraints, 0.0));
+                            AutoBuilder.pathfindToPose(entranceWithRotation, kConstraints, 0.0),
+                            AutoBuilder.pathfindToPose(exitWithRotation, kConstraints, 0.0));
                 },
                 Set.of(swerve));
     }
 
-    private Pose2d findClosest(Pose2d robotPose) {
-        FieldZones currentZone = FieldUtil.getCurrentZone(robotPose);
-        boolean isRedAlliance = FieldUtil.isRedAlliance();
+    private Trench findClosestTrench(Pose2d robotPose) {
+        List<Trench> trenches = FieldUtil.isRedAlliance() ? kRedTrenches : kBlueTrenches;
 
-        return switch (currentZone) {
-            case Red_Zone -> robotPose.nearest(kRedTrenchPoses);
-            case Blue_Zone -> robotPose.nearest(kBlueTrenchPoses);
-            case Neutral_Zone ->
-                isRedAlliance ? robotPose.nearest(kRedTrenchPoses) : robotPose.nearest(kBlueTrenchPoses);
-        };
+        return trenches.stream()
+                .min((a, b) -> {
+                    double da = minDistance(robotPose, a);
+                    double db = minDistance(robotPose, b);
+                    return Double.compare(da, db);
+                })
+                .orElseThrow();
     }
 
-    private Pose2d findNext(Pose2d firstPose) {
-        return firstPose.nearest(kAllTrenchPoses); // Remove the firstPose.
+    private double minDistance(Pose2d robotPose, Trench trench) {
+        double d1 = robotPose.getTranslation().getDistance(trench.allianceSide().getTranslation());
+        double d2 = robotPose.getTranslation().getDistance(trench.neutralSide().getTranslation());
+        return Math.min(d1, d2);
+    }
+
+    private Pose2d getEntrance(Pose2d robotPose, Trench trench) {
+        return robotPose.nearest(List.of(trench.allianceSide(), trench.neutralSide()));
+    }
+
+    private Pose2d getExit(Pose2d entrance, Trench trench) {
+        return entrance.equals(trench.allianceSide()) ? trench.neutralSide() : trench.allianceSide();
+    }
+
+    private Rotation2d snapRotation(Rotation2d robotRotation) {
+        double angle = robotRotation.getRadians();
+        double wrapped = Math.IEEEremainder(angle, Math.PI);
+
+        return Math.abs(wrapped) < Math.PI / 2 ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(180);
     }
 
     private static FieldZones getTargetZone(Pose2d currentPose) {
