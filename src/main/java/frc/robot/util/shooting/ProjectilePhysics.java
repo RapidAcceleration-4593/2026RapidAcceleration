@@ -14,7 +14,6 @@ public class ProjectilePhysics {
     private static final LinearAcceleration gravity = MetersPerSecondPerSecond.of(9.81);
 
     private static final double[][] kExitFactorData = {
-        // { distanceMeters, turretRadians, exitFactor }
         {2.936, 0.026, 0.38},
         {3.586, -0.690, 0.37},
         {2.304, 0.912, 0.40},
@@ -44,30 +43,83 @@ public class ProjectilePhysics {
         {3.975, 0.249, 0.36}
     };
 
+    private static final int[][] kTriangles = {
+        {4, 25, 5},
+        {8, 19, 12},
+        {9, 8, 12},
+        {24, 9, 12},
+        {9, 24, 23},
+        {24, 10, 23},
+        {0, 8, 9},
+        {18, 25, 4},
+        {14, 18, 4},
+        {13, 21, 26},
+        {0, 13, 14},
+        {13, 18, 14},
+        {7, 0, 14},
+        {8, 7, 19},
+        {0, 7, 8},
+        {18, 6, 25},
+        {23, 3, 1},
+        {10, 3, 23},
+        {25, 22, 5},
+        {21, 22, 26},
+        {22, 6, 26},
+        {6, 22, 25},
+        {17, 16, 9},
+        {17, 23, 1},
+        {17, 9, 23},
+        {3, 17, 1},
+        {16, 17, 13},
+        {13, 17, 21},
+        {17, 3, 21},
+        {20, 0, 9},
+        {16, 20, 9},
+        {20, 13, 0},
+        {20, 16, 13},
+        {7, 2, 19},
+        {2, 7, 14},
+        {19, 2, 4},
+        {2, 14, 4},
+        {13, 11, 18},
+        {11, 6, 18},
+        {11, 13, 26},
+        {6, 11, 26},
+        {15, 3, 10},
+        {3, 15, 21},
+        {15, 22, 21},
+        {15, 10, 5},
+        {22, 15, 5}
+    };
+
     public static double getExitFactor(Distance distance, Angle turretAngle) {
-        double d = distance.in(Meters);
-        double t = turretAngle.in(Radians);
+        double x = distance.in(Meters);
+        double y = turretAngle.in(Radians);
 
-        double weightedSum = 0;
-        double weightedTotal = 0;
+        for (int[] tri : kTriangles) {
+            double[] p1 = kExitFactorData[tri[0]];
+            double[] p2 = kExitFactorData[tri[1]];
+            double[] p3 = kExitFactorData[tri[2]];
 
-        for (double[] p : kExitFactorData) {
-            double dd = (d - p[0]) * 2.0;
-            double dt = t - p[1];
+            double x1 = p1[0], y1 = p1[1], z1 = p1[2];
+            double x2 = p2[0], y2 = p2[1], z2 = p2[2];
+            double x3 = p3[0], y3 = p3[1], z3 = p3[2];
 
-            double distSquared = dd * dd + dt * dt;
+            double denom = (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3);
 
-            if (distSquared < 1e-6) {
-                return p[2];
+            if (Math.abs(denom) < 1e-9) continue;
+
+            double w1 = ((y2 - y3) * (x - x3) + (x3 - x2) * (y - y3)) / denom;
+            double w2 = ((y3 - y1) * (x - x3) + (x1 - x3) * (y - y3)) / denom;
+            double w3 = 1.0 - w1 - w2;
+
+            if (w1 >= 0 && w2 >= 0 && w3 >= 0) {
+                double exitFactor = w1 * z1 + w2 * z2 + w3 * z3;
+                return MathUtil.clamp(exitFactor, 0.20, 0.45);
             }
-
-            double weight = 1.0 / distSquared;
-
-            weightedSum += weight * p[2];
-            weightedTotal += weight;
         }
-        double exitFactor = weightedSum / weightedTotal;
-        return MathUtil.clamp(exitFactor, 0.20, 0.45);
+
+        return kExitFactorData[0][2];
     }
 
     public static LinearVelocity calculateLaunchSpeed(
