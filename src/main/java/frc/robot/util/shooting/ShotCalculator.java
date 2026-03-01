@@ -12,7 +12,6 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.FieldUtil;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -51,8 +50,8 @@ public class ShotCalculator {
     }
 
     private AngularVelocity calculateShooter(LinearVelocity launchSpeed, Distance distance, Angle turretAngle) {
-        double kExitVelocityFactor = SmartDashboard.getNumber("ExitVelocityFactor", 0.35);
-        // double kExitVelocityFactor = ProjectilePhysics.getExitFactor(distance, turretAngle);
+        // double kExitVelocityFactor = SmartDashboard.getNumber("ExitVelocityFactor", 0.35);
+        double kExitVelocityFactor = ProjectilePhysics.getExitFactor(distance, turretAngle);
         return RadiansPerSecond.of(launchSpeed.in(MetersPerSecond) / (kWheelRadius.in(Meters) * kExitVelocityFactor));
     }
 
