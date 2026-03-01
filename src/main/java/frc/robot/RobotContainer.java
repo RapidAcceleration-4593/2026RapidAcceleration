@@ -103,8 +103,9 @@ public class RobotContainer {
     /** Register NamedCommands to be used in PathPlanner for autonomous. */
     private void registerCommands() {
         NamedCommands.registerCommand(
-                "ShootCommand", new ShootCommand(shooter, hood, indexer, calculator).withTimeout(5));
-        NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
+                "ShootCommand",
+                new ShootCommand(shooter, hood, indexer, calculator).alongWith(new ShakeDeployCommand(intake, deploy)));
+        NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy).withTimeout(4.5));
         NamedCommands.registerCommand("RetractIntakeCommand", new RetractIntakeCommand(intake, deploy));
         NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
     }
