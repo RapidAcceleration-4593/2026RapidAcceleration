@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftCenterPickup"
+            "pathName": "LeftCenter-1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CenterLeftTrench"
+            "pathName": "LeftCenter-2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LeftLeft"
+            "pathName": "LeftCenter-3"
           }
         }
       ]

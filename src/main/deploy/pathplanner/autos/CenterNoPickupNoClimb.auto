@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftCenterClimb"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ClimbCommand"
+            "pathName": "CenterNoPickup-1"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Left",
+  "folder": "Center",
   "choreoAuto": false
 }

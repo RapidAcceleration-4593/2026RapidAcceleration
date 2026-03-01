@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftCenterPickup"
+            "pathName": "LeftCenter-1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CenterLeftTrench"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LeftCenterClimb"
+            "pathName": "LeftCenter-2"
           }
         }
       ]

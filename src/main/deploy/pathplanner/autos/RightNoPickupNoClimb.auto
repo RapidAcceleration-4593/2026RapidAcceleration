@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightCenterClimb"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ClimbCommand"
+            "pathName": "RightNoPickup-1"
           }
         }
       ]

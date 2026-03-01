@@ -11,33 +11,15 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 3.0
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "RightOutpost-2"
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "ShootCommand"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "RightOutpost-3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ClimbCommand"
+            "pathName": "RightCenter-3"
           }
         }
       ]

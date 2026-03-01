@@ -5,15 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "ShootCommand"
+            "pathName": "LeftNoPickup-1"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Other",
+  "folder": "Left",
   "choreoAuto": false
 }

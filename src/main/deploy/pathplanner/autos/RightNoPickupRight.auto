@@ -5,21 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "ShootCommand"
+            "pathName": "RightNoPickup-1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "RightClimb-1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ClimbCommand"
+            "pathName": "RightCenter-3"
           }
         }
       ]
