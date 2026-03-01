@@ -5,6 +5,7 @@ import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 import static frc.robot.util.shooting.ShotCalculatorConstants.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -26,12 +27,12 @@ public class ShotCalculator {
         this.chassisSpeedsSupplier = chassisSpeedsSupplier;
     }
 
-    public ShotCalculation calculate() {
+    public ShotCalculation calculate(Pose3d targetPose3d) {
         Pose2d robotPose = poseSupplier.get().transformBy(kPhysicalOffset);
-        Pose2d targetPose = FieldUtil.getTargetHubPose().toPose2d();
+        Pose2d targetPose = targetPose3d.toPose2d();
 
-        Distance horizontalDistance = FieldUtil.getDistanceToHub(robotPose);
-        Distance verticalDistance = FieldUtil.getTargetHubPose().getMeasureZ().minus(kShooterHeight);
+        Distance horizontalDistance = Meters.of(targetPose.getTranslation().getDistance(robotPose.getTranslation()));
+        Distance verticalDistance = targetPose3d.getMeasureZ().minus(kShooterHeight);
 
         Logger.recordOutput("ShooterDistance", horizontalDistance);
 
@@ -43,6 +44,10 @@ public class ShotCalculator {
         AngularVelocity shooterVelocity = calculateShooter(launchSpeed, horizontalDistance, turretAngle);
 
         return new ShotCalculation(turretAngle, hoodAngle, shooterVelocity, true);
+    }
+
+    public ShotCalculation calculateHub() {
+		return calculate(FieldUtil.getTargetHubPose());
     }
 
     private Angle calculateHood(Distance distance) {
@@ -85,15 +90,15 @@ public class ShotCalculator {
     }
 
     public Angle getHoodAngle() {
-        return calculate().hoodAngle();
+        return calculateHub().hoodAngle();
     }
 
     public AngularVelocity getShooterVelocity() {
-        return calculate().shooterVelocity();
+        return calculateHub().shooterVelocity();
     }
 
     public Angle getTurretAngle() {
-        return calculate().turretAngle();
+        return calculateHub().turretAngle();
     }
 
     public record ShotCalculation(Angle turretAngle, Angle hoodAngle, AngularVelocity shooterVelocity, boolean valid) {}
