@@ -7,6 +7,18 @@
         {
           "type": "path",
           "data": {
+            "pathName": "RightCenterIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CenterRightTrench"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "RightCenterClimb"
           }
         },
