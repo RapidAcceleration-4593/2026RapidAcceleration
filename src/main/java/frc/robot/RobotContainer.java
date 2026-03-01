@@ -91,9 +91,10 @@ public class RobotContainer {
                 .rightTrigger(0.5)
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new ShakeDeployCommand(intake, deploy)));
-
         driverController.leftTrigger(0.5).whileTrue(new IntakeCommand(intake, deploy));
+
         driverController.leftBumper().whileTrue(new PathfindCommands().pathfindUnderNearestTrench(swerve));
+        driverController.rightBumper().onTrue(new RetractIntakeCommand(intake, deploy));
 
         // <------- Operator Controller ------->
         // TODO: Manual control commands.
@@ -103,9 +104,9 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand(
                 "ShootCommand", new ShootCommand(shooter, hood, indexer, calculator).withTimeout(5));
-        NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy).withTimeout(5));
-        NamedCommands.registerCommand("RetractIntakeCommand", new RetractIntakeCommand(intake, deploy).withTimeout(5));
-        NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber).withTimeout(5));
+        NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
+        NamedCommands.registerCommand("RetractIntakeCommand", new RetractIntakeCommand(intake, deploy));
+        NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
     }
 
     /** Select the command to run in autonomous mode. */

@@ -63,8 +63,8 @@ public final class PathfindCommands {
                     Pose2d exitWithRotation = new Pose2d(exit.getTranslation(), snapped);
 
                     return Commands.sequence(
-                            new SimplePathCommand(swerve, entranceWithRotation),
-                            new SimplePathCommand(swerve, exitWithRotation));
+                            AutoBuilder.pathfindToPose(entranceWithRotation, kConstraints, 1.0),
+                            AutoBuilder.pathfindToPose(exitWithRotation, kConstraints, 1.0));
                 },
                 Set.of(swerve));
     }
