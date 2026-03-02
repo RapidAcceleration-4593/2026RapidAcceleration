@@ -71,8 +71,6 @@ public class RobotContainer {
         operatorController = new CommandXboxController(kOperatorControllerPort);
 
         networkTableInstance = NetworkTableInstance.getDefault();
-        NetworkTableEntry entry =
-                networkTableInstance.getTable("AccelerationStation").getEntry("SelectedAuto");
 
         registerCommands();
         configureBindings();

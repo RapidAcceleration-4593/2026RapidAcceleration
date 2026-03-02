@@ -26,7 +26,32 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightCenter-2"
+            "pathName": "CenterOutpost-1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.25
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootCommand"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "CenterOutpost-2"
+                }
+              }
+            ]
           }
         }
       ]

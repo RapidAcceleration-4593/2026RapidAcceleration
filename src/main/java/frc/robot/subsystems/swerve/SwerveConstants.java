@@ -32,8 +32,8 @@ public final class SwerveConstants {
     public static final LinearVelocity kMaxVelocity = MetersPerSecond.of(5.5);
 
     // Currently only used for PathPlanner.
-    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(2.5);
-    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(2.5);
+    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(2.25);
+    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(3.0);
     public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(540.0);
     public static final AngularAcceleration kAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
 

@@ -32,16 +32,7 @@ public final class AprilTagConstants {
                         Inches.of(-8.628),
                         Inches.of(9.551),
                         new Rotation3d(Degrees.zero(), Degrees.of(-15.0), Degrees.of(-140.0))),
-                1.0),
-        // Front Camera
-        // new CameraConfig(
-        //         "OV9782_3",
-        //         new Transform3d(
-        //                 Inches.of(0.0),
-        //                 Inches.of(0.0),
-        //                 Inches.of(0.0),
-        //                 new Rotation3d(Degrees.zero(), Degrees.of(-15.0), Degrees.zero())),
-        //         1.0),
+                1.0)
     };
 
     public static final double kMaxAmbiguity = 0.30;
