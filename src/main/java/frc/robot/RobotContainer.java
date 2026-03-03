@@ -3,11 +3,13 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Controllers.*;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.RetractIntakeCommand;
 import frc.robot.commands.ShakeDeployCommand;
@@ -74,6 +76,7 @@ public class RobotContainer {
         autonManager = new AutonManager(swerve);
         networkTableInstance = NetworkTableInstance.getDefault();
 
+        registerCommands();
         configureBindings();
     }
 
@@ -112,11 +115,21 @@ public class RobotContainer {
 
     }
 
-    /** Select the command to run in autonomous mode. */
+    /** Select the command to run in Autonomous. */
     public Command getAutonomousCommand() {
         NetworkTableEntry entry =
                 networkTableInstance.getTable("AccelerationStation").getEntry("SelectedAuto");
         String name = entry.getString("RightCenterOutpost");
         return autonManager.getAuton(name);
+    }
+
+    /** Register NamedCommands for Autonomous. */
+    private void registerCommands() {
+        NamedCommands.registerCommand(
+                "ShootCommand",
+                new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetHubPose())
+                        .alongWith(new ShakeDeployCommand(intake, deploy)));
+        NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
+        NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
     }
 }
