@@ -3,18 +3,16 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Controllers.*;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.RetractIntakeCommand;
 import frc.robot.commands.ShakeDeployCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.auton.AutonManager;
 import frc.robot.commands.swerve.PathfindCommands;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
@@ -51,7 +49,8 @@ public class RobotContainer {
     private final CommandXboxController driverController;
     private final CommandXboxController operatorController;
 
-    // Autonomous NetworkTable Instance
+    // Autonomous Selector
+    private final AutonManager autonManager;
     private final NetworkTableInstance networkTableInstance;
 
     public RobotContainer() {
@@ -72,9 +71,9 @@ public class RobotContainer {
         driverController = new CommandXboxController(kDriverControllerPort);
         operatorController = new CommandXboxController(kOperatorControllerPort);
 
+        autonManager = new AutonManager(swerve);
         networkTableInstance = NetworkTableInstance.getDefault();
 
-        registerCommands();
         configureBindings();
     }
 
@@ -113,22 +112,11 @@ public class RobotContainer {
 
     }
 
-    /** Register NamedCommands to be used in PathPlanner for autonomous. */
-    private void registerCommands() {
-        NamedCommands.registerCommand(
-                "ShootCommand",
-                new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetHubPose())
-                        .alongWith(new ShakeDeployCommand(intake, deploy)));
-        NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy).withTimeout(4.5));
-        NamedCommands.registerCommand("RetractIntakeCommand", new RetractIntakeCommand(intake, deploy));
-        NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
-    }
-
     /** Select the command to run in autonomous mode. */
     public Command getAutonomousCommand() {
         NetworkTableEntry entry =
                 networkTableInstance.getTable("AccelerationStation").getEntry("SelectedAuto");
-        String auto = entry.getString("LeftCenterLeft");
-        return AutoBuilder.buildAuto(auto);
+        String name = entry.getString("RightCenterOutpost");
+        return autonManager.getAuton(name);
     }
 }
