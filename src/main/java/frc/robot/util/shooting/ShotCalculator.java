@@ -110,10 +110,10 @@ public class ShotCalculator {
             return robotPose.getRotation().getMeasure().minus(fieldAngle);
         }
 
-		Distance dx = virtualTarget.getMeasureX().minus(robotPose.getMeasureX());
-		Distance dy = virtualTarget.getMeasureY().minus(robotPose.getMeasureY());
+        Distance dx = virtualTarget.getMeasureX().minus(robotPose.getMeasureX());
+        Distance dy = virtualTarget.getMeasureY().minus(robotPose.getMeasureY());
 
-		Angle fieldAngle = Radians.of(Math.atan2(dy.in(Meters), dx.in(Meters)));
+        Angle fieldAngle = Radians.of(Math.atan2(dy.in(Meters), dx.in(Meters)));
         return robotPose.getRotation().getMeasure().minus(fieldAngle);
     }
 
