@@ -119,7 +119,7 @@ public class RobotContainer {
                 "ShootCommand",
                 new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetHubPose())
                         .alongWith(new ShakeDeployCommand(intake, deploy)));
-        NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
+        NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy).withTimeout(4.5));
         NamedCommands.registerCommand("RetractIntakeCommand", new RetractIntakeCommand(intake, deploy));
         NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
     }

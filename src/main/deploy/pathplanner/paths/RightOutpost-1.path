@@ -33,15 +33,10 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "ApproachOutpost",
-      "waypointRelativePos": 0.0,
+      "name": "IntakeCommand",
+      "waypointRelativePos": 0,
       "endWaypointRelativePos": 0.5026041666666677,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "IntakeCommand"
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {

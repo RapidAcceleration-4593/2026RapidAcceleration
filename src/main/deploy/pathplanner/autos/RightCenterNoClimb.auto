@@ -9,6 +9,12 @@
           "data": {
             "commands": [
               {
+                "type": "named",
+                "data": {
+                  "name": "IntakeCommand"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
                   "pathName": "RightCenter-1"
