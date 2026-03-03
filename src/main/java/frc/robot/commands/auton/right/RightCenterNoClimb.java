@@ -18,7 +18,7 @@ public class RightCenterNoClimb extends AutonCommand {
                 Commands.parallel(
                         AutoBuilder.followPath(paths.get(1)),
                         Commands.either(
-                                NamedCommands.getCommand("ShootCommand").withTimeout(10.0),
+                                NamedCommands.getCommand("ShootShakeCommand").withTimeout(10.0),
                                 Commands.none(),
                                 () -> FieldUtil.isInAllianceZone(AutoBuilder.getCurrentPose()))));
     }

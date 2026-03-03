@@ -126,7 +126,9 @@ public class RobotContainer {
     /** Register NamedCommands for Autonomous. */
     private void registerCommands() {
         NamedCommands.registerCommand(
-                "ShootCommand",
+                "ShootCommand", new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetHubPose()));
+        NamedCommands.registerCommand(
+                "ShootShakeCommand",
                 new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetHubPose())
                         .alongWith(new ShakeDeployCommand(intake, deploy)));
         NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));

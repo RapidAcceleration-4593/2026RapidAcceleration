@@ -16,6 +16,6 @@ public class RightOutpostNoClimb extends AutonCommand {
                 Commands.race(AutoBuilder.followPath(paths.get(0)), NamedCommands.getCommand("IntakeCommand")),
                 Commands.parallel(
                         AutoBuilder.followPath(paths.get(1)),
-                        NamedCommands.getCommand("ShootCommand").withTimeout(10.0)));
+                        NamedCommands.getCommand("ShootShakeCommand").withTimeout(10.0)));
     }
 }

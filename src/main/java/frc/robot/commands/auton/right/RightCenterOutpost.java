@@ -16,6 +16,6 @@ public class RightCenterOutpost extends AutonCommand {
                 Commands.race(AutoBuilder.followPath(paths.get(0)), NamedCommands.getCommand("IntakeCommand")),
                 AutoBuilder.followPath(paths.get(1)),
                 Commands.race(NamedCommands.getCommand("IntakeCommand"), Commands.waitSeconds(1.25)),
-                Commands.parallel(AutoBuilder.followPath(paths.get(2)), NamedCommands.getCommand("ShootCommand")));
+                Commands.parallel(AutoBuilder.followPath(paths.get(2)), NamedCommands.getCommand("ShootShakeCommand")));
     }
 }
