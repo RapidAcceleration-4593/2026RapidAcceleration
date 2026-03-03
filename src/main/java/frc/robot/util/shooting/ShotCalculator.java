@@ -6,7 +6,6 @@ import static frc.robot.util.shooting.ProjectilePhysicsConstants.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
@@ -111,8 +110,11 @@ public class ShotCalculator {
             return robotPose.getRotation().getMeasure().minus(fieldAngle);
         }
 
-        Translation2d relativeTarget = virtualTarget.getTranslation().minus(robotPose.getTranslation());
-        return relativeTarget.getAngle().getMeasure();
+		Distance dx = virtualTarget.getMeasureX().minus(robotPose.getMeasureX());
+		Distance dy = virtualTarget.getMeasureY().minus(robotPose.getMeasureY());
+
+		Angle fieldAngle = Radians.of(Math.atan2(dy.in(Meters), dx.in(Meters)));
+        return robotPose.getRotation().getMeasure().minus(fieldAngle);
     }
 
     public Angle getHoodAngle() {
