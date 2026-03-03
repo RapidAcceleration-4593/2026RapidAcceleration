@@ -10,12 +10,17 @@ import java.util.List;
 public class RightCenterOutpost extends AutonCommand {
 
     public RightCenterOutpost(AutonUtil util) {
-        super(util, List.of("RightCenter-1", "CenterOutpost-1", "CenterOutpost-2"));
+        super(util, List.of("RightCenter-1", "RightCenter-2", "RightCenterOutpost-3", "RightCenterOutpost-4"));
 
         addCommands(
-                Commands.race(AutoBuilder.followPath(paths.get(0)), NamedCommands.getCommand("IntakeCommand")),
+                NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(0))),
                 AutoBuilder.followPath(paths.get(1)),
-                Commands.race(NamedCommands.getCommand("IntakeCommand"), Commands.waitSeconds(1.25)),
-                Commands.parallel(AutoBuilder.followPath(paths.get(2)), NamedCommands.getCommand("ShootShakeCommand")));
+                NamedCommands.getCommand("ShootShakeCommand").withTimeout(3.0),
+                AutoBuilder.followPath(paths.get(2)),
+                Commands.parallel(
+                        NamedCommands.getCommand("ShootCommand"),
+                        Commands.sequence(
+                                NamedCommands.getCommand("IntakeCommand").withTimeout(1.25),
+                                AutoBuilder.followPath(paths.get(3)))));
     }
 }

@@ -5,7 +5,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.auton.AutonCommand;
 import frc.robot.commands.auton.AutonUtil;
-import frc.robot.util.FieldUtil;
 import java.util.List;
 
 public class RightCenterNoClimb extends AutonCommand {
@@ -14,12 +13,10 @@ public class RightCenterNoClimb extends AutonCommand {
         super(util, List.of("RightCenter-1", "RightCenter-2"));
 
         addCommands(
-                Commands.race(AutoBuilder.followPath(paths.get(0)), NamedCommands.getCommand("IntakeCommand")),
-                Commands.parallel(
-                        AutoBuilder.followPath(paths.get(1)),
-                        Commands.either(
-                                NamedCommands.getCommand("ShootShakeCommand").withTimeout(10.0),
-                                Commands.none(),
-                                () -> FieldUtil.isInAllianceZone(AutoBuilder.getCurrentPose()))));
+                Commands.race(
+                        Commands.waitSeconds(1.0).andThen(NamedCommands.getCommand("IntakeCommand")),
+                        AutoBuilder.followPath(paths.get(0))),
+                AutoBuilder.followPath(paths.get(1)),
+                NamedCommands.getCommand("ShootShakeCommand").withTimeout(10.0));
     }
 }
