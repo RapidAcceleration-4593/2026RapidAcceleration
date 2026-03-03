@@ -27,6 +27,9 @@ public final class FieldUtil {
     private static final Pose3d kRedHubPose =
             new Pose3d(Inches.of(469.1), Inches.of(158.85), Inches.of(72.0), new Rotation3d());
 
+	private static final Pose3d kBlueCFFPose = new Pose3d(Inches.of(110), Inches.of(158.85), Inches.of(0), new Rotation3d());
+	private static final Pose3d kRedCFFPose = new Pose3d(Inches.of(541), Inches.of(158.85), Inches.of(0), new Rotation3d());
+
     public enum FieldZones {
         Neutral_Zone,
         Blue_Zone,
@@ -48,6 +51,10 @@ public final class FieldUtil {
     public static Pose3d getTargetHubPose() {
         return getCurrentAlliance() == Alliance.Blue ? kBlueHubPose : kRedHubPose;
     }
+
+	public static Pose3d getCrossFieldFeedPose() {
+        return getCurrentAlliance() == Alliance.Blue ? kBlueCFFPose : kRedCFFPose;
+	}
 
     public static Distance getDistanceToHub(Pose2d robotPose) {
         Pose2d hubPose = getTargetHubPose().toPose2d();

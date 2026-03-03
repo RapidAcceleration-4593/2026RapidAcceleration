@@ -26,6 +26,7 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
+import frc.robot.util.FieldUtil;
 import frc.robot.util.shooting.ShotCalculator;
 
 public class RobotContainer {
@@ -87,7 +88,7 @@ public class RobotContainer {
 
         driverController
                 .rightTrigger(0.5)
-                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
+                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetHubPose())
                         .alongWith(new ShakeDeployCommand(intake, deploy)));
         driverController.leftTrigger(0.5).whileTrue(new IntakeCommand(intake, deploy));
 
@@ -102,7 +103,7 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand(
                 "ShootCommand",
-                new ShootCommand(shooter, hood, indexer, calculator).alongWith(new ShakeDeployCommand(intake, deploy)));
+                new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetHubPose()).alongWith(new ShakeDeployCommand(intake, deploy)));
         NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy).withTimeout(4.5));
         NamedCommands.registerCommand("RetractIntakeCommand", new RetractIntakeCommand(intake, deploy));
         NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));

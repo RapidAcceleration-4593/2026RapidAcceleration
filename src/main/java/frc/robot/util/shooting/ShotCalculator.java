@@ -19,12 +19,10 @@ import frc.robot.util.FieldUtil;
 import java.util.function.Supplier;
 
 public class ShotCalculator {
-
     private final Supplier<Pose2d> poseSupplier;
     private final Supplier<ChassisSpeeds> chassisSpeedsSupplier;
 
-    private ShotResult lastResult = ShotResult.invalid();
-    private double lastTimestamp = -1.0;
+    private ShotResult latestResult = ShotResult.invalid();
 
     private static final InterpolatingDoubleTreeMap hoodMap = new InterpolatingDoubleTreeMap();
 
@@ -39,9 +37,8 @@ public class ShotCalculator {
         this.chassisSpeedsSupplier = chassisSpeedsSupplier;
     }
 
-    public ShotResult calculate(Pose3d targetPose3d) {
-        double now = Timer.getFPGATimestamp();
-        if (now == lastTimestamp) return lastResult;
+    public void calculate(Pose3d targetPose3d) {
+        double now = Timer.getTimestamp();
 
         Pose2d robotPose = poseSupplier.get().transformBy(kPhysicalOffset);
         Pose2d targetPose2d = targetPose3d.toPose2d();
@@ -49,9 +46,7 @@ public class ShotCalculator {
         Distance realDistance = Meters.of(robotPose.getTranslation().getDistance(targetPose2d.getTranslation()));
 
         if (realDistance.lt(Meters.of(0.5)) || realDistance.gt(Meters.of(10.0))) {
-            lastResult = ShotResult.invalid();
-            lastTimestamp = now;
-            return lastResult;
+            latestResult = ShotResult.invalid();
         }
 
         ChassisSpeeds chassisSpeeds =
@@ -85,13 +80,7 @@ public class ShotCalculator {
         Angle turretAngle = calculateTurret(robotPose, virtualTarget);
         AngularVelocity shooterVelocity = calculateShooter(finalLaunchSpeed, finalVirtualDistance, turretAngle);
 
-        lastResult = new ShotResult(turretAngle, finalHoodAngle, shooterVelocity, true);
-        lastTimestamp = now;
-        return lastResult;
-    }
-
-    public ShotResult calculateHub() {
-        return calculate(FieldUtil.getTargetHubPose());
+        latestResult = new ShotResult(turretAngle, finalHoodAngle, shooterVelocity, true);
     }
 
     private Angle calculateHood(Distance distance) {
@@ -118,15 +107,15 @@ public class ShotCalculator {
     }
 
     public Angle getHoodAngle() {
-        return calculateHub().hoodAngle();
+        return latestResult.hoodAngle();
     }
 
     public AngularVelocity getShooterVelocity() {
-        return calculateHub().shooterVelocity();
+        return latestResult.shooterVelocity();
     }
 
     public Angle getTurretAngle() {
-        return calculateHub().turretAngle();
+        return latestResult.turretAngle();
     }
 
     public record ShotResult(Angle turretAngle, Angle hoodAngle, AngularVelocity shooterVelocity, boolean valid) {
