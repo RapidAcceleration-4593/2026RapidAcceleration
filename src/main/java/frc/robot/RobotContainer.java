@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Controllers.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -96,7 +97,20 @@ public class RobotContainer {
         driverController.rightBumper().onTrue(new RetractIntakeCommand(intake, deploy));
 
         // <------- Operator Controller ------->
-        // TODO: Manual control commands.
+        operatorController.rightTrigger(0.5).whileTrue(shooter.setVoltageCommand(Volts.of(6.0)));
+        operatorController.leftTrigger(0.5).whileTrue(intake.runCommand());
+
+        operatorController.leftBumper().whileTrue(turret.setVoltageCommand(Volts.of(-4.0)));
+        operatorController.rightBumper().whileTrue(turret.setVoltageCommand(Volts.of(4.0)));
+
+        operatorController.x().whileTrue(deploy.setVoltageCommand(Volts.of(5.0)));
+        operatorController.b().whileTrue(deploy.setVoltageCommand(Volts.of(-5.0)));
+
+        operatorController.y().whileTrue(indexer.runCommand());
+
+        // operatorController.povUp().whileTrue(climber.setVoltageCommand(Volts.of(12.0)));
+        // operatorController.povDown().whileTrue(climber.setVoltageCommand(Volts.of(-12.0)));
+
     }
 
     /** Register NamedCommands to be used in PathPlanner for autonomous. */
