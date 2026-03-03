@@ -18,6 +18,7 @@ import frc.robot.commands.ShootCommand;
 import frc.robot.commands.swerve.PathfindCommands;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
+import frc.robot.subsystems.ShotCalculatorSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.deploy.DeploySubsystem;
 import frc.robot.subsystems.hood.HoodSubsystem;
@@ -28,7 +29,6 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import frc.robot.util.FieldUtil;
-import frc.robot.util.shooting.ShotCalculator;
 
 public class RobotContainer {
 
@@ -45,7 +45,7 @@ public class RobotContainer {
     public final DeploySubsystem deploy;
     public final ClimberSubsystem climber;
 
-    public final ShotCalculator calculator;
+    public final ShotCalculatorSubsystem calculator;
 
     // Controller(s)
     private final CommandXboxController driverController;
@@ -67,7 +67,7 @@ public class RobotContainer {
         deploy = DeployFactory.initialize();
         climber = ClimberFactory.initialize();
 
-        calculator = new ShotCalculator(swerve::getPose, swerve::getChassisSpeeds);
+        calculator = new ShotCalculatorSubsystem(swerve::getPose, swerve::getChassisSpeeds);
 
         driverController = new CommandXboxController(kDriverControllerPort);
         operatorController = new CommandXboxController(kOperatorControllerPort);
@@ -117,7 +117,8 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand(
                 "ShootCommand",
-                new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetHubPose()).alongWith(new ShakeDeployCommand(intake, deploy)));
+                new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetHubPose())
+                        .alongWith(new ShakeDeployCommand(intake, deploy)));
         NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy).withTimeout(4.5));
         NamedCommands.registerCommand("RetractIntakeCommand", new RetractIntakeCommand(intake, deploy));
         NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));

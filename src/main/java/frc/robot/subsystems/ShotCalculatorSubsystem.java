@@ -1,4 +1,4 @@
-package frc.robot.util.shooting;
+package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
@@ -14,11 +14,12 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.FieldUtil;
+import frc.robot.util.shooting.ProjectilePhysics;
 import java.util.function.Supplier;
 
-public class ShotCalculator {
+public class ShotCalculatorSubsystem extends SubsystemBase {
     private final Supplier<Pose2d> poseSupplier;
     private final Supplier<ChassisSpeeds> chassisSpeedsSupplier;
 
@@ -32,14 +33,14 @@ public class ShotCalculator {
         hoodMap.put(5.0, 25.0);
     }
 
-    public ShotCalculator(Supplier<Pose2d> poseSupplier, Supplier<ChassisSpeeds> chassisSpeedsSupplier) {
+    private Pose3d targetPose3d = FieldUtil.getTargetHubPose();
+
+    public ShotCalculatorSubsystem(Supplier<Pose2d> poseSupplier, Supplier<ChassisSpeeds> chassisSpeedsSupplier) {
         this.poseSupplier = poseSupplier;
         this.chassisSpeedsSupplier = chassisSpeedsSupplier;
     }
 
-    public void calculate(Pose3d targetPose3d) {
-        double now = Timer.getTimestamp();
-
+    private void calculate(Pose3d targetPose3d) {
         Pose2d robotPose = poseSupplier.get().transformBy(kPhysicalOffset);
         Pose2d targetPose2d = targetPose3d.toPose2d();
 
@@ -122,5 +123,18 @@ public class ShotCalculator {
         public static ShotResult invalid() {
             return new ShotResult(Degrees.zero(), Degrees.zero(), RPM.zero(), false);
         }
+    }
+
+    public void setTarget(Pose3d target) {
+        targetPose3d = target;
+    }
+
+    public Pose3d getTarget() {
+        return targetPose3d;
+    }
+
+    @Override
+    public void periodic() {
+        this.calculate(targetPose3d);
     }
 }
