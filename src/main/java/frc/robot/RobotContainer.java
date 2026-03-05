@@ -27,7 +27,6 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
-import frc.robot.util.FieldUtil;
 
 public class RobotContainer {
 
@@ -89,14 +88,12 @@ public class RobotContainer {
 
         driverController
                 .rightTrigger(0.5)
-                .whileTrue(
-                        new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetPose(swerve.getPose()))
-                                .alongWith(new ShakeDeployCommand(intake, deploy)));
+                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
+                        .alongWith(new ShakeDeployCommand(intake, deploy)));
         driverController
                 .rightBumper()
-                .whileTrue(
-                        new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetPose(swerve.getPose()))
-                                .alongWith(new IntakeCommand(intake, deploy)));
+                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
+                        .alongWith(new IntakeCommand(intake, deploy)));
 
         driverController.leftTrigger(0.5).whileTrue(new IntakeCommand(intake, deploy));
         driverController.leftBumper().whileTrue(new PathfindCommands().pathfindUnderNearestTrench(swerve));
@@ -129,12 +126,10 @@ public class RobotContainer {
 
     /** Register NamedCommands for Autonomous. */
     private void registerCommands() {
-        NamedCommands.registerCommand(
-                "ShootCommand", new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetHubPose()));
+        NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, hood, indexer, calculator));
         NamedCommands.registerCommand(
                 "ShootShakeCommand",
-                new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetHubPose())
-                        .alongWith(new ShakeDeployCommand(intake, deploy)));
+                new ShootCommand(shooter, hood, indexer, calculator).alongWith(new ShakeDeployCommand(intake, deploy)));
         NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
         NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
     }

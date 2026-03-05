@@ -36,7 +36,7 @@ public class IndexerSubsystem extends SubsystemBase {
      * @return A command to run the spindexer and feeder motors and stop when complete.
      */
     public Command runCommand() {
-        return startEnd(
+        return runEnd(
                 () -> {
                     io.setSpindexerVoltage(kSpindexerVolts);
                     io.setFeederVoltage(kFeederVolts);

@@ -1,7 +1,6 @@
 package frc.robot.util;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -49,12 +48,6 @@ public final class FieldUtil {
     public static Pose3d getTargetPose(Pose2d robotPose) {
         boolean isInAllianceZone = isInAllianceZone(robotPose);
         return isInAllianceZone ? getTargetHubPose() : getCrossFieldFeedPose();
-    }
-
-    public static Distance getDistanceToHub(Pose2d robotPose) {
-        Pose2d hubPose = getTargetHubPose().toPose2d();
-        Pose2d shooterPose = robotPose.transformBy(kPhysicalOffset);
-        return Meters.of(shooterPose.getTranslation().getDistance(hubPose.getTranslation()));
     }
 
     public static FieldZones getCurrentZone(Pose2d robotPose) {

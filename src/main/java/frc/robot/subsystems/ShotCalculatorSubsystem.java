@@ -19,6 +19,7 @@ import frc.robot.util.shooting.ProjectilePhysics;
 import java.util.function.Supplier;
 
 public class ShotCalculatorSubsystem extends SubsystemBase {
+
     private final Supplier<Pose2d> poseSupplier;
     private final Supplier<ChassisSpeeds> chassisSpeedsSupplier;
 
@@ -32,21 +33,20 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         hoodMap.put(5.0, 25.0);
     }
 
-    private Pose3d targetPose3d = FieldUtil.getTargetHubPose();
-
     public ShotCalculatorSubsystem(Supplier<Pose2d> poseSupplier, Supplier<ChassisSpeeds> chassisSpeedsSupplier) {
         this.poseSupplier = poseSupplier;
         this.chassisSpeedsSupplier = chassisSpeedsSupplier;
     }
 
-    private void calculate(Pose3d targetPose3d) {
+    private void calculate() {
         Pose2d robotPose = poseSupplier.get().transformBy(kPhysicalOffset);
+        Pose3d targetPose3d = FieldUtil.getTargetPose(robotPose);
         Pose2d targetPose2d = targetPose3d.toPose2d();
 
         Distance realDistance = Meters.of(robotPose.getTranslation().getDistance(targetPose2d.getTranslation()));
-
         if (realDistance.lt(Meters.of(0.5)) || realDistance.gt(Meters.of(10.0))) {
             latestResult = ShotResult.invalid();
+            return;
         }
 
         ChassisSpeeds chassisSpeeds =
@@ -66,9 +66,9 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
             tof = ProjectilePhysics.calculateTime(launchSpeed, hoodAngle, virtualDistance);
 
             virtualTarget = new Pose2d(
-                    targetPose3d.getX() - (chassisSpeeds.vxMetersPerSecond * tof.in(Seconds)),
-                    targetPose3d.getY() - (chassisSpeeds.vyMetersPerSecond * tof.in(Seconds)),
-                    targetPose3d.toPose2d().getRotation());
+                    virtualTarget.getMeasureX().minus(Meters.of(chassisSpeeds.vxMetersPerSecond * tof.in(Seconds))),
+                    virtualTarget.getMeasureY().minus(Meters.of(chassisSpeeds.vyMetersPerSecond * tof.in(Seconds))),
+                    virtualTarget.getRotation());
         }
 
         Distance finalVirtualDistance =
@@ -113,17 +113,13 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         return latestResult.turretAngle();
     }
 
-    public void setTarget(Pose3d target) {
-        targetPose3d = target;
-    }
-
-    public Pose3d getTarget() {
-        return targetPose3d;
+    public boolean isValid() {
+        return latestResult.valid();
     }
 
     @Override
     public void periodic() {
-        this.calculate(targetPose3d);
+        calculate();
     }
 
     public record ShotResult(Angle turretAngle, Angle hoodAngle, AngularVelocity shooterVelocity, boolean valid) {
