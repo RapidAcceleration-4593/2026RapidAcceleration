@@ -78,7 +78,7 @@ public class Node3D {
                     + "' already exists as a child of Node3D '" + name + "'!");
             return;
         }
-        if (child.parent != this) {
+        if (child.parent != this && child.hasParent()) {
             addChildAlert.set(true);
             System.err.println("Cannot add '" + child.name + "' as a child to '" + name
                     + "'', as it is already the child of '" + child.parent + "'!'");
