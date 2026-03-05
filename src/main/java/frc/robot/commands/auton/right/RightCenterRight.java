@@ -18,7 +18,7 @@ public class RightCenterRight extends AutonCommand {
                         Commands.waitSeconds(10).andThen(NamedCommands.getCommand("IntakeCommand")),
                         AutoBuilder.followPath(paths.get(0))),
                 AutoBuilder.followPath(paths.get(1)),
-                NamedCommands.getCommand("ShootShakeCommands").withTimeout(Seconds.of(10.0)),
+                NamedCommands.getCommand("ShootShakeCommand").withTimeout(10.0),
                 AutoBuilder.followPath(paths.get(2)),
                 NamedCommands.getCommand("ClimbCommand").withTimeout(Seconds.of(5.0))
                 // ClimbCommand does nothing now, timeout soon will be useless (hopefully)
