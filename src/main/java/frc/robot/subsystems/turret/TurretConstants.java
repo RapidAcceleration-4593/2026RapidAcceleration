@@ -12,7 +12,7 @@ public final class TurretConstants {
     public static final boolean kInvertMotor = false;
     public static final boolean kInvertEncoder = false;
 
-    public static final double kP = 0.03;
+    public static final double kP = 0.01;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
@@ -22,7 +22,7 @@ public final class TurretConstants {
     public static final Angle kAngleTolerance = Degrees.of(0.25);
 
     public static final int kCountsPerRotation = 8192;
-    public static final double kMotorToEncoderGearing = (5.0 * 4.0 * 3.0);
+    public static final double kMotorToEncoderGearing = (4.0 * 4.0 * 3.0);
     public static final double kEncoderToTurretGearing = (165.0 / 34.0);
     public static final double kMotorToTurretGearing = kMotorToEncoderGearing * kEncoderToTurretGearing;
 
