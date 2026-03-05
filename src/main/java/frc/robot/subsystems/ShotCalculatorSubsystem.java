@@ -13,7 +13,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.shooting.ProjectilePhysics;
@@ -95,11 +94,6 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
     }
 
     private Angle calculateTurret(Pose2d robotPose, Pose2d virtualTarget) {
-        if (!FieldUtil.isInAllianceZone(robotPose)) {
-            Angle fieldAngle = FieldUtil.getCurrentAlliance() == Alliance.Blue ? Degrees.of(180) : Degrees.zero();
-            return robotPose.getRotation().getMeasure().minus(fieldAngle);
-        }
-
         Distance dx = virtualTarget.getMeasureX().minus(robotPose.getMeasureX());
         Distance dy = virtualTarget.getMeasureY().minus(robotPose.getMeasureY());
 
@@ -119,12 +113,6 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         return latestResult.turretAngle();
     }
 
-    public record ShotResult(Angle turretAngle, Angle hoodAngle, AngularVelocity shooterVelocity, boolean valid) {
-        public static ShotResult invalid() {
-            return new ShotResult(Degrees.zero(), Degrees.zero(), RPM.zero(), false);
-        }
-    }
-
     public void setTarget(Pose3d target) {
         targetPose3d = target;
     }
@@ -136,5 +124,11 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         this.calculate(targetPose3d);
+    }
+
+    public record ShotResult(Angle turretAngle, Angle hoodAngle, AngularVelocity shooterVelocity, boolean valid) {
+        public static ShotResult invalid() {
+            return new ShotResult(Degrees.zero(), Degrees.zero(), RPM.zero(), false);
+        }
     }
 }

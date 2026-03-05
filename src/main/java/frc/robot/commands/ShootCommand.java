@@ -10,9 +10,9 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import java.util.function.BooleanSupplier;
 
 public class ShootCommand extends ParallelCommandGroup {
+
     ShotCalculatorSubsystem calculator;
 
-    /** Points the hood at the hub, spins up the shooter, and runs the indexer until this Command is canceled. */
     public ShootCommand(
             ShooterSubsystem shooter,
             HoodSubsystem hood,

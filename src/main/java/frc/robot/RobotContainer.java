@@ -89,12 +89,19 @@ public class RobotContainer {
 
         driverController
                 .rightTrigger(0.5)
-                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetHubPose())
-                        .alongWith(new ShakeDeployCommand(intake, deploy)));
-        driverController.leftTrigger(0.5).whileTrue(new IntakeCommand(intake, deploy));
+                .whileTrue(
+                        new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetPose(swerve.getPose()))
+                                .alongWith(new ShakeDeployCommand(intake, deploy)));
+        driverController
+                .rightBumper()
+                .whileTrue(
+                        new ShootCommand(shooter, hood, indexer, calculator, FieldUtil.getTargetPose(swerve.getPose()))
+                                .alongWith(new IntakeCommand(intake, deploy)));
 
+        driverController.leftTrigger(0.5).whileTrue(new IntakeCommand(intake, deploy));
         driverController.leftBumper().whileTrue(new PathfindCommands().pathfindUnderNearestTrench(swerve));
-        driverController.rightBumper().onTrue(new RetractIntakeCommand(intake, deploy));
+
+        driverController.y().onTrue(new RetractIntakeCommand(intake, deploy));
 
         // <------- Operator Controller ------->
         operatorController.rightTrigger(0.5).whileTrue(shooter.setVoltageCommand(Volts.of(6.0)));
@@ -108,9 +115,8 @@ public class RobotContainer {
 
         operatorController.y().whileTrue(indexer.runCommand());
 
-        // operatorController.povUp().whileTrue(climber.setVoltageCommand(Volts.of(12.0)));
-        // operatorController.povDown().whileTrue(climber.setVoltageCommand(Volts.of(-12.0)));
-
+        operatorController.povUp().whileTrue(climber.setVoltageCommand(Volts.of(12.0)));
+        operatorController.povDown().whileTrue(climber.setVoltageCommand(Volts.of(-12.0)));
     }
 
     /** Select the command to run in Autonomous. */

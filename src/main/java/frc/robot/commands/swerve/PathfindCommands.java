@@ -11,11 +11,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.util.FieldUtil;
-import frc.robot.util.FieldUtil.FieldZones;
 import java.util.List;
 import java.util.Set;
 
 public final class PathfindCommands {
+
+    private record Trench(Pose2d allianceSide, Pose2d neutralSide) {}
 
     private static final Pose2d kLeftBlueAlliance = new Pose2d(Meters.of(3.25), Meters.of(7.425), new Rotation2d());
     private static final Pose2d kLeftBlueNeutral = new Pose2d(Meters.of(6.0), Meters.of(7.425), new Rotation2d());
@@ -29,8 +30,6 @@ public final class PathfindCommands {
     private static final Pose2d kRightRedAlliance = new Pose2d(Meters.of(13.33), Meters.of(7.425), new Rotation2d());
     private static final Pose2d kRightRedNeutral = new Pose2d(Meters.of(10.5), Meters.of(7.425), new Rotation2d());
 
-    private record Trench(Pose2d allianceSide, Pose2d neutralSide) {}
-
     private static final List<Trench> kBlueTrenches =
             List.of(new Trench(kLeftBlueAlliance, kLeftBlueNeutral), new Trench(kRightBlueAlliance, kRightBlueNeutral));
 
@@ -42,11 +41,6 @@ public final class PathfindCommands {
 
     public Command pathfindToPose(SwerveSubsystem swerve, Pose2d targetPose) {
         return Commands.defer(() -> AutoBuilder.pathfindToPose(targetPose, kConstraints, 0.0), Set.of(swerve));
-    }
-
-    public Command pathfindToOppositeZone(SwerveSubsystem swerve) {
-        return Commands.defer(
-                () -> AutoBuilder.pathfindToPose(getTargetPose(swerve.getPose()), kConstraints, 0.0), Set.of(swerve));
     }
 
     public Command pathfindUnderNearestTrench(SwerveSubsystem swerve) {
@@ -100,25 +94,5 @@ public final class PathfindCommands {
         double wrapped = Math.IEEEremainder(angle, Math.PI);
 
         return Math.abs(wrapped) < Math.PI / 2 ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(180);
-    }
-
-    private static FieldZones getTargetZone(Pose2d currentPose) {
-        FieldZones currentZone = FieldUtil.getCurrentZone(currentPose);
-        boolean isRedAlliance = FieldUtil.isRedAlliance();
-
-        return switch (currentZone) {
-            case Red_Zone, Blue_Zone -> FieldZones.Neutral_Zone;
-            case Neutral_Zone -> isRedAlliance ? FieldZones.Red_Zone : FieldZones.Blue_Zone;
-        };
-    }
-
-    private static Pose2d getTargetPose(Pose2d currentPose) {
-        FieldZones targetZone = getTargetZone(currentPose);
-
-        return switch (targetZone) {
-            case Blue_Zone -> FieldUtil.kInitialBluePose;
-            case Red_Zone -> FieldUtil.kInitialRedPose;
-            case Neutral_Zone -> FieldUtil.kInitialCenterPose;
-        };
     }
 }
