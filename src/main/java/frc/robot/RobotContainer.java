@@ -92,8 +92,8 @@ public class RobotContainer {
                         .alongWith(new ShakeDeployCommand(intake, deploy)));
         driverController
                 .rightBumper()
-                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new IntakeCommand(intake, deploy)));
+                .whileTrue(new IntakeCommand(intake, deploy)
+                        .alongWith(new ShootCommand(shooter, hood, indexer, calculator)));
 
         driverController.leftTrigger(0.5).whileTrue(new IntakeCommand(intake, deploy));
         driverController.leftBumper().whileTrue(new PathfindCommands().pathfindUnderNearestTrench(swerve));

@@ -11,7 +11,7 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 
 public final class ShooterConstants {
 
-    public static final int kMotorID = 7; // TODO: Change ID to 14
+    public static final int kMotorID = 14;
 
     public static final boolean kInvertMotor = false;
 
@@ -28,5 +28,5 @@ public final class ShooterConstants {
 
     public static final Distance kShooterHeight = Inches.of(18.0);
     public static final Transform2d kPhysicalOffset =
-            new Transform2d(new Translation2d(Inches.of(-5.557225), Inches.zero()), new Rotation2d());
+            new Transform2d(new Translation2d(Inches.of(-5.557), Inches.zero()), new Rotation2d());
 }
