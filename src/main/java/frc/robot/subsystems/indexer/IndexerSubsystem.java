@@ -58,4 +58,13 @@ public class IndexerSubsystem extends SubsystemBase {
             io.stopFeeder();
         });
     }
+
+    /**
+     * Detects whether the proximity sensor detects Fuel.
+     *
+     * @return Whether the proximity sensor is detected.
+     */
+    public boolean isFuelDetected() {
+        return inputs.isFuelDetected;
+    }
 }
