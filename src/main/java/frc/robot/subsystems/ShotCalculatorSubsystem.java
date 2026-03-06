@@ -6,6 +6,7 @@ import static frc.robot.util.shooting.ProjectilePhysicsConstants.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
@@ -68,7 +69,9 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
             virtualTarget = new Pose2d(
                     virtualTarget.getMeasureX().minus(Meters.of(chassisSpeeds.vxMetersPerSecond * tof.in(Seconds))),
                     virtualTarget.getMeasureY().minus(Meters.of(chassisSpeeds.vyMetersPerSecond * tof.in(Seconds))),
-                    virtualTarget.getRotation());
+                    virtualTarget
+                            .getRotation()
+                            .minus(new Rotation2d(Radians.of(chassisSpeeds.omegaRadiansPerSecond * tof.in(Seconds)))));
         }
 
         Distance finalVirtualDistance =
