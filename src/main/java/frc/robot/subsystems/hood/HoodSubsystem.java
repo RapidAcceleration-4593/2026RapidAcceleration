@@ -66,7 +66,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @return A command to set the motor voltage and stop when complete.
      */
     public Command setVoltageCommand(Voltage volts) {
-        return startEnd(() -> setVoltage(volts), io::stop);
+        return startEnd(() -> io.setVoltage(volts), io::stop);
     }
 
     /**
@@ -105,27 +105,9 @@ public class HoodSubsystem extends SubsystemBase {
      */
     private void setPosition(Supplier<Angle> angleSupplier) {
         Angle angle = angleSupplier.get();
-
-        // if (inputs.bottomLS && angle.lte(kMinimumAngle)) {
-        //     angle = kMinimumAngle;
-        // }
-
         Angle clampedAngle =
                 Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
         targetAngle = clampedAngle;
         io.setPosition(clampedAngle);
-    }
-
-    /**
-     * Sets the voltage of the motor.
-     *
-     * @param volts The voltage to apply to the hood motor.
-     */
-    private void setVoltage(Voltage volts) {
-        // if (inputs.bottomLS && volts.lt(Volts.zero())) {
-        //     io.stop();
-        // } else {
-        io.setVoltage(volts);
-        // }
     }
 }

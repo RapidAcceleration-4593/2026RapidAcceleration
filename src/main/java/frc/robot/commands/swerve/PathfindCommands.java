@@ -5,6 +5,7 @@ import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,6 +31,13 @@ public final class PathfindCommands {
     private static final Pose2d kRightRedAlliance = new Pose2d(Meters.of(13.33), Meters.of(7.425), new Rotation2d());
     private static final Pose2d kRightRedNeutral = new Pose2d(Meters.of(10.5), Meters.of(7.425), new Rotation2d());
 
+    private static final Pose2d kLeftBlueClimb = new Pose2d(Meters.of(0.92), Meters.of(3.0), new Rotation2d());
+    private static final Pose2d kRightBlueClimb =
+            new Pose2d(Meters.of(1.2), Meters.of(0.45), new Rotation2d(Degrees.of(180)));
+
+    private static final Pose2d kLeftRedClimb = FlippingUtil.flipFieldPose(kLeftBlueClimb);
+    private static final Pose2d kRightRedClimb = FlippingUtil.flipFieldPose(kRightBlueClimb);
+
     private static final List<Trench> kBlueTrenches =
             List.of(new Trench(kLeftBlueAlliance, kLeftBlueNeutral), new Trench(kRightBlueAlliance, kRightBlueNeutral));
 
@@ -38,6 +46,9 @@ public final class PathfindCommands {
 
     private static final PathConstraints kConstraints =
             new PathConstraints(kLinearVelocity, kLinearAcceleration, kAngularVelocity, kAngularAcceleration);
+
+    private static final PathConstraints kClimbConstants = new PathConstraints(
+            MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(1.0), kAngularVelocity, kAngularAcceleration);
 
     public Command pathfindToPose(SwerveSubsystem swerve, Pose2d targetPose) {
         return Commands.defer(() -> AutoBuilder.pathfindToPose(targetPose, kConstraints, 0.0), Set.of(swerve));
@@ -59,6 +70,26 @@ public final class PathfindCommands {
                     return Commands.sequence(
                             AutoBuilder.pathfindToPose(entranceWithRotation, kConstraints, 1.0),
                             AutoBuilder.pathfindToPose(exitWithRotation, kConstraints, 1.0));
+                },
+                Set.of(swerve));
+    }
+
+    public Command pathfindLeftClimb(SwerveSubsystem swerve) {
+        return Commands.defer(
+                () -> {
+                    boolean isRedAlliance = FieldUtil.isRedAlliance();
+                    return AutoBuilder.pathfindToPose(
+                            isRedAlliance ? kLeftRedClimb : kLeftBlueClimb, kClimbConstants, 0.0);
+                },
+                Set.of(swerve));
+    }
+
+    public Command pathfindRightClimb(SwerveSubsystem swerve) {
+        return Commands.defer(
+                () -> {
+                    boolean isRedAlliance = FieldUtil.isRedAlliance();
+                    return AutoBuilder.pathfindToPose(
+                            isRedAlliance ? kRightRedClimb : kRightBlueClimb, kClimbConstants, 0.0);
                 },
                 Set.of(swerve));
     }

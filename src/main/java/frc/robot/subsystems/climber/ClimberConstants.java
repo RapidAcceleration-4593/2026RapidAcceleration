@@ -17,9 +17,9 @@ public final class ClimberConstants {
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
-    public static final Distance kMinimumDistance = Inches.zero();
-    public static final Distance kMaximumDistance = Inches.of(4.0);
-    public static final Distance kDistanceTolerance = Inches.of(0.25);
+    public static final double kMinimumCounts = 0;
+    public static final double kMaximumCounts = 10000;
+    public static final double kCountsTolerance = 100;
 
     public static final int kCountsPerRotation = 8192;
     public static final double kMotorToEncoderGearing = (9.0 * 5.0);
@@ -27,11 +27,7 @@ public final class ClimberConstants {
     public static final double kMotorToClimberGearing = kMotorToEncoderGearing * kEncoderToClimberGearing;
 
     public static final Mass kCarriageMass = Kilograms.of(2);
-    public static final Distance kDrumRadius = Inches.of(0.5);
-
-    public static final double kPositionConversionFactor =
-            2 * Math.PI * kDrumRadius.in(Inches) / kEncoderToClimberGearing;
-    public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
+    public static final Distance kDrumRadius = Inches.of(0.25);
 
     public static final MomentOfInertia kClimberMOI = KilogramSquareMeters.of(0.0);
 }

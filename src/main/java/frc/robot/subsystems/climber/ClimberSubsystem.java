@@ -5,7 +5,6 @@ import static frc.robot.subsystems.climber.ClimberConstants.*;
 import static frc.robot.util.mechanism.MechanismFinder.fLengthMechanism3D;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,7 +18,7 @@ public class ClimberSubsystem extends SubsystemBase {
     private final ClimberInputsAutoLogged inputs;
     private final LengthMechanism3D climber3D;
 
-    private Distance targetDistance = kMinimumDistance;
+    private double targetDistance = kMinimumCounts;
 
     public ClimberSubsystem(ClimberIO io) {
         this.io = io;
@@ -34,20 +33,20 @@ public class ClimberSubsystem extends SubsystemBase {
         Logger.processInputs("Climber", inputs);
         targetDistance = inputs.targetDistance;
 
-        climber3D.setLength(inputs.distance);
+        climber3D.setLength(Inches.zero());
         CommandLogger.logSubsystemCommand(this);
     }
 
-    public Distance getCurrentDistance() {
+    public double getCurrentDistance() {
         return inputs.distance;
     }
 
-    public Distance getTargetDistance() {
+    public double getTargetDistance() {
         return inputs.targetDistance;
     }
 
     public boolean atTargetDistance() {
-        return inputs.distance.isNear(targetDistance, kDistanceTolerance);
+        return Math.abs(inputs.distance - targetDistance) < kCountsTolerance;
     }
 
     /**
@@ -66,8 +65,8 @@ public class ClimberSubsystem extends SubsystemBase {
      * @param distance The distance to apply to the open-loop PID control.
      * @return A command to run the motor to a distance and stop when complete.
      */
-    public Command goToDistanceCommand(Distance distance) {
-        return startEnd(() -> setPosition(distance), io::stop).until(this::atTargetDistance);
+    public Command goToDistanceCommand(double counts) {
+        return startEnd(() -> setPosition(counts), io::stop).until(this::atTargetDistance);
     }
 
     /**
@@ -84,9 +83,8 @@ public class ClimberSubsystem extends SubsystemBase {
      *
      * @param distance The distance to set as the climber position.
      */
-    private void setPosition(Distance distance) {
-        Distance clampedDistance = Inches.of(
-                MathUtil.clamp(distance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches)));
+    private void setPosition(double counts) {
+        double clampedDistance = MathUtil.clamp(counts, kMinimumCounts, kMaximumCounts);
         targetDistance = clampedDistance;
         io.setPosition(clampedDistance);
     }

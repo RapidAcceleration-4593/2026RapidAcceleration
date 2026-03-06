@@ -22,17 +22,17 @@ public class ClimberIOSim extends ClimberIOReal implements IPhysicsSim {
     private final SparkMaxAlternateEncoderSim encoderSim;
 
     public ClimberIOSim() {
-        DCMotor gearbox = DCMotor.getVex775Pro(1);
+        DCMotor gearbox = DCMotor.getNEO(1);
 
         climberSim = new ElevatorSim(
                 gearbox,
                 kMotorToClimberGearing,
                 kCarriageMass.in(Kilograms),
                 kDrumRadius.in(Meters),
-                kMinimumDistance.in(Meters),
-                kMaximumDistance.in(Meters),
+                kMinimumCounts,
+                kMaximumCounts,
                 true,
-                kMinimumDistance.in(Meters));
+                kMinimumCounts);
 
         motorSim = new SparkMaxSim(motor, gearbox);
         encoderSim = new SparkMaxAlternateEncoderSim(motor);

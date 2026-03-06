@@ -17,7 +17,6 @@ import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 
 public class ClimberIOReal implements ClimberIO {
@@ -28,7 +27,7 @@ public class ClimberIOReal implements ClimberIO {
     private final SparkClosedLoopController controller;
 
     public ClimberIOReal() {
-        motor = new SparkMax(kMotorID, MotorType.kBrushed);
+        motor = new SparkMax(kMotorID, MotorType.kBrushless);
         encoder = motor.getAlternateEncoder();
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
@@ -37,20 +36,16 @@ public class ClimberIOReal implements ClimberIO {
                 .smartCurrentLimit(60)
                 .voltageCompensation(12.0);
 
-        AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
-                .inverted(kInvertEncoder)
-                .countsPerRevolution(kCountsPerRotation)
-                .positionConversionFactor(kPositionConversionFactor)
-                .velocityConversionFactor(kVelocityConversionFactor);
+        AlternateEncoderConfig altEncoderConfig =
+                new AlternateEncoderConfig().inverted(kInvertEncoder).countsPerRevolution(kCountsPerRotation);
 
-        ClosedLoopConfig controlConfig = new ClosedLoopConfig()
-                .pid(kP, kI, kD)
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder); // FeedbackSEnsor.kAlternateOrExternalEncoder
+        ClosedLoopConfig controlConfig =
+                new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
 
         SoftLimitConfig limitConfig = new SoftLimitConfig()
-                .reverseSoftLimit(kMinimumDistance.in(Inches))
+                .reverseSoftLimit(kMinimumCounts)
                 .reverseSoftLimitEnabled(true)
-                .forwardSoftLimit(kMaximumDistance.in(Inches))
+                .forwardSoftLimit(kMaximumCounts)
                 .forwardSoftLimitEnabled(true);
 
         SparkMaxConfig config = new SparkMaxConfig();
@@ -59,25 +54,22 @@ public class ClimberIOReal implements ClimberIO {
         config.apply(controlConfig);
         config.apply(limitConfig);
 
-        config.softLimit.reverseSoftLimitEnabled(true).reverseSoftLimit(kMinimumDistance.in(Inches));
-        config.softLimit.forwardSoftLimitEnabled(true).forwardSoftLimit(kMaximumDistance.in(Inches));
-
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();
     }
 
     @Override
     public void updateInputs(ClimberInputs inputs) {
-        inputs.distance = Inches.of(encoder.getPosition());
-        inputs.targetDistance = Inches.of(controller.getSetpoint());
+        inputs.distance = encoder.getPosition();
+        inputs.targetDistance = controller.getSetpoint();
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
     }
 
     @Override
-    public void setPosition(Distance distance) {
-        controller.setSetpoint(distance.in(Inches), ControlType.kPosition);
+    public void setPosition(double counts) {
+        controller.setSetpoint(counts, ControlType.kPosition);
     }
 
     @Override
