@@ -3,6 +3,9 @@ package frc.robot.subsystems.leds;
 import static frc.robot.subsystems.leds.LEDConstants.*;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.networktables.BooleanSubscriber;
+import edu.wpi.first.networktables.BooleanTopic;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
@@ -13,6 +16,9 @@ import frc.robot.subsystems.leds.patterns.*;
 import java.util.List;
 
 public class LEDSubsystem extends SubsystemBase {
+
+    private final BooleanTopic redAllianceTopic;
+    private final BooleanSubscriber redAllianceSub;
 
     private final AddressableLED led;
     private final AddressableLEDBuffer buffer;
@@ -33,6 +39,9 @@ public class LEDSubsystem extends SubsystemBase {
     private Color gradientColor = Color.kGreen;
 
     public LEDSubsystem() {
+        redAllianceTopic = NetworkTableInstance.getDefault().getBooleanTopic("/FMSInfo/IsRedAlliance");
+        redAllianceSub = redAllianceTopic.subscribe(false);
+
         led = new AddressableLED(kPWMChannel);
         buffer = new AddressableLEDBuffer(kLEDCount);
 
@@ -46,6 +55,15 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         fillLEDs(Color.kBlack);
+        boolean isRedAlliance = redAllianceSub.get(false);
+
+        if (isRedAlliance) {
+            baseColor = Color.kRed;
+            gradientColor = Color.kBlack;
+        } else {
+            baseColor = Color.kBlue;
+            gradientColor = Color.kBlack;
+        }
 
         if (currentPattern != null) {
             currentPattern.run();
@@ -110,10 +128,8 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     /**
-     * Constructs a command to change the base and gradient colors for color specific patterns.
+     * Constructs a command to change the base and gradient colors to random colors.
      *
-     * @param baseColor The base color.
-     * @param gradientColor The gradient color.
      * @return A commmand to change the base and gradient colors.
      */
     public Command randomColorCommand() {
