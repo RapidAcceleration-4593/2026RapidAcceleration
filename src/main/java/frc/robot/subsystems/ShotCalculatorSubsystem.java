@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.shooting.ProjectilePhysics;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class ShotCalculatorSubsystem extends SubsystemBase {
 
@@ -49,8 +50,8 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
             return;
         }
 
-        ChassisSpeeds chassisSpeeds =
-                ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeedsSupplier.get(), robotPose.getRotation());
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
+                chassisSpeedsSupplier.get(), poseSupplier.get().getRotation());
 
         Pose2d virtualTarget = targetPose2d;
         Distance verticalDistance = targetPose3d.getMeasureZ().minus(kShooterHeight);
@@ -66,10 +67,18 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
             tof = ProjectilePhysics.calculateTime(launchSpeed, hoodAngle, virtualDistance);
 
             virtualTarget = new Pose2d(
-                    virtualTarget.getMeasureX().minus(Meters.of(chassisSpeeds.vxMetersPerSecond * tof.in(Seconds))),
-                    virtualTarget.getMeasureY().minus(Meters.of(chassisSpeeds.vyMetersPerSecond * tof.in(Seconds))),
-                    virtualTarget.getRotation());
+                    targetPose2d.getMeasureX().minus(Meters.of(chassisSpeeds.vxMetersPerSecond * tof.in(Seconds))),
+                    targetPose2d.getMeasureY().minus(Meters.of(chassisSpeeds.vyMetersPerSecond * tof.in(Seconds))),
+                    targetPose2d.getRotation());
         }
+        Pose2d predictedPose = new Pose2d(
+                robotPose.getX() + chassisSpeeds.vxMetersPerSecond * 0.2,
+                robotPose.getY() + chassisSpeeds.vxMetersPerSecond * 0.2,
+                robotPose.getRotation());
+        Logger.recordOutput("ChassisSpeeds", chassisSpeeds);
+        Logger.recordOutput("TOF", tof);
+        Logger.recordOutput("FutureRobotPose", predictedPose);
+        Logger.recordOutput("TargetPose", virtualTarget);
 
         Distance finalVirtualDistance =
                 Meters.of(virtualTarget.getTranslation().getDistance(robotPose.getTranslation()));
