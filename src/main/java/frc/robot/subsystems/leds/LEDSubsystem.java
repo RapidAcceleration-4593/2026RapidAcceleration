@@ -37,7 +37,7 @@ public class LEDSubsystem extends SubsystemBase {
     private double speedFactor = 1.0;
 
     private Color baseColor = Color.kBlue;
-    private Color gradientColor = Color.kGreen;
+    private Color gradientColor = Color.kBlack;
 
     public LEDSubsystem() {
         redAllianceTopic = NetworkTableInstance.getDefault().getBooleanTopic("/FMSInfo/IsRedAlliance");
@@ -58,13 +58,13 @@ public class LEDSubsystem extends SubsystemBase {
         fillLEDs(Color.kBlack);
         boolean isRedAlliance = redAllianceSub.get(false);
 
-        if (isRedAlliance) {
-            baseColor = Color.kRed;
-            gradientColor = Color.kBlack;
-        } else {
-            baseColor = Color.kBlue;
-            gradientColor = Color.kBlack;
-        }
+        // if (isRedAlliance) {
+        //     baseColor = Color.kRed;
+        //     gradientColor = Color.kBlack;
+        // } else {
+        //     baseColor = Color.kBlue;
+        //     gradientColor = Color.kBlack;
+        // }
 
         if (currentPattern != null) {
             currentPattern.run();
@@ -110,6 +110,11 @@ public class LEDSubsystem extends SubsystemBase {
 
 	public void changeSpeed(double speedFactor) {
 		this.speedFactor = speedFactor;
+	}
+
+	public void changeColor(Color baseColor, Color gradientColor) {
+		this.baseColor = baseColor;
+        this.gradientColor = gradientColor;
 	}
 
     /**
