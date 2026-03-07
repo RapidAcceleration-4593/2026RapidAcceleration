@@ -8,14 +8,13 @@ import java.util.List;
 
 public class CenterNoPickupLeft extends AutonCommand {
 
-	public CenterNoPickupLeft(AutonUtil util) {
-		super(util, List.of("CenterNoPickup-1", "CenterNoPickupLeft"));
+    public CenterNoPickupLeft(AutonUtil util) {
+        super(util, List.of("CenterNoPickup-1", "CenterNoPickupLeft"));
 
-		addCommands(
-			AutoBuilder.followPath(paths.get(0)),
-			NamedCommands.getCommand("ShootCommand").withTimeout(5.0),
-			AutoBuilder.followPath(paths.get(1)),
-			NamedCommands.getCommand("ClimbCommand")
-		);
-	}
+        addCommands(
+                AutoBuilder.followPath(paths.get(0)),
+                NamedCommands.getCommand("ShootCommand").withTimeout(5.0),
+                AutoBuilder.followPath(paths.get(1)),
+                NamedCommands.getCommand("ClimbCommand"));
+    }
 }

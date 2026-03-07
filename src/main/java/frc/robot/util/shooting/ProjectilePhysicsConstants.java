@@ -13,6 +13,8 @@ public final class ProjectilePhysicsConstants {
     public static final Distance kShooterHeight = Inches.of(18.0);
     public static final Distance kWheelRadius = Inches.of(2.0);
 
+    public static final double kTwistCompensationFactor = 0.1;
+
     public static final double[][] kExitFactorData = {
         {2.936, 0.026, 0.38},
         {3.586, -0.690, 0.37},

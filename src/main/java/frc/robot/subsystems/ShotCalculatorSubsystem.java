@@ -6,7 +6,6 @@ import static frc.robot.util.shooting.ProjectilePhysicsConstants.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
@@ -69,9 +68,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
             virtualTarget = new Pose2d(
                     virtualTarget.getMeasureX().minus(Meters.of(chassisSpeeds.vxMetersPerSecond * tof.in(Seconds))),
                     virtualTarget.getMeasureY().minus(Meters.of(chassisSpeeds.vyMetersPerSecond * tof.in(Seconds))),
-                    virtualTarget
-                            .getRotation()
-                            .minus(new Rotation2d(Radians.of(chassisSpeeds.omegaRadiansPerSecond * tof.in(Seconds)))));
+                    virtualTarget.getRotation());
         }
 
         Distance finalVirtualDistance =
@@ -80,7 +77,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         LinearVelocity finalLaunchSpeed =
                 ProjectilePhysics.calculateLaunchSpeed(finalHoodAngle, finalVirtualDistance, verticalDistance);
 
-        Angle turretAngle = calculateTurret(robotPose, virtualTarget);
+        Angle turretAngle = calculateTurret(robotPose, virtualTarget, chassisSpeeds);
         AngularVelocity shooterVelocity = calculateShooter(finalLaunchSpeed, finalVirtualDistance, turretAngle);
 
         latestResult = new ShotResult(turretAngle, finalHoodAngle, shooterVelocity, true);
@@ -96,12 +93,16 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         return RadiansPerSecond.of(launchSpeed.in(MetersPerSecond) / (kWheelRadius.in(Meters) * kExitVelocityFactor));
     }
 
-    private Angle calculateTurret(Pose2d robotPose, Pose2d virtualTarget) {
+    private Angle calculateTurret(Pose2d robotPose, Pose2d virtualTarget, ChassisSpeeds chassisSpeeds) {
         Distance dx = virtualTarget.getMeasureX().minus(robotPose.getMeasureX());
         Distance dy = virtualTarget.getMeasureY().minus(robotPose.getMeasureY());
 
         Angle fieldAngle = Radians.of(Math.atan2(dy.in(Meters), dx.in(Meters)));
-        return robotPose.getRotation().getMeasure().minus(fieldAngle);
+        return robotPose
+                .getRotation()
+                .getMeasure()
+                .minus(fieldAngle)
+                .minus(Radians.of(chassisSpeeds.omegaRadiansPerSecond * kTwistCompensationFactor));
     }
 
     public Angle getHoodAngle() {
