@@ -4,11 +4,11 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.leds.LEDSubsystem;
 
-public class RunShooterLEDPatternCommand extends Command {
+public class RunIntakeLEDPatternCommand extends Command {
 
     private final LEDSubsystem subsystem;
 
-    public RunShooterLEDPatternCommand(LEDSubsystem subsystem) {
+    public RunIntakeLEDPatternCommand(LEDSubsystem subsystem) {
         this.subsystem = subsystem;
         addRequirements(subsystem);
     }
@@ -16,9 +16,9 @@ public class RunShooterLEDPatternCommand extends Command {
     @Override
     public void initialize() {
         subsystem.changePattern(2);
-        subsystem.changeSpeed(2.0);
+        subsystem.changeSpeed(-1.5);
         subsystem.setUseAllianceColor(false);
-        subsystem.changeColor(Color.kGreen, Color.kBlack);
+        subsystem.changeColor(Color.kOrange, Color.kBlack);
     }
 
     @Override

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.leds.LEDConstants.kColors;
 import frc.robot.subsystems.leds.patterns.*;
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class LEDSubsystem extends SubsystemBase {
 
     private Color baseColor = Color.kBlue;
     private Color gradientColor = Color.kBlack;
+    private boolean useAllianceColor = true;
 
     public LEDSubsystem() {
         redAllianceTopic = NetworkTableInstance.getDefault().getBooleanTopic("/FMSInfo/IsRedAlliance");
@@ -56,22 +58,18 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         fillLEDs(Color.kBlack);
-        boolean isRedAlliance = redAllianceSub.get(false);
 
-        // if (isRedAlliance) {
-        //     baseColor = Color.kRed;
-        //     gradientColor = Color.kBlack;
-        // } else {
-        //     baseColor = Color.kBlue;
-        //     gradientColor = Color.kBlack;
-        // }
+        if (useAllianceColor) {
+            baseColor = getAllianceColor();
+            gradientColor = Color.kBlack;
+        }
 
         if (currentPattern != null) {
             currentPattern.run();
         }
 
         updateLEDs();
-        realFrame = (realFrame + kBaseSpeed * speedFactor) % kLEDCount;
+        realFrame = ((realFrame + kBaseSpeed * speedFactor) % kLEDCount + kLEDCount) % kLEDCount;
         animationFrame = ((int) realFrame + kLEDCount) % kLEDCount;
     }
 
@@ -83,12 +81,26 @@ public class LEDSubsystem extends SubsystemBase {
         LEDPattern.solid(color).applyTo(buffer);
     }
 
-    public void applyPattern(LEDPattern pattern) {
-        pattern.applyTo(buffer);
-    }
-
     public void updateLEDs() {
         led.setData(buffer);
+    }
+
+    public void changePattern(int patternIndex) {
+        currentPatternIndex = patternIndex % patterns.size();
+        currentPattern = patterns.get(currentPatternIndex);
+    }
+
+    public void changeSpeed(double speedFactor) {
+        this.speedFactor = speedFactor;
+    }
+
+    public void changeColor(Color baseColor, Color gradientColor) {
+        this.baseColor = baseColor;
+        this.gradientColor = gradientColor;
+    }
+
+    public void setUseAllianceColor(boolean value) {
+        this.useAllianceColor = value;
     }
 
     public Color getBaseColor() {
@@ -103,29 +115,13 @@ public class LEDSubsystem extends SubsystemBase {
         return this.animationFrame;
     }
 
-	public void changePattern(int patternIndex) {
-		currentPatternIndex = patternIndex % patterns.size();
-        currentPattern = patterns.get(currentPatternIndex);
-	}
-
-	public void changeSpeed(double speedFactor) {
-		this.speedFactor = speedFactor;
-	}
-
-	public void changeColor(Color baseColor, Color gradientColor) {
-		this.baseColor = baseColor;
-        this.gradientColor = gradientColor;
-	}
-
-    /**
-     * Constructs a command to stop all LED patterns and turn off all LEDs.
-     *
-     * @return A command to stop all LED patterns and turn off all LEDs.
-     */
-    public Command stopLEDs() {
-        return runOnce(() -> {
-            fillLEDs(Color.kBlack);
-        });
+    public Color getAllianceColor() {
+        boolean isRedAlliance = redAllianceSub.get(false);
+        if (isRedAlliance) {
+            return Color.kRed;
+        } else {
+            return Color.kBlue;
+        }
     }
 
     /**
