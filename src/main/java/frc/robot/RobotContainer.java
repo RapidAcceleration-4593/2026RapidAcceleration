@@ -139,5 +139,6 @@ public class RobotContainer {
                 new ShootCommand(shooter, hood, indexer, calculator).alongWith(new ShakeDeployCommand(intake, deploy)));
         NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
         NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
+		NamedCommands.registerCommand("ClimberRaiseArmCommand", climber.goToDistanceCommand(10000)); //we probably want to write this differently
     }
 }
