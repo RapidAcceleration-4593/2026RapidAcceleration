@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.subsystems.ShotCalculatorSubsystem;
 import frc.robot.subsystems.hood.HoodSubsystem;
@@ -20,6 +21,6 @@ public class ShootCommand extends ParallelCommandGroup {
         addCommands(
                 shooter.runAtVelocityCommand(calculator::getShooterVelocity),
                 hood.runToAngleCommand(calculator::getHoodAngle),
-                indexer.runCommand().onlyWhile(readySupplier));
+                Commands.sequence(Commands.waitSeconds(0.5), indexer.runCommand()));
     }
 }
