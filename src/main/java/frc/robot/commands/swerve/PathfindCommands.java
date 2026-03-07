@@ -17,41 +17,27 @@ import java.util.Set;
 
 public final class PathfindCommands {
 
-    private record Trench(Pose2d allianceSide, Pose2d neutralSide) {}
-
-    private static final Pose2d kLeftBlueAlliance = new Pose2d(Meters.of(3.25), Meters.of(7.425), new Rotation2d());
-    private static final Pose2d kLeftBlueNeutral = new Pose2d(Meters.of(6.0), Meters.of(7.425), new Rotation2d());
-
-    private static final Pose2d kRightBlueAlliance = new Pose2d(Meters.of(3.25), Meters.of(0.65), new Rotation2d());
-    private static final Pose2d kRightBlueNeutral = new Pose2d(Meters.of(6.0), Meters.of(0.65), new Rotation2d());
-
-    private static final Pose2d kLeftRedAlliance = FlippingUtil.flipFieldPose(kLeftBlueAlliance);
-    private static final Pose2d kLeftRedNeutral = FlippingUtil.flipFieldPose(kLeftBlueNeutral);
-
-    private static final Pose2d kRightRedAlliance = FlippingUtil.flipFieldPose(kRightBlueAlliance);
-    private static final Pose2d kRightRedNeutral = FlippingUtil.flipFieldPose(kRightBlueNeutral);
-
-    private static final Pose2d kLeftBlueClimb = new Pose2d(Meters.of(0.92), Meters.of(3.0), new Rotation2d());
-    private static final Pose2d kRightBlueClimb =
-            new Pose2d(Meters.of(1.2), Meters.of(0.45), new Rotation2d(Degrees.of(180)));
-
-    private static final Pose2d kLeftRedClimb = FlippingUtil.flipFieldPose(kLeftBlueClimb);
-    private static final Pose2d kRightRedClimb = FlippingUtil.flipFieldPose(kRightBlueClimb);
-
-    private static final List<Trench> kBlueTrenches =
-            List.of(new Trench(kLeftBlueAlliance, kLeftBlueNeutral), new Trench(kRightBlueAlliance, kRightBlueNeutral));
-
-    private static final List<Trench> kRedTrenches =
-            List.of(new Trench(kLeftRedAlliance, kLeftRedNeutral), new Trench(kRightRedAlliance, kRightRedNeutral));
-
     private static final PathConstraints kConstraints =
             new PathConstraints(kLinearVelocity, kLinearAcceleration, kAngularVelocity, kAngularAcceleration);
 
     private static final PathConstraints kClimbConstants = new PathConstraints(
             MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(1.0), kAngularVelocity, kAngularAcceleration);
 
-    public Command pathfindToPose(SwerveSubsystem swerve, Pose2d targetPose) {
-        return Commands.defer(() -> AutoBuilder.pathfindToPose(targetPose, kConstraints, 0.0), Set.of(swerve));
+    private record Trench(Pose2d allianceSide, Pose2d neutralSide) {}
+
+    private static final Pose2d kLeftClimb = new Pose2d(Meters.of(0.92), Meters.of(3.0), new Rotation2d());
+    private static final Pose2d kRightClimb = new Pose2d(Meters.of(1.2), Meters.of(0.45), new Rotation2d());
+
+    private static final List<Trench> kTrenches = List.of(
+            new Trench(
+                    new Pose2d(Meters.of(3.25), Meters.of(7.425), new Rotation2d()),
+                    new Pose2d(Meters.of(6.0), Meters.of(7.425), new Rotation2d())),
+            new Trench(
+                    new Pose2d(Meters.of(3.25), Meters.of(0.65), new Rotation2d()),
+                    new Pose2d(Meters.of(6.0), Meters.of(0.65), new Rotation2d())));
+
+    private Pose2d fieldPose(Pose2d bluePose) {
+        return FieldUtil.isRedAlliance() ? FlippingUtil.flipFieldPose(bluePose) : bluePose;
     }
 
     public Command pathfindUnderNearestTrench(SwerveSubsystem swerve) {
@@ -68,7 +54,7 @@ public final class PathfindCommands {
                     Pose2d exitWithRotation = new Pose2d(exit.getTranslation(), snapped);
 
                     return Commands.sequence(
-                            AutoBuilder.pathfindToPose(entranceWithRotation, kConstraints, 0.0),
+                            AutoBuilder.pathfindToPose(entranceWithRotation, kConstraints, 1.0),
                             AutoBuilder.pathfindToPose(exitWithRotation, kConstraints, 0.0));
                 },
                 Set.of(swerve));
@@ -76,34 +62,28 @@ public final class PathfindCommands {
 
     public Command pathfindLeftClimb(SwerveSubsystem swerve) {
         return Commands.defer(
-                () -> {
-                    boolean isRedAlliance = FieldUtil.isRedAlliance();
-                    return AutoBuilder.pathfindToPose(
-                            isRedAlliance ? kLeftRedClimb : kLeftBlueClimb, kClimbConstants, 0.0);
-                },
-                Set.of(swerve));
+                () -> AutoBuilder.pathfindToPose(fieldPose(kLeftClimb), kClimbConstants, 0.0), Set.of(swerve));
     }
 
     public Command pathfindRightClimb(SwerveSubsystem swerve) {
         return Commands.defer(
-                () -> {
-                    boolean isRedAlliance = FieldUtil.isRedAlliance();
-                    return AutoBuilder.pathfindToPose(
-                            isRedAlliance ? kRightRedClimb : kRightBlueClimb, kClimbConstants, 0.0);
-                },
-                Set.of(swerve));
+                () -> AutoBuilder.pathfindToPose(fieldPose(kRightClimb), kClimbConstants, 0.0), Set.of(swerve));
     }
 
     private Trench findClosestTrench(Pose2d robotPose) {
-        List<Trench> trenches = FieldUtil.isRedAlliance() ? kRedTrenches : kBlueTrenches;
-
-        return trenches.stream()
-                .min((a, b) -> {
-                    double da = minDistance(robotPose, a);
-                    double db = minDistance(robotPose, b);
-                    return Double.compare(da, db);
-                })
+        return kTrenches.stream()
+                .map(this::getCorrectTrench)
+                .min((a, b) -> Double.compare(minDistance(robotPose, a), minDistance(robotPose, b)))
                 .orElseThrow();
+    }
+
+    private Trench getCorrectTrench(Trench blueTrench) {
+        if (FieldUtil.isRedAlliance()) {
+            return new Trench(
+                    FlippingUtil.flipFieldPose(blueTrench.allianceSide()),
+                    FlippingUtil.flipFieldPose(blueTrench.neutralSide()));
+        }
+        return blueTrench;
     }
 
     private double minDistance(Pose2d robotPose, Trench trench) {

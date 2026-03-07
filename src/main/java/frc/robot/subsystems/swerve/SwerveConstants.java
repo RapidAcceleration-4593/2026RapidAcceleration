@@ -32,7 +32,7 @@ public final class SwerveConstants {
     public static final LinearVelocity kMaxVelocity = MetersPerSecond.of(5.5);
 
     // Currently only used for PathPlanner.
-    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(2.25);
+    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(2.5);
     public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(3.0);
     public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(540.0);
     public static final AngularAcceleration kAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
@@ -253,8 +253,6 @@ public final class SwerveConstants {
             .withGyro(COTS.ofPigeon2())
             .withSwerveModule(new SwerveModuleSimulationConfig(
                     DCMotor.getKrakenX60(1),
-                    // Must be a Falcon motor for this version of MapleSim.
-                    // MapleMotorSim should implement DCMotorSim in upcoming versions.
                     DCMotor.getKrakenX60(1),
                     kDriveGearRatio,
                     kSteerGearRatio,

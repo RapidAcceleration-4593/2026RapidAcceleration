@@ -1,7 +1,5 @@
 package frc.robot.commands.auton.right;
 
-import static edu.wpi.first.units.Units.Seconds;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -20,7 +18,7 @@ public class RightCenterRight extends AutonCommand {
                 AutoBuilder.followPath(paths.get(1)),
                 NamedCommands.getCommand("ShootShakeCommand").withTimeout(10.0),
                 AutoBuilder.followPath(paths.get(2)),
-                NamedCommands.getCommand("ClimbCommand").withTimeout(Seconds.of(5.0))
+                NamedCommands.getCommand("ClimbCommand").withTimeout(5.0)
                 // ClimbCommand does nothing now, timeout soon will be useless (hopefully)
                 );
     }
