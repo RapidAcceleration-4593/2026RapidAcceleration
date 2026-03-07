@@ -25,11 +25,11 @@ public final class PathfindCommands {
     private static final Pose2d kRightBlueAlliance = new Pose2d(Meters.of(3.25), Meters.of(0.65), new Rotation2d());
     private static final Pose2d kRightBlueNeutral = new Pose2d(Meters.of(6.0), Meters.of(0.65), new Rotation2d());
 
-    private static final Pose2d kLeftRedAlliance = new Pose2d(Meters.of(13.33), Meters.of(0.65), new Rotation2d());
-    private static final Pose2d kLeftRedNeutral = new Pose2d(Meters.of(10.5), Meters.of(0.65), new Rotation2d());
+    private static final Pose2d kLeftRedAlliance = FlippingUtil.flipFieldPose(kLeftBlueAlliance);
+    private static final Pose2d kLeftRedNeutral = FlippingUtil.flipFieldPose(kLeftBlueNeutral);
 
-    private static final Pose2d kRightRedAlliance = new Pose2d(Meters.of(13.33), Meters.of(7.425), new Rotation2d());
-    private static final Pose2d kRightRedNeutral = new Pose2d(Meters.of(10.5), Meters.of(7.425), new Rotation2d());
+    private static final Pose2d kRightRedAlliance = FlippingUtil.flipFieldPose(kRightBlueAlliance);
+    private static final Pose2d kRightRedNeutral = FlippingUtil.flipFieldPose(kRightBlueNeutral);
 
     private static final Pose2d kLeftBlueClimb = new Pose2d(Meters.of(0.92), Meters.of(3.0), new Rotation2d());
     private static final Pose2d kRightBlueClimb =
@@ -68,8 +68,8 @@ public final class PathfindCommands {
                     Pose2d exitWithRotation = new Pose2d(exit.getTranslation(), snapped);
 
                     return Commands.sequence(
-                            AutoBuilder.pathfindToPose(entranceWithRotation, kConstraints, 1.0),
-                            AutoBuilder.pathfindToPose(exitWithRotation, kConstraints, 1.0));
+                            AutoBuilder.pathfindToPose(entranceWithRotation, kConstraints, 0.0),
+                            AutoBuilder.pathfindToPose(exitWithRotation, kConstraints, 0.0));
                 },
                 Set.of(swerve));
     }

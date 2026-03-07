@@ -126,7 +126,9 @@ public class RobotContainer {
 
     /** Register NamedCommands for Autonomous. */
     private void registerCommands() {
-        NamedCommands.registerCommand("ShootCommand", new ShootCommand(shooter, hood, indexer, calculator));
+        NamedCommands.registerCommand(
+                "ShootCommand",
+                new ShootCommand(shooter, hood, indexer, calculator)); // .until(indexer::isFuelDetected)
         NamedCommands.registerCommand(
                 "ShootShakeCommand",
                 new ShootCommand(shooter, hood, indexer, calculator).alongWith(new ShakeDeployCommand(intake, deploy)));

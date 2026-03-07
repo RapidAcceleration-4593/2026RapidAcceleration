@@ -53,8 +53,7 @@ public class IntakeIOSim extends IntakeIOReal implements IPhysicsSim {
                 flywheelSim.getAngularVelocityRPM() * kIntakeGearing,
                 SimulatedBattery.getBatteryVoltage().in(Volts),
                 0.02);
-        if (SimulationManager.getInstance().isIntakeExtended()
-                && Math.abs(motorSim.getVelocity()) > kMotorVelocityIntakeThreshold) {
+        if (SimulationManager.getInstance().isIntakeExtended()) {
             intakeSim.startIntake();
         } else {
             intakeSim.stopIntake();
