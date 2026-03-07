@@ -23,6 +23,7 @@ import frc.robot.subsystems.deploy.DeploySubsystem;
 import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.leds.LEDSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
@@ -45,6 +46,8 @@ public class RobotContainer {
 
     public final ShotCalculatorSubsystem calculator;
 
+    public final LEDSubsystem leds;
+
     // Controller(s)
     private final CommandXboxController driverController;
     private final CommandXboxController operatorController;
@@ -66,6 +69,8 @@ public class RobotContainer {
         deploy = DeployFactory.initialize();
         climber = ClimberFactory.initialize();
 
+        leds = new LEDSubsystem();
+
         calculator = new ShotCalculatorSubsystem(swerve::getPose, swerve::getChassisSpeeds);
 
         driverController = new CommandXboxController(kDriverControllerPort);
@@ -84,7 +89,7 @@ public class RobotContainer {
         turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle));
 
         // <------- Driver Controller ------->
-        driverController.start().onTrue(swerve.resetGyroCommand());
+        // driverController.start().onTrue(swerve.resetGyroCommand());
 
         driverController
                 .rightTrigger(0.5)
