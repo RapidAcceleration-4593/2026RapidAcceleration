@@ -94,7 +94,9 @@ public class RobotContainer {
         driverController
                 .rightTrigger(0.5)
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new ShakeDeployCommand(intake, deploy)));
+                        .alongWith(new ShakeDeployCommand(intake, deploy))
+                        .alongWith(leds.changeSpeedCommand(2.0))
+                        .alongWith(leds.changePatternCommand(2, 0)));
         driverController
                 .rightBumper()
                 .whileTrue(new IntakeCommand(intake, deploy)

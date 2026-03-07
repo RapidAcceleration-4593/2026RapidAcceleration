@@ -24,7 +24,7 @@ public class LEDSubsystem extends SubsystemBase {
     private final AddressableLEDBuffer buffer;
 
     private RunnableLEDPattern currentPattern;
-    private int currentPatternIndex = 2;
+    private int currentPatternIndex = 0;
     private List<RunnableLEDPattern> patterns = List.of(
             new GradientFillPattern(this),
             new GradientTrailPattern(this),
@@ -34,6 +34,7 @@ public class LEDSubsystem extends SubsystemBase {
 
     private int animationFrame = 0;
     private double realFrame = 0.0;
+    private double speedFactor = 1.0;
 
     private Color baseColor = Color.kBlue;
     private Color gradientColor = Color.kGreen;
@@ -70,7 +71,7 @@ public class LEDSubsystem extends SubsystemBase {
         }
 
         updateLEDs();
-        realFrame = (realFrame + kSpeedFactor) % kLEDCount;
+        realFrame = (realFrame + kBaseSpeed * speedFactor) % kLEDCount;
         animationFrame = ((int) realFrame + kLEDCount) % kLEDCount;
     }
 
@@ -149,5 +150,35 @@ public class LEDSubsystem extends SubsystemBase {
             currentPatternIndex = (currentPatternIndex + 1) % patterns.size();
             currentPattern = patterns.get(currentPatternIndex);
         });
+    }
+
+    /**
+     * Constructs a command to change the speed of the current LED pattern, then changes it back to 1.0.
+     *
+     * @param speedFactor The factor which is multiplied by base speed to determine the actual speed of the pattern.
+     * @return A command to change the speed of the current LED pattern.
+     */
+    public Command changeSpeedCommand(double speedFactor) {
+        return startEnd(() -> this.speedFactor = speedFactor, () -> this.speedFactor = 1.0);
+    }
+
+    /**
+     * Constructs a command to change the current LED pattern to the specified start index, then changes it back to the
+     * end index.
+     *
+     * @param patternIndexStart The index of the pattern to start from.
+     * @param patternIndexEnd The index of the pattern to end on.
+     * @return A command to change the LED pattern.
+     */
+    public Command changePatternCommand(int patternIndexStart, int patternIndexEnd) {
+        return startEnd(
+                () -> {
+                    currentPatternIndex = patternIndexStart % patterns.size();
+                    currentPattern = patterns.get(currentPatternIndex);
+                },
+                () -> {
+                    currentPatternIndex = patternIndexEnd % patterns.size();
+                    currentPattern = patterns.get(currentPatternIndex);
+                });
     }
 }

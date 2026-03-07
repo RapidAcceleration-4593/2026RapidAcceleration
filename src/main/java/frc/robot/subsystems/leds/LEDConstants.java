@@ -32,7 +32,7 @@ public final class LEDConstants {
     }
 
     // General pattern config.
-    public static final double kSpeedFactor = 1.0;
+    public static final double kBaseSpeed = 1.0;
 
     // Trail pattern config.
     public static final int kTrailCount = 1;
