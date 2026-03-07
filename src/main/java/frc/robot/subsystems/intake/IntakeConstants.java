@@ -7,7 +7,7 @@ import edu.wpi.first.units.measure.Voltage;
 
 public final class IntakeConstants {
 
-    public static final int kMotorID = 8; // TODO: Flash ID.
+    public static final int kMotorID = 8;
 
     public static final boolean kInvertMotor = false;
     public static final int kMaxCapacity = 35;

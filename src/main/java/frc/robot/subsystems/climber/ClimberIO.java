@@ -1,7 +1,6 @@
 package frc.robot.subsystems.climber;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.climber.ClimberConstants.kMaximumCounts;
 import static frc.robot.subsystems.climber.ClimberConstants.kMinimumCounts;
 
 import edu.wpi.first.units.measure.Current;
@@ -13,7 +12,7 @@ public interface ClimberIO {
     @AutoLog
     public static class ClimberInputs {
         public double distance = kMinimumCounts;
-        public double targetDistance = kMaximumCounts;
+        public double targetDistance = kMinimumCounts;
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();

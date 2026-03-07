@@ -11,7 +11,7 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 
 public final class ShooterConstants {
 
-    public static final int kMotorID = 14; // TODO: Flash ID.
+    public static final int kMotorID = 14;
 
     public static final boolean kInvertMotor = false;
 

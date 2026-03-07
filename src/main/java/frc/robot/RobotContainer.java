@@ -43,10 +43,9 @@ public class RobotContainer {
     public final IntakeSubsystem intake;
     public final DeploySubsystem deploy;
     public final ClimberSubsystem climber;
+    public final LEDSubsystem LEDs;
 
     public final ShotCalculatorSubsystem calculator;
-
-    public final LEDSubsystem leds;
 
     // Controller(s)
     private final CommandXboxController driverController;
@@ -68,8 +67,7 @@ public class RobotContainer {
         intake = IntakeFactory.initialize();
         deploy = DeployFactory.initialize();
         climber = ClimberFactory.initialize();
-
-        leds = new LEDSubsystem();
+        LEDs = new LEDSubsystem();
 
         calculator = new ShotCalculatorSubsystem(swerve::getPose, swerve::getChassisSpeeds);
 
@@ -89,14 +87,14 @@ public class RobotContainer {
         turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle));
 
         // <------- Driver Controller ------->
-        // driverController.start().onTrue(swerve.resetGyroCommand());
+        driverController.start().onTrue(swerve.resetGyroCommand());
 
         driverController
                 .rightTrigger(0.5)
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new ShakeDeployCommand(intake, deploy))
-                        .alongWith(leds.changeSpeedCommand(2.0))
-                        .alongWith(leds.changePatternCommand(2, 0)));
+                        .alongWith(LEDs.changeSpeedCommand(2.0))
+                        .alongWith(LEDs.changePatternCommand(2, 0)));
         driverController
                 .rightBumper()
                 .whileTrue(new IntakeCommand(intake, deploy)
@@ -141,6 +139,8 @@ public class RobotContainer {
                 new ShootCommand(shooter, hood, indexer, calculator).alongWith(new ShakeDeployCommand(intake, deploy)));
         NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
         NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
-		NamedCommands.registerCommand("ClimberRaiseArmCommand", climber.goToDistanceCommand(10000)); //we probably want to write this differently
+        NamedCommands.registerCommand(
+                "ClimberRaiseArmCommand",
+                climber.goToDistanceCommand(10000)); // we probably want to write this differently
     }
 }
