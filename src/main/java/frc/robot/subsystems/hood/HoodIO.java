@@ -15,7 +15,7 @@ public interface HoodIO {
         public Angle angle = kMinimumAngle;
         public Angle targetAngle = kMinimumAngle;
 
-        public boolean limitswitch = false;
+        public boolean bottomLS = false;
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();

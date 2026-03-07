@@ -2,7 +2,7 @@ package frc.robot.util;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.*;
-import static frc.robot.subsystems.hood.HoodConstants.kPhysicalOffset;
+import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 import static frc.robot.subsystems.swerve.SwerveConstants.kMapleSimConfig;
 import static frc.robot.subsystems.vision.apriltag.AprilTagConstants.kFieldLayout;
 

@@ -3,15 +3,17 @@ package frc.robot.subsystems.shooter;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CommandLogger;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-    private final ShooterInputsAutoLogged inputs;
     private final ShooterIO io;
+    private final ShooterInputsAutoLogged inputs;
 
     private AngularVelocity targetVelocity = kZeroVelocity;
 
@@ -46,8 +48,8 @@ public class ShooterSubsystem extends SubsystemBase {
      *
      * @return A command to set the motor voltage and stop when complete.
      */
-    public Command runAtVoltageCommand() {
-        return startEnd(() -> io.setVoltage(kShooterVolts), io::stop);
+    public Command setVoltageCommand(Voltage volts) {
+        return startEnd(() -> io.setVoltage(volts), io::stop);
     }
 
     /**
@@ -56,8 +58,8 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param velocity The velocity to apply to the closed-loop PID control.
      * @return A command to run the motor at a velocity and stop when completed.
      */
-    public Command runAtVelocityCommand(AngularVelocity velocity) {
-        return startEnd(() -> setVelocity(velocity), io::stop);
+    public Command runAtVelocityCommand(Supplier<AngularVelocity> velocitySupplier) {
+        return runEnd(() -> setVelocity(velocitySupplier), io::stop);
     }
 
     /**
@@ -69,8 +71,13 @@ public class ShooterSubsystem extends SubsystemBase {
         return runOnce(io::stop);
     }
 
-    /** Sets the velocity of the closed-loop PID control. */
-    private void setVelocity(AngularVelocity velocity) {
+    /**
+     * Sets the velocity of the closed-loop feedforward controller.
+     *
+     * @param velocity The velocity to set as the shooter velocity.
+     */
+    private void setVelocity(Supplier<AngularVelocity> velocitySupplier) {
+        AngularVelocity velocity = velocitySupplier.get();
         targetVelocity = velocity;
         io.setVelocity(velocity);
     }

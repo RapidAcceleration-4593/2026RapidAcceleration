@@ -5,37 +5,31 @@ import static frc.robot.subsystems.hood.HoodConstants.*;
 import static frc.robot.util.mechanism.MechanismFinder.fAngleMechanism3D;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.CommandLogger;
-import frc.robot.util.FieldUtil;
 import frc.robot.util.mechanism.AngleMechanism3D;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class HoodSubsystem extends SubsystemBase {
 
-    private final Supplier<Pose2d> poseSupplier;
-    private final HoodInputsAutoLogged inputs;
     private final HoodIO io;
+    private final HoodInputsAutoLogged inputs;
+    private final AngleMechanism3D hood3D;
 
     private Angle targetAngle = kMinimumAngle;
 
-    private final AngleMechanism3D hood3D;
-
-    public HoodSubsystem(HoodIO io, Supplier<Pose2d> poseSupplier) {
+    public HoodSubsystem(HoodIO io) {
         this.io = io;
         this.inputs = new HoodInputsAutoLogged();
-        this.poseSupplier = poseSupplier;
 
-        Trigger limitSwitchTrigger = new Trigger(() -> inputs.limitswitch);
-        limitSwitchTrigger.onTrue(Commands.runOnce(io::resetPosition));
+        Trigger lsTrigger = new Trigger(() -> inputs.bottomLS);
+        lsTrigger.onTrue(Commands.runOnce(io::resetPosition));
         hood3D = fAngleMechanism3D.find("Hood");
     }
 
@@ -47,6 +41,10 @@ public class HoodSubsystem extends SubsystemBase {
 
         hood3D.setAngle(inputs.angle);
         CommandLogger.logSubsystemCommand(this);
+
+        if (inputs.bottomLS) {
+            io.resetPosition();
+        }
     }
 
     public Angle getCurrentAngle() {
@@ -58,8 +56,7 @@ public class HoodSubsystem extends SubsystemBase {
     }
 
     public boolean atTargetAngle() {
-        return inputs.angle.isNear(targetAngle, kAngleTolerance)
-                || (inputs.targetAngle == kMinimumAngle && inputs.limitswitch);
+        return inputs.angle.isNear(targetAngle, kAngleTolerance);
     }
 
     /**
@@ -69,8 +66,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @return A command to set the motor voltage and stop when complete.
      */
     public Command setVoltageCommand(Voltage volts) {
-        return startEnd(() -> io.setVoltage(volts), io::stop)
-                .until(() -> (inputs.limitswitch && inputs.appliedVolts.lt(Volts.zero())));
+        return startEnd(() -> io.setVoltage(volts), io::stop);
     }
 
     /**
@@ -84,12 +80,13 @@ public class HoodSubsystem extends SubsystemBase {
     }
 
     /**
-     * Constructs a command to continuously run the hood to the calculated Hub angle.
+     * Constructs a command to run the hood continuously to a set angle.
      *
-     * @return A command to run the motor to the calculated Hub angle without stopping.
+     * @param angle The angle to apply to the closed-loop PID control.
+     * @return A command to run the motor to an angle without stopping.
      */
-    public Command pointAtHubCommand() {
-        return runEnd(() -> setPosition(this::calculateHubAngle), () -> setPosition(() -> kMinimumAngle));
+    public Command runToAngleCommand(Supplier<Angle> angle) {
+        return runEnd(() -> setPosition(angle), () -> setPosition(() -> kMinimumAngle));
     }
 
     /**
@@ -99,18 +96,6 @@ public class HoodSubsystem extends SubsystemBase {
      */
     public Command stopCommand() {
         return runOnce(io::stop);
-    }
-
-    /**
-     * Calculates the hood angle based on the distance from the Hub.
-     *
-     * @return An angle from the linear regression equation.
-     */
-    private Angle calculateHubAngle() {
-        Pose2d targetPose = FieldUtil.getTargetHubPose();
-        Pose2d shooterPose = poseSupplier.get().plus(kPhysicalOffset);
-        Distance distance = Meters.of(shooterPose.getTranslation().getDistance(targetPose.getTranslation()));
-        return Degrees.of(10.0 * distance.in(Meters));
     }
 
     /**

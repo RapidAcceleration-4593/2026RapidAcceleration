@@ -14,6 +14,8 @@ public interface IndexerIO {
         public AngularVelocity spindexerVelocity = RPM.zero();
         public AngularVelocity feederVelocity = RPM.zero();
 
+        public boolean isFuelDetected = false;
+
         public Voltage spindexerVolts = Volts.zero();
         public Voltage feederVolts = Volts.zero();
 

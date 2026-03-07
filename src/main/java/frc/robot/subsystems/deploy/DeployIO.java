@@ -15,8 +15,7 @@ public interface DeployIO {
         public Distance distance = kMinimumDistance;
         public Distance targetDistance = kMinimumDistance;
 
-        public boolean inLimitSwitch = false;
-        public boolean outLimitSwitch = false;
+        public boolean retractedLS = false;
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();

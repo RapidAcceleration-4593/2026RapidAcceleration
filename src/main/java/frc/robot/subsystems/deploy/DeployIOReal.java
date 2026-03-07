@@ -25,21 +25,18 @@ public class DeployIOReal implements DeployIO {
     protected final SparkMax motor;
     protected final RelativeEncoder encoder;
     protected final DigitalInput retractedLS;
-    protected final DigitalInput extendedLS;
 
     private final SparkClosedLoopController controller;
 
     public DeployIOReal() {
         motor = new SparkMax(kMotorID, MotorType.kBrushless);
         encoder = motor.getAlternateEncoder();
-
         retractedLS = new DigitalInput(kRetractedLSChannel);
-        extendedLS = new DigitalInput(kExtendedLSChannel);
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
                 .inverted(kInvertMotor)
                 .idleMode(IdleMode.kCoast)
-                .smartCurrentLimit(60)
+                .smartCurrentLimit(30)
                 .voltageCompensation(12.0);
 
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
@@ -65,8 +62,7 @@ public class DeployIOReal implements DeployIO {
         inputs.distance = Inches.of(encoder.getPosition());
         inputs.targetDistance = Inches.of(controller.getSetpoint());
 
-        inputs.inLimitSwitch = isAtRetracted();
-        inputs.outLimitSwitch = isAtExtended();
+        inputs.retractedLS = retractedLS.get() ^ kInvertRetractedLS;
 
         inputs.appliedVolts = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.outputCurrent = Amps.of(motor.getOutputCurrent());
@@ -74,20 +70,7 @@ public class DeployIOReal implements DeployIO {
 
     @Override
     public void setPosition(Distance distance) {
-        controller.setSetpoint(distance.in(Inches), ControlType.kMAXMotionPositionControl);
-    }
-
-    @Override
-    public void resetPosition() {
-        controller.setIAccum(0);
-
-        if (isAtRetracted()) {
-            encoder.setPosition(kMinimumDistance.in(Inches));
-        } else if (isAtExtended()) {
-            encoder.setPosition(kMaximumDistance.in(Inches));
-        }
-
-        setPosition(Inches.of(encoder.getPosition()));
+        controller.setSetpoint(distance.in(Inches), ControlType.kPosition);
     }
 
     @Override
@@ -96,15 +79,15 @@ public class DeployIOReal implements DeployIO {
     }
 
     @Override
+    public void resetPosition() {
+        encoder.setPosition(kMinimumDistance.in(Inches));
+        if (motor.getAppliedOutput() < 0.0) {
+            controller.setSetpoint(encoder.getPosition(), ControlType.kPosition);
+        }
+    }
+
+    @Override
     public void stop() {
         motor.stopMotor();
-    }
-
-    private boolean isAtRetracted() {
-        return retractedLS.get() ^ kInvertInLS;
-    }
-
-    private boolean isAtExtended() {
-        return extendedLS.get() ^ kInvertOutLS;
     }
 }

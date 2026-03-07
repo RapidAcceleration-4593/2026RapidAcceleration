@@ -18,6 +18,7 @@ import org.ironmaple.simulation.motorsims.SimulatedBattery;
 public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
 
     private final SingleJointedArmSim hoodSim;
+
     private final SparkMaxSim motorSim;
     private final SparkMaxAlternateEncoderSim encoderSim;
     private final DIOSim limitSwitchSim;

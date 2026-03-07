@@ -1,13 +1,18 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.deploy.DeployConstants;
+import static edu.wpi.first.units.Units.Inches;
+import static frc.robot.subsystems.deploy.DeployConstants.kMaximumDistance;
+
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.subsystems.deploy.DeploySubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 
-public class IntakeCommand extends SequentialCommandGroup {
+public class IntakeCommand extends ParallelCommandGroup {
 
     public IntakeCommand(IntakeSubsystem intake, DeploySubsystem deploy) {
-        addCommands(deploy.goToDistanceCommand(DeployConstants.kMaximumDistance), intake.runCommand());
+        addCommands(
+                deploy.goToDistanceCommand(kMaximumDistance)
+                        .onlyWhile(() -> deploy.getCurrentDistance().lt(Inches.of(10))),
+                intake.runCommand());
     }
 }

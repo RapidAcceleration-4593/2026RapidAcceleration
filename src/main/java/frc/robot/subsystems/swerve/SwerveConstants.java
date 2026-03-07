@@ -29,10 +29,11 @@ public final class SwerveConstants {
     private static final Current kSlipCurrent = Amps.of(120.0);
 
     /** Theoretical Maximum Speed at 12V. */
-    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(5.5);
+    public static final LinearVelocity kMaxVelocity = MetersPerSecond.of(5.5);
 
     // Currently only used for PathPlanner.
-    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(5.0);
+    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(2.5);
+    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(3.0);
     public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(540.0);
     public static final AngularAcceleration kAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
 
@@ -108,7 +109,7 @@ public final class SwerveConstants {
                     .withSteerMotorClosedLoopOutput(kSteerClosedLoopOutput)
                     .withDriveMotorClosedLoopOutput(kDriveClosedLoopOutput)
                     .withSlipCurrent(kSlipCurrent)
-                    .withSpeedAt12Volts(kLinearVelocity)
+                    .withSpeedAt12Volts(kMaxVelocity)
                     .withDriveMotorType(kDriveMotorType)
                     .withSteerMotorType(kSteerMotorType)
                     .withFeedbackSource(kSteerFeedbackType)
@@ -125,7 +126,7 @@ public final class SwerveConstants {
     private static final int kFrontLeftDriveMotorId = 6;
     private static final int kFrontLeftSteerMotorId = 7;
     private static final int kFrontLeftEncoderId = 1;
-    private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.31982421875);
+    private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.328125);
     private static final boolean kFrontLeftSteerMotorInverted = true;
     private static final boolean kFrontLeftEncoderInverted = false;
 
@@ -136,7 +137,7 @@ public final class SwerveConstants {
     private static final int kFrontRightDriveMotorId = 8;
     private static final int kFrontRightSteerMotorId = 9;
     private static final int kFrontRightEncoderId = 2;
-    private static final Angle kFrontRightEncoderOffset = Rotations.of(0.2138671875);
+    private static final Angle kFrontRightEncoderOffset = Rotations.of(0.2275390625);
     private static final boolean kFrontRightSteerMotorInverted = true;
     private static final boolean kFrontRightEncoderInverted = false;
 
@@ -147,7 +148,7 @@ public final class SwerveConstants {
     private static final int kBackLeftDriveMotorId = 10;
     private static final int kBackLeftSteerMotorId = 11;
     private static final int kBackLeftEncoderId = 3;
-    private static final Angle kBackLeftEncoderOffset = Rotations.of(-0.1611328125);
+    private static final Angle kBackLeftEncoderOffset = Rotations.of(0.18115234375);
     private static final boolean kBackLeftSteerMotorInverted = true;
     private static final boolean kBackLeftEncoderInverted = false;
 
@@ -158,7 +159,7 @@ public final class SwerveConstants {
     private static final int kBackRightDriveMotorId = 12;
     private static final int kBackRightSteerMotorId = 13;
     private static final int kBackRightEncoderId = 4;
-    private static final Angle kBackRightEncoderOffset = Rotations.of(-0.139892578125);
+    private static final Angle kBackRightEncoderOffset = Rotations.of(-0.1455078125);
     private static final boolean kBackRightSteerMotorInverted = true;
     private static final boolean kBackRightEncoderInverted = false;
 
@@ -239,7 +240,7 @@ public final class SwerveConstants {
             kRobotMOI,
             new ModuleConfig(
                     kWheelRadius,
-                    kLinearVelocity,
+                    kMaxVelocity,
                     kWheelCOF,
                     DCMotor.getKrakenX60(1).withReduction(kDriveGearRatio),
                     kSlipCurrent,
@@ -252,8 +253,6 @@ public final class SwerveConstants {
             .withGyro(COTS.ofPigeon2())
             .withSwerveModule(new SwerveModuleSimulationConfig(
                     DCMotor.getKrakenX60(1),
-                    // Must be a Falcon motor for this version of MapleSim.
-                    // MapleMotorSim should implement DCMotorSim in upcoming versions.
                     DCMotor.getKrakenX60(1),
                     kDriveGearRatio,
                     kSteerGearRatio,
