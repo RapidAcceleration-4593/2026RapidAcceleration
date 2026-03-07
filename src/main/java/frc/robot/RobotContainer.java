@@ -14,6 +14,7 @@ import frc.robot.commands.RetractIntakeCommand;
 import frc.robot.commands.ShakeDeployCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.auton.AutonManager;
+import frc.robot.commands.leds.RunShooterLEDPatternCommand;
 import frc.robot.commands.swerve.PathfindCommands;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
@@ -93,8 +94,7 @@ public class RobotContainer {
                 .rightTrigger(0.5)
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new ShakeDeployCommand(intake, deploy))
-                        .alongWith(LEDs.changeSpeedCommand(2.0))
-                        .alongWith(LEDs.changePatternCommand(2, 0)));
+                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
         driverController
                 .rightBumper()
                 .whileTrue(new IntakeCommand(intake, deploy)
