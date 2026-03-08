@@ -126,11 +126,12 @@ public class RobotContainer {
         operatorController.povUp().whileTrue(climber.setVoltageCommand(Volts.of(12.0)));
         operatorController.povDown().whileTrue(climber.setVoltageCommand(Volts.of(-12.0)));
 
-		operatorController.start().onTrue(turret.runOnce(() -> 
-			turret.setDefaultCommand(Commands.none())));
+        operatorController.start().onTrue(turret.runOnce(() -> turret.setDefaultCommand(Commands.none())));
 
-		operatorController.back().onTrue(turret.runOnce(() -> 
-        turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle))));
+        operatorController
+                .back()
+                .onTrue(turret.runOnce(
+                        () -> turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle))));
     }
 
     /** Select the command to run in Autonomous. */
