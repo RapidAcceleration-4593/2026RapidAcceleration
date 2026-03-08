@@ -98,8 +98,6 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
     }
 
     private AngularVelocity calculateShooter(LinearVelocity launchSpeed, Distance distance, Angle turretAngle) {
-        // double kExitVelocityFactor = SmartDashboard.getNumber("ExitVelocityFactor", 0.35);
-        // double kExitVelocityFactor = ProjectilePhysics.getBarycentricExitFactor(distance, turretAngle);
         double kExitVelocityFactor = ProjectilePhysics.getLinearExitFactor(distance, turretAngle);
         return RadiansPerSecond.of(launchSpeed.in(MetersPerSecond) / (kWheelRadius.in(Meters) * kExitVelocityFactor));
     }
