@@ -65,7 +65,8 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
 
             LinearVelocity launchSpeed =
                     ProjectilePhysics.calculateLaunchSpeed(hoodAngle, horizontalDistance, verticalDistance);
-            Time tof = ProjectilePhysics.calculateTime(launchSpeed, hoodAngle, FieldUtil.getTargetPose(robotPose).getMeasureZ());
+            Time tof = ProjectilePhysics.calculateTime(
+                    launchSpeed, hoodAngle, FieldUtil.getTargetPose(robotPose).getMeasureZ());
 
             Pose2d newVirtualTarget = new Pose2d(
                     targetPose2d.getMeasureX().minus(Meters.of(chassisSpeeds.vxMetersPerSecond * tof.in(Seconds))),

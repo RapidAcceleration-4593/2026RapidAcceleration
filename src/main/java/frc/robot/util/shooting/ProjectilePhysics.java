@@ -57,10 +57,10 @@ public class ProjectilePhysics {
     }
 
     public static Time calculateTime(LinearVelocity launchSpeed, Angle hoodAngle, Distance targetHeight) {
-		double y_0 = kShooterHeight.in(Meters) - targetHeight.in(Meters);
-		double v_y = Math.cos(hoodAngle.in(Radians)) * launchSpeed.in(MetersPerSecond);
-		double g = gravity.in(MetersPerSecondPerSecond);
-		double t = (v_y + Math.sqrt(v_y * v_y + 2 * g * y_0)) / g;
-		return Seconds.of(t);
+        double y_0 = kShooterHeight.in(Meters) - targetHeight.in(Meters);
+        double v_y = Math.cos(hoodAngle.in(Radians)) * launchSpeed.in(MetersPerSecond);
+        double g = gravity.in(MetersPerSecondPerSecond);
+        double t = (v_y + Math.sqrt(v_y * v_y + 2 * g * y_0)) / g;
+        return Seconds.of(t);
     }
 }

@@ -18,9 +18,9 @@ public final class FieldUtil {
             new Pose3d(Inches.of(182.1), kFieldWidth.div(2), Inches.of(72.0), new Rotation3d());
     private static final Pose3d kRedHubPose =
             new Pose3d(Inches.of(469.1), kFieldWidth.div(2), Inches.of(72.0), new Rotation3d());
-    private static final Pose3d kBlueCFFPose =
+    private static final Pose3d kBlueInitialPose =
             new Pose3d(kFieldLength.times(0.15), kFieldWidth.div(2), Inches.zero(), new Rotation3d());
-    private static final Pose3d kRedCFFPose =
+    private static final Pose3d kRedInitialPose =
             new Pose3d(kFieldLength.times(0.85), kFieldWidth.div(2), Inches.zero(), new Rotation3d());
 
     public enum FieldZones {
@@ -41,13 +41,16 @@ public final class FieldUtil {
         return getCurrentAlliance() == Alliance.Blue ? kBlueHubPose : kRedHubPose;
     }
 
-    public static Pose3d getCrossFieldFeedPose() {
-        return getCurrentAlliance() == Alliance.Blue ? kBlueCFFPose : kRedCFFPose;
+    public static Pose3d getCrossFieldFeedPose(Pose2d robotPose2d) {
+        Distance x = getCurrentAlliance() == Alliance.Blue ? kFieldLength.times(0.15) : kFieldLength.times(0.85);
+        Distance y =
+                robotPose2d.getMeasureY().gt(kFieldWidth.times(0.5)) ? kFieldWidth.times(0.8) : kFieldWidth.times(0.2);
+        return new Pose3d(x, y, Meters.zero(), Rotation3d.kZero);
     }
 
     public static Pose3d getTargetPose(Pose2d robotPose) {
         boolean isInAllianceZone = isInAllianceZone(robotPose);
-        return isInAllianceZone ? getTargetHubPose() : getCrossFieldFeedPose();
+        return isInAllianceZone ? getTargetHubPose() : getCrossFieldFeedPose(robotPose);
     }
 
     public static FieldZones getCurrentZone(Pose2d robotPose) {
@@ -64,6 +67,6 @@ public final class FieldUtil {
     }
 
     public static Pose2d getInitialPose() {
-        return isRedAlliance() ? kRedCFFPose.toPose2d() : kBlueCFFPose.toPose2d();
+        return isRedAlliance() ? kRedInitialPose.toPose2d() : kBlueInitialPose.toPose2d();
     }
 }
