@@ -122,6 +122,7 @@ public class RobotContainer {
         operatorController.b().whileTrue(deploy.setVoltageCommand(Volts.of(-5.0)));
 
         operatorController.y().whileTrue(indexer.runCommand());
+        operatorController.a().whileTrue(intake.setVoltageCommand(Volts.of(-6.0)));
 
         operatorController.povUp().whileTrue(climber.setVoltageCommand(Volts.of(12.0)));
         operatorController.povDown().whileTrue(climber.setVoltageCommand(Volts.of(-12.0)));

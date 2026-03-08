@@ -7,7 +7,6 @@ import com.revrobotics.sim.SparkMaxAlternateEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
@@ -17,7 +16,6 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.util.IPhysicsSim;
 import frc.robot.util.SimulationManager;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
-import org.littletonrobotics.junction.Logger;
 
 public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
 
@@ -72,6 +70,5 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
 
         retractedLSSim.setValue(deploySim.hasHitLowerLimit() ^ kInvertRetractedLS);
         SimulationManager.getInstance().setIntakeExtended(deploySim.hasHitUpperLimit());
-        Logger.recordOutput("DeploySimInches", Units.metersToInches(deploySim.getPositionMeters()));
     }
 }

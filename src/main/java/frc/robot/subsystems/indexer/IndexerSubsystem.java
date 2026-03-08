@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CommandLogger;
 import frc.robot.util.mechanism.WheelMechanism3D;
 import java.util.OptionalDouble;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class IndexerSubsystem extends SubsystemBase {
@@ -76,9 +77,10 @@ public class IndexerSubsystem extends SubsystemBase {
      *
      * @return Whether Fuel was detected recently.
      */
+    @AutoLogOutput(key = "IndexerSubsystem/FuelDetected")
     public boolean isFuelDetected() {
         if (lastFuelTimestamp.isEmpty()) return false;
-        return Timer.getTimestamp() - lastFuelTimestamp.getAsDouble() < 3.0;
+        return Timer.getTimestamp() - lastFuelTimestamp.getAsDouble() < 2.0;
     }
 
     /**
@@ -86,6 +88,7 @@ public class IndexerSubsystem extends SubsystemBase {
      *
      * @return The number of Fuel detected.
      */
+    @AutoLogOutput(key = "IndexerSubsystem/FuelShotCount")
     public int getFuelShotCount() {
         return fuelShotCount;
     }

@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake;
 
 import static frc.robot.subsystems.intake.IntakeConstants.kIntakeVolts;
 
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CommandLogger;
@@ -23,6 +24,16 @@ public class IntakeSubsystem extends SubsystemBase {
         Logger.processInputs("Intake", inputs);
 
         CommandLogger.logSubsystemCommand(this);
+    }
+
+    /**
+     * Constructs a command to run the intake at a set voltage.
+     *
+     * @param volts The voltage to apply to the motor.
+     * @return A command to set the motor voltage and stop when complete.
+     */
+    public Command setVoltageCommand(Voltage volts) {
+        return startEnd(() -> io.setVoltage(volts), io::stop);
     }
 
     /**
