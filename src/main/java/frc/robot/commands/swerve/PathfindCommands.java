@@ -101,9 +101,6 @@ public final class PathfindCommands {
     }
 
     private Rotation2d snapRotation(Rotation2d robotRotation) {
-        double angle = robotRotation.getRadians();
-        double wrapped = Math.IEEEremainder(angle, Math.PI);
-
-        return Math.abs(wrapped) < Math.PI / 2 ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(180);
+        return Rotation2d.fromDegrees(Math.round(robotRotation.getDegrees() / 180.0) * 180.0);
     }
 }

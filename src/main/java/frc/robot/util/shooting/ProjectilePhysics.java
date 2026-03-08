@@ -11,7 +11,7 @@ import edu.wpi.first.units.measure.Time;
 
 public class ProjectilePhysics {
 
-    public static double getExitFactor(Distance distance, Angle turretAngle) {
+    public static double getBarycentricExitFactor(Distance distance, Angle turretAngle) {
         double x = distance.in(Meters);
         double y = turretAngle.in(Radians);
 
@@ -39,6 +39,10 @@ public class ProjectilePhysics {
         }
 
         return kExitFactorData[0][2];
+    }
+
+    public static double getLinearExitFactor(Distance distance, Angle turretAngle) {
+        return 0.412329 - 0.013133 * distance.in(Meters) + 0.012952 * turretAngle.in(Radians);
     }
 
     public static LinearVelocity calculateLaunchSpeed(
