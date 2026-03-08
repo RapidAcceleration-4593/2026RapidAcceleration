@@ -7,6 +7,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IntakeCommand;
@@ -124,6 +125,12 @@ public class RobotContainer {
 
         operatorController.povUp().whileTrue(climber.setVoltageCommand(Volts.of(12.0)));
         operatorController.povDown().whileTrue(climber.setVoltageCommand(Volts.of(-12.0)));
+
+		operatorController.start().onTrue(turret.runOnce(() -> 
+			turret.setDefaultCommand(Commands.none())));
+
+		operatorController.back().onTrue(turret.runOnce(() -> 
+        turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle))));
     }
 
     /** Select the command to run in Autonomous. */
