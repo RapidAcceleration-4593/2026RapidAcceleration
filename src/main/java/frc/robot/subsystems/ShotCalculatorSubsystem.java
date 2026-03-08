@@ -75,11 +75,6 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
                 robotPose.getX() + chassisSpeeds.vxMetersPerSecond * 0.2,
                 robotPose.getY() + chassisSpeeds.vxMetersPerSecond * 0.2,
                 robotPose.getRotation());
-        Logger.recordOutput("ChassisSpeeds", chassisSpeeds);
-        Logger.recordOutput("TOF", tof);
-        Logger.recordOutput("FutureRobotPose", predictedPose);
-        Logger.recordOutput("TargetPose", virtualTarget);
-
         Distance finalVirtualDistance =
                 Meters.of(virtualTarget.getTranslation().getDistance(robotPose.getTranslation()));
         Angle finalHoodAngle = calculateHood(finalVirtualDistance);
@@ -88,6 +83,12 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
 
         Angle turretAngle = calculateTurret(robotPose, virtualTarget, chassisSpeeds);
         AngularVelocity shooterVelocity = calculateShooter(finalLaunchSpeed, finalVirtualDistance, turretAngle);
+
+        Logger.recordOutput("ChassisSpeeds", chassisSpeeds);
+        Logger.recordOutput("TOF", tof);
+        Logger.recordOutput("FutureRobotPose", predictedPose);
+        Logger.recordOutput("TargetPose", virtualTarget);
+        Logger.recordOutput("VirtualDistance", finalVirtualDistance);
 
         latestResult = new ShotResult(turretAngle, finalHoodAngle, shooterVelocity, true);
     }

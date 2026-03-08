@@ -6,6 +6,7 @@ import static frc.robot.Constants.Controllers.*;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ClimbCommand;
@@ -84,6 +85,7 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
+        SmartDashboard.putNumber("ExitVelocityFactor", 0.0);
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
                 swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
         turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle));
@@ -99,7 +101,8 @@ public class RobotContainer {
         driverController
                 .rightBumper()
                 .whileTrue(new IntakeCommand(intake, deploy)
-                        .alongWith(new ShootCommand(shooter, hood, indexer, calculator)));
+                        .alongWith(new ShootCommand(shooter, hood, indexer, calculator))
+                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
 
         driverController
                 .leftTrigger(0.5)

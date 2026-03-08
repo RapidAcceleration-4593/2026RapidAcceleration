@@ -12,13 +12,13 @@ public final class TurretConstants {
     public static final boolean kInvertMotor = false;
     public static final boolean kInvertEncoder = false;
 
-    public static final double kP = 0.02;
+    public static final double kP = 0.015;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
     public static final Angle kInitialAngle = Degrees.of(0.0);
-    public static final Angle kMinimumAngle = Degrees.of(-120.0);
-    public static final Angle kMaximumAngle = Degrees.of(120.0);
+    public static final Angle kMinimumAngle = Degrees.of(-100.0);
+    public static final Angle kMaximumAngle = Degrees.of(150.0);
     public static final Angle kAngleTolerance = Degrees.of(0.25);
 
     public static final int kCountsPerRotation = 8192;

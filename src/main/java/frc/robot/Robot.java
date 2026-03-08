@@ -145,7 +145,7 @@ public class Robot extends LoggedRobot {
     /** This function is called periodically when in simulaiton. */
     @Override
     public void simulationPeriodic() {
-		if (Constants.kCurrentMode != Mode.SIM) return;
+        if (Constants.kCurrentMode != Mode.SIM) return;
         SimulationManager.getInstance().periodic();
     }
 }
