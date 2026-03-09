@@ -3,12 +3,10 @@ package frc.robot.subsystems.climber;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.climber.ClimberConstants.*;
 
-import com.revrobotics.sim.SparkMaxAlternateEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.util.IPhysicsSim;
 import frc.robot.util.SimulationManager;
@@ -17,25 +15,15 @@ import org.ironmaple.simulation.motorsims.SimulatedBattery;
 public class ClimberIOSim extends ClimberIOReal implements IPhysicsSim {
 
     private final ElevatorSim climberSim;
-
     private final SparkMaxSim motorSim;
-    private final SparkMaxAlternateEncoderSim encoderSim;
 
     public ClimberIOSim() {
         DCMotor gearbox = DCMotor.getNEO(1);
 
         climberSim = new ElevatorSim(
-                gearbox,
-                kMotorToClimberGearing,
-                kCarriageMass.in(Kilograms),
-                kDrumRadius.in(Meters),
-                kMinimumCounts,
-                kMaximumCounts,
-                true,
-                kMinimumCounts);
+                gearbox, kMotorToClimberGearing, kCarriageMass.in(Kilograms), kDrumRadius.in(Meters), 0, 0.15, true, 0);
 
         motorSim = new SparkMaxSim(motor, gearbox);
-        encoderSim = new SparkMaxAlternateEncoderSim(motor);
 
         SimulationManager.getInstance().addSimulatable(this);
     }
@@ -60,7 +48,5 @@ public class ClimberIOSim extends ClimberIOReal implements IPhysicsSim {
                 motorAngularVelocity.in(RPM),
                 SimulatedBattery.getBatteryVoltage().in(Volts),
                 0.02);
-        Distance climberDistance = Meters.of(climberSim.getPositionMeters());
-        encoderSim.setPosition(climberDistance.in(Inches));
     }
 }

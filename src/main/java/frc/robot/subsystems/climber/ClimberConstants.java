@@ -11,17 +11,7 @@ public final class ClimberConstants {
     public static final int kMotorID = 2;
 
     public static final boolean kInvertMotor = false;
-    public static final boolean kInvertEncoder = false;
 
-    public static final double kP = 0.0;
-    public static final double kI = 0.0;
-    public static final double kD = 0.0;
-
-    public static final double kMinimumCounts = 0;
-    public static final double kMaximumCounts = 10000;
-    public static final double kCountsTolerance = 100;
-
-    public static final int kCountsPerRotation = 8192;
     public static final double kMotorToEncoderGearing = (9.0 * 5.0);
     public static final double kEncoderToClimberGearing = 1.0;
     public static final double kMotorToClimberGearing = kMotorToEncoderGearing * kEncoderToClimberGearing;
