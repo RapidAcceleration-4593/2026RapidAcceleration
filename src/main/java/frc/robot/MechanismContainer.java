@@ -16,18 +16,18 @@ public class MechanismContainer {
 
         Node3D deployNode = new Node3D("Deploy", Pose3d.kZero);
         Node3D spindexerNode = new Node3D("Indexer", new Pose3d(0.034, 0, 0, Rotation3d.kZero));
-        Node3D shooterBaseNode = new Node3D("ShooterBase", new Pose3d(-0.144, 0, 0, Rotation3d.kZero));
-        Node3D hoodNode = new Node3D("Hood", new Pose3d(-0.022, 0, 0.47, new Rotation3d(0, 0, 0)), shooterBaseNode);
+        Node3D turretNode = new Node3D("Turret", new Pose3d(-0.144, 0, 0, Rotation3d.kZero));
+        Node3D hoodNode = new Node3D("Hood", new Pose3d(-0.022, 0, 0.47, new Rotation3d(0, 0, 0)), turretNode);
         hoodNode.setAngle(HoodConstants.kMinimumAngle, Axis.Y, false);
         Node3D climberNode = new Node3D("Climber", Pose3d.kZero);
 
         LengthMechanism3D deploy = new LengthMechanism3D(deployNode, Axis.X);
         WheelMechanism3D spindexer = new WheelMechanism3D(spindexerNode, Axis.Z);
 
-        AngleMechanism3D shooterBase = new AngleMechanism3D(shooterBaseNode, Axis.Z);
+        AngleMechanism3D turret = new AngleMechanism3D(turretNode, Axis.Z);
         AngleMechanism3D hood = new AngleMechanism3D(hoodNode, Axis.Y);
         LengthMechanism3D climber = new LengthMechanism3D(climberNode, Axis.Z);
 
-        Robot3D.getInstance().addMechanisms(new Mechanism3D[] {deploy, spindexer, shooterBase, hood, climber});
+        Robot3D.getInstance().addMechanisms(new Mechanism3D[] {deploy, spindexer, turret, hood, climber});
     }
 }

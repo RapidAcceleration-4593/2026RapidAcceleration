@@ -2,6 +2,7 @@ package frc.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.turret.TurretConstants.*;
+import static frc.robot.util.mechanism.MechanismFinder.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
@@ -9,6 +10,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CommandLogger;
+import frc.robot.util.mechanism.AngleMechanism3D;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -18,10 +20,12 @@ public class TurretSubsystem extends SubsystemBase {
     private final TurretInputsAutoLogged inputs;
 
     private Angle targetAngle = kInitialAngle;
+    private AngleMechanism3D turret3D;
 
     public TurretSubsystem(TurretIO io) {
         this.io = io;
         this.inputs = new TurretInputsAutoLogged();
+        this.turret3D = fAngleMechanism3D.find("Turret");
     }
 
     @Override
@@ -29,6 +33,7 @@ public class TurretSubsystem extends SubsystemBase {
         io.updateInputs(inputs);
         Logger.processInputs("Turret", inputs);
         targetAngle = inputs.targetAngle;
+        turret3D.setAngle(inputs.angle);
 
         CommandLogger.logSubsystemCommand(this);
     }
