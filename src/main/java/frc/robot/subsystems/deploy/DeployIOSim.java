@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.util.IPhysicsSim;
 import frc.robot.util.SimulationManager;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
+import org.littletonrobotics.junction.Logger;
 
 public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
 
@@ -38,7 +39,7 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
                 kMinimumDistance.in(Meters));
 
         motorSim = new SparkMaxSim(motor, gearbox);
-        encoderSim = new SparkMaxAlternateEncoderSim(motor);
+        encoderSim = motorSim.getAlternateEncoderSim();
         retractedLSSim = new DIOSim(retractedLS);
 
         SimulationManager.getInstance().addSimulatable(this);
@@ -63,10 +64,11 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
                 RadiansPerSecond.of(carriageVelocity.in(MetersPerSecond) / kDrumRadius.in(Meters));
         AngularVelocity motorVelocity = drumVelocity.times(kMotorToDeployGearing);
         motorSim.iterate(
-                motorVelocity.in(RPM), SimulatedBattery.getBatteryVoltage().in(Volts), 0.02);
+                motorVelocity.in(RPM) * kVelocityConversionFactor, SimulatedBattery.getBatteryVoltage().in(Volts), 0.02);
 
         Distance deployDistance = Meters.of(deploySim.getPositionMeters());
-        encoderSim.setPosition(deployDistance.in(Inches));
+		Logger.recordOutput("RealDeployDistance", deployDistance);
+		encoderSim.iterate(motorVelocity.in(RPM) * kVelocityConversionFactor / kMotorToEncoderGearing, 0.02);
 
         retractedLSSim.setValue(deploySim.hasHitLowerLimit() ^ kInvertRetractedLS);
         SimulationManager.getInstance().setIntakeExtended(deploySim.hasHitUpperLimit());
