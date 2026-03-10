@@ -1,4 +1,4 @@
-package frc.robot.commands.auton.right;
+package frc.robot.commands.auton.other;
 
 import static edu.wpi.first.units.Units.Seconds;
 

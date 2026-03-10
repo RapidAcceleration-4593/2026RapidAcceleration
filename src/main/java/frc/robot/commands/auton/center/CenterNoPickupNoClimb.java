@@ -13,6 +13,6 @@ public class CenterNoPickupNoClimb extends AutonCommand {
 
         addCommands(
                 AutoBuilder.followPath(paths.get(0)),
-                NamedCommands.getCommand("ShootCommand").withTimeout(5.0));
+                NamedCommands.getCommand("ShootCommand").withTimeout(10.0));
     }
 }

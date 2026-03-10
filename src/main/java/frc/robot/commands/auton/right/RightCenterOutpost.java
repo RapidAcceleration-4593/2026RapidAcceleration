@@ -9,7 +9,7 @@ import java.util.List;
 public class RightCenterOutpost extends AutonCommand {
 
     public RightCenterOutpost(AutonUtil util) {
-        super(util, List.of("RightCenter-1", "RightCenter-2"));
+        super(util, List.of("RightCenter-1", "RightCOutpost-2"));
 
         addCommands(
                 NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(0))),
