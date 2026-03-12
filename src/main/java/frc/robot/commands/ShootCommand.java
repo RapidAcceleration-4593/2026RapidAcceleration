@@ -18,6 +18,6 @@ public class ShootCommand extends ParallelCommandGroup {
         addCommands(
                 shooter.runAtVelocityCommand(calculator::getShooterVelocity),
                 hood.runToAngleCommand(calculator::getHoodAngle),
-				Commands.waitSeconds(0.5).andThen(indexer.runCommand()));
+                Commands.waitSeconds(0.5).andThen(indexer.runCommand()));
     }
 }

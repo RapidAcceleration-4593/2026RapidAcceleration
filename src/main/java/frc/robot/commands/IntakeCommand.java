@@ -11,8 +11,7 @@ public class IntakeCommand extends ParallelCommandGroup {
 
     public IntakeCommand(IntakeSubsystem intake, DeploySubsystem deploy) {
         addCommands(
-                deploy.goToDistanceCommand(kMaximumDistance)
-                        .onlyWhile(() -> deploy.getCurrentDistance().lt(Inches.of(10))),
+                deploy.goToDistanceCommand(kMaximumDistance),
                 intake.runCommand());
     }
 }
