@@ -15,8 +15,7 @@ public interface DeployIO {
         public Distance distance = kMinimumDistance;
         public Distance targetDistance = kMinimumDistance;
 
-        public boolean inLimitSwitch = false;
-        public boolean outLimitSwitch = false;
+        public boolean retractedLS = false;
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();
@@ -28,11 +27,11 @@ public interface DeployIO {
     /** Sets the position of the deployment motor. */
     public default void setPosition(Distance distance) {}
 
-    /** Resets the closed-loop error, encoder, and setpoint. */
-    public default void resetPosition() {}
-
     /** Sets the voltage of the deployment motor. */
     public default void setVoltage(Voltage volts) {}
+
+    /** Resets the closed-loop error, encoder, and setpoint. */
+    public default void resetPosition() {}
 
     /** Stops the deployment motor immediately. */
     public default void stop() {}

@@ -3,7 +3,7 @@ package frc.robot.subsystems.turret;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.turret.TurretConstants.*;
 
-import com.revrobotics.sim.SparkMaxAlternateEncoderSim;
+import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -11,6 +11,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.util.IPhysicsSim;
+import frc.robot.util.SimulationManager;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
@@ -18,7 +19,7 @@ public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
     private final SingleJointedArmSim turretSim;
 
     private final SparkMaxSim motorSim;
-    private final SparkMaxAlternateEncoderSim encoderSim;
+    private final SparkAbsoluteEncoderSim encoderSim;
 
     public TurretIOSim() {
         DCMotor gearbox = DCMotor.getNeo550(1);
@@ -34,7 +35,9 @@ public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
                 kInitialAngle.in(Radians));
 
         motorSim = new SparkMaxSim(motor, gearbox);
-        encoderSim = new SparkMaxAlternateEncoderSim(motor);
+        encoderSim = new SparkAbsoluteEncoderSim(motor);
+
+        SimulationManager.getInstance().addSimulatable(this);
     }
 
     @Override

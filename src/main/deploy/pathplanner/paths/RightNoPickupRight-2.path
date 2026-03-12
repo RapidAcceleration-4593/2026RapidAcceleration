@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3,
+        "x": 3.0,
         "y": 2.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3001473514343174,
-        "y": 2.2499999565751057
+        "x": 0.8703459727851062,
+        "y": 2.0662851063387837
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.3,
-        "y": 2.9
+        "x": 0.9240669008402487,
+        "y": 2.9616339072578306
       },
       "prevControl": {
-        "x": 1.2998333587817226,
-        "y": 2.650000055538597
+        "x": 0.9360048848525024,
+        "y": 2.4662075707492908
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,9 +31,21 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "ArmReady",
+      "waypointRelativePos": 0.27796610169491537,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ClimberRaiseArmCommand"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 2.2,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -42,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Right",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

@@ -17,9 +17,9 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
 
+    private final RobotContainer robotContainer;
+    private final MechanismContainer mechanismContainer;
     private Command autonomousCommand;
-    private MechanismContainer mechanismContainer;
-    private RobotContainer robotContainer;
 
     public Robot() {
         Logger.recordMetadata("ProjectName", MAVEN_NAME);
@@ -145,6 +145,7 @@ public class Robot extends LoggedRobot {
     /** This function is called periodically when in simulaiton. */
     @Override
     public void simulationPeriodic() {
+        if (Constants.kCurrentMode != Mode.SIM) return;
         SimulationManager.getInstance().periodic();
     }
 }

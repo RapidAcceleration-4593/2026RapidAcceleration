@@ -1,33 +1,30 @@
 package frc.robot.factory;
 
-import static frc.robot.Constants.*;
+import static frc.robot.Constants.kCurrentMode;
 
-import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.*;
-import frc.robot.util.SimulationManager;
 
 public final class TurretFactory {
 
     private TurretFactory() {}
 
-    public static TurretSubsystem initialize(SwerveSubsystem swerve) {
+    public static TurretSubsystem initialize() {
         return switch (kCurrentMode) {
-            case REAL -> initializeReal(swerve);
+            case REAL -> initializeReal();
             case SIM -> initializeSim();
-            case REPLAY -> initializeReplay(swerve);
+            case REPLAY -> initializeReplay();
         };
     }
 
-    private static TurretSubsystem initializeReal(SwerveSubsystem swerve) {
-        return new TurretSubsystem(new TurretIOReal(), swerve::getPose, swerve::getChassisSpeeds);
+    private static TurretSubsystem initializeReal() {
+        return new TurretSubsystem(new TurretIOReal());
     }
 
     private static TurretSubsystem initializeSim() {
-        SimulationManager simulation = SimulationManager.getInstance();
-        return new TurretSubsystem(new TurretIOSim(), simulation::getPose, simulation::getChassisSpeeds);
+        return new TurretSubsystem(new TurretIOSim());
     }
 
-    private static TurretSubsystem initializeReplay(SwerveSubsystem swerve) {
-        return new TurretSubsystem(new TurretIO() {}, swerve::getPose, swerve::getChassisSpeeds);
+    private static TurretSubsystem initializeReplay() {
+        return new TurretSubsystem(new TurretIO() {});
     }
 }

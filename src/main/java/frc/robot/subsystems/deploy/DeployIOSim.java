@@ -7,7 +7,6 @@ import com.revrobotics.sim.SparkMaxAlternateEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
@@ -22,10 +21,10 @@ import org.littletonrobotics.junction.Logger;
 public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
 
     private final ElevatorSim deploySim;
+
     private final SparkMaxSim motorSim;
     private final SparkMaxAlternateEncoderSim encoderSim;
     private final DIOSim retractedLSSim;
-    private final DIOSim extendedLSSim;
 
     public DeployIOSim() {
         DCMotor gearbox = DCMotor.getNeo550(1);
@@ -40,9 +39,8 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
                 kMinimumDistance.in(Meters));
 
         motorSim = new SparkMaxSim(motor, gearbox);
-        encoderSim = new SparkMaxAlternateEncoderSim(motor);
+        encoderSim = motorSim.getAlternateEncoderSim();
         retractedLSSim = new DIOSim(retractedLS);
-        extendedLSSim = new DIOSim(extendedLS);
 
         SimulationManager.getInstance().addSimulatable(this);
     }
@@ -50,8 +48,7 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
     @Override
     public void updatePlantSim() {
         deploySim.setInput(motorSim.getAppliedOutput()
-                * SimulatedBattery.getBatteryVoltage().in(Volts)
-                * (kPositiveVoltageExtends ? 1 : -1));
+                * SimulatedBattery.getBatteryVoltage().in(Volts));
         deploySim.update(0.02);
     }
 
@@ -67,16 +64,15 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
                 RadiansPerSecond.of(carriageVelocity.in(MetersPerSecond) / kDrumRadius.in(Meters));
         AngularVelocity motorVelocity = drumVelocity.times(kMotorToDeployGearing);
         motorSim.iterate(
-                motorVelocity.in(RPM) * (kPositiveVoltageExtends ? 1 : -1),
+                motorVelocity.in(RPM) * kVelocityConversionFactor,
                 SimulatedBattery.getBatteryVoltage().in(Volts),
                 0.02);
 
         Distance deployDistance = Meters.of(deploySim.getPositionMeters());
-        encoderSim.setPosition(deployDistance.in(Inches));
+        Logger.recordOutput("RealDeployDistance", deployDistance);
+        encoderSim.iterate(motorVelocity.in(RPM) * kVelocityConversionFactor / kMotorToEncoderGearing, 0.02);
 
-        retractedLSSim.setValue(deploySim.hasHitLowerLimit() ^ kInvertInLS);
-        extendedLSSim.setValue(deploySim.hasHitUpperLimit() ^ kInvertOutLS);
+        retractedLSSim.setValue(deploySim.hasHitLowerLimit() ^ kInvertRetractedLS);
         SimulationManager.getInstance().setIntakeExtended(deploySim.hasHitUpperLimit());
-        Logger.recordOutput("DeploySimInches", Units.metersToInches(deploySim.getPositionMeters()));
     }
 }
