@@ -100,7 +100,7 @@ public class RobotContainer {
                         .alongWith(Commands.either(
                                 new RunShooterLEDPatternCommand(LEDs),
                                 new RunWarningLEDPatternCommand(LEDs),
-                                () -> calculator.isValid() && turret.atTargetAngle())));
+                                turret::atTargetAngle)));
         driverController
                 .rightBumper()
                 .whileTrue(new IntakeCommand(intake, deploy)
@@ -108,7 +108,7 @@ public class RobotContainer {
                         .alongWith(Commands.either(
                                 new RunShooterLEDPatternCommand(LEDs),
                                 new RunWarningLEDPatternCommand(LEDs),
-                                () -> calculator.isValid() && turret.atTargetAngle())));
+                                turret::atTargetAngle)));
 
         driverController
                 .leftTrigger(0.5)
