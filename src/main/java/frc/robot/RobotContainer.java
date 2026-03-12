@@ -17,7 +17,6 @@ import frc.robot.commands.ShootCommand;
 import frc.robot.commands.auton.AutonManager;
 import frc.robot.commands.leds.RunIntakeLEDPatternCommand;
 import frc.robot.commands.leds.RunShooterLEDPatternCommand;
-import frc.robot.commands.leds.RunWarningLEDPatternCommand;
 import frc.robot.commands.swerve.PathfindCommands;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
@@ -95,20 +94,14 @@ public class RobotContainer {
 
         driverController
                 .rightTrigger(0.5)
-                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator, turret)
+                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new ShakeDeployCommand(intake, deploy))
-                        .alongWith(Commands.either(
-                                new RunShooterLEDPatternCommand(LEDs),
-                                new RunWarningLEDPatternCommand(LEDs),
-                                turret::atTargetAngle)));
+                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
         driverController
                 .rightBumper()
                 .whileTrue(new IntakeCommand(intake, deploy)
-                        .alongWith(new ShootCommand(shooter, hood, indexer, calculator, turret))
-                        .alongWith(Commands.either(
-                                new RunShooterLEDPatternCommand(LEDs),
-                                new RunWarningLEDPatternCommand(LEDs),
-                                turret::atTargetAngle)));
+                        .alongWith(new ShootCommand(shooter, hood, indexer, calculator))
+                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
 
         driverController
                 .leftTrigger(0.5)
@@ -153,10 +146,10 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand(
                 "ShootCommand",
-                new ShootCommand(shooter, hood, indexer, calculator, turret)); // .until(indexer::isFuelDetected)
+                new ShootCommand(shooter, hood, indexer, calculator)); // .until(indexer::isFuelDetected)
         NamedCommands.registerCommand(
                 "ShootShakeCommand",
-                new ShootCommand(shooter, hood, indexer, calculator, turret)
+                new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new ShakeDeployCommand(intake, deploy)));
         NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
         NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
