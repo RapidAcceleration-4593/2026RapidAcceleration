@@ -25,6 +25,6 @@ public class ShootCommand extends ParallelCommandGroup {
                 hood.runToAngleCommand(calculator::getHoodAngle),
                 new RunWarningLEDPatternCommand(LEDs).onlyWhile(() -> !turret.atTargetAngle() || !calculator.isValid()),
                 Commands.repeatingSequence(Commands.sequence(Commands.waitSeconds(0.5), indexer.runCommand())
-                        .onlyWhile(calculator::isValid)));
+                        .onlyWhile(() -> calculator.isValid() && turret.atTargetAngle())));
     }
 }
