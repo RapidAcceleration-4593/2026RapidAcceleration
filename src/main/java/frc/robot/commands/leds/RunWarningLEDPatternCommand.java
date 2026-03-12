@@ -18,7 +18,7 @@ public class RunWarningLEDPatternCommand extends Command {
         subsystem.setOverlayPattern(2);
         subsystem.setOverlaySpeed(3.0);
         subsystem.setOverlayUseAllianceColor(false);
-        subsystem.setOverlayColor(Color.kGreen, Color.kBlack);
+        subsystem.setOverlayColor(Color.kRed, Color.kBlack);
     }
 
     @Override

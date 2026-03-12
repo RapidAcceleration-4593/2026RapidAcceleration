@@ -17,6 +17,7 @@ import frc.robot.commands.ShootCommand;
 import frc.robot.commands.auton.AutonManager;
 import frc.robot.commands.leds.RunIntakeLEDPatternCommand;
 import frc.robot.commands.leds.RunShooterLEDPatternCommand;
+import frc.robot.commands.leds.RunWarningLEDPatternCommand;
 import frc.robot.commands.swerve.PathfindCommands;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
@@ -94,14 +95,20 @@ public class RobotContainer {
 
         driverController
                 .rightTrigger(0.5)
-                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator, turret, LEDs)
+                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator, turret)
                         .alongWith(new ShakeDeployCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
+                        .alongWith(Commands.either(
+                                new RunShooterLEDPatternCommand(LEDs),
+                                new RunWarningLEDPatternCommand(LEDs),
+                                () -> calculator.isValid() && turret.atTargetAngle())));
         driverController
                 .rightBumper()
                 .whileTrue(new IntakeCommand(intake, deploy)
-                        .alongWith(new ShootCommand(shooter, hood, indexer, calculator, turret, LEDs))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
+                        .alongWith(new ShootCommand(shooter, hood, indexer, calculator, turret))
+                        .alongWith(Commands.either(
+                                new RunShooterLEDPatternCommand(LEDs),
+                                new RunWarningLEDPatternCommand(LEDs),
+                                () -> calculator.isValid() && turret.atTargetAngle())));
 
         driverController
                 .leftTrigger(0.5)
@@ -138,7 +145,7 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         NetworkTableEntry entry =
                 networkTableInstance.getTable("AccelerationStation").getEntry("SelectedAuto");
-        String name = entry.getString("RightCenterOutpost");
+        String name = entry.getString("DoNothing");
         return autonManager.getAuton(name);
     }
 
@@ -146,10 +153,10 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand(
                 "ShootCommand",
-                new ShootCommand(shooter, hood, indexer, calculator, turret, LEDs)); // .until(indexer::isFuelDetected)
+                new ShootCommand(shooter, hood, indexer, calculator, turret)); // .until(indexer::isFuelDetected)
         NamedCommands.registerCommand(
                 "ShootShakeCommand",
-                new ShootCommand(shooter, hood, indexer, calculator, turret, LEDs)
+                new ShootCommand(shooter, hood, indexer, calculator, turret)
                         .alongWith(new ShakeDeployCommand(intake, deploy)));
         NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
         NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
