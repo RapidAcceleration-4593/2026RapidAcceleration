@@ -15,16 +15,16 @@ public class RunShooterLEDPatternCommand extends Command {
 
     @Override
     public void initialize() {
-        subsystem.changePattern(2);
-        subsystem.changeSpeed(3.0);
+        subsystem.setPattern(2);
+        subsystem.setSpeed(3.0);
         subsystem.setUseAllianceColor(false);
-        subsystem.changeColor(Color.kGreen, Color.kBlack);
+        subsystem.setColor(Color.kGreen, Color.kBlack);
     }
 
     @Override
     public void end(boolean interupted) {
-        subsystem.changePattern(0);
-        subsystem.changeSpeed(1.0);
+        subsystem.setPattern(0);
+        subsystem.setSpeed(1.0);
         subsystem.setUseAllianceColor(true);
     }
 }

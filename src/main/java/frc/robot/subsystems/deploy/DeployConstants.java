@@ -33,10 +33,10 @@ public final class DeployConstants {
     public static final Mass kCarriageMass = Kilograms.of(6.0);
     public static final Distance kDrumRadius = Inches.of(0.75);
 
-	// Encoder position is in inches
+    // Encoder position is in inches
     public static final double kPositionConversionFactor =
             2.0 * Math.PI * kDrumRadius.in(Inches) / kEncoderToDeployGearing;
-	// Encoder velocity is in inches per second
+    // Encoder velocity is in inches per second
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final MomentOfInertia kDeployMOI = KilogramSquareMeters.of(0.2555);

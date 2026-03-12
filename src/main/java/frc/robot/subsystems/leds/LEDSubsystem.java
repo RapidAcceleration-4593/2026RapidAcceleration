@@ -25,7 +25,10 @@ public class LEDSubsystem extends SubsystemBase {
     private final AddressableLEDBuffer buffer;
 
     private RunnableLEDPattern currentPattern;
+    private RunnableLEDPattern currentOverlayPattern;
     private int currentPatternIndex = 0;
+    // -1 = no overlay, 0-infinity = overlay.
+    private int currentOverlayPatternIndex = -1;
     private List<RunnableLEDPattern> patterns = List.of(
             new GradientFillPattern(this),
             new GradientTrailPattern(this),
@@ -35,11 +38,15 @@ public class LEDSubsystem extends SubsystemBase {
 
     private int animationFrame = 0;
     private double realFrame = 0.0;
-    private double speedFactor = 1.0;
 
+    private double speedFactor = 1.0;
+    private double overlaySpeedFactor = 1.0;
     private Color baseColor = Color.kBlue;
+    private Color overlayBaseColor = Color.kBlue;
     private Color gradientColor = Color.kBlack;
+    private Color overlayGradientColor = Color.kBlack;
     private boolean useAllianceColor = true;
+    private boolean overlayUseAllianceColor = true;
 
     public LEDSubsystem() {
         redAllianceTopic = NetworkTableInstance.getDefault().getBooleanTopic("/FMSInfo/IsRedAlliance");
@@ -59,17 +66,26 @@ public class LEDSubsystem extends SubsystemBase {
     public void periodic() {
         fillLEDs(Color.kBlack);
 
-        if (useAllianceColor) {
-            baseColor = getAllianceColor();
-            gradientColor = Color.kBlack;
-        }
-
-        if (currentPattern != null) {
+        if (currentOverlayPattern != null) {
+            if (overlayUseAllianceColor) {
+                overlayBaseColor = getAllianceColor();
+                overlayGradientColor = Color.kBlack;
+            }
+            currentOverlayPattern.run();
+        } else {
+            if (useAllianceColor) {
+                baseColor = getAllianceColor();
+                gradientColor = Color.kBlack;
+            }
             currentPattern.run();
         }
 
         updateLEDs();
-        realFrame = ((realFrame + kBaseSpeed * speedFactor) % kLEDCount + kLEDCount) % kLEDCount;
+        if (currentOverlayPattern == null) {
+            realFrame = ((realFrame + kBaseSpeed * speedFactor) % kLEDCount + kLEDCount) % kLEDCount;
+        } else {
+            realFrame = ((realFrame + kBaseSpeed * overlaySpeedFactor) % kLEDCount + kLEDCount) % kLEDCount;
+        }
         animationFrame = ((int) realFrame + kLEDCount) % kLEDCount;
     }
 
@@ -85,30 +101,60 @@ public class LEDSubsystem extends SubsystemBase {
         led.setData(buffer);
     }
 
-    public void changePattern(int patternIndex) {
+    public void setPattern(int patternIndex) {
         currentPatternIndex = patternIndex % patterns.size();
         currentPattern = patterns.get(currentPatternIndex);
     }
 
-    public void changeSpeed(double speedFactor) {
+    public void setOverlayPattern(int patternIndex) {
+        if (patternIndex == -1) {
+            currentOverlayPattern = null;
+            return;
+        }
+        currentOverlayPatternIndex = patternIndex % patterns.size();
+        currentOverlayPattern = patterns.get(currentOverlayPatternIndex);
+    }
+
+    public void setSpeed(double speedFactor) {
         this.speedFactor = speedFactor;
     }
 
-    public void changeColor(Color baseColor, Color gradientColor) {
+    public void setOverlaySpeed(double speedFactor) {
+        this.overlaySpeedFactor = speedFactor;
+    }
+
+    public void setColor(Color baseColor, Color gradientColor) {
         this.baseColor = baseColor;
         this.gradientColor = gradientColor;
+    }
+
+    public void setOverlayColor(Color baseColor, Color gradientColor) {
+        this.overlayBaseColor = baseColor;
+        this.overlayGradientColor = gradientColor;
     }
 
     public void setUseAllianceColor(boolean value) {
         this.useAllianceColor = value;
     }
 
+    public void setOverlayUseAllianceColor(boolean value) {
+        this.overlayUseAllianceColor = value;
+    }
+
     public Color getBaseColor() {
-        return this.baseColor;
+        if (currentOverlayPattern == null) {
+            return this.baseColor;
+        } else {
+            return this.overlayBaseColor;
+        }
     }
 
     public Color getGradientColor() {
-        return this.gradientColor;
+        if (currentOverlayPattern == null) {
+            return this.gradientColor;
+        } else {
+            return this.overlayGradientColor;
+        }
     }
 
     public int getAnimationFrame() {

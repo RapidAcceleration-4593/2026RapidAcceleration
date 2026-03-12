@@ -15,16 +15,16 @@ public class RunIntakeLEDPatternCommand extends Command {
 
     @Override
     public void initialize() {
-        subsystem.changePattern(2);
-        subsystem.changeSpeed(-1.0);
+        subsystem.setPattern(2);
+        subsystem.setSpeed(-1.0);
         subsystem.setUseAllianceColor(false);
-        subsystem.changeColor(Color.kOrangeRed, Color.kBlack);
+        subsystem.setColor(Color.kOrangeRed, Color.kBlack);
     }
 
     @Override
     public void end(boolean interupted) {
-        subsystem.changePattern(0);
-        subsystem.changeSpeed(1.0);
+        subsystem.setPattern(0);
+        subsystem.setSpeed(1.0);
         subsystem.setUseAllianceColor(true);
     }
 }

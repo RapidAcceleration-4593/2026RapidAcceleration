@@ -94,13 +94,13 @@ public class RobotContainer {
 
         driverController
                 .rightTrigger(0.5)
-                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
+                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator, turret, LEDs)
                         .alongWith(new ShakeDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs)));
         driverController
                 .rightBumper()
                 .whileTrue(new IntakeCommand(intake, deploy)
-                        .alongWith(new ShootCommand(shooter, hood, indexer, calculator))
+                        .alongWith(new ShootCommand(shooter, hood, indexer, calculator, turret, LEDs))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs)));
 
         driverController
@@ -146,10 +146,11 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand(
                 "ShootCommand",
-                new ShootCommand(shooter, hood, indexer, calculator)); // .until(indexer::isFuelDetected)
+                new ShootCommand(shooter, hood, indexer, calculator, turret, LEDs)); // .until(indexer::isFuelDetected)
         NamedCommands.registerCommand(
                 "ShootShakeCommand",
-                new ShootCommand(shooter, hood, indexer, calculator).alongWith(new ShakeDeployCommand(intake, deploy)));
+                new ShootCommand(shooter, hood, indexer, calculator, turret, LEDs)
+                        .alongWith(new ShakeDeployCommand(intake, deploy)));
         NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
         NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
         NamedCommands.registerCommand("ClimberRaiseArmCommand", Commands.none());
