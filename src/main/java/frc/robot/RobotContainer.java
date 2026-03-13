@@ -9,6 +9,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.RetractIntakeCommand;
@@ -31,6 +32,7 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
+import frc.robot.util.FieldUtil;
 
 public class RobotContainer {
 
@@ -132,6 +134,14 @@ public class RobotContainer {
                 .back()
                 .onTrue(turret.runOnce(
                         () -> turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle))));
+
+        new Trigger(indexer::getShotDetected).onTrue(Commands.runOnce(() -> {
+            if (FieldUtil.isInAllianceZone(swerve.getPose())) {
+                indexer.addHubShot();
+            } else {
+                indexer.addFeedingShot();
+            }
+        }));
     }
 
     /** Select the command to run in Autonomous. */
@@ -146,11 +156,15 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand(
                 "ShootCommand",
-                new ShootCommand(shooter, hood, indexer, calculator)); // .until(indexer::isFuelDetected)
+                new ShootCommand(shooter, hood, indexer, calculator)
+                        .alongWith(new RunShooterLEDPatternCommand(LEDs))); // .until(indexer::isFuelDetected)
         NamedCommands.registerCommand(
                 "ShootShakeCommand",
-                new ShootCommand(shooter, hood, indexer, calculator).alongWith(new ShakeDeployCommand(intake, deploy)));
-        NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(intake, deploy));
+                new ShootCommand(shooter, hood, indexer, calculator)
+                        .alongWith(new ShakeDeployCommand(intake, deploy))
+                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
+        NamedCommands.registerCommand(
+                "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
         NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
         NamedCommands.registerCommand("ClimberRaiseArmCommand", Commands.none());
     }
