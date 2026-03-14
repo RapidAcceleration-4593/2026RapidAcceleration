@@ -18,8 +18,12 @@ public class IndexerSubsystem extends SubsystemBase {
     private final IndexerInputsAutoLogged inputs;
     private final WheelMechanism3D indexer3D;
 
-    private int fuelShotCount = 0;
+    private int fuelShotHub = 0;
+    private int fuelShotFeeding = 0;
+
     private boolean lastFuelDetected = false;
+    private boolean shotDetected = false;
+
     private OptionalDouble lastFuelTimestamp = OptionalDouble.empty();
 
     public IndexerSubsystem(IndexerIO io) {
@@ -34,8 +38,8 @@ public class IndexerSubsystem extends SubsystemBase {
         Logger.processInputs("Indexer", inputs);
         indexer3D.setAngularVelocity(inputs.spindexerVelocity);
 
-        if (inputs.isFuelDetected && !lastFuelDetected) {
-            fuelShotCount++;
+        shotDetected = inputs.isFuelDetected && !lastFuelDetected;
+        if (shotDetected) {
             lastFuelTimestamp = OptionalDouble.of(Timer.getTimestamp());
         }
         lastFuelDetected = inputs.isFuelDetected;
@@ -72,6 +76,19 @@ public class IndexerSubsystem extends SubsystemBase {
         });
     }
 
+    /* Returns when a ball leaves the Shooter. */
+    public boolean getShotDetected() {
+        return shotDetected;
+    }
+
+    public void addHubShot() {
+        fuelShotHub++;
+    }
+
+    public void addFeedingShot() {
+        fuelShotFeeding++;
+    }
+
     /**
      * Detects whether the proximity sensor detects Fuel.
      *
@@ -84,17 +101,22 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     /**
-     * Retrieves the amount of Fuel detected through the proximity sensor.
+     * Retrieves the amount of Fuel detected while aiming at the Hub.
      *
-     * @return The number of Fuel detected.
+     * @return The number of Hub Fuel detected.
      */
-    @AutoLogOutput(key = "IndexerSubsystem/FuelShotCount")
+    @AutoLogOutput(key = "IndexerSubsystem/FuelShotHub")
     public int getFuelShotCount() {
-        return fuelShotCount;
+        return fuelShotHub;
     }
 
-    /** Resets the Fuel detected counter. */
-    public void resetFuelShotCount() {
-        fuelShotCount = 0;
+    /**
+     * Retreives the amount of Fuel detected while cross-feeding.
+     *
+     * @return The number of cross-feeding Fuel detected.
+     */
+    @AutoLogOutput(key = "IndexerSubsystem/FuelShotFeeding")
+    public int getFuelShotFeeding() {
+        return fuelShotFeeding;
     }
 }
