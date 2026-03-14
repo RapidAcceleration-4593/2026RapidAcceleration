@@ -78,6 +78,7 @@ public class RobotContainer {
         operatorController = new CommandXboxController(kOperatorControllerPort);
 
         autonManager = new AutonManager(swerve);
+        autonManager.warmup();
         networkTableInstance = NetworkTableInstance.getDefault();
 
         registerCommands();

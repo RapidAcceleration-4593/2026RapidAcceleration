@@ -58,7 +58,9 @@ public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
         AngularVelocity motorVelocity = turretVelocity.times(kMotorToTurretGearing);
 
         motorSim.iterate(
-                motorVelocity.in(RPM), SimulatedBattery.getBatteryVoltage().in(Volts), 0.02);
-        encoderSim.setPosition(Degrees.convertFrom(turretSim.getAngleRads(), Radians));
+                motorVelocity.in(RPM) / kVelocityConversionFactor,
+                SimulatedBattery.getBatteryVoltage().in(Volts),
+                0.02);
+        encoderSim.iterate(turretVelocity.in(RPM) * kVelocityConversionFactor, 0.02);
     }
 }
