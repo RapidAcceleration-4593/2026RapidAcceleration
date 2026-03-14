@@ -36,7 +36,7 @@ public class AutonManager {
         autonMap.put("Right2xCenterNoClimb", () -> new Right2xCenterNoClimb(util));
         autonMap.put("RightCenterOutpost", () -> new RightCenterOutpost(util));
 
-		autonMap.put("RightCenterLoop", () -> new RightCenterLoop(util));
+        autonMap.put("RightCenterLoop", () -> new RightCenterLoop(util));
     }
 
     /** Loads all PathPlanner paths into the cache. */
