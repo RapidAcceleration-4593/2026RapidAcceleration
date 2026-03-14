@@ -165,6 +165,7 @@ public class RobotContainer {
                         .alongWith(new RunShooterLEDPatternCommand(LEDs)));
         NamedCommands.registerCommand(
                 "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
+        NamedCommands.registerCommand("ShakeDeployCommand", new ShakeDeployCommand(intake, deploy));
         NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
         NamedCommands.registerCommand("ClimberRaiseArmCommand", Commands.none());
     }
