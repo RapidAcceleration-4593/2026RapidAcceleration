@@ -8,6 +8,7 @@ import frc.robot.commands.auton.right.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 public class AutonManager {
@@ -34,6 +35,16 @@ public class AutonManager {
         autonMap.put("Left2xCenterNoClimb", () -> new Left2xCenterNoClimb(util));
         autonMap.put("Right2xCenterNoClimb", () -> new Right2xCenterNoClimb(util));
         autonMap.put("RightCenterOutpost", () -> new RightCenterOutpost(util));
+
+        autonMap.put("RightCenterLoop", () -> new RightCenterLoop(util));
+    }
+
+    /** Loads all PathPlanner paths into the cache. */
+    public void warmup() {
+        for (Entry<String, Supplier<Command>> entry : autonMap.entrySet()) {
+            // Call the constructor of each auton to load the paths.
+            entry.getValue().get();
+        }
     }
 
     public Command getAuton(String name) {

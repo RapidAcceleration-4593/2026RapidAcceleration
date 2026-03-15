@@ -78,7 +78,7 @@ public class TurretSubsystem extends SubsystemBase {
      * @return A command to run the motor to an angle without stopping.
      */
     public Command runToAngleCommand(Supplier<Angle> angleSupplier) {
-        return runEnd(() -> setPosition(() -> calculateSafeAngle(angleSupplier.get())), io::stop);
+        return run(() -> setPosition(() -> calculateSafeAngle(angleSupplier.get())));
     }
 
     /**
@@ -97,6 +97,8 @@ public class TurretSubsystem extends SubsystemBase {
      */
     private Angle calculateSafeAngle(Angle targetAngle) {
         Angle current = getCurrentAngle();
+        double targetDeg = targetAngle.in(Degrees);
+        double currentDeg = current.in(Degrees);
 
         Angle error =
                 Degrees.of(MathUtil.inputModulus(targetAngle.minus(current).in(Degrees), -180.0, 180.0));
