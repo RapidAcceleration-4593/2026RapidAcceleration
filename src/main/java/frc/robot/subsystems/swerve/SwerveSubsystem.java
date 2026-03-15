@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
@@ -216,13 +217,15 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
      * Stops the drive and turns the modules to an X arrangement to resist movement. The modules will return to their
      * normal orientations the next time a nonzero velocity is requested.
      */
-    public void stopWithX() {
-        Rotation2d[] headings = new Rotation2d[4];
-        for (int i = 0; i < 4; i++) {
-            headings[i] = getModuleTranslations()[i].getAngle();
-        }
-        kinematics.resetHeadings(headings);
-        stop();
+    public Command stopXCommand() {
+        return Commands.runOnce(() -> {
+            Rotation2d[] headings = new Rotation2d[4];
+            for (int i = 0; i < 4; i++) {
+                headings[i] = getModuleTranslations()[i].getAngle();
+            }
+            kinematics.resetHeadings(headings);
+            stop();
+        });
     }
 
     /** Returns a command to run a quasistatic test in the specified direction. */

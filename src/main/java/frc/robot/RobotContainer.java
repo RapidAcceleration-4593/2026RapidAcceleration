@@ -94,6 +94,7 @@ public class RobotContainer {
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());
+        driverController.x().onTrue(swerve.stopXCommand());
 
         driverController
                 .rightTrigger(0.5)
