@@ -86,7 +86,8 @@ public class RobotContainer {
     private void configureBindings() {
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
                 swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
-        turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle));
+        turret.setDefaultCommand(
+                turret.runToAngleCommand(() -> calculator.getLastValidResult().turretAngle()));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());

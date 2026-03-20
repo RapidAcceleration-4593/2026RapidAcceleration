@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
+import static frc.robot.subsystems.turret.TurretConstants.kMaximumAngle;
+import static frc.robot.subsystems.turret.TurretConstants.kMinimumAngle;
 import static frc.robot.util.shooting.ProjectilePhysicsConstants.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -18,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.shooting.ProjectilePhysics;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.Logger;
 
 public class ShotCalculatorSubsystem extends SubsystemBase {
 
@@ -26,6 +27,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
     private final Supplier<ChassisSpeeds> chassisSpeedsSupplier;
 
     private ShotResult latestResult = ShotResult.invalid();
+    private ShotResult latestValidResult = ShotResult.invalid();
 
     private static final InterpolatingDoubleTreeMap hoodMap = new InterpolatingDoubleTreeMap();
 
@@ -65,8 +67,16 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
 
             LinearVelocity launchSpeed =
                     ProjectilePhysics.calculateLaunchSpeed(hoodAngle, horizontalDistance, verticalDistance);
-            Time tof = ProjectilePhysics.calculateTime(
-                    launchSpeed, hoodAngle, FieldUtil.getTargetPose(robotPose).getMeasureZ());
+
+            Time tof;
+            if (Double.isNaN(launchSpeed.magnitude())) {
+                tof = Seconds.of(0.5); // Attempt to seed convergence with a different TOF.
+            } else {
+                tof = ProjectilePhysics.calculateTime(
+                        launchSpeed,
+                        hoodAngle,
+                        FieldUtil.getTargetPose(robotPose).getMeasureZ());
+            }
 
             Pose2d newVirtualTarget = new Pose2d(
                     targetPose2d.getMeasureX().minus(Meters.of(chassisSpeeds.vxMetersPerSecond * tof.in(Seconds))),
@@ -85,13 +95,22 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         LinearVelocity finalLaunchSpeed =
                 ProjectilePhysics.calculateLaunchSpeed(finalHoodAngle, finalDistance, verticalDistance);
 
+        if (Double.isNaN(finalLaunchSpeed.in(MetersPerSecond))) {
+            latestResult = ShotResult.invalid();
+            return;
+        }
+
         Angle turretAngle = calculateTurret(robotPose, virtualTarget, chassisSpeeds);
+
+        if (turretAngle.gt(kMaximumAngle) || turretAngle.lt(kMinimumAngle)) {
+            latestResult = ShotResult.invalid();
+            return;
+        }
+
         AngularVelocity shooterVelocity = calculateShooter(finalLaunchSpeed, finalDistance, turretAngle);
 
-        Logger.recordOutput("TargetPose", virtualTarget);
-        Logger.recordOutput("VirtualDistance", finalDistance);
-
         latestResult = new ShotResult(turretAngle, finalHoodAngle, shooterVelocity, true);
+        latestValidResult = latestResult;
     }
 
     private Angle calculateHood(Distance distance) {
@@ -134,6 +153,10 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         calculate();
+    }
+
+    public ShotResult getLastValidResult() {
+        return latestValidResult;
     }
 
     public record ShotResult(Angle turretAngle, Angle hoodAngle, AngularVelocity shooterVelocity, boolean valid) {
