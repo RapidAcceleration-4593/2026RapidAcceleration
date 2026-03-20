@@ -17,11 +17,11 @@ public final class IndexerConstants {
     public static final boolean kInvertFeederMotor = false;
     public static final boolean kInvertSensor = false;
 
-    public static final Voltage kSpindexerVolts = Volts.of(8);
-    public static final Voltage kFeederVolts = Volts.of(10);
+    public static final Voltage kSpindexerVolts = Volts.of(8.0);
+    public static final Voltage kFeederVolts = Volts.of(6.0);
 
     public static final double kSpindexerGearing = (5.0 * 3.0 * 3.0);
-    public static final double kFeederGearing = (4.0);
+    public static final double kFeederGearing = (3.0);
 
     public static final MomentOfInertia kSpindexerMOI = KilogramSquareMeters.of(0.001);
     public static final MomentOfInertia kFeederMOI = KilogramSquareMeters.of(0.001);

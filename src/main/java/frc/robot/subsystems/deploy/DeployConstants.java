@@ -16,7 +16,7 @@ public final class DeployConstants {
     public static final boolean kInvertEncoder = false;
     public static final boolean kInvertRetractedLS = true;
 
-    public static final double kP = 0.22;
+    public static final double kP = 0.1; // TODO: Tune PID.
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
@@ -27,7 +27,7 @@ public final class DeployConstants {
     public static final Distance kDistanceTolerance = Inches.of(0.25);
 
     public static final int kCountsPerRotation = 8192;
-    public static final double kMotorToEncoderGearing = (5.0 * 5.0) * (22.0 / 24.0);
+    public static final double kMotorToEncoderGearing = (5.0 * 5.0) * (24.0 / 24.0);
     public static final double kEncoderToDeployGearing = 1.0;
     public static final double kMotorToDeployGearing = kMotorToEncoderGearing * kEncoderToDeployGearing;
 
