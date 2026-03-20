@@ -23,18 +23,27 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class DeployIOReal implements DeployIO {
 
     protected final SparkMax motor;
+    protected final SparkMax followerMotor;
+
     protected final RelativeEncoder encoder;
     protected final DigitalInput retractedLS;
 
     private final SparkClosedLoopController controller;
 
     public DeployIOReal() {
-        motor = new SparkMax(kMotorID, MotorType.kBrushless);
+        motor = new SparkMax(kLeftMotorID, MotorType.kBrushless);
+        followerMotor = new SparkMax(kRightMotorID, MotorType.kBrushless);
         encoder = motor.getAlternateEncoder();
         retractedLS = new DigitalInput(kRetractedLSChannel);
 
         SparkBaseConfig baseConfig = new SparkMaxConfig()
                 .inverted(kInvertMotor)
+                .idleMode(IdleMode.kCoast)
+                .smartCurrentLimit(30)
+                .voltageCompensation(12.0);
+
+        SparkBaseConfig followerConfig = new SparkMaxConfig()
+                .follow(motor, true)
                 .idleMode(IdleMode.kCoast)
                 .smartCurrentLimit(30)
                 .voltageCompensation(12.0);
@@ -54,6 +63,7 @@ public class DeployIOReal implements DeployIO {
         config.apply(controlConfig);
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        followerMotor.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();
     }
 

@@ -45,8 +45,8 @@ public class RobotContainer {
 
     public final IntakeSubsystem intake;
     public final DeploySubsystem deploy;
-    public final LEDSubsystem LEDs;
 
+    public final LEDSubsystem LEDs;
     public final ShotCalculatorSubsystem calculator;
 
     // Controller(s)
@@ -68,8 +68,8 @@ public class RobotContainer {
 
         intake = IntakeFactory.initialize();
         deploy = DeployFactory.initialize();
-        LEDs = new LEDSubsystem();
 
+        LEDs = new LEDSubsystem();
         calculator = new ShotCalculatorSubsystem(swerve::getPose, swerve::getChassisSpeeds);
 
         driverController = new CommandXboxController(kDriverControllerPort);
@@ -151,15 +151,14 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand(
                 "ShootCommand",
-                new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs))); // .until(indexer::isFuelDetected)
+                new ShootCommand(shooter, hood, indexer, calculator).alongWith(new RunShooterLEDPatternCommand(LEDs)));
         NamedCommands.registerCommand(
                 "ShootShakeCommand",
                 new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new ShakeDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs)));
+        NamedCommands.registerCommand("ShakeDeployCommand", new ShakeDeployCommand(intake, deploy));
         NamedCommands.registerCommand(
                 "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
-        NamedCommands.registerCommand("ShakeDeployCommand", new ShakeDeployCommand(intake, deploy));
     }
 }

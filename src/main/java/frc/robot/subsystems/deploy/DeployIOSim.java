@@ -27,7 +27,7 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
     private final DIOSim retractedLSSim;
 
     public DeployIOSim() {
-        DCMotor gearbox = DCMotor.getNeo550(1);
+        DCMotor gearbox = DCMotor.getNeo550(2);
 
         deploySim = new ElevatorSim(
                 LinearSystemId.createElevatorSystem(
