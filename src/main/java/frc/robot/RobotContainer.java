@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.RetractIntakeCommand;
 import frc.robot.commands.ShakeDeployCommand;
@@ -22,7 +21,6 @@ import frc.robot.commands.swerve.PathfindCommands;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
 import frc.robot.subsystems.ShotCalculatorSubsystem;
-import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.deploy.DeploySubsystem;
 import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
@@ -47,7 +45,6 @@ public class RobotContainer {
 
     public final IntakeSubsystem intake;
     public final DeploySubsystem deploy;
-    public final ClimberSubsystem climber;
     public final LEDSubsystem LEDs;
 
     public final ShotCalculatorSubsystem calculator;
@@ -71,7 +68,6 @@ public class RobotContainer {
 
         intake = IntakeFactory.initialize();
         deploy = DeployFactory.initialize();
-        climber = ClimberFactory.initialize();
         LEDs = new LEDSubsystem();
 
         calculator = new ShotCalculatorSubsystem(swerve::getPose, swerve::getChassisSpeeds);
@@ -127,9 +123,6 @@ public class RobotContainer {
         operatorController.y().whileTrue(indexer.runCommand());
         operatorController.a().whileTrue(intake.setVoltageCommand(Volts.of(-6.0)));
 
-        operatorController.povUp().whileTrue(climber.setVoltageCommand(Volts.of(12.0)));
-        operatorController.povDown().whileTrue(climber.setVoltageCommand(Volts.of(-12.0)));
-
         operatorController.start().onTrue(turret.runOnce(() -> turret.setDefaultCommand(turret.idle())));
 
         operatorController
@@ -168,7 +161,5 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
         NamedCommands.registerCommand("ShakeDeployCommand", new ShakeDeployCommand(intake, deploy));
-        NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
-        NamedCommands.registerCommand("ClimberRaiseArmCommand", Commands.none());
     }
 }
