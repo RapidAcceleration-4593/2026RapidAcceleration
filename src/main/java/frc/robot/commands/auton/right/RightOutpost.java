@@ -6,9 +6,9 @@ import frc.robot.commands.auton.AutonCommand;
 import frc.robot.commands.auton.AutonUtil;
 import java.util.List;
 
-public class RightOutpostNoClimb extends AutonCommand {
+public class RightOutpost extends AutonCommand {
 
-    public RightOutpostNoClimb(AutonUtil util) {
+    public RightOutpost(AutonUtil util) {
         super(util, List.of("RightOutpost-1", "RightOutpost-2"));
 
         addCommands(

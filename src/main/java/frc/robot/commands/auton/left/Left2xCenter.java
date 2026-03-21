@@ -1,4 +1,4 @@
-package frc.robot.commands.auton.right;
+package frc.robot.commands.auton.left;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -6,10 +6,10 @@ import frc.robot.commands.auton.AutonCommand;
 import frc.robot.commands.auton.AutonUtil;
 import java.util.List;
 
-public class Right2xCenterNoClimb extends AutonCommand {
+public class Left2xCenter extends AutonCommand {
 
-    public Right2xCenterNoClimb(AutonUtil util) {
-        super(util, List.of("RightCenter-1", "RightCenter-2", "RightCenter-3", "RightCenter-4"));
+    public Left2xCenter(AutonUtil util) {
+        super(util, List.of("LeftCenter-1", "LeftCenter-2", "LeftCenter-3", "LeftCenter-4"));
 
         addCommands(
                 NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(0))),

@@ -6,9 +6,9 @@ import frc.robot.commands.auton.AutonCommand;
 import frc.robot.commands.auton.AutonUtil;
 import java.util.List;
 
-public class LeftCenterNoClimb extends AutonCommand {
+public class LeftCenter extends AutonCommand {
 
-    public LeftCenterNoClimb(AutonUtil util) {
+    public LeftCenter(AutonUtil util) {
         super(util, List.of("LeftCenter-1", "LeftCenter-2"));
 
         addCommands(
