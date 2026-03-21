@@ -1,4 +1,4 @@
-package frc.robot.commands.auton.center;
+package frc.robot.commands.auton.left;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -6,13 +6,13 @@ import frc.robot.commands.auton.AutonCommand;
 import frc.robot.commands.auton.AutonUtil;
 import java.util.List;
 
-public class CenterNoPickupNoClimb extends AutonCommand {
+public class LeftNoPickup extends AutonCommand {
 
-    public CenterNoPickupNoClimb(AutonUtil util) {
-        super(util, List.of("CenterNoPickup-1"));
+    public LeftNoPickup(AutonUtil util) {
+        super(util, List.of("LeftNoPickup-1"));
 
         addCommands(
                 AutoBuilder.followPath(paths.get(0)),
-                NamedCommands.getCommand("ShootCommand").withTimeout(10.0));
+                NamedCommands.getCommand("ShootCommand").withTimeout(7.5));
     }
 }

@@ -22,18 +22,18 @@ public class AutonManager {
     }
 
     private void registerAutons() {
-        autonMap.put("LeftCenterNoClimb", () -> new LeftCenterNoClimb(util));
-        autonMap.put("LeftNoPickupNoClimb", () -> new LeftNoPickupNoClimb(util));
+        autonMap.put("LeftCenter", () -> new LeftCenter(util));
+        autonMap.put("LeftNoPickup", () -> new LeftNoPickup(util));
 
-        autonMap.put("CenterNoPickupNoClimb", () -> new CenterNoPickupNoClimb(util));
+        autonMap.put("CenterNoPickup", () -> new CenterNoPickup(util));
 
-        autonMap.put("RightCenterNoClimb", () -> new RightCenterNoClimb(util));
-        autonMap.put("RightNoPickupNoClimb", () -> new RightNoPickupNoClimb(util));
-        autonMap.put("RightOutpostNoClimb", () -> new RightOutpostNoClimb(util));
+        autonMap.put("RightCenter", () -> new RightCenter(util));
+        autonMap.put("RightNoPickup", () -> new RightNoPickup(util));
+        autonMap.put("RightOutpost", () -> new RightOutpost(util));
 
         autonMap.put("DoNothing", () -> Commands.none());
-        autonMap.put("Left2xCenterNoClimb", () -> new Left2xCenterNoClimb(util));
-        autonMap.put("Right2xCenterNoClimb", () -> new Right2xCenterNoClimb(util));
+        autonMap.put("Left2xCenter", () -> new Left2xCenter(util));
+        autonMap.put("Right2xCenter", () -> new Right2xCenter(util));
         autonMap.put("RightCenterOutpost", () -> new RightCenterOutpost(util));
 
         autonMap.put("RightCenterLoop", () -> new RightCenterLoop(util));
