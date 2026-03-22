@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.MAXMotionConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -54,8 +55,12 @@ public class DeployIOReal implements DeployIO {
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 
-        ClosedLoopConfig controlConfig =
-                new ClosedLoopConfig().pid(kP, kI, kD).feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
+        MAXMotionConfig maxMotionConfig = new MAXMotionConfig().cruiseVelocity(kLinearVelocity.in(InchesPerSecond));
+
+        ClosedLoopConfig controlConfig = new ClosedLoopConfig()
+                .pid(kP, kI, kD)
+                .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
+                .apply(maxMotionConfig);
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
@@ -81,6 +86,11 @@ public class DeployIOReal implements DeployIO {
     @Override
     public void setPosition(Distance distance) {
         controller.setSetpoint(distance.in(Inches), ControlType.kPosition);
+    }
+
+    @Override
+    public void setPositionConstrained(Distance distance) {
+        controller.setSetpoint(distance.in(Inches), ControlType.kMAXMotionPositionControl);
     }
 
     @Override

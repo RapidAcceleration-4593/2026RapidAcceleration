@@ -41,10 +41,6 @@ public class DeploySubsystem extends SubsystemBase {
 
         deploy3D.setLength(inputs.distance);
         CommandLogger.logSubsystemCommand(this);
-
-        if (inputs.retractedLS) {
-            io.resetPosition();
-        }
     }
 
     public Distance getCurrentDistance() {
@@ -70,20 +66,14 @@ public class DeploySubsystem extends SubsystemBase {
         return startEnd(() -> setVoltage(volts), io::stop).until(this::drivingIntoLimit);
     }
 
-    /** @return True if limit switch is pressed or max distance is exceeded, false if not */
-    public boolean drivingIntoLimit() {
-        return (inputs.retractedLS && inputs.appliedVolts.lt(Volts.zero()))
-                || (inputs.distance.gt(kMaximumDistance) && inputs.appliedVolts.gt(Volts.zero()));
-    }
-
     /**
      * Constructs a command to run the deploy to a set distance.
      *
      * @param distance The distance to apply to the closed-loop PID control.
      * @return A command to run the motor to a distance and stop when complete.
      */
-    public Command goToDistanceCommand(Distance distance) {
-        return runEnd(() -> setPosition(distance), io::stop).until(this::atTargetDistance);
+    public Command goToDistanceCommand(Distance distance, boolean constrained) {
+        return runEnd(() -> setPosition(distance, constrained), io::stop).until(this::atTargetDistance);
     }
 
     /**
@@ -99,8 +89,9 @@ public class DeploySubsystem extends SubsystemBase {
      * Sets the distance of the closed-loop PID controller.
      *
      * @param distance The distance to set as the deploy position.
+     * @param constrained Whether to apply velocity constraints.
      */
-    private void setPosition(Distance distance) {
+    private void setPosition(Distance distance, boolean constrained) {
         if (inputs.retractedLS && distance.lte(kMinimumDistance)) {
             distance = kMinimumDistance;
         }
@@ -108,7 +99,12 @@ public class DeploySubsystem extends SubsystemBase {
         Distance clampedDistance = Inches.of(
                 MathUtil.clamp(distance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches)));
         targetDistance = clampedDistance;
-        io.setPosition(distance);
+
+        if (constrained) {
+            io.setPositionConstrained(distance);
+        } else {
+            io.setPosition(distance);
+        }
     }
 
     /**
@@ -122,5 +118,11 @@ public class DeploySubsystem extends SubsystemBase {
         } else {
             io.setVoltage(volts);
         }
+    }
+
+    /** Whether the limit switch is pressed or maximum distance is exceeded. */
+    private boolean drivingIntoLimit() {
+        return (inputs.retractedLS && inputs.appliedVolts.lt(Volts.zero()))
+                || (inputs.distance.gt(kMaximumDistance) && inputs.appliedVolts.gt(Volts.zero()));
     }
 }
