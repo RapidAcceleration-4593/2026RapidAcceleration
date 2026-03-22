@@ -15,6 +15,9 @@ import frc.robot.util.CommandLogger;
 import frc.robot.util.mechanism.LengthMechanism3D;
 import org.littletonrobotics.junction.Logger;
 
+/**
+ * This subsystem manages the extendible hopper of the robot.
+ */
 public class DeploySubsystem extends SubsystemBase {
 
     private final DeployIO io;
@@ -43,14 +46,23 @@ public class DeploySubsystem extends SubsystemBase {
         CommandLogger.logSubsystemCommand(this);
     }
 
+	/**
+	 * @return The distance that the mechanism is currently extended from the robot.
+	 */
     public Distance getCurrentDistance() {
         return inputs.distance;
     }
 
+	/**
+	 * @return The extension setpoint that the mechanism is currently attempting to reach.
+	 */
     public Distance getTargetDistance() {
         return inputs.targetDistance;
     }
 
+	/**
+	 * @return True if the actual extension is within tolerance of the extension setpoint, false otherwise.
+	 */
     public boolean atTargetDistance() {
         return inputs.distance.isNear(targetDistance, kDistanceTolerance);
     }

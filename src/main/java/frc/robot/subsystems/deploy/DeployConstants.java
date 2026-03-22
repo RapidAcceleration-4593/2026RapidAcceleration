@@ -40,6 +40,4 @@ public final class DeployConstants {
     public static final double kPositionConversionFactor =
             2.0 * Math.PI * kDrumRadius.in(Inches) / kEncoderToDeployGearing;
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
-
-    public static final MomentOfInertia kDeployMOI = KilogramSquareMeters.of(0.2555);
 }
