@@ -52,8 +52,6 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
                 robotVelocity.vyMetersPerSecond * kSystemLatency.in(Seconds),
                 robotVelocity.omegaRadiansPerSecond * kSystemLatency.in(Seconds)));
 
-        Transform2d predictedMovement = new Transform2d(currentPose, predictedPose);
-
         // Calculate Shooter's Instantanious Velocity.
         double shooterVxRobot =
                 robotVelocity.vxMetersPerSecond - (robotVelocity.omegaRadiansPerSecond * kPhysicalOffset.getY());
