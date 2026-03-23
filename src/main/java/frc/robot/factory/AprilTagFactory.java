@@ -1,10 +1,13 @@
 package frc.robot.factory;
 
 import static frc.robot.Constants.*;
-import static frc.robot.subsystems.vision.apriltag.AprilTagConstants.*;
+import static frc.robot.subsystems.vision.AprilTagConstants.*;
 
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-import frc.robot.subsystems.vision.apriltag.*;
+import frc.robot.subsystems.vision.AprilTagIO;
+import frc.robot.subsystems.vision.AprilTagIOReal;
+import frc.robot.subsystems.vision.AprilTagIOSim;
+import frc.robot.subsystems.vision.AprilTagSubsystem;
 import frc.robot.util.SimulationManager;
 import java.util.Arrays;
 

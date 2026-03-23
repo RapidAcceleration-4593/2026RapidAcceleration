@@ -31,7 +31,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
-import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
+import frc.robot.subsystems.vision.AprilTagSubsystem;
 import frc.robot.util.CommandLogger;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.LocalADStarAK;

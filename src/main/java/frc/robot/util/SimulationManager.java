@@ -4,7 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 import static frc.robot.subsystems.swerve.SwerveConstants.kMapleSimConfig;
-import static frc.robot.subsystems.vision.apriltag.AprilTagConstants.kFieldLayout;
+import static frc.robot.subsystems.vision.AprilTagConstants.kFieldLayout;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;

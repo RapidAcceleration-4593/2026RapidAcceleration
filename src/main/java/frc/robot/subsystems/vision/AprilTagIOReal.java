@@ -1,6 +1,6 @@
-package frc.robot.subsystems.vision.apriltag;
+package frc.robot.subsystems.vision;
 
-import static frc.robot.subsystems.vision.apriltag.AprilTagConstants.*;
+import static frc.robot.subsystems.vision.AprilTagConstants.*;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;

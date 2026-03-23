@@ -1,4 +1,4 @@
-package frc.robot.subsystems.vision.apriltag;
+package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;

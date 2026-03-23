@@ -1,4 +1,4 @@
-package frc.robot.subsystems.vision.apriltag;
+package frc.robot.subsystems.vision;
 
 import static edu.wpi.first.units.Units.*;
 
