@@ -4,7 +4,8 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 import static frc.robot.subsystems.turret.TurretConstants.kMaximumAngle;
 import static frc.robot.subsystems.turret.TurretConstants.kMinimumAngle;
-import static frc.robot.util.shooting.ProjectilePhysicsConstants.*;
+import static frc.robot.util.shooting.ProjectilePhysics.*;
+import static frc.robot.util.shooting.ProjectilePhysicsCalibration.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -19,9 +20,15 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.shooting.ProjectilePhysics;
+import frc.robot.util.shooting.ProjectilePhysicsCalibration;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class ShotCalculatorSubsystem extends SubsystemBase {
+
+    public static final int kCalculationIterations = 4;
+    public static final double kConvergenceEpsilon = 3e-4;
+    public static final double kTwistCompensationFactor = 0.1;
 
     private final Supplier<Pose2d> poseSupplier;
     private final Supplier<ChassisSpeeds> chassisSpeedsSupplier;
@@ -90,6 +97,8 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
             virtualTarget = newVirtualTarget;
         }
 
+        Logger.recordOutput("VirtualTarget", virtualTarget);
+
         Distance finalDistance = Meters.of(robotXY.getDistance(virtualTarget.getTranslation()));
         Angle finalHoodAngle = calculateHood(finalDistance);
         LinearVelocity finalLaunchSpeed =
@@ -118,7 +127,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
     }
 
     private AngularVelocity calculateShooter(LinearVelocity launchSpeed, Distance distance, Angle turretAngle) {
-        double kExitVelocityFactor = ProjectilePhysics.getLinearExitFactor(distance, turretAngle);
+        double kExitVelocityFactor = ProjectilePhysicsCalibration.kDefault.getLinearExitFactor(distance, turretAngle);
         return RadiansPerSecond.of(launchSpeed.in(MetersPerSecond) / (kWheelRadius.in(Meters) * kExitVelocityFactor));
     }
 
