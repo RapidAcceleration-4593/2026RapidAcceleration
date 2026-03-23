@@ -2,9 +2,11 @@ package frc.robot.util.shooting;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Milliseconds;
 
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.Time;
 
 public final class ProjectilePhysicsConstants {
 
@@ -15,8 +17,7 @@ public final class ProjectilePhysicsConstants {
 
     public static final int kCalculationIterations = 4;
     public static final double kConvergenceEpsilon = 3e-4;
-
-    public static final double kTwistCompensationFactor = 0.1;
+    public static final Time kSystemLatency = Milliseconds.of(80.0);
 
     public static final double[][] kExitFactorData = {
         {2.936, 0.026, 0.38},
