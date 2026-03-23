@@ -52,21 +52,23 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
                 robotVelocity.omegaRadiansPerSecond * kSystemLatency.in(Seconds)));
 
         // Calculate Shooter's Total Velocity.
-        double shooterVxRobot = robotVelocity.vxMetersPerSecond;
+        double shooterVxRobot =
+                robotVelocity.vxMetersPerSecond - (robotVelocity.omegaRadiansPerSecond * kPhysicalOffset.getY());
         double shooterVyRobot =
-                robotVelocity.vyMetersPerSecond - (robotVelocity.omegaRadiansPerSecond * kPhysicalOffset.getX());
+                robotVelocity.vyMetersPerSecond + (robotVelocity.omegaRadiansPerSecond * kPhysicalOffset.getX());
         Translation2d shooterFieldVelocity =
-                new Translation2d(shooterVxRobot, shooterVyRobot).rotateBy(currentPose.getRotation());
+                new Translation2d(shooterVxRobot, shooterVyRobot).rotateBy(predictedPose.getRotation());
 
         // Shooter Position at Time of Shot.
         Translation2d shooterXY = predictedPose.transformBy(kPhysicalOffset).getTranslation();
         Pose3d realTarget3d = FieldUtil.getTargetPose(predictedPose);
+        Translation2d realTargetXY = realTarget3d.toPose2d().getTranslation();
         Distance verticalDistance = realTarget3d.getMeasureZ().minus(kShooterHeight);
 
         // Iterative Solver for Virtual Target.
-        Translation2d realTargetXY = realTarget3d.toPose2d().getTranslation();
         Translation2d virtualTargetXY = realTargetXY;
-        Time tof = Seconds.of(0.5);
+        Angle finalHoodAngle = Degrees.zero();
+        Time tof = Seconds.of(1.0);
 
         for (int i = 0; i < kCalculationIterations; i++) {
             Distance virtualDistance = Meters.of(shooterXY.getDistance(virtualTargetXY));
@@ -77,43 +79,38 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
                 return;
             }
 
-            Angle hoodAngle = calculateHood(virtualDistance);
-            LinearVelocity launchSpeed =
-                    ProjectilePhysics.calculateLaunchSpeed(hoodAngle, virtualDistance, verticalDistance);
+            finalHoodAngle = calculateHood(virtualDistance);
+            LinearVelocity requiredLaunchSpeed =
+                    ProjectilePhysics.calculateLaunchSpeed(finalHoodAngle, virtualDistance, verticalDistance);
 
             // Recalculate Time of Flight.
-            Time newTof = ProjectilePhysics.calculateTime(launchSpeed, hoodAngle, realTarget3d.getMeasureZ());
-            Translation2d nextVirtualTargetXY = realTargetXY.minus(shooterFieldVelocity.times(newTof.in(Seconds)));
+            tof = ProjectilePhysics.calculateTime(requiredLaunchSpeed, finalHoodAngle, realTarget3d.getMeasureZ());
+            Translation2d nextVirtualTargetXY = realTargetXY.minus(shooterFieldVelocity.times(tof.in(Seconds)));
 
             // Early Convergence Check.
             if (nextVirtualTargetXY.getDistance(virtualTargetXY) < kConvergenceEpsilon) {
                 virtualTargetXY = nextVirtualTargetXY;
-                tof = newTof;
                 break;
             }
             virtualTargetXY = nextVirtualTargetXY;
-            tof = newTof;
         }
 
         // Extract Final Solution.
         Translation2d targetVector = virtualTargetXY.minus(shooterXY);
-        Rotation2d angleToTarget = new Rotation2d(targetVector.getX(), targetVector.getY());
-        Distance finalVirtualDistance = Meters.of(targetVector.getNorm());
+        Rotation2d finalAngleToTarget = new Rotation2d(targetVector.getX(), targetVector.getY());
 
-        Angle turretAngle = calculateTurret(predictedPose, angleToTarget);
-        Angle hoodAngle = calculateHood(finalVirtualDistance);
-
-        AngularVelocity shooterVelocity = calculateShooter(
-                finalVirtualDistance, verticalDistance, hoodAngle, turretAngle, shooterFieldVelocity, angleToTarget);
+        Angle turretAngle = calculateTurret(predictedPose, finalAngleToTarget);
+        AngularVelocity finalShooterVelocity =
+                calculateShooter(targetVector, shooterFieldVelocity, verticalDistance, finalHoodAngle, turretAngle);
 
         // Final Validity Check.
-        if (Double.isNaN(shooterVelocity.in(RadiansPerSecond))) {
+        if (Double.isNaN(finalShooterVelocity.in(RadiansPerSecond))) {
             latestResult = ShotResult.invalid();
             return;
         }
-        latestResult = new ShotResult(turretAngle, hoodAngle, shooterVelocity, true);
+        latestResult = new ShotResult(turretAngle, finalHoodAngle, finalShooterVelocity, true);
 
-        Logger.recordOutput("ShotCalculation/VirtualTargetPose", new Pose2d(virtualTargetXY, angleToTarget));
+        Logger.recordOutput("ShotCalculation/VirtualTargetPose", new Pose2d(virtualTargetXY, finalAngleToTarget));
         Logger.recordOutput("ShotCalculation/PredictedRobotPose", predictedPose);
         Logger.recordOutput("ShotCalculation/TimeOfFlight", tof.in(Seconds));
     }
@@ -127,17 +124,22 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
     }
 
     private AngularVelocity calculateShooter(
-            Distance hDistance,
+            Translation2d targetVector,
+            Translation2d shooterFieldVelocity,
             Distance vDistance,
             Angle hoodAngle,
-            Angle turretAngle,
-            Translation2d robotVelocity,
-            Rotation2d targetAngle) {
-        LinearVelocity launchSpeed = ProjectilePhysics.calculateLaunchSpeed(hoodAngle, hDistance, vDistance);
-        Translation2d shotVector = new Translation2d(launchSpeed.in(MetersPerSecond), targetAngle).minus(robotVelocity);
+            Angle turretAngle) {
 
+        Distance hDistance = Meters.of(targetVector.getNorm());
+        LinearVelocity requiredLaunchSpeed = ProjectilePhysics.calculateLaunchSpeed(hoodAngle, hDistance, vDistance);
+
+        Translation2d shotDirection = targetVector.div(targetVector.getNorm());
+        Translation2d requiredVelocityVector = shotDirection.times(requiredLaunchSpeed.in(MetersPerSecond));
+
+        double effectiveLaunchSpeed =
+                requiredVelocityVector.minus(shooterFieldVelocity).getNorm();
         double exitFactor = ProjectilePhysics.getLinearExitFactor(hDistance, turretAngle);
-        return RadiansPerSecond.of(shotVector.getNorm() / (kWheelRadius.in(Meters) * exitFactor));
+        return RadiansPerSecond.of(effectiveLaunchSpeed / (kWheelRadius.in(Meters) * exitFactor));
     }
 
     @Override
