@@ -163,10 +163,6 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         return latestResult.valid();
     }
 
-    public ShotResult getLastValidResult() {
-        return latestResult;
-    }
-
     public record ShotResult(Angle turretAngle, Angle hoodAngle, AngularVelocity shooterVelocity, boolean valid) {
         public static ShotResult invalid() {
             return new ShotResult(Degrees.zero(), Degrees.zero(), RPM.zero(), false);
