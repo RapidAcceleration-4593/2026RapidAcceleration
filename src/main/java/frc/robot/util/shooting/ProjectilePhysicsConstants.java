@@ -17,7 +17,7 @@ public final class ProjectilePhysicsConstants {
 
     public static final int kCalculationIterations = 4;
     public static final double kConvergenceEpsilon = 3e-4;
-    public static final Time kSystemLatency = Milliseconds.of(80.0);
+    public static final Time kSystemLatency = Milliseconds.of(40.0);
 
     public static final double[][] kExitFactorData = {
         {2.936, 0.026, 0.38},
