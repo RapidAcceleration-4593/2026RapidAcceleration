@@ -89,11 +89,6 @@ public class DeployIOReal implements DeployIO {
     }
 
     @Override
-    public void setPositionConstrained(Distance distance) {
-        controller.setSetpoint(distance.in(Inches), ControlType.kMAXMotionPositionControl);
-    }
-
-    @Override
     public void setVoltage(Voltage volts) {
         motor.setVoltage(volts);
     }
@@ -101,9 +96,7 @@ public class DeployIOReal implements DeployIO {
     @Override
     public void resetPosition() {
         encoder.setPosition(kMinimumDistance.in(Inches));
-        if (motor.getAppliedOutput() < 0.0) {
-            controller.setSetpoint(encoder.getPosition(), ControlType.kPosition);
-        }
+        controller.setSetpoint(kMinimumDistance.in(Inches), ControlType.kPosition);
     }
 
     @Override
