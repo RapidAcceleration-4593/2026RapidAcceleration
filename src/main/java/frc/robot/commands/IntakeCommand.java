@@ -9,6 +9,6 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 public class IntakeCommand extends ParallelCommandGroup {
 
     public IntakeCommand(IntakeSubsystem intake, DeploySubsystem deploy) {
-        addCommands(deploy.goToDistanceCommand(kMaximumDistance, false), intake.runCommand());
+        addCommands(deploy.goToDistanceCommand(kMaximumDistance), intake.runCommand());
     }
 }

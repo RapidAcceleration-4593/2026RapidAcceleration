@@ -41,10 +41,6 @@ public class HoodSubsystem extends SubsystemBase {
 
         hood3D.setAngle(inputs.angle);
         CommandLogger.logSubsystemCommand(this);
-
-        if (inputs.bottomLS) {
-            io.resetPosition();
-        }
     }
 
     public Angle getCurrentAngle() {
