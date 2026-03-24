@@ -3,8 +3,6 @@ package frc.robot.subsystems.turret;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.turret.TurretConstants.*;
 
-import com.revrobotics.sim.SparkAbsoluteEncoderSim;
-import com.revrobotics.sim.SparkMaxAlternateEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -14,7 +12,6 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.util.IPhysicsSim;
 import frc.robot.util.SimulationManager;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
-import org.littletonrobotics.junction.Logger;
 
 public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
 
@@ -57,6 +54,8 @@ public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
         AngularVelocity turretVelocity = RadiansPerSecond.of(turretSim.getVelocityRadPerSec());
 
         motorSim.iterate(
-                turretVelocity.in(DegreesPerSecond) * 60, SimulatedBattery.getBatteryVoltage().in(Volts), 0.02);
+                turretVelocity.in(DegreesPerSecond) * 60,
+                SimulatedBattery.getBatteryVoltage().in(Volts),
+                0.02);
     }
 }
