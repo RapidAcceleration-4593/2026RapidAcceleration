@@ -13,7 +13,6 @@ public class RunIntakeLEDPatternCommand extends Command {
 
     public RunIntakeLEDPatternCommand(LEDSubsystem subsystem) {
         this.subsystem = subsystem;
-        addRequirements(subsystem);
     }
 
     @Override
