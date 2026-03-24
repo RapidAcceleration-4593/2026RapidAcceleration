@@ -97,7 +97,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         }
 
         // Extract Final Solution.
-        Translation2d targetVector = virtualTargetXY;
+        Translation2d targetVector = virtualTargetXY.minus(shooterXY);
         Rotation2d finalAngleToTarget = new Rotation2d(targetVector.getX(), targetVector.getY());
 
         Angle turretAngle = calculateTurret(predictedPose, finalAngleToTarget);
