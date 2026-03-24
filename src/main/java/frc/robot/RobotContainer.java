@@ -95,12 +95,12 @@ public class RobotContainer {
 
         driverController
                 .rightTrigger(0.5)
-                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
+                .whileTrue(new ShootCommand(shooter, hood, indexer, turret, LEDs, calculator)
                         .alongWith(new RetractDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs)));
         driverController
                 .rightTrigger(0.5)
-                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
+                .whileTrue(new ShootCommand(shooter, hood, indexer, turret, LEDs, calculator)
                         .alongWith(new IntakeCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs)));
 
@@ -144,15 +144,16 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand(
                 "ShootCommand",
-                new ShootCommand(shooter, hood, indexer, calculator).alongWith(new RunShooterLEDPatternCommand(LEDs)));
+                new ShootCommand(shooter, hood, indexer, turret, LEDs, calculator)
+                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
         NamedCommands.registerCommand(
                 "ShootShakeCommand",
-                new ShootCommand(shooter, hood, indexer, calculator)
+                new ShootCommand(shooter, hood, indexer, turret, LEDs, calculator)
                         .alongWith(new ShakeDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs)));
         NamedCommands.registerCommand(
                 "ShootRetractCommand",
-                new ShootCommand(shooter, hood, indexer, calculator)
+                new ShootCommand(shooter, hood, indexer, turret, LEDs, calculator)
                         .alongWith(new RetractDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs)));
         NamedCommands.registerCommand(
