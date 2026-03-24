@@ -10,9 +10,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.leds.LEDConstants.kColors;
 import frc.robot.subsystems.leds.patterns.*;
 import java.util.List;
 
@@ -24,11 +22,6 @@ public class LEDSubsystem extends SubsystemBase {
     private final AddressableLED led;
     private final AddressableLEDBuffer buffer;
 
-    private RunnableLEDPattern currentPattern;
-    private RunnableLEDPattern currentOverlayPattern;
-    private int currentPatternIndex = 0;
-    // -1 = no overlay, 0-infinity = overlay.
-    private int currentOverlayPatternIndex = -1;
     private List<RunnableLEDPattern> patterns = List.of(
             new GradientFillPattern(this),
             new GradientTrailPattern(this),
@@ -39,14 +32,15 @@ public class LEDSubsystem extends SubsystemBase {
     private int animationFrame = 0;
     private double realFrame = 0.0;
 
+    // Current pattern data.
     private double speedFactor = 1.0;
-    private double overlaySpeedFactor = 1.0;
     private Color baseColor = Color.kBlue;
-    private Color overlayBaseColor = Color.kBlue;
     private Color gradientColor = Color.kBlack;
-    private Color overlayGradientColor = Color.kBlack;
     private boolean useAllianceColor = true;
-    private boolean overlayUseAllianceColor = true;
+    private int currentPatternIndex = 0;
+    private RunnableLEDPattern currentPattern;
+
+    private List<LEDLayer> layers;
 
     public LEDSubsystem() {
         redAllianceTopic = NetworkTableInstance.getDefault().getBooleanTopic("/FMSInfo/IsRedAlliance");
@@ -59,6 +53,11 @@ public class LEDSubsystem extends SubsystemBase {
         led.setData(buffer);
         led.start();
 
+        LEDLayer layer = addLayer(-1.0);
+        layer.useAllianceColor = true;
+        layer.patternIndex = 0;
+        layer.speedFactor = 1;
+
         currentPattern = patterns.get(currentPatternIndex);
     }
 
@@ -66,26 +65,25 @@ public class LEDSubsystem extends SubsystemBase {
     public void periodic() {
         fillLEDs(Color.kBlack);
 
-        if (currentOverlayPattern != null) {
-            if (overlayUseAllianceColor) {
-                overlayBaseColor = getAllianceColor();
-                overlayGradientColor = Color.kBlack;
-            }
-            currentOverlayPattern.run();
-        } else {
-            if (useAllianceColor) {
-                baseColor = getAllianceColor();
-                gradientColor = Color.kBlack;
-            }
-            currentPattern.run();
+        if (layers.size() < 1) {
+            updateLEDs();
+            return;
         }
 
-        updateLEDs();
-        if (currentOverlayPattern == null) {
-            realFrame = ((realFrame + kBaseSpeed * speedFactor) % kLEDCount + kLEDCount) % kLEDCount;
-        } else {
-            realFrame = ((realFrame + kBaseSpeed * overlaySpeedFactor) % kLEDCount + kLEDCount) % kLEDCount;
+        LEDLayer layer = layers.get(0);
+        setPattern(layer.patternIndex);
+        setColor(layer.baseColor, layer.gradientColor);
+        setUseAllianceColor(layer.useAllianceColor);
+        setSpeed(layer.speedFactor);
+
+        if (useAllianceColor) {
+            baseColor = getAllianceColor();
+            gradientColor = Color.kBlack;
         }
+        currentPattern.run();
+
+        updateLEDs();
+        realFrame = ((realFrame + kBaseSpeed * speedFactor) % kLEDCount + kLEDCount) % kLEDCount;
         animationFrame = ((int) realFrame + kLEDCount) % kLEDCount;
     }
 
@@ -106,21 +104,8 @@ public class LEDSubsystem extends SubsystemBase {
         currentPattern = patterns.get(currentPatternIndex);
     }
 
-    public void setOverlayPattern(int patternIndex) {
-        if (patternIndex == -1) {
-            currentOverlayPattern = null;
-            return;
-        }
-        currentOverlayPatternIndex = patternIndex % patterns.size();
-        currentOverlayPattern = patterns.get(currentOverlayPatternIndex);
-    }
-
     public void setSpeed(double speedFactor) {
         this.speedFactor = speedFactor;
-    }
-
-    public void setOverlaySpeed(double speedFactor) {
-        this.overlaySpeedFactor = speedFactor;
     }
 
     public void setColor(Color baseColor, Color gradientColor) {
@@ -128,33 +113,16 @@ public class LEDSubsystem extends SubsystemBase {
         this.gradientColor = gradientColor;
     }
 
-    public void setOverlayColor(Color baseColor, Color gradientColor) {
-        this.overlayBaseColor = baseColor;
-        this.overlayGradientColor = gradientColor;
-    }
-
     public void setUseAllianceColor(boolean value) {
         this.useAllianceColor = value;
     }
 
-    public void setOverlayUseAllianceColor(boolean value) {
-        this.overlayUseAllianceColor = value;
-    }
-
     public Color getBaseColor() {
-        if (currentOverlayPattern == null) {
-            return this.baseColor;
-        } else {
-            return this.overlayBaseColor;
-        }
+        return this.baseColor;
     }
 
     public Color getGradientColor() {
-        if (currentOverlayPattern == null) {
-            return this.gradientColor;
-        } else {
-            return this.overlayGradientColor;
-        }
+        return this.gradientColor;
     }
 
     public int getAnimationFrame() {
@@ -170,41 +138,16 @@ public class LEDSubsystem extends SubsystemBase {
         }
     }
 
-    /**
-     * Constructs a command to change the base and gradient colors for color specific patterns.
-     *
-     * @param baseColor The base color.
-     * @param gradientColor The gradient color.
-     * @return A commmand to change the base and gradient colors.
-     */
-    public Command changeColorCommand(Color baseColor, Color gradientColor) {
-        return runOnce(() -> {
-            this.baseColor = baseColor;
-            this.gradientColor = gradientColor;
-        });
+    public LEDLayer addLayer(double priority) {
+        LEDLayer layer = new LEDLayer();
+        layer.priority = priority;
+        layers.add(layer);
+        layers.sort((a, b) -> Double.compare(a.priority, b.priority));
+        return layer;
     }
 
-    /**
-     * Constructs a command to change the base and gradient colors to random colors.
-     *
-     * @return A commmand to change the base and gradient colors.
-     */
-    public Command randomColorCommand() {
-        return runOnce(() -> {
-            this.baseColor = kColors.getRandom();
-            this.gradientColor = kColors.getRandom();
-        });
-    }
-
-    /**
-     * Constructs a command to switch to the next pattern in the list of patterns.
-     *
-     * @return A command to switch to the next pattern in the list of patterns.
-     */
-    public Command nextPatternCommand() {
-        return runOnce(() -> {
-            currentPatternIndex = (currentPatternIndex + 1) % patterns.size();
-            currentPattern = patterns.get(currentPatternIndex);
-        });
+    public void removeLayer(LEDLayer layer) {
+        layers.remove(layer);
+        layers.sort((a, b) -> Double.compare(a.priority, b.priority));
     }
 }
