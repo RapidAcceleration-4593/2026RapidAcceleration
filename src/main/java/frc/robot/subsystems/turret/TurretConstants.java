@@ -27,7 +27,7 @@ public final class TurretConstants {
     public static final double kMotorToTurretGearing = kMotorToEncoderGearing * kEncoderToTurretGearing;
 
     public static final double kPositionConversionFactor = 360.0 / kEncoderToTurretGearing;
-    public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
+    public static final double kVelocityConversionFactor = 1;
 
     public static final MomentOfInertia kTurretMOI = KilogramSquareMeters.of(0.003);
 }

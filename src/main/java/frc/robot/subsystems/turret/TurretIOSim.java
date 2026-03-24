@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.turret.TurretConstants.*;
 
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
+import com.revrobotics.sim.SparkMaxAlternateEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -13,13 +14,13 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.util.IPhysicsSim;
 import frc.robot.util.SimulationManager;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
+import org.littletonrobotics.junction.Logger;
 
 public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
 
     private final SingleJointedArmSim turretSim;
 
     private final SparkMaxSim motorSim;
-    private final SparkAbsoluteEncoderSim encoderSim;
 
     public TurretIOSim() {
         DCMotor gearbox = DCMotor.getNeo550(1);
@@ -35,7 +36,6 @@ public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
                 kInitialAngle.in(Radians));
 
         motorSim = new SparkMaxSim(motor, gearbox);
-        encoderSim = new SparkAbsoluteEncoderSim(motor);
 
         SimulationManager.getInstance().addSimulatable(this);
     }
@@ -55,12 +55,8 @@ public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
     @Override
     public void updateIOSim() {
         AngularVelocity turretVelocity = RadiansPerSecond.of(turretSim.getVelocityRadPerSec());
-        AngularVelocity motorVelocity = turretVelocity.times(kMotorToTurretGearing);
 
         motorSim.iterate(
-                motorVelocity.in(RPM) / kVelocityConversionFactor,
-                SimulatedBattery.getBatteryVoltage().in(Volts),
-                0.02);
-        encoderSim.iterate(turretVelocity.in(RPM) * kVelocityConversionFactor, 0.02);
+                turretVelocity.in(DegreesPerSecond) * 60, SimulatedBattery.getBatteryVoltage().in(Volts), 0.02);
     }
 }
