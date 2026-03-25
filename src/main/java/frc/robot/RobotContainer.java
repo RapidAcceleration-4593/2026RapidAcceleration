@@ -93,6 +93,8 @@ public class RobotContainer {
         driverController.start().onTrue(swerve.resetGyroCommand());
         driverController.x().onTrue(swerve.stopXCommand());
 
+        driverController.povDown().whileTrue(hood.setVoltageCommand(Volts.of(-8.0)));
+
         driverController
                 .rightTrigger(0.5)
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
