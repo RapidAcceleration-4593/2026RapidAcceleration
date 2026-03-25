@@ -27,6 +27,9 @@ public interface DeployIO {
     /** Sets the position of the deployment motor. */
     public default void setPosition(Distance distance) {}
 
+    /** Sets the position of the deployment motor with constrained velocity. */
+    public default void setPositionConstrained(Distance distance) {}
+
     /** Sets the voltage of the deployment motor. */
     public default void setVoltage(Voltage volts) {}
 

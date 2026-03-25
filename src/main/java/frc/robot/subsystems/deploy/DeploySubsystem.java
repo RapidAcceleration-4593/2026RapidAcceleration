@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.CommandLogger;
 import frc.robot.util.mechanism.LengthMechanism3D;
-import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 /** This subsystem manages the extendible hopper of the robot. */
@@ -73,20 +72,11 @@ public class DeploySubsystem extends SubsystemBase {
      * Constructs a command to run the deploy to a set distance.
      *
      * @param distance The distance to apply to the closed-loop PID control.
+     * @param isConstrained Whether to apply velocity constraints.
      * @return A command to run the motor to a distance and stop when complete.
      */
-    public Command goToDistanceCommand(Distance distance) {
-        return startEnd(() -> setPosition(() -> distance), io::stop).until(this::atTargetDistance);
-    }
-
-    /**
-     * Constructs a command to run the deploy continuously to a set distance.
-     *
-     * @param distance The distance to apply to the closed-loop PID control.
-     * @return A command to run the motor to a distance without stopping.
-     */
-    public Command runToDistanceCommand(Supplier<Distance> distance) {
-        return runEnd(() -> setPosition(distance), io::stop);
+    public Command goToDistanceCommand(Distance distance, boolean isConstrained) {
+        return startEnd(() -> setPosition(distance, isConstrained), io::stop).until(this::atTargetDistance);
     }
 
     /**
@@ -101,14 +91,18 @@ public class DeploySubsystem extends SubsystemBase {
     /**
      * Sets the distance of the closed-loop PID controller.
      *
-     * @param distanceSupplier The supplied distance to set as the deploy position.
+     * @param distance The distance to set as the deploy position.
      */
-    private void setPosition(Supplier<Distance> distanceSupplier) {
-        Distance distance = distanceSupplier.get();
+    private void setPosition(Distance distance, boolean isConstrained) {
         Distance clampedDistance = Inches.of(
                 MathUtil.clamp(distance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches)));
         this.targetDistance = clampedDistance;
-        io.setPosition(clampedDistance);
+
+        if (isConstrained) {
+            io.setPositionConstrained(clampedDistance);
+        } else {
+            io.setPosition(clampedDistance);
+        }
     }
 
     /**
