@@ -16,7 +16,6 @@ import org.ironmaple.simulation.motorsims.SimulatedBattery;
 public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
 
     private final SingleJointedArmSim turretSim;
-
     private final SparkMaxSim motorSim;
 
     public TurretIOSim() {
@@ -52,7 +51,6 @@ public class TurretIOSim extends TurretIOReal implements IPhysicsSim {
     @Override
     public void updateIOSim() {
         AngularVelocity turretVelocity = RadiansPerSecond.of(turretSim.getVelocityRadPerSec());
-
         motorSim.iterate(
                 turretVelocity.in(DegreesPerSecond) * 60,
                 SimulatedBattery.getBatteryVoltage().in(Volts),

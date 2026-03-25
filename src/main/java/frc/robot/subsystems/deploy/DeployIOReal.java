@@ -56,8 +56,9 @@ public class DeployIOReal implements DeployIO {
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 
-        MAXMotionConfig maxMotionConfig =
-                new MAXMotionConfig().cruiseVelocity(kLinearVeocity.in(InchesPerSecond), ClosedLoopSlot.kSlot1);
+        MAXMotionConfig maxMotionConfig = new MAXMotionConfig()
+                .cruiseVelocity(kLinearVeocity.in(InchesPerSecond), ClosedLoopSlot.kSlot1)
+                .maxAcceleration(kLinearAcceleration.in(InchesPerSecondPerSecond), ClosedLoopSlot.kSlot1);
 
         ClosedLoopConfig controlConfig = new ClosedLoopConfig()
                 .pid(kP, kI, kD, ClosedLoopSlot.kSlot0)
