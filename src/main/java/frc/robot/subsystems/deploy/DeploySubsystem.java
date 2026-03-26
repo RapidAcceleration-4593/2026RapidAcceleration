@@ -30,7 +30,6 @@ public class DeploySubsystem extends SubsystemBase {
 
         Trigger lsTrigger = new Trigger(() -> inputs.retractedLS);
         lsTrigger.onTrue(Commands.runOnce(io::resetPosition));
-
         deploy3D = fLengthMechanism3D.find("Deploy");
     }
 
@@ -38,7 +37,6 @@ public class DeploySubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Deploy", inputs);
-        targetDistance = inputs.targetDistance;
 
         deploy3D.setLength(inputs.distance);
         CommandLogger.logSubsystemCommand(this);
@@ -74,10 +72,11 @@ public class DeploySubsystem extends SubsystemBase {
      * Constructs a command to run the deploy to a set distance.
      *
      * @param distance The distance to apply to the closed-loop PID control.
+     * @param isConstrained Whether to apply velocity constraints.
      * @return A command to run the motor to a distance and stop when complete.
      */
-    public Command goToDistanceCommand(Distance distance, boolean constrained) {
-        return runEnd(() -> setPosition(distance, constrained), io::stop).until(this::atTargetDistance);
+    public Command goToDistanceCommand(Distance distance, boolean isConstrained) {
+        return startEnd(() -> setPosition(distance, isConstrained), io::stop).until(this::atTargetDistance);
     }
 
     /**
@@ -93,21 +92,16 @@ public class DeploySubsystem extends SubsystemBase {
      * Sets the distance of the closed-loop PID controller.
      *
      * @param distance The distance to set as the deploy position.
-     * @param constrained Whether to apply velocity constraints.
      */
-    private void setPosition(Distance distance, boolean constrained) {
-        if (inputs.retractedLS && distance.lte(kMinimumDistance)) {
-            distance = kMinimumDistance;
-        }
-
+    private void setPosition(Distance distance, boolean isConstrained) {
         Distance clampedDistance = Inches.of(
                 MathUtil.clamp(distance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches)));
-        targetDistance = clampedDistance;
+        this.targetDistance = clampedDistance;
 
-        if (constrained) {
-            io.setPositionConstrained(distance);
+        if (isConstrained) {
+            io.setPositionConstrained(clampedDistance);
         } else {
-            io.setPosition(distance);
+            io.setPosition(clampedDistance);
         }
     }
 

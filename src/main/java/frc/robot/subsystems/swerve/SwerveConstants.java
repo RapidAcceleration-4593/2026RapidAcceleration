@@ -26,7 +26,7 @@ public final class SwerveConstants {
     public static final double kWheelCOF = 1.2;
 
     /** Current at which the wheels start to slip. */
-    private static final Current kSlipCurrent = Amps.of(120.0);
+    private static final Current kSlipCurrent = Amps.of(60.0);
 
     /** Theoretical Maximum Speed at 12V. */
     public static final LinearVelocity kMaxVelocity = MetersPerSecond.of(5.5);
@@ -79,7 +79,7 @@ public final class SwerveConstants {
     private static final TalonFXConfiguration kSteerInitialConfigs = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                     // Help avoid brownouts without impacting performance.
-                    .withStatorCurrentLimit(Amps.of(60))
+                    .withStatorCurrentLimit(Amps.of(30))
                     .withStatorCurrentLimitEnable(true));
 
     private static final CANcoderConfiguration kEncoderInitialConfigs = new CANcoderConfiguration();

@@ -32,7 +32,6 @@ public class TurretSubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Turret", inputs);
-        targetAngle = inputs.targetAngle;
         turret3D.setAngle(inputs.angle);
 
         CommandLogger.logSubsystemCommand(this);
@@ -118,7 +117,7 @@ public class TurretSubsystem extends SubsystemBase {
         Angle angle = angleSupplier.get();
         Angle clampedAngle =
                 Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
-        targetAngle = clampedAngle;
+        this.targetAngle = clampedAngle;
         io.setPosition(clampedAngle);
     }
 }

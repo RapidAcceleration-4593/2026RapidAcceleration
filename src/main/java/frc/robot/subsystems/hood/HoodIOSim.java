@@ -3,7 +3,6 @@ package frc.robot.subsystems.hood;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.hood.HoodConstants.*;
 
-import com.revrobotics.sim.SparkMaxAlternateEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -18,9 +17,7 @@ import org.ironmaple.simulation.motorsims.SimulatedBattery;
 public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
 
     private final SingleJointedArmSim hoodSim;
-
     private final SparkMaxSim motorSim;
-    private final SparkMaxAlternateEncoderSim encoderSim;
     private final DIOSim limitSwitchSim;
 
     public HoodIOSim() {
@@ -30,14 +27,13 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
                 gearbox,
                 kMotorToHoodGearing,
                 kHoodMOI.in(KilogramSquareMeters),
-                Units.inchesToMeters(12.0),
+                Units.inchesToMeters(10.0),
                 kMinimumAngle.in(Radians),
                 kMaximumAngle.in(Radians),
-                true,
+                false,
                 kMinimumAngle.in(Radians));
 
         motorSim = new SparkMaxSim(motor, gearbox);
-        encoderSim = new SparkMaxAlternateEncoderSim(motor);
         limitSwitchSim = new DIOSim(limitswitch);
 
         SimulationManager.getInstance().addSimulatable(this);
@@ -58,12 +54,10 @@ public class HoodIOSim extends HoodIOReal implements IPhysicsSim {
     @Override
     public void updateIOSim() {
         AngularVelocity hoodVelocity = RadiansPerSecond.of(hoodSim.getVelocityRadPerSec());
-        AngularVelocity encoderVelocity = hoodVelocity.times(kEncoderToHoodGearing);
-        AngularVelocity motorVelocity = encoderVelocity.times(kMotorToEncoderGearing);
-
         motorSim.iterate(
-                motorVelocity.in(RPM), SimulatedBattery.getBatteryVoltage().in(Volts), 0.02);
-        encoderSim.setPosition(Degrees.convertFrom(hoodSim.getAngleRads(), Radians));
-        limitSwitchSim.setValue(hoodSim.hasHitLowerLimit());
+                hoodVelocity.in(DegreesPerSecond) * 60,
+                SimulatedBattery.getBatteryVoltage().in(Volts),
+                0.02);
+        limitSwitchSim.setValue(hoodSim.hasHitLowerLimit() ^ kInvertLS);
     }
 }
