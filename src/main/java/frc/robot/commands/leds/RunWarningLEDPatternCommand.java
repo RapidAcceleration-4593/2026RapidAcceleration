@@ -21,8 +21,8 @@ public class RunWarningLEDPatternCommand extends Command {
         layer.useAllianceColor = false;
         layer.baseColor = Color.kRed;
         layer.gradientColor = Color.kRed;
-        layer.patternIndex = 1;
-        layer.speedFactor = 3.0;
+        layer.patternIndex = 5;
+        layer.speedFactor = 2.0;
     }
 
     @Override

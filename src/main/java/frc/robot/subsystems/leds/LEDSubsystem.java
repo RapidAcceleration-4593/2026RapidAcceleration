@@ -8,10 +8,10 @@ import edu.wpi.first.networktables.BooleanTopic;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.leds.patterns.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LEDSubsystem extends SubsystemBase {
@@ -22,25 +22,25 @@ public class LEDSubsystem extends SubsystemBase {
     private final AddressableLED led;
     private final AddressableLEDBuffer buffer;
 
+    private RunnableLEDPattern currentPattern;
     private List<RunnableLEDPattern> patterns = List.of(
             new GradientFillPattern(this),
             new GradientTrailPattern(this),
             new GradientCrossTrailPattern(this),
             new MovingRainbowFillPattern(this),
-            new RainbowGradientTrailPattern(this));
+            new RainbowGradientTrailPattern(this),
+            new BlinkPattern(this));
 
     private int animationFrame = 0;
     private double realFrame = 0.0;
 
-    // Current pattern data.
     private double speedFactor = 1.0;
     private Color baseColor = Color.kBlue;
     private Color gradientColor = Color.kBlack;
     private boolean useAllianceColor = true;
     private int currentPatternIndex = 0;
-    private RunnableLEDPattern currentPattern;
 
-    private List<LEDLayer> layers;
+    private List<LEDLayer> layers = new ArrayList<>();
 
     public LEDSubsystem() {
         redAllianceTopic = NetworkTableInstance.getDefault().getBooleanTopic("/FMSInfo/IsRedAlliance");
@@ -92,7 +92,9 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     public void fillLEDs(Color color) {
-        LEDPattern.solid(color).applyTo(buffer);
+        for (int i = 0; i < kLEDCount; i++) {
+            buffer.setLED(i, color);
+        }
     }
 
     public void updateLEDs() {
@@ -142,12 +144,16 @@ public class LEDSubsystem extends SubsystemBase {
         LEDLayer layer = new LEDLayer();
         layer.priority = priority;
         layers.add(layer);
-        layers.sort((a, b) -> Double.compare(a.priority, b.priority));
+        sortLayers();
         return layer;
     }
 
     public void removeLayer(LEDLayer layer) {
         layers.remove(layer);
-        layers.sort((a, b) -> Double.compare(a.priority, b.priority));
+        sortLayers();
+    }
+
+    private void sortLayers() {
+        layers.sort((a, b) -> Double.compare(b.priority, a.priority));
     }
 }
