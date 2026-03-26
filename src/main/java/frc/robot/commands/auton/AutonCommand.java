@@ -14,7 +14,7 @@ public abstract class AutonCommand extends SequentialCommandGroup {
         this.util = util;
         this.paths = pathNames.stream()
                 .map(util::loadPath)
-                .map(p -> isFlipped ? p.flipPath() : p)
+                .map(p -> isFlipped ? p.mirrorPath() : p)
                 .toList();
 
         if (paths.isEmpty()) throw new IllegalArgumentException("At least one path must be provided.");

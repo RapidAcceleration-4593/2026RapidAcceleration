@@ -13,9 +13,9 @@ public class SideCenterLoop extends AutonCommand {
         super(util, isFlipped, List.of("SideCenterLoop-1"));
 
         addCommands(
-                NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(0))),
                 Commands.parallel(
-                        NamedCommands.getCommand("ShootCommand"),
-                        Commands.waitSeconds(5.0).andThen(NamedCommands.getCommand("ShakeDeployCommand"))));
+                        AutoBuilder.followPath(paths.get(0)),
+                        Commands.waitSeconds(1.0).andThen(NamedCommands.getCommand("IntakeCommand"))),
+                NamedCommands.getCommand("ShakeDeployCommand"));
     }
 }

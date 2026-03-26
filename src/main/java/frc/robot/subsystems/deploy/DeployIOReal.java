@@ -40,13 +40,13 @@ public class DeployIOReal implements DeployIO {
         SparkBaseConfig baseConfig = new SparkMaxConfig()
                 .inverted(kInvertMotor)
                 .idleMode(IdleMode.kCoast)
-                .smartCurrentLimit(20)
+                .smartCurrentLimit(15)
                 .voltageCompensation(12.0);
 
         SparkBaseConfig followerConfig = new SparkMaxConfig()
                 .follow(motor, true)
                 .idleMode(IdleMode.kCoast)
-                .smartCurrentLimit(20)
+                .smartCurrentLimit(15)
                 .voltageCompensation(12.0);
 
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()

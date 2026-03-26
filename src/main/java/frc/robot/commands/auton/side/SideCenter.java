@@ -14,6 +14,6 @@ public class SideCenter extends AutonCommand {
         addCommands(
                 NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(0))),
                 AutoBuilder.followPath(paths.get(1)),
-                NamedCommands.getCommand("ShootShakeCommand").withTimeout(15.0));
+                NamedCommands.getCommand("ShootShakeCommand"));
     }
 }
