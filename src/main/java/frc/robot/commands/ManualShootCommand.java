@@ -11,13 +11,10 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class ManualShootCommand extends ParallelCommandGroup {
 
-    public ManualShootCommand(
-            ShooterSubsystem shooter,
-            HoodSubsystem hood,
-            IndexerSubsystem indexer) {
+    public ManualShootCommand(ShooterSubsystem shooter, HoodSubsystem hood, IndexerSubsystem indexer) {
 
         addCommands(
-                shooter.setVoltageCommand(Volts.of(12)),
+                shooter.setVoltageCommand(Volts.of(7.5)),
                 hood.goToAngleCommand(HoodConstants.kMinimumAngle),
                 Commands.waitSeconds(0.4).andThen(indexer.runCommand()));
     }

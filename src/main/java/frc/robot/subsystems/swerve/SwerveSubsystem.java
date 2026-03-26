@@ -318,4 +318,9 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
     public double getMaxAngularSpeedRadPerSec() {
         return getMaxLinearSpeedMetersPerSec() / kDriveBaseRadius;
     }
+
+    /** Manually resets the current odometry pose in front of the Hub. */
+    public Command resetPoseCommand() {
+        return Commands.runOnce(() -> setPose(FieldUtil.getInitialPose()));
+    }
 }

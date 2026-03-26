@@ -32,8 +32,8 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
 
     static {
         // Distance [meters], Hood [Degrees]
-        hoodMap.put(1.5, 12.5);
-        hoodMap.put(5.0, 25.0);
+        hoodMap.put(1.25, 12.5);
+        hoodMap.put(8.0, 30.0);
     }
 
     public ShotCalculatorSubsystem(Supplier<Pose2d> poseSupplier, Supplier<ChassisSpeeds> chassisSpeedsSupplier) {

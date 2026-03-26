@@ -92,9 +92,9 @@ public class RobotContainer {
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());
+        driverController.a().onTrue(swerve.resetPoseCommand());
         driverController.x().onTrue(swerve.stopXCommand());
-
-        driverController.povDown().whileTrue(hood.setVoltageCommand(Volts.of(-8.0)));
+        driverController.y().onTrue(new RetractDeployCommand(intake, deploy));
 
         driverController
                 .rightTrigger(0.5)
@@ -110,9 +110,8 @@ public class RobotContainer {
         driverController
                 .leftTrigger(0.5)
                 .whileTrue(new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
-        driverController.leftBumper().whileTrue(new PathfindCommands().pathfindUnderNearestTrench(swerve));
 
-        driverController.y().onTrue(new RetractDeployCommand(intake, deploy));
+        driverController.leftBumper().whileTrue(new PathfindCommands().pathfindUnderNearestTrench(swerve));
 
         // <------- Operator Controller ------->
         operatorController.rightTrigger(0.5).whileTrue(new ManualShootCommand(shooter, hood, indexer));
@@ -121,14 +120,11 @@ public class RobotContainer {
         operatorController.leftBumper().whileTrue(turret.setVoltageCommand(Volts.of(-4.0)));
         operatorController.rightBumper().whileTrue(turret.setVoltageCommand(Volts.of(4.0)));
 
+        operatorController.a().whileTrue(intake.setVoltageCommand(Volts.of(-6.0)));
         operatorController.x().whileTrue(deploy.setVoltageCommand(Volts.of(5.0)));
         operatorController.b().whileTrue(deploy.setVoltageCommand(Volts.of(-5.0)));
 
-        operatorController.y().whileTrue(indexer.runCommand());
-        operatorController.a().whileTrue(intake.setVoltageCommand(Volts.of(-6.0)));
-
         operatorController.start().onTrue(turret.runOnce(() -> turret.setDefaultCommand(turret.idle())));
-
         operatorController
                 .back()
                 .onTrue(turret.runOnce(
