@@ -14,7 +14,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
-import com.revrobotics.spark.config.MAXMotionConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -56,15 +55,10 @@ public class DeployIOReal implements DeployIO {
                 .positionConversionFactor(kPositionConversionFactor)
                 .velocityConversionFactor(kVelocityConversionFactor);
 
-        MAXMotionConfig maxMotionConfig = new MAXMotionConfig()
-                .cruiseVelocity(kLinearVeocity.in(InchesPerSecond), ClosedLoopSlot.kSlot1)
-                .maxAcceleration(kLinearAcceleration.in(InchesPerSecondPerSecond), ClosedLoopSlot.kSlot1);
-
         ClosedLoopConfig controlConfig = new ClosedLoopConfig()
                 .pid(kP, kI, kD, ClosedLoopSlot.kSlot0)
-                .pid(kP, kI, kD, ClosedLoopSlot.kSlot1)
-                .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
-                .apply(maxMotionConfig);
+                .pid(kP1, kI1, kD1, ClosedLoopSlot.kSlot1)
+                .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.apply(baseConfig);
@@ -94,7 +88,7 @@ public class DeployIOReal implements DeployIO {
 
     @Override
     public void setPositionConstrained(Distance distance) {
-        controller.setSetpoint(distance.in(Inches), ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot1);
+        controller.setSetpoint(distance.in(Inches), ControlType.kPosition, ClosedLoopSlot.kSlot1);
     }
 
     @Override
@@ -105,7 +99,7 @@ public class DeployIOReal implements DeployIO {
     @Override
     public void resetPosition() {
         encoder.setPosition(kMinimumDistance.in(Inches));
-        controller.setSetpoint(kMinimumDistance.in(Inches), ControlType.kMAXMotionPositionControl);
+        controller.setSetpoint(kMinimumDistance.in(Inches), ControlType.kPosition);
     }
 
     @Override

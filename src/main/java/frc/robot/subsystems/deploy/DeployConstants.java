@@ -21,14 +21,18 @@ public final class DeployConstants {
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
+    public static final double kP1 = 0.02;
+    public static final double kI1 = 0.0;
+    public static final double kD1 = 0.0;
+
     public static final Distance kMinimumDistance = Inches.zero();
     public static final Distance kMaximumDistance = Inches.of(11.0);
-    public static final Distance kAgitationInDistance = Inches.of(7.5);
+    public static final Distance kAgitationInDistance = Inches.of(6.0);
     public static final Distance kAgitationOutDistance = Inches.of(10.0);
     public static final Distance kDistanceTolerance = Inches.of(0.25);
 
-    public static final LinearVelocity kLinearVeocity = InchesPerSecond.of(1.0);
-    public static final LinearAcceleration kLinearAcceleration = InchesPerSecondPerSecond.of(4.0);
+    public static final LinearVelocity kLinearVeocity = InchesPerSecond.of(1.5);
+    public static final LinearAcceleration kLinearAcceleration = InchesPerSecondPerSecond.of(5.0);
 
     public static final int kCountsPerRotation = 8192;
     public static final double kMotorToEncoderGearing = (5.0 * 5.0) * (24.0 / 24.0);
