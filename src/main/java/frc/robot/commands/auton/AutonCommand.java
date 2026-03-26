@@ -10,9 +10,12 @@ public abstract class AutonCommand extends SequentialCommandGroup {
     protected final AutonUtil util;
     protected final List<PathPlannerPath> paths;
 
-    protected AutonCommand(AutonUtil util, List<String> pathNames) {
+    protected AutonCommand(AutonUtil util, boolean isFlipped, List<String> pathNames) {
         this.util = util;
-        this.paths = pathNames.stream().map(util::loadPath).toList();
+        this.paths = pathNames.stream()
+                .map(util::loadPath)
+                .map(p -> isFlipped ? p.flipPath() : p)
+                .toList();
 
         if (paths.isEmpty()) throw new IllegalArgumentException("At least one path must be provided.");
 

@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 4.4,
-        "y": 7.425
+        "y": 0.65
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.4,
-        "y": 7.425
+        "x": 5.649962907795921,
+        "y": 0.65
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.386417031378058,
-        "y": 7.425
+        "x": 6.387853309474548,
+        "y": 0.65
       },
       "prevControl": {
-        "x": 6.0648875476637345,
-        "y": 7.425
+        "x": 6.092984647785217,
+        "y": 0.65
       },
       "nextControl": {
-        "x": 7.886417031378058,
-        "y": 7.425
+        "x": 7.760740031132416,
+        "y": 0.65
       },
       "isLocked": false,
       "linkedName": null
@@ -33,15 +33,15 @@
     {
       "anchor": {
         "x": 7.8,
-        "y": 5.917957911908905
+        "y": 2.1547175632014217
       },
       "prevControl": {
         "x": 7.8,
-        "y": 6.18341049573983
+        "y": 1.9047175632014217
       },
       "nextControl": {
         "x": 7.8,
-        "y": 5.667957911908905
+        "y": 2.404717563201422
       },
       "isLocked": false,
       "linkedName": null
@@ -53,7 +53,7 @@
       },
       "prevControl": {
         "x": 7.8,
-        "y": 5.35403702706053
+        "y": 3.6008059616810995
       },
       "nextControl": null,
       "isLocked": false,
@@ -67,14 +67,14 @@
     },
     {
       "waypointRelativePos": 2,
-      "rotationDegrees": -90.0
+      "rotationDegrees": 90.0
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
       "minWaypointRelativePos": 1.4,
-      "maxWaypointRelativePos": 2.8,
+      "maxWaypointRelativePos": 2.75,
       "constraints": {
         "maxVelocity": 2.0,
         "maxAcceleration": 2.0,
@@ -96,13 +96,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -90.0
+    "velocity": 0.0,
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Left",
+  "folder": "Side",
   "idealStartingState": {
-    "velocity": 0.0,
+    "velocity": 0,
     "rotation": 0.0
   },
   "useDefaultConstraints": true

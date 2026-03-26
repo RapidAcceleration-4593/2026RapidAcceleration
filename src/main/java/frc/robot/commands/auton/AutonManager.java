@@ -3,8 +3,7 @@ package frc.robot.commands.auton;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.auton.center.*;
-import frc.robot.commands.auton.left.*;
-import frc.robot.commands.auton.right.*;
+import frc.robot.commands.auton.side.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,21 +21,19 @@ public class AutonManager {
     }
 
     private void registerAutons() {
-        autonMap.put("LeftCenter", () -> new LeftCenter(util));
-        autonMap.put("LeftNoPickup", () -> new LeftNoPickup(util));
+        autonMap.put("DoNothing", () -> Commands.none());
+
+        autonMap.put("LeftCenter", () -> new SideCenter(util, true));
+        autonMap.put("LeftNoPickup", () -> new SideNoPickup(util, true));
+        autonMap.put("Left2xCenter", () -> new Side2xCenter(util, true));
+        autonMap.put("LeftCenterLoop", () -> new SideCenterLoop(util, true));
 
         autonMap.put("CenterNoPickup", () -> new CenterNoPickup(util));
 
-        autonMap.put("RightCenter", () -> new RightCenter(util));
-        autonMap.put("RightNoPickup", () -> new RightNoPickup(util));
-        autonMap.put("RightOutpost", () -> new RightOutpost(util));
-
-        autonMap.put("DoNothing", () -> Commands.none());
-        autonMap.put("Left2xCenter", () -> new Left2xCenter(util));
-        autonMap.put("Right2xCenter", () -> new Right2xCenter(util));
-        autonMap.put("RightCenterOutpost", () -> new RightCenterOutpost(util));
-
-        autonMap.put("RightCenterLoop", () -> new RightCenterLoop(util));
+        autonMap.put("RightCenter", () -> new SideCenter(util, false));
+        autonMap.put("RightNoPickup", () -> new SideNoPickup(util, false));
+        autonMap.put("Right2xCenter", () -> new Side2xCenter(util, false));
+        autonMap.put("RightCenterLoop", () -> new SideCenterLoop(util, false));
     }
 
     /** Loads all PathPlanner paths into the cache. */

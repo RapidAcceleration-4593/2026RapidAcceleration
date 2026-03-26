@@ -1,4 +1,4 @@
-package frc.robot.commands.auton.right;
+package frc.robot.commands.auton.side;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -7,10 +7,10 @@ import frc.robot.commands.auton.AutonCommand;
 import frc.robot.commands.auton.AutonUtil;
 import java.util.List;
 
-public class RightCenterLoop extends AutonCommand {
+public class SideCenterLoop extends AutonCommand {
 
-    public RightCenterLoop(AutonUtil util) {
-        super(util, List.of("RightCenterLoop-1"));
+    public SideCenterLoop(AutonUtil util, boolean isFlipped) {
+        super(util, isFlipped, List.of("SideCenterLoop-1"));
 
         addCommands(
                 NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(0))),
