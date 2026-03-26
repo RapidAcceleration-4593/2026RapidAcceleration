@@ -26,7 +26,6 @@ public class ShooterSubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Shooter", inputs);
-        targetVelocity = inputs.targetVelocity;
 
         CommandLogger.logSubsystemCommand(this);
     }
@@ -78,7 +77,7 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     private void setVelocity(Supplier<AngularVelocity> velocitySupplier) {
         AngularVelocity velocity = velocitySupplier.get();
-        targetVelocity = velocity;
+        this.targetVelocity = velocity;
         io.setVelocity(velocity);
     }
 }

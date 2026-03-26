@@ -93,13 +93,15 @@ public class RobotContainer {
         driverController.start().onTrue(swerve.resetGyroCommand());
         driverController.x().onTrue(swerve.stopXCommand());
 
+        driverController.povDown().whileTrue(hood.setVoltageCommand(Volts.of(-8.0)));
+
         driverController
                 .rightTrigger(0.5)
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new RetractDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs)));
         driverController
-                .rightTrigger(0.5)
+                .rightBumper()
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new IntakeCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs)));

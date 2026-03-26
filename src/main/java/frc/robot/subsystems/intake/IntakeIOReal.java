@@ -19,7 +19,7 @@ public class IntakeIOReal implements IntakeIO {
     public IntakeIOReal() {
         SparkBaseConfig intakeConfig = new SparkMaxConfig()
                 .inverted(kInvertMotor)
-                .idleMode(IdleMode.kBrake)
+                .idleMode(IdleMode.kCoast)
                 .smartCurrentLimit(60)
                 .voltageCompensation(12.0);
 

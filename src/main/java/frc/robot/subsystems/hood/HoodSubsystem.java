@@ -37,14 +37,9 @@ public class HoodSubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Hood", inputs);
-        targetAngle = inputs.targetAngle;
 
         hood3D.setAngle(inputs.angle);
         CommandLogger.logSubsystemCommand(this);
-
-        if (inputs.bottomLS) {
-            io.resetPosition();
-        }
     }
 
     public Angle getCurrentAngle() {
@@ -107,7 +102,7 @@ public class HoodSubsystem extends SubsystemBase {
         Angle angle = angleSupplier.get();
         Angle clampedAngle =
                 Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
-        targetAngle = clampedAngle;
+        this.targetAngle = clampedAngle;
         io.setPosition(clampedAngle);
     }
 }

@@ -10,7 +10,7 @@ public final class Constants {
         REPLAY
     }
 
-    public static final Mode kCurrentMode = RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
+    public static final Mode kCurrentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
 
     public static final class Controllers {
         public static final int kDriverControllerPort = 0;

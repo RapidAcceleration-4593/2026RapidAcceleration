@@ -66,6 +66,8 @@ public class HoodIOReal implements HoodIO {
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();
+
+        resetPosition();
     }
 
     @Override
