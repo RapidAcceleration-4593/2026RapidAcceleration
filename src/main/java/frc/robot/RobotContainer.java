@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.ManualShootCommand;
 import frc.robot.commands.RetractDeployCommand;
 import frc.robot.commands.ShakeDeployCommand;
 import frc.robot.commands.ShootCommand;
@@ -114,7 +115,7 @@ public class RobotContainer {
         driverController.y().onTrue(new RetractDeployCommand(intake, deploy));
 
         // <------- Operator Controller ------->
-        operatorController.rightTrigger(0.5).whileTrue(shooter.setVoltageCommand(Volts.of(7.5)));
+        operatorController.rightTrigger(0.5).whileTrue(new ManualShootCommand(shooter, hood, indexer));
         operatorController.leftTrigger(0.5).whileTrue(intake.runCommand());
 
         operatorController.leftBumper().whileTrue(turret.setVoltageCommand(Volts.of(-4.0)));
