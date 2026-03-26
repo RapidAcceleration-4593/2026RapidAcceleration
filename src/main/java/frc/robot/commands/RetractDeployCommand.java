@@ -16,6 +16,6 @@ public class RetractDeployCommand extends SequentialCommandGroup {
                 Commands.parallel(
                         deploy.goToDistanceCommand(kMinimumDistance, true),
                         intake.runCommand()
-                                .onlyWhile(() -> deploy.getCurrentDistance().gt(Inches.of(8.0)))));
+                                .onlyWhile(() -> deploy.getCurrentDistance().gt(Inches.of(7.5)))));
     }
 }

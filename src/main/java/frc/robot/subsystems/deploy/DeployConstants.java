@@ -3,8 +3,6 @@ package frc.robot.subsystems.deploy;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearAcceleration;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 
 public final class DeployConstants {
@@ -30,9 +28,6 @@ public final class DeployConstants {
     public static final Distance kAgitationInDistance = Inches.of(6.0);
     public static final Distance kAgitationOutDistance = Inches.of(10.0);
     public static final Distance kDistanceTolerance = Inches.of(0.25);
-
-    public static final LinearVelocity kLinearVeocity = InchesPerSecond.of(1.5);
-    public static final LinearAcceleration kLinearAcceleration = InchesPerSecondPerSecond.of(5.0);
 
     public static final int kCountsPerRotation = 8192;
     public static final double kMotorToEncoderGearing = (5.0 * 5.0) * (24.0 / 24.0);
