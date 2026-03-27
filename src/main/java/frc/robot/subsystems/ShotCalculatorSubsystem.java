@@ -100,8 +100,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         Rotation2d angleToTarget = new Rotation2d(targetVector.getX(), targetVector.getY());
 
         Angle turretAngle = calculateTurret(predictedPose, angleToTarget);
-        AngularVelocity shooterVelocity =
-                calculateShooter(targetVector, shooterFieldVelocity, verticalDistance, hoodAngle, turretAngle);
+        AngularVelocity shooterVelocity = calculateShooter(targetVector, verticalDistance, hoodAngle, turretAngle);
 
         // Final Validity Check.
         if (Double.isNaN(shooterVelocity.in(RadiansPerSecond))) {
@@ -124,19 +123,14 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
     }
 
     private AngularVelocity calculateShooter(
-            Translation2d targetVector,
-            Translation2d shooterFieldVelocity,
-            Distance vDistance,
-            Angle hoodAngle,
-            Angle turretAngle) {
+            Translation2d targetVector, Distance vDistance, Angle hoodAngle, Angle turretAngle) {
         Distance hDistance = Meters.of(targetVector.getNorm());
         LinearVelocity requiredLaunchSpeed = ProjectilePhysics.calculateLaunchSpeed(hoodAngle, hDistance, vDistance);
 
         Translation2d shotDirection = targetVector.div(targetVector.getNorm());
         Translation2d requiredVelocityVector = shotDirection.times(requiredLaunchSpeed.in(MetersPerSecond));
 
-        double effectiveLaunchSpeed =
-                requiredVelocityVector.minus(shooterFieldVelocity).getNorm();
+        double effectiveLaunchSpeed = requiredVelocityVector.getNorm();
         double exitFactor = ProjectilePhysics.getLinearExitFactor(hDistance, turretAngle);
         return RadiansPerSecond.of(effectiveLaunchSpeed / (kWheelRadius.in(Meters) * exitFactor));
     }

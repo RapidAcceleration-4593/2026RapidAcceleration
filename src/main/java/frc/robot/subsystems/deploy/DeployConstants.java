@@ -19,7 +19,7 @@ public final class DeployConstants {
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
-    public static final double kP1 = 0.02;
+    public static final double kP1 = 0.015;
     public static final double kI1 = 0.0;
     public static final double kD1 = 0.0;
 

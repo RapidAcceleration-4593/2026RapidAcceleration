@@ -42,7 +42,7 @@ public class ProjectilePhysics {
     }
 
     public static double getLinearExitFactor(Distance distance, Angle turretAngle) {
-        return 0.415 - 0.013133 * distance.in(Meters) + 0.012952 * turretAngle.in(Radians);
+        return 0.419 - 0.013133 * distance.in(Meters) + 0.012952 * turretAngle.in(Radians);
     }
 
     public static LinearVelocity calculateLaunchSpeed(
