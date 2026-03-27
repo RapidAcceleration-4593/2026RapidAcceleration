@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Inches;
-import static frc.robot.subsystems.deploy.DeployConstants.kMinimumDistance;
+import static frc.robot.subsystems.deploy.DeployConstants.*;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -12,7 +12,7 @@ public class RetractDeployCommand extends SequentialCommandGroup {
 
     public RetractDeployCommand(IntakeSubsystem intake, DeploySubsystem deploy) {
         addCommands(
-                Commands.waitSeconds(1.0),
+                new ShakeDeployCommand(intake, deploy).withTimeout(3.0),
                 Commands.parallel(
                         deploy.goToDistanceCommand(kMinimumDistance, true),
                         intake.runCommand()

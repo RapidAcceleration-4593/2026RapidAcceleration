@@ -100,7 +100,7 @@ public class RobotContainer {
         driverController
                 .rightTrigger(0.5)
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new ShakeDeployCommand(intake, deploy))
+                        .alongWith(new RetractDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
                                 .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
@@ -150,17 +150,27 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand(
                 "ShootCommand",
-                new ShootCommand(shooter, hood, indexer, calculator).alongWith(new RunShooterLEDPatternCommand(LEDs)));
+                new ShootCommand(shooter, hood, indexer, calculator)
+                        .alongWith(new RunShooterLEDPatternCommand(LEDs))
+                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
+                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
+                                .repeatedly()));
         NamedCommands.registerCommand(
                 "ShootShakeCommand",
                 new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new ShakeDeployCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
+                        .alongWith(new RunShooterLEDPatternCommand(LEDs))
+                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
+                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
+                                .repeatedly()));
         NamedCommands.registerCommand(
                 "ShootRetractCommand",
                 new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new RetractDeployCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
+                        .alongWith(new RunShooterLEDPatternCommand(LEDs))
+                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
+                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
+                                .repeatedly()));
         NamedCommands.registerCommand(
                 "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
     }
