@@ -12,10 +12,10 @@ public class RetractDeployCommand extends SequentialCommandGroup {
 
     public RetractDeployCommand(IntakeSubsystem intake, DeploySubsystem deploy) {
         addCommands(
-                new ShakeDeployCommand(intake, deploy).withTimeout(3.0),
                 Commands.parallel(
                         deploy.goToDistanceCommand(kMinimumDistance, true),
                         intake.runCommand()
-                                .onlyWhile(() -> deploy.getCurrentDistance().gt(Inches.of(7.5)))));
+                                .onlyWhile(() -> deploy.getCurrentDistance().gt(Inches.of(7.5)))),
+                new ShakeDeployCommand(intake, deploy));
     }
 }
