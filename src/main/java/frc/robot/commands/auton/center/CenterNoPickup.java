@@ -9,10 +9,10 @@ import java.util.List;
 public class CenterNoPickup extends AutonCommand {
 
     public CenterNoPickup(AutonUtil util) {
-        super(util, List.of("CenterNoPickup-1"));
+        super(util, false, List.of("CenterNoPickup-1"));
 
         addCommands(
                 AutoBuilder.followPath(paths.get(0)),
-                NamedCommands.getCommand("ShootCommand").withTimeout(10.0));
+                NamedCommands.getCommand("ShootCommand").withTimeout(7.5));
     }
 }
