@@ -18,6 +18,7 @@ import frc.robot.commands.ShootCommand;
 import frc.robot.commands.auton.AutonManager;
 import frc.robot.commands.leds.RunIntakeLEDPatternCommand;
 import frc.robot.commands.leds.RunShooterLEDPatternCommand;
+import frc.robot.commands.leds.RunWarningLEDPatternCommand;
 import frc.robot.commands.swerve.PathfindCommands;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
@@ -100,12 +101,18 @@ public class RobotContainer {
                 .rightTrigger(0.5)
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new RetractDeployCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
+                        .alongWith(new RunShooterLEDPatternCommand(LEDs))
+                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
+                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
+                                .repeatedly()));
         driverController
                 .rightBumper()
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new IntakeCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
+                        .alongWith(new RunShooterLEDPatternCommand(LEDs))
+                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
+                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
+                                .repeatedly()));
 
         driverController
                 .leftTrigger(0.5)
