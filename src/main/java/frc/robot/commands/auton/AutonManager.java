@@ -23,18 +23,18 @@ public class AutonManager {
     private void registerAutons() {
         autonMap.put("DoNothing", Commands::none);
 
-        autonMap.put("LeftCenterTrench", () -> new SideCenter(util, true));
-        autonMap.put("LeftCenterBump", () -> new SideCenterLoop(util, true));
-        autonMap.put("LeftNoPickupNoTraversal", () -> new SideNoPickup(util, true));
+        autonMap.put("LeftCenterTrench", () -> new SideCenterTrench(util, true));
+        autonMap.put("LeftCenterBump", () -> new SideCenterBump(util, true));
+        autonMap.put("LeftNoPickupNoTraversal", () -> new SideNoPickupNoTraversal(util, true));
 
-        autonMap.put("CenterNoPickupNoTraversal", () -> new CenterNoPickup(util));
+        autonMap.put("CenterNoPickupNoTraversal", () -> new CenterNoPickupNoTraversal(util));
 
-        autonMap.put("RightCenterTrench", () -> new SideCenter(util, false));
-        autonMap.put("RightCenterBump", () -> new SideCenterLoop(util, false));
-        autonMap.put("RightNoPickupNoTraversal", () -> new SideNoPickup(util, false));
+        autonMap.put("RightCenterTrench", () -> new SideCenterTrench(util, false));
+        autonMap.put("RightCenterBump", () -> new SideCenterBump(util, false));
+        autonMap.put("RightNoPickupNoTraversal", () -> new SideNoPickupNoTraversal(util, false));
 
-        autonMap.put("Left2xCenterTrench", () -> new Side2xCenter(util, true));
-        autonMap.put("Right2xCenterTrench", () -> new Side2xCenter(util, false));
+        autonMap.put("Left2xCenterTrench", () -> new Side2xCenterTrench(util, true));
+        autonMap.put("Right2xCenterTrench", () -> new Side2xCenterTrench(util, false));
     }
 
     /** Loads all PathPlanner paths into the cache. */

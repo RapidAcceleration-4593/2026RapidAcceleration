@@ -7,15 +7,16 @@ import frc.robot.commands.auton.AutonCommand;
 import frc.robot.commands.auton.AutonUtil;
 import java.util.List;
 
-public class SideCenterLoop extends AutonCommand {
+public class SideCenterBump extends AutonCommand {
 
-    public SideCenterLoop(AutonUtil util, boolean isFlipped) {
-        super(util, isFlipped, List.of("SideCenterLoop-1"));
+    public SideCenterBump(AutonUtil util, boolean isFlipped) {
+        super(util, isFlipped, List.of("SideCenterBump-1", "SideCenterBump-2"));
 
         addCommands(
                 Commands.parallel(
                         AutoBuilder.followPath(paths.get(0)),
                         Commands.waitSeconds(1.0).andThen(NamedCommands.getCommand("IntakeCommand"))),
+                NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(1))),
                 NamedCommands.getCommand("ShakeDeployCommand"));
     }
 }

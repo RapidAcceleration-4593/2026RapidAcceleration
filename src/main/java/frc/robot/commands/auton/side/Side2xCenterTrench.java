@@ -6,10 +6,13 @@ import frc.robot.commands.auton.AutonCommand;
 import frc.robot.commands.auton.AutonUtil;
 import java.util.List;
 
-public class Side2xCenter extends AutonCommand {
+public class Side2xCenterTrench extends AutonCommand {
 
-    public Side2xCenter(AutonUtil util, boolean isFlipped) {
-        super(util, isFlipped, List.of("SideCenter-1", "SideCenter-2", "SideCenter-3", "SideCenter-4"));
+    public Side2xCenterTrench(AutonUtil util, boolean isFlipped) {
+        super(
+                util,
+                isFlipped,
+                List.of("SideCenterTrench-1", "SideCenterTrench-2", "SideCenterTrench-3", "SideCenterTrench-4"));
 
         addCommands(
                 NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(0))),
