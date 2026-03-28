@@ -28,6 +28,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
     private final Supplier<ChassisSpeeds> chassisSpeedsSupplier;
 
     private ShotResult latestResult = ShotResult.invalid();
+    private LinearVelocity latestLaunchSpeed = MetersPerSecond.zero();
     private static final InterpolatingDoubleTreeMap hoodMap = new InterpolatingDoubleTreeMap();
 
     static {
@@ -126,6 +127,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
             Translation2d targetVector, Distance vDistance, Angle hoodAngle, Angle turretAngle) {
         Distance hDistance = Meters.of(targetVector.getNorm());
         LinearVelocity requiredLaunchSpeed = ProjectilePhysics.calculateLaunchSpeed(hoodAngle, hDistance, vDistance);
+        latestLaunchSpeed = requiredLaunchSpeed;
 
         Translation2d shotDirection = targetVector.div(targetVector.getNorm());
         Translation2d requiredVelocityVector = shotDirection.times(requiredLaunchSpeed.in(MetersPerSecond));
@@ -150,6 +152,10 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
 
     public AngularVelocity getShooterVelocity() {
         return latestResult.shooterVelocity();
+    }
+
+    public LinearVelocity getLaunchSpeed() {
+        return latestLaunchSpeed;
     }
 
     public boolean isValid() {

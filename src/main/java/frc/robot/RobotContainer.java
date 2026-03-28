@@ -1,8 +1,8 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Controllers.*;
+import static frc.robot.Constants.kCurrentMode;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.Mode;
 import frc.robot.commands.*;
 import frc.robot.commands.auton.AutonManager;
 import frc.robot.commands.leds.*;
@@ -100,9 +101,7 @@ public class RobotContainer {
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
                                 .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
-                                .repeatedly()))
-                .onTrue(Commands.runOnce(() -> SimulationManager.getInstance()
-                        .launchProjectile(turret.getCurrentAngle(), hood.getCurrentAngle(), MetersPerSecond.of(7))));
+                                .repeatedly()));
         driverController
                 .rightBumper()
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
@@ -165,6 +164,12 @@ public class RobotContainer {
                 indexer.addHubShot();
             } else {
                 indexer.addFeedingShot();
+            }
+
+            if (kCurrentMode == Mode.SIM) {
+                SimulationManager.getInstance()
+                        .launchProjectile(
+                                calculator.getTurretAngle(), calculator.getHoodAngle(), calculator.getLaunchSpeed());
             }
         }));
     }
