@@ -10,15 +10,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.ManualShootCommand;
-import frc.robot.commands.RetractDeployCommand;
-import frc.robot.commands.ShakeDeployCommand;
-import frc.robot.commands.ShootCommand;
+import frc.robot.commands.*;
 import frc.robot.commands.auton.AutonManager;
-import frc.robot.commands.leds.RunIntakeLEDPatternCommand;
-import frc.robot.commands.leds.RunShooterLEDPatternCommand;
-import frc.robot.commands.leds.RunWarningLEDPatternCommand;
+import frc.robot.commands.leds.*;
 import frc.robot.commands.swerve.PathfindCommands;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
@@ -150,21 +144,6 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand(
                 "ShootCommand",
-                new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs))
-                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
-                                .repeatedly()));
-        NamedCommands.registerCommand(
-                "ShootShakeCommand",
-                new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new ShakeDeployCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs))
-                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
-                                .repeatedly()));
-        NamedCommands.registerCommand(
-                "ShootRetractCommand",
                 new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new RetractDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))

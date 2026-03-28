@@ -17,6 +17,6 @@ public class SideCenterBump extends AutonCommand {
                         AutoBuilder.followPath(paths.get(0)),
                         Commands.waitSeconds(1.0).andThen(NamedCommands.getCommand("IntakeCommand"))),
                 NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(1))),
-                NamedCommands.getCommand("ShakeDeployCommand"));
+                NamedCommands.getCommand("ShootCommand"));
     }
 }
