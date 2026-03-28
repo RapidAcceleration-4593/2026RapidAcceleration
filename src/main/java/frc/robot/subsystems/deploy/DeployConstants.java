@@ -28,6 +28,7 @@ public final class DeployConstants {
     public static final Distance kAgitationInDistance = Inches.of(6.0);
     public static final Distance kAgitationOutDistance = Inches.of(10.0);
     public static final Distance kDistanceTolerance = Inches.of(0.25);
+    public static final Distance kMinimumIntakeDistance = Inches.of(8);
 
     public static final int kCountsPerRotation = 8192;
     public static final double kMotorToEncoderGearing = (5.0 * 5.0) * (24.0 / 24.0);

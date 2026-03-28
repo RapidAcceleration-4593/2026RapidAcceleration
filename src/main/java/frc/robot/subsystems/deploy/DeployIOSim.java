@@ -59,6 +59,7 @@ public class DeployIOSim extends DeployIOReal implements IPhysicsSim {
                 0.02);
 
         retractedLSSim.setValue(deploySim.hasHitLowerLimit() ^ kInvertRetractedLS);
-        SimulationManager.getInstance().setIntakeExtended(deploySim.hasHitUpperLimit());
+        SimulationManager.getInstance()
+                .setIntakeExtended(deploySim.getPositionMeters() > kMinimumIntakeDistance.in(Meters));
     }
 }

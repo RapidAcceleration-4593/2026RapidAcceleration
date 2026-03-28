@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Controllers.*;
 
@@ -27,6 +28,7 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.AprilTagSubsystem;
 import frc.robot.util.FieldUtil;
+import frc.robot.util.SimulationManager;
 
 public class RobotContainer {
 
@@ -98,7 +100,9 @@ public class RobotContainer {
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
                                 .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
-                                .repeatedly()));
+                                .repeatedly()))
+                .onTrue(Commands.runOnce(() -> SimulationManager.getInstance()
+                        .launchProjectile(turret.getCurrentAngle(), hood.getCurrentAngle(), MetersPerSecond.of(7))));
         driverController
                 .rightBumper()
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
