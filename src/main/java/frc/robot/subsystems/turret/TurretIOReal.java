@@ -34,7 +34,7 @@ public class TurretIOReal implements TurretIO {
         SparkBaseConfig baseConfig = new SparkMaxConfig()
                 .inverted(kInvertMotor)
                 .idleMode(IdleMode.kBrake)
-                .smartCurrentLimit(30)
+                .smartCurrentLimit(20)
                 .voltageCompensation(12.0);
 
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()

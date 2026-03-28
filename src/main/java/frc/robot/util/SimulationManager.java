@@ -3,6 +3,7 @@ package frc.robot.util;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
+import static frc.robot.subsystems.shooter.ShooterConstants.kShooterHeight;
 import static frc.robot.subsystems.swerve.SwerveConstants.kMapleSimConfig;
 import static frc.robot.subsystems.vision.AprilTagConstants.kFieldLayout;
 
@@ -10,15 +11,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.Mode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
@@ -81,27 +77,17 @@ public final class SimulationManager {
     }
 
     /** Simulates an object being launched from the shooter mechanism. */
-    private void launchProjectile(Angle turretAngle, Angle hoodAngle, AngularVelocity velocity) {
-        Distance wheelRadius = Inches.of(2.0);
-        LinearVelocity linearVelocity = MetersPerSecond.of(velocity.in(RadiansPerSecond) * wheelRadius.in(Meters));
+    public void launchProjectile(Angle turretAngle, Angle hoodAngle, LinearVelocity launchVelocity) {
         Rotation2d turretRotation = Rotation2d.fromRadians(turretAngle.in(Radians));
-
         RebuiltFuelOnFly projectile = new RebuiltFuelOnFly(
                 getPose().getTranslation(),
                 kPhysicalOffset.getTranslation(),
                 getChassisSpeeds(),
                 getPose().getRotation().plus(turretRotation),
-                Inches.of(20.5),
-                linearVelocity,
+                kShooterHeight,
+                launchVelocity,
                 Degrees.of(90.0).minus(hoodAngle));
-
         arena.addGamePieceProjectile(projectile);
-    }
-
-    public Command launchProjectileCommand(
-            Supplier<Angle> turretAngle, Supplier<Angle> hoodAngle, Supplier<AngularVelocity> velocity) {
-        return Commands.runOnce(() -> launchProjectile(turretAngle.get(), hoodAngle.get(), velocity.get()))
-                .withTimeout(Seconds.of(0.4));
     }
 
     /** Run periodically during simulation. */

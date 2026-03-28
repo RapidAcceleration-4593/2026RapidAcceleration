@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -15,13 +16,13 @@ public final class FieldUtil {
     public static final Distance kFieldWidth = Inches.of(317.7);
 
     private static final Pose3d kBlueHubPose =
-            new Pose3d(Inches.of(182.1), kFieldWidth.div(2), Inches.of(72.0), new Rotation3d());
+            new Pose3d(Inches.of(182.1), kFieldWidth.div(2), Inches.of(72.0), Rotation3d.kZero);
     private static final Pose3d kRedHubPose =
-            new Pose3d(Inches.of(469.1), kFieldWidth.div(2), Inches.of(72.0), new Rotation3d());
-    private static final Pose3d kBlueInitialPose =
-            new Pose3d(kFieldLength.times(0.15), kFieldWidth.div(2), Inches.zero(), new Rotation3d());
-    private static final Pose3d kRedInitialPose =
-            new Pose3d(kFieldLength.times(0.85), kFieldWidth.div(2), Inches.zero(), new Rotation3d());
+            new Pose3d(Inches.of(469.1), kFieldWidth.div(2), Inches.of(72.0), Rotation3d.kZero);
+    private static final Pose2d kBlueInitialPose =
+            new Pose2d(kFieldLength.times(0.22), kFieldWidth.div(2), Rotation2d.kZero);
+    private static final Pose2d kRedInitialPose =
+            new Pose2d(kFieldLength.times(0.78), kFieldWidth.div(2), Rotation2d.k180deg);
 
     public enum FieldZones {
         Neutral_Zone,
@@ -41,11 +42,11 @@ public final class FieldUtil {
         return getCurrentAlliance() == Alliance.Blue ? kBlueHubPose : kRedHubPose;
     }
 
-    public static Pose3d getCrossFieldFeedPose(Pose2d robotPose2d) {
-        Distance x = getCurrentAlliance() == Alliance.Blue ? kFieldLength.times(0.15) : kFieldLength.times(0.85);
+    public static Pose3d getCrossFieldFeedPose(Pose2d robotPose) {
+        Distance x = isRedAlliance() ? kFieldLength.times(0.9) : kFieldLength.times(0.1);
         Distance y =
-                robotPose2d.getMeasureY().gt(kFieldWidth.times(0.5)) ? kFieldWidth.times(0.8) : kFieldWidth.times(0.2);
-        return new Pose3d(x, y, Meters.zero(), Rotation3d.kZero);
+                robotPose.getMeasureY().gt(kFieldWidth.times(0.5)) ? kFieldWidth.times(0.8) : kFieldWidth.times(0.2);
+        return new Pose3d(x, y, Inches.zero(), Rotation3d.kZero);
     }
 
     public static Pose3d getTargetPose(Pose2d robotPose) {
@@ -67,6 +68,6 @@ public final class FieldUtil {
     }
 
     public static Pose2d getInitialPose() {
-        return isRedAlliance() ? kRedInitialPose.toPose2d() : kBlueInitialPose.toPose2d();
+        return isRedAlliance() ? kRedInitialPose : kBlueInitialPose;
     }
 }

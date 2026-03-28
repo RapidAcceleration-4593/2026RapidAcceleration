@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.Volts;
-
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.subsystems.ShotCalculatorSubsystem;
@@ -18,8 +16,8 @@ public class ShootCommand extends ParallelCommandGroup {
             ShotCalculatorSubsystem calculator) {
 
         addCommands(
-                // shooter.runAtVelocityCommand(calculator::getShooterVelocity),
-                shooter.setVoltageCommand(Volts.of(7.25)),
+                shooter.runAtVelocityCommand(calculator::getShooterVelocity),
+                // shooter.setVoltageCommand(Volts.of(7.25)),
                 hood.runToAngleCommand(calculator::getHoodAngle),
                 Commands.waitSeconds(0.4).andThen(indexer.runCommand()));
     }

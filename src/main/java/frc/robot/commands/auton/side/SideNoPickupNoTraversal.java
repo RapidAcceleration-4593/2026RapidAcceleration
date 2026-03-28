@@ -1,4 +1,4 @@
-package frc.robot.commands.auton.left;
+package frc.robot.commands.auton.side;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -6,10 +6,10 @@ import frc.robot.commands.auton.AutonCommand;
 import frc.robot.commands.auton.AutonUtil;
 import java.util.List;
 
-public class LeftNoPickup extends AutonCommand {
+public class SideNoPickupNoTraversal extends AutonCommand {
 
-    public LeftNoPickup(AutonUtil util) {
-        super(util, List.of("LeftNoPickup-1"));
+    public SideNoPickupNoTraversal(AutonUtil util, boolean isFlipped) {
+        super(util, isFlipped, List.of("SideNoPickup-1"));
 
         addCommands(
                 AutoBuilder.followPath(paths.get(0)),
