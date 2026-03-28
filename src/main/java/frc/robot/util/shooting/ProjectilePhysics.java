@@ -45,6 +45,11 @@ public class ProjectilePhysics {
         return 0.419 - 0.013133 * distance.in(Meters) + 0.012952 * turretAngle.in(Radians);
     }
 
+    public static double getPhysicsExitFactor(Distance distance, Angle turretAngle) {
+        double alignmentFactor = Math.cos(turretAngle.plus(Degrees.of(45)).in(Radians));
+        return 0.42 + (-0.0131 * distance.in(Meters)) + (0.025 * turretAngle.in(Radians) * alignmentFactor);
+    }
+
     public static LinearVelocity calculateLaunchSpeed(
             Angle hoodAngle, Distance horizontalDistance, Distance verticalDistance) {
         double sin = Math.sin(hoodAngle.in(Radians));
