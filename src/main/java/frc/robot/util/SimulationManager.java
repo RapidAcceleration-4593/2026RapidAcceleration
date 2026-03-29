@@ -2,11 +2,11 @@ package frc.robot.util;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.*;
+import static frc.robot.subsystems.deploy.DeployConstants.kHopperCapacity;
 import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 import static frc.robot.subsystems.shooter.ShooterConstants.kShooterHeight;
 import static frc.robot.subsystems.swerve.SwerveConstants.kMapleSimConfig;
 import static frc.robot.subsystems.vision.AprilTagConstants.kFieldLayout;
-import static frc.robot.util.SimulationConstants.kHopperCapacity;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -90,7 +90,7 @@ public final class SimulationManager {
         Rotation2d turretRotation = Rotation2d.fromRadians(turretAngle.in(Radians));
         RebuiltFuelOnFly projectile = new RebuiltFuelOnFly(
                 getPose().getTranslation(),
-                kPhysicalOffset.getTranslation(),
+                kPhysicalOffset.getTranslation().rotateBy(turretRotation),
                 getChassisSpeeds(),
                 getPose().getRotation().minus(turretRotation),
                 kShooterHeight,
@@ -116,7 +116,6 @@ public final class SimulationManager {
 
         Logger.recordOutput("FieldSimulation/RobotPosition", getPose());
         Logger.recordOutput("FieldSimulation/Fuel", arena.getGamePiecesArrayByType("Fuel"));
-        Logger.recordOutput("FieldSimulation/FuelStored", intakeSim.getGamePiecesAmount());
     }
 
     /** Registers a subsystem physics simulation. */

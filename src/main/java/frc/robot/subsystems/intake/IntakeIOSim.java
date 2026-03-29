@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.util.IPhysicsSim;
 import frc.robot.util.SimulationManager;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
-import org.littletonrobotics.junction.Logger;
 
 public class IntakeIOSim extends IntakeIOReal implements IPhysicsSim {
 
@@ -50,13 +49,10 @@ public class IntakeIOSim extends IntakeIOReal implements IPhysicsSim {
                 SimulatedBattery.getBatteryVoltage().in(Volts),
                 0.02);
 
-        Logger.recordOutput("FlywheelRPM", flywheelSim.getAngularVelocityRPM());
         if (flywheelSim.getAngularVelocityRPM() > kMinimumIntakeRPM) {
             SimulationManager.getInstance().setIntakeSpinning(true);
         } else {
             SimulationManager.getInstance().setIntakeSpinning(false);
         }
-        Logger.recordOutput("IntakeSpinning", SimulationManager.getInstance().isIntakeSpinning());
-        Logger.recordOutput("IntakeExtended", SimulationManager.getInstance().isIntakeExtended());
     }
 }
