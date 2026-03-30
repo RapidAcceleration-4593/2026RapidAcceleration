@@ -80,7 +80,7 @@ public class RobotContainer {
 
         registerCommands();
         configureBindings();
-        getIndexerSensor();
+        setupIndexerSensor();
     }
 
     private void configureBindings() {
@@ -158,7 +158,7 @@ public class RobotContainer {
     }
 
     /** Increments the Fuel counter based on the robot's current field pose. */
-    private Trigger getIndexerSensor() {
+    private Trigger setupIndexerSensor() {
         return new Trigger(indexer::getShotDetected).onTrue(Commands.runOnce(() -> {
             if (FieldUtil.isInAllianceZone(swerve.getPose())) {
                 indexer.addHubShot();
