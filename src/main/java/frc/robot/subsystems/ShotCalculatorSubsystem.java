@@ -37,7 +37,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
     static {
         // Distance [meters], Hood [Degrees]
         hoodMap.put(1.25, 12.5);
-        hoodMap.put(6.0, 30.0);
+        hoodMap.put(8.0, 30.0);
     }
 
     public ShotCalculatorSubsystem(Supplier<Pose2d> poseSupplier, Supplier<ChassisSpeeds> chassisSpeedsSupplier) {
@@ -79,6 +79,11 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         Logger.recordOutput(
                 "ShotTuner/RequiredLinearLaunchSpeedMPS", getLaunchSpeed().in(MetersPerSecond));
         Logger.recordOutput("ShotTuner/TurretAngleRad", getTurretAngle().in(Radians));
+        Logger.recordOutput(
+                "ShotTuner/Formatted",
+                "{" + (Math.round(getLaunchSpeed().in(MetersPerSecond) * 1000) / 1000) + ", "
+                        + (Math.round(getTurretAngle().in(Radians) * 1000) / 1000) + ", " + (networkExitFactor.get())
+                        + "}");
         Logger.recordOutput("ShotTuner/Valid", isValid());
     }
 
