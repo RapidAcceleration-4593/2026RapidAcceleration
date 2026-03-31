@@ -53,10 +53,8 @@ public class LEDSubsystem extends SubsystemBase {
         led.setData(buffer);
         led.start();
 
-        LEDLayer layer = addLayer(-1.0);
-        layer.useAllianceColor = true;
-        layer.patternIndex = 0;
-        layer.speedFactor = 1;
+        LEDLayer layer = new LEDLayer(-1.0, 0, Color.kAliceBlue, Color.kBrown, true, 1.0);
+        addLayer(layer);
 
         currentPattern = patterns.get(currentPatternIndex);
     }
@@ -71,10 +69,10 @@ public class LEDSubsystem extends SubsystemBase {
         }
 
         LEDLayer layer = layers.get(0);
-        setPattern(layer.patternIndex);
-        setColor(layer.baseColor, layer.gradientColor);
-        setUseAllianceColor(layer.useAllianceColor);
-        setSpeed(layer.speedFactor);
+        setPattern(layer.getPatternIndex());
+        setColor(layer.getBaseColor(), layer.getGradientcColor());
+        setUseAllianceColor(layer.getUseAllianceColor());
+        setSpeed(layer.getSpeedFactor());
 
         if (useAllianceColor) {
             baseColor = getAllianceColor();
@@ -140,12 +138,9 @@ public class LEDSubsystem extends SubsystemBase {
         }
     }
 
-    public LEDLayer addLayer(double priority) {
-        LEDLayer layer = new LEDLayer();
-        layer.priority = priority;
+    public void addLayer(LEDLayer layer) {
         layers.add(layer);
         sortLayers();
-        return layer;
     }
 
     public void removeLayer(LEDLayer layer) {
@@ -154,6 +149,6 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     private void sortLayers() {
-        layers.sort((a, b) -> Double.compare(b.priority, a.priority));
+        layers.sort((a, b) -> Double.compare(b.getPriority(), a.getPriority()));
     }
 }

@@ -9,20 +9,17 @@ public class RunIntakeLEDPatternCommand extends Command {
 
     private final LEDSubsystem subsystem;
 
-    private LEDLayer layer;
+    private final LEDLayer layer;
 
     public RunIntakeLEDPatternCommand(LEDSubsystem subsystem) {
         this.subsystem = subsystem;
+
+        layer = new LEDLayer(1.0, 2, Color.kOrangeRed, Color.kBlack, false, -1.0);
     }
 
     @Override
     public void initialize() {
-        layer = subsystem.addLayer(1.0);
-        layer.useAllianceColor = false;
-        layer.baseColor = Color.kOrangeRed;
-        layer.gradientColor = Color.kBlack;
-        layer.patternIndex = 2;
-        layer.speedFactor = -1.0;
+        subsystem.addLayer(layer);
     }
 
     @Override

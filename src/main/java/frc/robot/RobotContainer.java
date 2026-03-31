@@ -98,18 +98,12 @@ public class RobotContainer {
                 .rightTrigger(0.5)
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new RetractDeployCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs))
-                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
-                                .repeatedly()));
+                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
         driverController
                 .rightBumper()
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new IntakeCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs))
-                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
-                                .repeatedly()));
+                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
 
         driverController
                 .leftTrigger(0.5)
@@ -149,10 +143,7 @@ public class RobotContainer {
                 "ShootCommand",
                 new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new RetractDeployCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs))
-                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
-                                .repeatedly()));
+                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
         NamedCommands.registerCommand(
                 "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
     }
