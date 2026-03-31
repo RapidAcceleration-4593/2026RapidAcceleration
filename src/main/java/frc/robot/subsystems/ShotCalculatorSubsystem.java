@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 import static frc.robot.util.shooting.ProjectilePhysicsConstants.*;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,7 +15,9 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.turret.TurretConstants;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.shooting.ProjectilePhysics;
 import java.util.function.Supplier;
@@ -51,20 +54,28 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         Pose3d realTarget3d = FieldUtil.getTargetHubPose();
         Translation2d realTargetXY = realTarget3d.toPose2d().getTranslation();
         Distance verticalDistance = realTarget3d.getMeasureZ().minus(kShooterHeight);
-        Translation2d targetVector = realTargetXY.minus(shooterXY);
 
-        Angle hoodAngle = calculateHood(Meters.of(targetVector.getDistance(Translation2d.kZero)));
+        // Iterative Solver for Virtual Target.
+        Translation2d virtualTargetXY = realTargetXY;
+        Angle hoodAngle = calculateHood(Meters.of(virtualTargetXY.getDistance(Translation2d.kZero)));
+
+        boolean latestIsValid = true;
+
+        // Extract Final Solution.
+        Translation2d targetVector = virtualTargetXY.minus(shooterXY);
         Rotation2d angleToTarget = new Rotation2d(targetVector.getX(), targetVector.getY());
 
         Angle turretAngle = calculateTurret(currentPose, angleToTarget);
-        AngularVelocity shooterVelocity = calculateShooter(targetVector, verticalDistance, hoodAngle, turretAngle);
+        if (turretAngle.lt(TurretConstants.kMinimumAngle) || turretAngle.gt(TurretConstants.kMaximumAngle)) {
+            latestIsValid = false;
+        }
 
         // Final Validity Check.
+        AngularVelocity shooterVelocity = calculateShooter(targetVector, verticalDistance, hoodAngle, turretAngle);
         if (Double.isNaN(shooterVelocity.in(RadiansPerSecond))) {
-            latestResult = ShotResult.invalid();
-            return;
+            latestIsValid = false;
         }
-        latestResult = new ShotResult(turretAngle, hoodAngle, shooterVelocity, true);
+        latestResult = new ShotResult(turretAngle, hoodAngle, shooterVelocity, latestIsValid);
 
         Logger.recordOutput("ShotTuner/RequiredLinearLaunchSpeed", getLaunchSpeed());
         Logger.recordOutput("ShotTuner/TurretAngle", getTurretAngle());
@@ -76,7 +87,8 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
     }
 
     private Angle calculateTurret(Pose2d robotPose, Rotation2d angleToTarget) {
-        return robotPose.getRotation().getMeasure().minus(angleToTarget.getMeasure());
+        Angle raw = robotPose.getRotation().getMeasure().minus(angleToTarget.getMeasure());
+        return Degrees.of(MathUtil.inputModulus(raw.in(Degrees), -180.0, 180.0));
     }
 
     private AngularVelocity calculateShooter(
@@ -117,6 +129,10 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
 
     public boolean isValid() {
         return latestResult.valid();
+    }
+
+    public boolean isInvalid() {
+        return !latestResult.valid();
     }
 
     public record ShotResult(Angle turretAngle, Angle hoodAngle, AngularVelocity shooterVelocity, boolean valid) {

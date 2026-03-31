@@ -100,7 +100,7 @@ public class RobotContainer {
                         .alongWith(new RetractDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
+                                .onlyWhile(calculator::isInvalid)
                                 .repeatedly()));
         driverController
                 .rightBumper()
@@ -108,7 +108,7 @@ public class RobotContainer {
                         .alongWith(new IntakeCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
+                                .onlyWhile(calculator::isInvalid)
                                 .repeatedly()));
 
         driverController
@@ -151,7 +151,7 @@ public class RobotContainer {
                         .alongWith(new RetractDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
+                                .onlyWhile(calculator::isInvalid)
                                 .repeatedly()));
         NamedCommands.registerCommand(
                 "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
