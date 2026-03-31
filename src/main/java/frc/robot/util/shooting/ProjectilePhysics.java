@@ -11,57 +11,14 @@ import edu.wpi.first.units.measure.Time;
 
 public class ProjectilePhysics {
 
-    public static double getBarycentricExitFactor(Distance distance, Angle turretAngle) {
-        double x = distance.in(Meters);
-        double y = turretAngle.in(Radians);
+    public static double getExitFactor(Angle turretAngle) {
+        double theta = turretAngle.in(Radians);
+        double exitFactor = kA0
+                + kA1 * Math.cos(theta)
+                + kB1 * Math.sin(theta)
+                + kA2 * Math.cos(2.0 * theta)
+                + kB2 * Math.sin(2.0 * theta);
 
-        for (int[] tri : kTriangles) {
-            double[] p1 = kExitFactorData[tri[0]];
-            double[] p2 = kExitFactorData[tri[1]];
-            double[] p3 = kExitFactorData[tri[2]];
-
-            double x1 = p1[0], y1 = p1[1], z1 = p1[2];
-            double x2 = p2[0], y2 = p2[1], z2 = p2[2];
-            double x3 = p3[0], y3 = p3[1], z3 = p3[2];
-
-            double denom = (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3);
-
-            if (Math.abs(denom) < 1e-9) continue;
-
-            double w1 = ((y2 - y3) * (x - x3) + (x3 - x2) * (y - y3)) / denom;
-            double w2 = ((y3 - y1) * (x - x3) + (x1 - x3) * (y - y3)) / denom;
-            double w3 = 1.0 - w1 - w2;
-
-            if (w1 >= 0 && w2 >= 0 && w3 >= 0) {
-                double exitFactor = w1 * z1 + w2 * z2 + w3 * z3;
-                return MathUtil.clamp(exitFactor, 0.20, 0.45);
-            }
-        }
-
-        return kExitFactorData[0][2];
-    }
-
-    public static double getLinearExitFactor(Distance distance, Angle turretAngle) {
-        double exitFactor = 0.419 - 0.013133 * distance.in(Meters) + 0.012952 * turretAngle.in(Radians);
-        return MathUtil.clamp(exitFactor, 0.20, 0.45);
-    }
-
-    public static double getPhysicsExitFactor(Angle turretAngle, LinearVelocity launchSpeed) {
-        Angle relativeAngle = turretAngle.plus(Degrees.of(45.0));
-        double interferenceScalar = Math.abs(Math.sin(relativeAngle.in(Radians)));
-
-        LinearVelocity initialVelocity =
-                MetersPerSecond.of(kTowerExitVelocity.in(RadiansPerSecond) * kFuelRadius.in(Meters));
-
-        LinearVelocity fightingVelocity = initialVelocity.times(interferenceScalar);
-        LinearVelocity wheelVelocity = launchSpeed.times(2.0);
-
-        double slipPenalty = 0.0;
-        if (wheelVelocity.in(MetersPerSecond) > 0.1) {
-            slipPenalty = fightingVelocity.in(MetersPerSecond) / (2.0 * wheelVelocity.in(MetersPerSecond));
-        }
-
-        double exitFactor = kFrictionLoss * (0.5 - slipPenalty);
         return MathUtil.clamp(exitFactor, 0.20, 0.45);
     }
 

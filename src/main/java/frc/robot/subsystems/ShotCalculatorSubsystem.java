@@ -36,7 +36,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
     static {
         // Distance [meters], Hood [Degrees]
         hoodMap.put(1.25, 12.5);
-        hoodMap.put(6.0, 30.0);
+        hoodMap.put(8.0, 30.0);
     }
 
     public ShotCalculatorSubsystem(Supplier<Pose2d> poseSupplier, Supplier<ChassisSpeeds> chassisSpeedsSupplier) {
@@ -134,12 +134,8 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         LinearVelocity requiredLaunchSpeed = ProjectilePhysics.calculateLaunchSpeed(hoodAngle, hDistance, vDistance);
         latestLaunchSpeed = requiredLaunchSpeed;
 
-        Translation2d shotDirection = targetVector.div(targetVector.getNorm());
-        Translation2d requiredVelocityVector = shotDirection.times(requiredLaunchSpeed.in(MetersPerSecond));
-
-        double effectiveLaunchSpeed = requiredVelocityVector.getNorm();
-        double exitFactor = ProjectilePhysics.getLinearExitFactor(hDistance, turretAngle);
-        return RadiansPerSecond.of(effectiveLaunchSpeed / (kWheelRadius.in(Meters) * exitFactor));
+        double exitFactor = ProjectilePhysics.getExitFactor(turretAngle);
+        return RadiansPerSecond.of(requiredLaunchSpeed.in(MetersPerSecond) / (kShooterRadius.in(Meters) * exitFactor));
     }
 
     @Override
