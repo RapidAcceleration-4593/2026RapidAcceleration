@@ -42,12 +42,27 @@ public class ProjectilePhysics {
     }
 
     public static double getLinearExitFactor(Distance distance, Angle turretAngle) {
-        return 0.419 - 0.013133 * distance.in(Meters) + 0.012952 * turretAngle.in(Radians);
+        double exitFactor = 0.419 - 0.013133 * distance.in(Meters) + 0.012952 * turretAngle.in(Radians);
+        return MathUtil.clamp(exitFactor, 0.20, 0.45);
     }
 
-    public static double getPhysicsExitFactor(Distance distance, Angle turretAngle) {
-        double alignmentFactor = Math.cos(turretAngle.plus(Degrees.of(45)).in(Radians));
-        return 0.42 + (-0.0131 * distance.in(Meters)) + (0.025 * turretAngle.in(Radians) * alignmentFactor);
+    public static double getPhysicsExitFactor(Angle turretAngle, LinearVelocity launchSpeed) {
+        Angle relativeAngle = turretAngle.plus(Degrees.of(45.0));
+        double interferenceScalar = Math.abs(Math.sin(relativeAngle.in(Radians)));
+
+        LinearVelocity initialVelocity =
+                MetersPerSecond.of(kTowerExitVelocity.in(RadiansPerSecond) * kFuelRadius.in(Meters));
+
+        LinearVelocity fightingVelocity = initialVelocity.times(interferenceScalar);
+        LinearVelocity wheelVelocity = launchSpeed.times(2.0);
+
+        double slipPenalty = 0.0;
+        if (wheelVelocity.in(MetersPerSecond) > 0.1) {
+            slipPenalty = fightingVelocity.in(MetersPerSecond) / (2.0 * wheelVelocity.in(MetersPerSecond));
+        }
+
+        double exitFactor = kFrictionLoss * (0.5 - slipPenalty);
+        return MathUtil.clamp(exitFactor, 0.20, 0.45);
     }
 
     public static LinearVelocity calculateLaunchSpeed(

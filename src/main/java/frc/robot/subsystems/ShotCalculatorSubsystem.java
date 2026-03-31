@@ -124,9 +124,8 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
     }
 
     private Angle calculateTurret(Pose2d robotPose, Rotation2d angleToTarget) {
-        double rawDegrees = robotPose.getRotation().getDegrees() - angleToTarget.getDegrees();
-        double normalizedDegrees = MathUtil.inputModulus(rawDegrees, -180, 180);
-        return Degrees.of(normalizedDegrees);
+        Angle raw = robotPose.getRotation().getMeasure().minus(angleToTarget.getMeasure());
+        return Degrees.of(MathUtil.inputModulus(raw.in(Degrees), -180.0, 180.0));
     }
 
     private AngularVelocity calculateShooter(
