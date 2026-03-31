@@ -56,7 +56,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
 
         // Iterative Solver for Virtual Target.
         Translation2d virtualTargetXY = realTargetXY;
-        Angle hoodAngle = calculateHood(Meters.of(virtualTargetXY.getDistance(Translation2d.kZero)));
+        Angle hoodAngle = calculateHood(Meters.of(virtualTargetXY.getDistance(shooterXY)));
 
         boolean latestIsValid = true;
 
