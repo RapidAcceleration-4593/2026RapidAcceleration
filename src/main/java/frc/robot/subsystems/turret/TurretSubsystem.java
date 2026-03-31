@@ -100,8 +100,10 @@ public class TurretSubsystem extends SubsystemBase {
                 Degrees.of(MathUtil.inputModulus(targetAngle.minus(current).in(Degrees), -180.0, 180.0));
         Angle candidate = current.plus(error);
 
-        if (candidate.gte(kMinimumAngle) && candidate.lte(kMaximumAngle)) {
-            return candidate;
+        if (candidate.lt(kMinimumAngle)) {
+            candidate = candidate.plus(Degrees.of(360.0));
+        } else if (candidate.gt(kMaximumAngle)) {
+            candidate = candidate.minus(Degrees.of(360.0));
         }
         return Degrees.of(MathUtil.clamp(candidate.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
     }
