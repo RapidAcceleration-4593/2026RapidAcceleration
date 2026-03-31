@@ -15,7 +15,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.turret.TurretConstants;
 import frc.robot.util.FieldUtil;
@@ -77,8 +76,9 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         }
         latestResult = new ShotResult(turretAngle, hoodAngle, shooterVelocity, latestIsValid);
 
-        Logger.recordOutput("ShotTuner/RequiredLinearLaunchSpeed", getLaunchSpeed());
-        Logger.recordOutput("ShotTuner/TurretAngle", getTurretAngle());
+        Logger.recordOutput(
+                "ShotTuner/RequiredLinearLaunchSpeedMPS", getLaunchSpeed().in(MetersPerSecond));
+        Logger.recordOutput("ShotTuner/TurretAngleRad", getTurretAngle().in(Radians));
         Logger.recordOutput("ShotTuner/Valid", isValid());
     }
 
@@ -102,7 +102,6 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
 
         double effectiveLaunchSpeed = requiredVelocityVector.getNorm();
         double exitFactor = networkExitFactor.get();
-        Logger.recordOutput("ShotTuner/ExitFactor", exitFactor);
         return RadiansPerSecond.of(effectiveLaunchSpeed / (kWheelRadius.in(Meters) * exitFactor));
     }
 
