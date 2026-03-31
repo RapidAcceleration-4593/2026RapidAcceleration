@@ -1,9 +1,8 @@
 package frc.robot.util.shooting;
 
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Milliseconds;
+import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.Time;
@@ -18,6 +17,11 @@ public final class ProjectilePhysicsConstants {
     public static final int kCalculationIterations = 4;
     public static final double kConvergenceEpsilon = 3e-4;
     public static final Time kSystemLatency = Milliseconds.of(40.0);
+
+    public static final Distance kFuelRadius = Centimeters.of(7.5);
+    public static final AngularVelocity kTowerExitVelocity =
+            RadiansPerSecond.of(10.0); // Angular velocity at tower exit.
+    public static final double kFrictionLoss = 0.85; // Efficiency of compression.
 
     public static final double[][] kExitFactorData = {
         {2.936, 0.026, 0.38},

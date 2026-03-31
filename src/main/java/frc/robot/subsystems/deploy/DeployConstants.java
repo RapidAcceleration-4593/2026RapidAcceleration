@@ -15,11 +15,11 @@ public final class DeployConstants {
     public static final boolean kInvertEncoder = false;
     public static final boolean kInvertRetractedLS = true;
 
-    public static final double kP = 0.24;
+    public static final double kP = 0.2;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
-    public static final double kP1 = 0.015;
+    public static final double kP1 = 0.02;
     public static final double kI1 = 0.0;
     public static final double kD1 = 0.0;
 
@@ -27,6 +27,7 @@ public final class DeployConstants {
     public static final Distance kMaximumDistance = Inches.of(11.0);
     public static final Distance kAgitationInDistance = Inches.of(6.0);
     public static final Distance kAgitationOutDistance = Inches.of(10.0);
+    public static final Distance kMinimumIntakeDistance = Inches.of(7.5);
     public static final Distance kDistanceTolerance = Inches.of(0.25);
 
     public static final int kCountsPerRotation = 8192;
@@ -34,6 +35,7 @@ public final class DeployConstants {
     public static final double kEncoderToDeployGearing = 1.0;
     public static final double kMotorToDeployGearing = kMotorToEncoderGearing * kEncoderToDeployGearing;
 
+    public static final int kHopperCapacity = 35;
     public static final Mass kCarriageMass = Kilograms.of(5.0);
     public static final Distance kDrumRadius = Inches.of(0.75);
 

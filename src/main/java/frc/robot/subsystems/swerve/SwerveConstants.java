@@ -22,14 +22,14 @@ public final class SwerveConstants {
     public static final Mass kRobotMass = Pounds.of(115.0);
     public static final MomentOfInertia kRobotMOI = KilogramSquareMeters.of(6.490);
 
-    private static final Distance kWheelRadius = Inches.of(1.91);
+    private static final Distance kWheelRadius = Inches.of(2.0);
     public static final double kWheelCOF = 1.2;
 
     /** Current at which the wheels start to slip. */
     private static final Current kSlipCurrent = Amps.of(60.0);
 
     /** Theoretical Maximum Speed at 12V. */
-    public static final LinearVelocity kMaxVelocity = MetersPerSecond.of(5.5);
+    public static final LinearVelocity kMaxVelocity = MetersPerSecond.of(5.0);
 
     // Currently only used for PathPlanner.
     public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(2.0);

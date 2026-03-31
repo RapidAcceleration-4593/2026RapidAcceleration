@@ -68,6 +68,6 @@ public class IndexerIOSim extends IndexerIOReal implements IPhysicsSim {
                 SimulatedBattery.getBatteryVoltage().in(Volts),
                 0.02);
 
-        // sensorSim.setValue();
+        sensorSim.setValue((Math.abs(spindexerMotor.getEncoder().getPosition()) * 5) % 1.0 < 0.1);
     }
 }

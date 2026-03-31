@@ -2,6 +2,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Controllers.*;
+import static frc.robot.Constants.kCurrentMode;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -10,15 +11,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.ManualShootCommand;
-import frc.robot.commands.RetractDeployCommand;
-import frc.robot.commands.ShakeDeployCommand;
-import frc.robot.commands.ShootCommand;
+import frc.robot.Constants.Mode;
+import frc.robot.commands.*;
 import frc.robot.commands.auton.AutonManager;
-import frc.robot.commands.leds.RunIntakeLEDPatternCommand;
-import frc.robot.commands.leds.RunShooterLEDPatternCommand;
-import frc.robot.commands.leds.RunWarningLEDPatternCommand;
+import frc.robot.commands.leds.*;
 import frc.robot.commands.swerve.PathfindCommands;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
@@ -33,6 +29,7 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.AprilTagSubsystem;
 import frc.robot.util.FieldUtil;
+import frc.robot.util.SimulationManager;
 
 public class RobotContainer {
 
@@ -83,7 +80,7 @@ public class RobotContainer {
 
         registerCommands();
         configureBindings();
-        getIndexerSensor();
+        setupIndexerSensor();
     }
 
     private void configureBindings() {
@@ -103,7 +100,7 @@ public class RobotContainer {
                         .alongWith(new RetractDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
+                                .onlyWhile(calculator::isInvalid)
                                 .repeatedly()));
         driverController
                 .rightBumper()
@@ -111,7 +108,7 @@ public class RobotContainer {
                         .alongWith(new IntakeCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
+                                .onlyWhile(calculator::isInvalid)
                                 .repeatedly()));
 
         driverController
@@ -151,37 +148,28 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "ShootCommand",
                 new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs))
-                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
-                                .repeatedly()));
-        NamedCommands.registerCommand(
-                "ShootShakeCommand",
-                new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new ShakeDeployCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs))
-                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
-                                .repeatedly()));
-        NamedCommands.registerCommand(
-                "ShootRetractCommand",
-                new ShootCommand(shooter, hood, indexer, calculator)
                         .alongWith(new RetractDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(() -> !calculator.isValid() || !turret.atTargetAngle())
+                                .onlyWhile(calculator::isInvalid)
                                 .repeatedly()));
         NamedCommands.registerCommand(
                 "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
     }
 
     /** Increments the Fuel counter based on the robot's current field pose. */
-    private Trigger getIndexerSensor() {
+    private Trigger setupIndexerSensor() {
         return new Trigger(indexer::getShotDetected).onTrue(Commands.runOnce(() -> {
             if (FieldUtil.isInAllianceZone(swerve.getPose())) {
                 indexer.addHubShot();
             } else {
                 indexer.addFeedingShot();
+            }
+
+            if (kCurrentMode == Mode.SIM) {
+                SimulationManager.getInstance()
+                        .launchProjectile(
+                                calculator.getTurretAngle(), calculator.getHoodAngle(), calculator.getLaunchSpeed());
             }
         }));
     }

@@ -14,6 +14,6 @@ public class SideCenterTrench extends AutonCommand {
         addCommands(
                 NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(0))),
                 AutoBuilder.followPath(paths.get(1)),
-                NamedCommands.getCommand("ShootShakeCommand"));
+                NamedCommands.getCommand("ShootCommand"));
     }
 }
