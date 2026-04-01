@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
@@ -23,7 +24,6 @@ import frc.robot.util.FieldUtil;
 import frc.robot.util.shooting.ProjectilePhysics;
 import frc.robot.util.shooting.ProjectilePhysicsCalibration;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.Logger;
 
 public class ShotCalculatorSubsystem extends SubsystemBase {
 
@@ -50,20 +50,14 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         this.chassisSpeedsSupplier = chassisSpeedsSupplier;
     }
 
-    private void calculate() {
-        Pose2d currentPose = poseSupplier.get();
-        ChassisSpeeds robotVelocity =
-                ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeedsSupplier.get(), currentPose.getRotation());
+    private ShotResult calculateMovingShot(
+            Pose2d shooterPose, ChassisSpeeds shooterVelocityFieldRelative, Translation3d targetPos) {
+        Translation2d shooterXY = shooterPose.getTranslation();
+        Translation2d realTargetXY = targetPos.toTranslation2d();
+        Distance verticalDistance = kShooterHeight.minus(targetPos.getMeasureZ());
 
-        // Calculate Shooter's Total Velocity.
-        Translation2d shooterFieldVelocity =
-                new Translation2d(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond);
-
-        // Shooter Position at Time of Shot.
-        Translation2d shooterXY = currentPose.transformBy(kPhysicalOffset).getTranslation();
-        Pose3d realTarget3d = FieldUtil.getTargetPose(currentPose);
-        Translation2d realTargetXY = realTarget3d.toPose2d().getTranslation();
-        Distance verticalDistance = kShooterHeight.minus(realTarget3d.getMeasureZ());
+        Translation2d shooterFieldVelocity = new Translation2d(
+                shooterVelocityFieldRelative.vxMetersPerSecond, shooterVelocityFieldRelative.vyMetersPerSecond);
 
         // Iterative Solver for Virtual Target.
         Translation2d virtualTargetXY = realTargetXY;
@@ -95,13 +89,11 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
             virtualTargetXY = nextVirtualTargetXY;
         }
 
-        Logger.recordOutput("VirtualTarget", new Pose2d(virtualTargetXY, Rotation2d.kZero));
-
         // Extract Final Solution.
         Translation2d targetVector = virtualTargetXY.minus(shooterXY);
         Rotation2d angleToTarget = new Rotation2d(targetVector.getX(), targetVector.getY());
 
-        Angle turretAngle = calculateTurret(currentPose, angleToTarget);
+        Angle turretAngle = calculateTurret(shooterPose, angleToTarget);
         if (turretAngle.lt(TurretConstants.kMinimumAngle) || turretAngle.gt(TurretConstants.kMaximumAngle)) {
             latestIsValid = false;
         }
@@ -111,13 +103,19 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
                 calculateShooter(Meters.of(targetVector.getNorm()), verticalDistance, hoodAngle, turretAngle);
         if (Double.isNaN(shooterVelocity.in(RadiansPerSecond))) {
             latestIsValid = false;
+            return ShotResult.invalid();
         }
-        latestResult = new ShotResult(turretAngle, hoodAngle, shooterVelocity, latestIsValid);
+        return new ShotResult(turretAngle, hoodAngle, shooterVelocity, latestIsValid);
+    }
 
-        Logger.recordOutput("ShotCalculation/VirtualTargetPose", new Pose2d(virtualTargetXY, angleToTarget));
-        Logger.recordOutput("ShotCalculation/ChassisSpeeds", robotVelocity);
-        Logger.recordOutput("ShotCalculation/PredictedRobotPose", currentPose);
-        Logger.recordOutput("ShotCalculation/TimeOfFlight", tof.in(Seconds));
+    private void calculate() {
+        Pose2d currentPose = poseSupplier.get();
+        Pose2d shooterPose = currentPose.transformBy(kPhysicalOffset);
+        ChassisSpeeds robotVelocity =
+                ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeedsSupplier.get(), currentPose.getRotation());
+		
+        Pose3d realTarget3d = FieldUtil.getTargetPose(currentPose);
+        latestResult = calculateMovingShot(shooterPose, robotVelocity, realTarget3d.getTranslation());
     }
 
     private Angle calculateHood(Distance distance) {
