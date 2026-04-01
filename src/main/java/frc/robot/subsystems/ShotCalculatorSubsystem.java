@@ -63,7 +63,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         Translation2d shooterXY = currentPose.transformBy(kPhysicalOffset).getTranslation();
         Pose3d realTarget3d = FieldUtil.getTargetPose(currentPose);
         Translation2d realTargetXY = realTarget3d.toPose2d().getTranslation();
-        Distance verticalDistance = realTarget3d.getMeasureZ().minus(kShooterHeight);
+        Distance verticalDistance = kShooterHeight.minus(realTarget3d.getMeasureZ());
 
         // Iterative Solver for Virtual Target.
         Translation2d virtualTargetXY = realTargetXY;
@@ -84,7 +84,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
                     ProjectilePhysics.calculateLaunchSpeed(hoodAngle, virtualDistance, verticalDistance);
 
             // Recalculate Time of Flight.
-            tof = ProjectilePhysics.calculateTime(requiredLaunchSpeed, hoodAngle, realTarget3d.getMeasureZ());
+            tof = ProjectilePhysics.calculateTime(requiredLaunchSpeed, hoodAngle, verticalDistance);
             Translation2d nextVirtualTargetXY = realTargetXY.minus(shooterFieldVelocity.times(tof.in(Seconds)));
 
             // Early Convergence Check.
