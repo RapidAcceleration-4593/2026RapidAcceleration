@@ -87,11 +87,11 @@ public class RobotContainer {
     private void configureBindings() {
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
                 swerve,
-                () -> !FieldUtil.isInAllianceZone(swerve.getPose())
+                () -> FieldUtil.isInAllianceZone(swerve.getPose())
                                 && shooter.getTargetVelocity().in(RadiansPerSecond) > 0.0
                         ? driverController.getLeftY() * 0.5
                         : driverController.getLeftY(),
-                () -> !FieldUtil.isInAllianceZone(swerve.getPose())
+                () -> FieldUtil.isInAllianceZone(swerve.getPose())
                                 && shooter.getTargetVelocity().in(RadiansPerSecond) > 0.0
                         ? driverController.getLeftX() * 0.5
                         : driverController.getLeftX(),
