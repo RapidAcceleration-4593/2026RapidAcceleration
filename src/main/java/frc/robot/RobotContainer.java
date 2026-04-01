@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Controllers.*;
 import static frc.robot.Constants.kCurrentMode;
@@ -85,7 +86,16 @@ public class RobotContainer {
 
     private void configureBindings() {
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
-                swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
+                swerve,
+                () -> FieldUtil.isInAllianceZone(swerve.getPose())
+                                && shooter.getTargetVelocity().in(RadiansPerSecond) > 0.0
+                        ? driverController.getLeftY() * 0.5
+                        : driverController.getLeftY(),
+                () -> FieldUtil.isInAllianceZone(swerve.getPose())
+                                && shooter.getTargetVelocity().in(RadiansPerSecond) > 0.0
+                        ? driverController.getLeftX() * 0.5
+                        : driverController.getLeftX(),
+                driverController::getRightX));
         turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle));
 
         // <------- Driver Controller ------->
