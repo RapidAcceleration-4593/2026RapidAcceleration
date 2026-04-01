@@ -110,12 +110,33 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
 
     private void calculate() {
         Pose2d currentPose = poseSupplier.get();
-        Pose2d shooterPose = currentPose.transformBy(kPhysicalOffset);
         ChassisSpeeds robotVelocity =
                 ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeedsSupplier.get(), currentPose.getRotation());
-		
+
+        // Latency compensation.
+        // currentPose = currentPose.plus(new Transform2d(
+        //                 robotVelocity.vxMetersPerSecond,
+        //                 robotVelocity.vyMetersPerSecond,
+        //                 new Rotation2d(robotVelocity.omegaRadiansPerSecond))
+        //         .times(kSystemLatency.in(Seconds)));
+
+        Pose2d shooterPose = currentPose.transformBy(kPhysicalOffset);
+
+        // Account for the fact that the translational velocity of the shooter is slightly different than the
+        // translational velocity of the robot due to the robot rotating and the shooter being offset from the center of
+        // rotation.
+        double shooterVxRobot = (robotVelocity.omegaRadiansPerSecond * kPhysicalOffset.getY());
+        double shooterVyRobot = (robotVelocity.omegaRadiansPerSecond * kPhysicalOffset.getX());
+        Translation2d shooterRobotVelocity =
+                new Translation2d(shooterVxRobot, shooterVyRobot).rotateBy(currentPose.getRotation());
+
+        ChassisSpeeds shooterSpeeds = new ChassisSpeeds(
+                shooterRobotVelocity.getX() + robotVelocity.vxMetersPerSecond,
+                shooterRobotVelocity.getY() + robotVelocity.vyMetersPerSecond,
+                robotVelocity.omegaRadiansPerSecond);
+
         Pose3d realTarget3d = FieldUtil.getTargetPose(currentPose);
-        latestResult = calculateMovingShot(shooterPose, robotVelocity, realTarget3d.getTranslation());
+        latestResult = calculateMovingShot(shooterPose, shooterSpeeds, realTarget3d.getTranslation());
     }
 
     private Angle calculateHood(Distance distance) {
