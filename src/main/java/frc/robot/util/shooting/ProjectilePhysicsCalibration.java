@@ -105,4 +105,39 @@ public class ProjectilePhysicsCalibration {
     public double getLinearExitFactor(LinearVelocity launchSpeed, Angle turretAngle) {
         return offset + speedMult * launchSpeed.in(MetersPerSecond) + angleMult * turretAngle.in(Radians);
     }
+
+    public double getQuadraticExitFactor(LinearVelocity launchSpeed, Angle turretAngle) {
+        double x = launchSpeed.in(MetersPerSecond);
+        double y = turretAngle.in(Radians);
+        double exitFactor =
+                -0.00924813 * Math.pow(x, 2) - 0.00326423 * Math.pow(y, 2) + 0.132669 * x + 0.00673983 * y - 0.07958;
+        return exitFactor;
+    }
+
+    public double getCubicExitFactor(LinearVelocity launchSpeed, Angle turretAngle) {
+        double x = launchSpeed.in(MetersPerSecond);
+        double y = turretAngle.in(Radians);
+        double exitFactor = -0.000848441 * Math.pow(x, 3)
+                - 0.00120982 * Math.pow(y, 3)
+                + 0.0110914 * Math.pow(x, 2)
+                - 0.00285624 * Math.pow(y, 2)
+                - 0.0312852 * x
+                + 0.0134458 * y
+                + 0.364219;
+        return exitFactor;
+    }
+
+    public double getInterrelationalExitFactor(LinearVelocity launchSpeed, Angle turretAngle) {
+        double x = launchSpeed.in(MetersPerSecond);
+        double y = turretAngle.in(Radians);
+        double exitFactor = -0.00761085 * Math.pow(x, 3)
+                - 0.00107918 * Math.pow(y, 3)
+                + 0.171929 * Math.pow(x, 2)
+                - 0.00267933 * Math.pow(y, 2)
+                + 0.00417471 * x * y
+                - 1.29963 * x
+                - 0.0215811 * y
+                + 3.67785;
+        return exitFactor;
+    }
 }
