@@ -17,8 +17,8 @@ public final class TurretConstants {
     public static final double kD = 0.0;
 
     public static final Angle kInitialAngle = Degrees.of(0.0);
-    public static final Angle kMinimumAngle = Degrees.of(-200.0);
-    public static final Angle kMaximumAngle = Degrees.of(200.0);
+    public static final Angle kMinimumAngle = Degrees.of(-90.0);
+    public static final Angle kMaximumAngle = Degrees.of(270.0);
     public static final Angle kAngleTolerance = Degrees.of(0.25);
 
     public static final int kCountsPerRotation = 8192;
