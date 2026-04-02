@@ -1,6 +1,6 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Controllers.*;
 import static frc.robot.Constants.kCurrentMode;
@@ -87,15 +87,11 @@ public class RobotContainer {
     private void configureBindings() {
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
                 swerve,
+                driverController::getLeftY,
+                driverController::getLeftX,
+                driverController::getRightX,
                 () -> FieldUtil.isInAllianceZone(swerve.getPose())
-                                && shooter.getTargetVelocity().in(RadiansPerSecond) > 0.0
-                        ? driverController.getLeftY() * 0.7
-                        : driverController.getLeftY(),
-                () -> FieldUtil.isInAllianceZone(swerve.getPose())
-                                && shooter.getTargetVelocity().in(RadiansPerSecond) > 0.0
-                        ? driverController.getLeftX() * 0.7
-                        : driverController.getLeftX(),
-                driverController::getRightX));
+                        && shooter.getTargetVelocity().gt(RPM.zero())));
         turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle));
 
         // <------- Driver Controller ------->
@@ -148,9 +144,7 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         NetworkTableEntry entry =
                 networkTableInstance.getTable("AccelerationStation").getEntry("SelectedAuto");
-        String name = entry.getString("DoNothing");
-        // return autonManager.getAuton(name);
-        return autonManager.getAuton("Left2xCenterTrench");
+        return autonManager.getAuton(entry.getString("DoNothing"));
     }
 
     /** Register NamedCommands for Autonomous. */
