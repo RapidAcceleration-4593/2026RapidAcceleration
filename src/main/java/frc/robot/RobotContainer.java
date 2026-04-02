@@ -102,12 +102,11 @@ public class RobotContainer {
         driverController.start().onTrue(swerve.resetGyroCommand());
         driverController.a().onTrue(swerve.resetPoseCommand());
         driverController.x().onTrue(swerve.stopXCommand());
-        driverController.y().onTrue(new RetractDeployCommand(intake, deploy));
 
         driverController
                 .rightTrigger(0.5)
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new RetractDeployCommand(intake, deploy))
+                        .alongWith(new ShakeDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
                                 .onlyWhile(calculator::isInvalid)
@@ -158,7 +157,7 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "ShootCommand",
                 new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new RetractDeployCommand(intake, deploy))
+                        .alongWith(new ShakeDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
                                 .onlyWhile(calculator::isInvalid)

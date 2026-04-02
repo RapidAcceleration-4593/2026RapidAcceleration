@@ -12,7 +12,7 @@ import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 public class ProjectilePhysicsCalibration {
 
-    // Launch speed mps, turret angle rad, exit factor.
+    // Launch Speed [m/s], Turret Angle [rad], Exit Factor.
     public static final double[][] kExitFactorData = {
         {7.2157, -0.0358, 0.400},
         {7.6178, -0.3159, 0.390},
@@ -103,7 +103,8 @@ public class ProjectilePhysicsCalibration {
     }
 
     public double getLinearExitFactor(LinearVelocity launchSpeed, Angle turretAngle) {
-        return offset + speedMult * launchSpeed.in(MetersPerSecond) + angleMult * turretAngle.in(Radians);
+        double exitFactor = offset + speedMult * launchSpeed.in(MetersPerSecond) + angleMult * turretAngle.in(Radians);
+        return MathUtil.clamp(exitFactor, 0.20, 0.45);
     }
 
     public double getQuadraticExitFactor(LinearVelocity launchSpeed, Angle turretAngle) {
@@ -111,7 +112,7 @@ public class ProjectilePhysicsCalibration {
         double y = turretAngle.in(Radians);
         double exitFactor =
                 -0.00924813 * Math.pow(x, 2) - 0.00326423 * Math.pow(y, 2) + 0.132669 * x + 0.00673983 * y - 0.07958;
-        return exitFactor;
+        return MathUtil.clamp(exitFactor, 0.20, 0.45);
     }
 
     public double getCubicExitFactor(LinearVelocity launchSpeed, Angle turretAngle) {
@@ -124,7 +125,7 @@ public class ProjectilePhysicsCalibration {
                 - 0.0312852 * x
                 + 0.0134458 * y
                 + 0.364219;
-        return exitFactor;
+        return MathUtil.clamp(exitFactor, 0.20, 0.45);
     }
 
     public double getInterrelationalExitFactor(LinearVelocity launchSpeed, Angle turretAngle) {
@@ -138,6 +139,6 @@ public class ProjectilePhysicsCalibration {
                 - 1.29963 * x
                 - 0.0215811 * y
                 + 3.67785;
-        return exitFactor;
+        return MathUtil.clamp(exitFactor, 0.20, 0.45);
     }
 }

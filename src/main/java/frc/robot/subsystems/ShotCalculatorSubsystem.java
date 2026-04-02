@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 import static frc.robot.util.shooting.ProjectilePhysics.*;
-import static frc.robot.util.shooting.ProjectilePhysicsCalibration.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -154,7 +153,8 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
                 ProjectilePhysics.calculateLaunchSpeed(hoodAngle, horizontalDistance, verticalDistance);
         latestLaunchSpeed = requiredLaunchSpeed;
 
-        double exitFactor = ProjectilePhysicsCalibration.kDefault.getLinearExitFactor(requiredLaunchSpeed, turretAngle);
+        double exitFactor =
+                ProjectilePhysicsCalibration.kDefault.getInterrelationalExitFactor(requiredLaunchSpeed, turretAngle);
         return RadiansPerSecond.of(requiredLaunchSpeed.in(MetersPerSecond) / (kWheelRadius.in(Meters) * exitFactor));
     }
 
