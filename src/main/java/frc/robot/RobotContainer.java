@@ -101,18 +101,18 @@ public class RobotContainer {
 
         driverController
                 .rightTrigger(0.5)
-                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
+                .whileTrue(new ShootCommand(shooter, turret, hood, indexer, calculator)
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(calculator::isInvalid)
+                                .onlyWhile(() -> !turret.atTargetAngle())
                                 .repeatedly()));
         driverController
                 .rightBumper()
-                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
+                .whileTrue(new ShootCommand(shooter, turret, hood, indexer, calculator)
                         .alongWith(new IntakeCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(calculator::isInvalid)
+                                .onlyWhile(() -> !turret.atTargetAngle())
                                 .repeatedly()));
 
         driverController
@@ -151,11 +151,11 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand(
                 "ShootCommand",
-                new ShootCommand(shooter, hood, indexer, calculator)
+                new ShootCommand(shooter, turret, hood, indexer, calculator)
                         .alongWith(new ShakeDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(calculator::isInvalid)
+                                .onlyWhile(() -> !turret.atTargetAngle())
                                 .repeatedly()));
         NamedCommands.registerCommand(
                 "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
