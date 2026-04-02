@@ -89,11 +89,11 @@ public class RobotContainer {
                 swerve,
                 () -> FieldUtil.isInAllianceZone(swerve.getPose())
                                 && shooter.getTargetVelocity().in(RadiansPerSecond) > 0.0
-                        ? driverController.getLeftY() * 0.5
+                        ? driverController.getLeftY() * 0.7
                         : driverController.getLeftY(),
                 () -> FieldUtil.isInAllianceZone(swerve.getPose())
                                 && shooter.getTargetVelocity().in(RadiansPerSecond) > 0.0
-                        ? driverController.getLeftX() * 0.5
+                        ? driverController.getLeftX() * 0.7
                         : driverController.getLeftX(),
                 driverController::getRightX));
         turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle));
@@ -106,7 +106,6 @@ public class RobotContainer {
         driverController
                 .rightTrigger(0.5)
                 .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new ShakeDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
                                 .onlyWhile(calculator::isInvalid)
@@ -136,6 +135,7 @@ public class RobotContainer {
         operatorController.a().whileTrue(intake.setVoltageCommand(Volts.of(-6.0)));
         operatorController.x().whileTrue(deploy.setVoltageCommand(Volts.of(5.0)));
         operatorController.b().whileTrue(deploy.setVoltageCommand(Volts.of(-5.0)));
+        operatorController.y().whileTrue(new ShakeDeployCommand(intake, deploy));
 
         operatorController.start().onTrue(turret.runOnce(() -> turret.setDefaultCommand(turret.idle())));
         operatorController
@@ -149,7 +149,8 @@ public class RobotContainer {
         NetworkTableEntry entry =
                 networkTableInstance.getTable("AccelerationStation").getEntry("SelectedAuto");
         String name = entry.getString("DoNothing");
-        return autonManager.getAuton(name);
+        // return autonManager.getAuton(name);
+        return autonManager.getAuton("Left2xCenterTrench");
     }
 
     /** Register NamedCommands for Autonomous. */
