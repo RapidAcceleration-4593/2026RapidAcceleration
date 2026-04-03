@@ -101,18 +101,17 @@ public class RobotContainer {
 
         driverController
                 .rightTrigger(0.5)
-                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new RetractDeployCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
+                .whileTrue(new ShootCommand(shooter, turret, hood, indexer, calculator)
+                        .alongWith(new RunShooterLEDLayer(LEDs)));
         driverController
                 .rightBumper()
                 .whileTrue(new ShootCommand(shooter, turret, hood, indexer, calculator)
                         .alongWith(new IntakeCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
+                        .alongWith(new RunShooterLEDLayer(LEDs)));
 
         driverController
                 .leftTrigger(0.5)
-                .whileTrue(new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
+                .whileTrue(new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
 
         driverController.leftBumper().whileTrue(new PathfindCommands().pathfindUnderNearestTrench(swerve));
 
@@ -146,11 +145,9 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand(
                 "ShootCommand",
-                new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new RetractDeployCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
+                new ShootCommand(shooter, turret, hood, indexer, calculator).alongWith(new RunShooterLEDLayer(LEDs)));
         NamedCommands.registerCommand(
-                "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
+                "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
     }
 
     /** Increments the Fuel counter based on the robot's current field pose. */
