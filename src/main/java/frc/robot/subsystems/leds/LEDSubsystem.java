@@ -62,11 +62,6 @@ public class LEDSubsystem extends SubsystemBase {
     public void periodic() {
         fillLEDs(Color.kBlack);
 
-        if (layers.size() < 1) {
-            updateLEDs();
-            return;
-        }
-
         if (useAllianceColor) {
             baseColor = getAllianceColor();
             gradientColor = Color.kBlack;
