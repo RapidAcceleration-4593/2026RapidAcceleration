@@ -21,6 +21,7 @@ import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class SwerveCommands {
@@ -56,12 +57,17 @@ public class SwerveCommands {
 
     /** Field relative drive command using two joysticks (controlling linear and angular velocities). */
     public static Command joystickDrive(
-            SwerveSubsystem swerve, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
+            SwerveSubsystem swerve,
+            DoubleSupplier xSupplier,
+            DoubleSupplier ySupplier,
+            DoubleSupplier omegaSupplier,
+            BooleanSupplier slowSupplier) {
         return Commands.run(
                 () -> {
                     // Get linear velocity.
-                    Translation2d linear =
-                            getLinearVelocityFromJoysticks(-xSupplier.getAsDouble(), -ySupplier.getAsDouble());
+                    double multiplier = slowSupplier.getAsBoolean() ? 0.7 : 1.0;
+                    Translation2d linear = getLinearVelocityFromJoysticks(
+                            -xSupplier.getAsDouble() * multiplier, -ySupplier.getAsDouble() * multiplier);
 
                     // Apply rotation deadband. Square rotation value for more precise control.
                     double omega = MathUtil.applyDeadband(-omegaSupplier.getAsDouble(), DEADBAND);

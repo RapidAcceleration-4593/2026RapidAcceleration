@@ -6,7 +6,7 @@ import java.util.Random;
 public final class LEDConstants {
 
     public static final int kPWMChannel = 0;
-    public static final int kLEDCount = 91;
+    public static final int kLEDCount = 88;
 
     public static enum kColors {
         RED(Color.kRed),

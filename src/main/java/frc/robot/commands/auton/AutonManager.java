@@ -49,7 +49,7 @@ public class AutonManager {
         Supplier<Command> supplier = autonMap.get(name);
         if (supplier == null) {
             System.err.println("Unknown autonomous routine: " + name + ". Defaulting.");
-            supplier = autonMap.get("RightCenterOutpost");
+            supplier = autonMap.get("DoNothing");
         }
         return supplier.get();
     }

@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Controllers.*;
 import static frc.robot.Constants.kCurrentMode;
@@ -85,14 +86,18 @@ public class RobotContainer {
 
     private void configureBindings() {
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
-                swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
+                swerve,
+                driverController::getLeftY,
+                driverController::getLeftX,
+                driverController::getRightX,
+                () -> FieldUtil.isInAllianceZone(swerve.getPose())
+                        && shooter.getTargetVelocity().gt(RPM.zero())));
         turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());
         driverController.a().onTrue(swerve.resetPoseCommand());
         driverController.x().onTrue(swerve.stopXCommand());
-        driverController.y().onTrue(new RetractDeployCommand(intake, deploy));
 
         driverController
                 .rightTrigger(0.5)
@@ -101,7 +106,7 @@ public class RobotContainer {
                         .alongWith(new RunShooterLEDPatternCommand(LEDs)));
         driverController
                 .rightBumper()
-                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
+                .whileTrue(new ShootCommand(shooter, turret, hood, indexer, calculator)
                         .alongWith(new IntakeCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs)));
 
@@ -121,6 +126,7 @@ public class RobotContainer {
         operatorController.a().whileTrue(intake.setVoltageCommand(Volts.of(-6.0)));
         operatorController.x().whileTrue(deploy.setVoltageCommand(Volts.of(5.0)));
         operatorController.b().whileTrue(deploy.setVoltageCommand(Volts.of(-5.0)));
+        operatorController.y().whileTrue(new ShakeDeployCommand(intake, deploy));
 
         operatorController.start().onTrue(turret.runOnce(() -> turret.setDefaultCommand(turret.idle())));
         operatorController
@@ -133,8 +139,7 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         NetworkTableEntry entry =
                 networkTableInstance.getTable("AccelerationStation").getEntry("SelectedAuto");
-        String name = entry.getString("DoNothing");
-        return autonManager.getAuton(name);
+        return autonManager.getAuton(entry.getString("DoNothing"));
     }
 
     /** Register NamedCommands for Autonomous. */

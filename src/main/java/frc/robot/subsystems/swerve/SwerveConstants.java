@@ -19,10 +19,10 @@ import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 public final class SwerveConstants {
 
     // Robot Physical Properties.
-    public static final Mass kRobotMass = Pounds.of(115.0);
-    public static final MomentOfInertia kRobotMOI = KilogramSquareMeters.of(6.490);
+    public static final Mass kRobotMass = Pounds.of(120.0);
+    public static final MomentOfInertia kRobotMOI = KilogramSquareMeters.of(6.47);
 
-    private static final Distance kWheelRadius = Inches.of(1.91);
+    private static final Distance kWheelRadius = Inches.of(2.0);
     public static final double kWheelCOF = 1.2;
 
     /** Current at which the wheels start to slip. */
@@ -50,7 +50,7 @@ public final class SwerveConstants {
     private static final double kSteerGearRatio = 18.75;
 
     /** How much the drive motor unintentionally turns when you rotate steering (azimuth). */
-    private static final double kCoupleRatio = 0.0;
+    private static final double kCoupleRatio = 0.0; // (Drive Rotations) / (Steer Rotations)
 
     private static final boolean kInvertLeftSide = false;
     private static final boolean kInvertRightSide = true;
@@ -79,7 +79,7 @@ public final class SwerveConstants {
     private static final TalonFXConfiguration kSteerInitialConfigs = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                     // Help avoid brownouts without impacting performance.
-                    .withStatorCurrentLimit(Amps.of(30))
+                    .withStatorCurrentLimit(Amps.of(25))
                     .withStatorCurrentLimitEnable(true));
 
     private static final CANcoderConfiguration kEncoderInitialConfigs = new CANcoderConfiguration();

@@ -6,19 +6,23 @@ import frc.robot.subsystems.ShotCalculatorSubsystem;
 import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.turret.TurretSubsystem;
 
 public class ShootCommand extends ParallelCommandGroup {
 
     public ShootCommand(
             ShooterSubsystem shooter,
+            TurretSubsystem turret,
             HoodSubsystem hood,
             IndexerSubsystem indexer,
             ShotCalculatorSubsystem calculator) {
 
         addCommands(
                 shooter.runAtVelocityCommand(calculator::getShooterVelocity),
-                // shooter.setVoltageCommand(Volts.of(7.25)),
                 hood.runToAngleCommand(calculator::getHoodAngle),
-                Commands.waitSeconds(0.4).andThen(indexer.runCommand()));
+                Commands.waitSeconds(0.4)
+                        .andThen(indexer.runCommand()
+                                .onlyWhile(turret::atTargetAngle)
+                                .repeatedly()));
     }
 }
