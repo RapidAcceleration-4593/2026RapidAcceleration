@@ -16,8 +16,6 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -320,15 +318,6 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
     public double getMaxAngularSpeedRadPerSec() {
         return getMaxLinearSpeedMetersPerSec() / kDriveBaseRadius;
     }
-
-	public boolean isMoving() {
-		ChassisSpeeds speeds = getChassisSpeeds();
-		Translation2d translationalSpeed = new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
-		if (translationalSpeed.getNorm() > 0.02) {
-			return true;
-		}
-		return Math.abs(speeds.omegaRadiansPerSecond) > 0.1;
-	}
 
     /** Manually resets the current odometry pose in front of the Hub. */
     public Command resetPoseCommand() {
