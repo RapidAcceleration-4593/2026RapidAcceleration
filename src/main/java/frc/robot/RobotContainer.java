@@ -102,6 +102,7 @@ public class RobotContainer {
         driverController
                 .rightTrigger(0.5)
                 .whileTrue(new ShootCommand(shooter, turret, hood, indexer, calculator)
+                        .alongWith(new ShakeDeployCommand(intake, deploy))
                         .alongWith(new RunShooterLEDPatternCommand(LEDs))
                         .alongWith(new RunWarningLEDPatternCommand(LEDs)
                                 .onlyWhile(() -> !turret.atTargetAngle())
@@ -131,7 +132,6 @@ public class RobotContainer {
         operatorController.a().whileTrue(intake.setVoltageCommand(Volts.of(-6.0)));
         operatorController.x().whileTrue(deploy.setVoltageCommand(Volts.of(5.0)));
         operatorController.b().whileTrue(deploy.setVoltageCommand(Volts.of(-5.0)));
-        operatorController.y().whileTrue(new ShakeDeployCommand(intake, deploy));
 
         operatorController.start().onTrue(turret.runOnce(() -> turret.setDefaultCommand(turret.idle())));
         operatorController
