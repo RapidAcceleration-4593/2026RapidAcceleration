@@ -19,7 +19,7 @@ public class RunShootIntakeLEDPattern extends Command {
     public void initialize() {
         layer = subsystem.addLayer(3.0);
         layer.useAllianceColor = false;
-        layer.baseColor = Color.kLightGreen;
+        layer.baseColor = Color.kGreen;
         layer.gradientColor = Color.kBlack;
         layer.patternIndex = 2;
         layer.speedFactor = 5.0;

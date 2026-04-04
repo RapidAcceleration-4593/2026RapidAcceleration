@@ -102,7 +102,6 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
                 calculateShooter(Meters.of(targetVector.getNorm()), verticalDistance, hoodAngle, turretAngle);
         if (Double.isNaN(shooterVelocity.in(RadiansPerSecond))) {
             latestIsValid = false;
-            return ShotResult.invalid();
         }
         return new ShotResult(turretAngle, hoodAngle, shooterVelocity, latestIsValid);
     }
