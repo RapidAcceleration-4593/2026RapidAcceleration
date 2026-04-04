@@ -3,8 +3,8 @@
     "robotLength": 0.838,
     "holonomicMode": true,
     "pathFolders": [
-        "SideCenterRamp",
         "NoPickup",
+        "SideCenterBump",
         "SideCenterTrench"
     ],
     "autoFolders": [],
