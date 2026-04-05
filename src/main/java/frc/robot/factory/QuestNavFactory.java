@@ -11,7 +11,7 @@ public final class QuestNavFactory {
     public static QuestNavSubsystem initialize(QuestNavSubsystem.VisionConsumer swerve) {
         return switch (kCurrentMode) {
             case REAL -> new QuestNavSubsystem(new QuestNavIOReal(), swerve);
-            case SIM -> new QuestNavSubsystem(new QuestNavIOSim(), swerve);
+            case SIM -> new QuestNavSubsystem(new QuestNavIOReal(), swerve);
             case REPLAY -> new QuestNavSubsystem(new QuestNavIO() {}, swerve);
         };
     }

@@ -62,7 +62,7 @@ public class SwerveSubsystem extends SubsystemBase implements QuestNavSubsystem.
     // Utilities & Callbacks.
     private final SysIdRoutine sysId;
     private final Consumer<Pose2d> resetSimulationPoseCallBack;
-    private final Consumer<Pose3d> visionResetCallback;
+    private Consumer<Pose3d> visionResetCallback;
 
     public SwerveSubsystem(
             GyroIO gyroIO,
@@ -300,18 +300,26 @@ public class SwerveSubsystem extends SubsystemBase implements QuestNavSubsystem.
     public void setPose(Pose2d pose) {
         resetSimulationPoseCallBack.accept(pose);
         poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
-        visionResetCallback.accept(new Pose3d(pose));
+
+        if (visionResetCallback != null) {
+            visionResetCallback.accept(new Pose3d(pose));
+        }
     }
 
-    /** Resets the gyro angle to zero. */
-    public Command resetGyroCommand() {
-        return runOnce(gyroIO::resetGyro);
+    /** Updates the callback used to reset vision sensor origins. */
+    public void setVisionResetCallback(Consumer<Pose3d> callback) {
+        this.visionResetCallback = callback;
     }
 
     /** Adds a new timestamped vision measurement. */
     @Override
     public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
         poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    }
+
+    /** Resets the gyro angle to zero. */
+    public Command resetGyroCommand() {
+        return runOnce(gyroIO::resetGyro);
     }
 
     /** Returns the maximum linear speed in meters per second. */

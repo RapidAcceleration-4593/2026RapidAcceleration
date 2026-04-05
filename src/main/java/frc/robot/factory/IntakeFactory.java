@@ -10,21 +10,9 @@ public final class IntakeFactory {
 
     public static IntakeSubsystem initialize() {
         return switch (kCurrentMode) {
-            case REAL -> initializeReal();
-            case SIM -> initializeSim();
-            case REPLAY -> initializeReplay();
+            case REAL -> new IntakeSubsystem(new IntakeIOReal());
+            case SIM -> new IntakeSubsystem(new IntakeIOSim());
+            case REPLAY -> new IntakeSubsystem(new IntakeIO() {});
         };
-    }
-
-    private static IntakeSubsystem initializeReal() {
-        return new IntakeSubsystem(new IntakeIOReal());
-    }
-
-    private static IntakeSubsystem initializeSim() {
-        return new IntakeSubsystem(new IntakeIOSim());
-    }
-
-    private static IntakeSubsystem initializeReplay() {
-        return new IntakeSubsystem(new IntakeIO() {});
     }
 }

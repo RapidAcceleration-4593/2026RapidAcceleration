@@ -60,6 +60,7 @@ public class RobotContainer {
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
         questNav = QuestNavFactory.initialize(swerve);
+        swerve.setVisionResetCallback(questNav::resetPose);
 
         shooter = ShooterFactory.initialize();
         hood = HoodFactory.initialize();

@@ -10,21 +10,9 @@ public final class ShooterFactory {
 
     public static ShooterSubsystem initialize() {
         return switch (kCurrentMode) {
-            case REAL -> initializeReal();
-            case SIM -> initializeSim();
-            case REPLAY -> initializeReplay();
+            case REAL -> new ShooterSubsystem(new ShooterIOReal());
+            case SIM -> new ShooterSubsystem(new ShooterIOSim());
+            case REPLAY -> new ShooterSubsystem(new ShooterIO() {});
         };
-    }
-
-    private static ShooterSubsystem initializeReal() {
-        return new ShooterSubsystem(new ShooterIOReal());
-    }
-
-    private static ShooterSubsystem initializeSim() {
-        return new ShooterSubsystem(new ShooterIOSim());
-    }
-
-    private static ShooterSubsystem initializeReplay() {
-        return new ShooterSubsystem(new ShooterIO() {});
     }
 }
