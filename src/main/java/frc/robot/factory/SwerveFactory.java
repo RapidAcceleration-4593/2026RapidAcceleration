@@ -25,7 +25,8 @@ public final class SwerveFactory {
                 new ModuleIOTalonFXReal(FrontRight),
                 new ModuleIOTalonFXReal(BackLeft),
                 new ModuleIOTalonFXReal(BackRight),
-                pose -> {});
+                pose -> {},
+                pose3d -> {});
     }
 
     private static SwerveSubsystem initializeSim() {
@@ -39,7 +40,8 @@ public final class SwerveFactory {
                 new ModuleIOTalonFXSim(FrontRight, modules[1]),
                 new ModuleIOTalonFXSim(BackLeft, modules[2]),
                 new ModuleIOTalonFXSim(BackRight, modules[3]),
-                simulation::setPose);
+                simulation::setPose,
+                pose3d -> {});
     }
 
     private static SwerveSubsystem initializeReplay() {
@@ -49,6 +51,7 @@ public final class SwerveFactory {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                pose -> {});
+                pose -> {},
+                pose3d -> {});
     }
 }

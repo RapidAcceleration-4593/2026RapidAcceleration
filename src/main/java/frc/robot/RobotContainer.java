@@ -28,7 +28,7 @@ import frc.robot.subsystems.leds.LEDSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
-import frc.robot.subsystems.vision.AprilTagSubsystem;
+import frc.robot.subsystems.vision.QuestNavSubsystem;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.SimulationManager;
 
@@ -36,7 +36,7 @@ public class RobotContainer {
 
     // Subsystem(s)
     public final SwerveSubsystem swerve;
-    public final AprilTagSubsystem apriltag;
+    public final QuestNavSubsystem questNav;
 
     public final ShooterSubsystem shooter;
     public final TurretSubsystem turret;
@@ -59,7 +59,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
-        apriltag = AprilTagFactory.initialize(swerve);
+        questNav = QuestNavFactory.initialize(swerve);
 
         shooter = ShooterFactory.initialize();
         hood = HoodFactory.initialize();

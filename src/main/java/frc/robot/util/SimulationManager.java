@@ -6,7 +6,6 @@ import static frc.robot.subsystems.deploy.DeployConstants.kHopperCapacity;
 import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 import static frc.robot.subsystems.shooter.ShooterConstants.kShooterHeight;
 import static frc.robot.subsystems.swerve.SwerveConstants.kMapleSimConfig;
-import static frc.robot.subsystems.vision.AprilTagConstants.kFieldLayout;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -45,7 +44,6 @@ public final class SimulationManager {
         arena.setEfficiencyMode(false);
         components = new ArrayList<>();
         visionSim = new VisionSystemSim("main");
-        visionSim.addAprilTags(kFieldLayout);
         intakeSim = IntakeSimulation.OverTheBumperIntake(
                 "Fuel", swerveSim, Inches.of(24), Inches.of(8), IntakeSimulation.IntakeSide.FRONT, kHopperCapacity);
     }

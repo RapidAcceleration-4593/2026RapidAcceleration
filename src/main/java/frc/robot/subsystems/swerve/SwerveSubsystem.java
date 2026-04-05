@@ -15,6 +15,7 @@ import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -31,7 +32,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
-import frc.robot.subsystems.vision.AprilTagSubsystem;
+import frc.robot.subsystems.vision.QuestNavSubsystem;
 import frc.robot.util.CommandLogger;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.LocalADStarAK;
@@ -41,7 +42,7 @@ import java.util.function.Consumer;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.VisionConsumer {
+public class SwerveSubsystem extends SubsystemBase implements QuestNavSubsystem.VisionConsumer {
 
     // Locks & Alerts.
     public static final Lock odometryLock = new ReentrantLock();
@@ -61,6 +62,7 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
     // Utilities & Callbacks.
     private final SysIdRoutine sysId;
     private final Consumer<Pose2d> resetSimulationPoseCallBack;
+    private final Consumer<Pose3d> visionResetCallback;
 
     public SwerveSubsystem(
             GyroIO gyroIO,
@@ -68,9 +70,11 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
             ModuleIO frModuleIO,
             ModuleIO blModuleIO,
             ModuleIO brModuleIO,
-            Consumer<Pose2d> resetSimulationPoseCallBack) {
+            Consumer<Pose2d> resetSimulationPoseCallBack,
+            Consumer<Pose3d> visionResetCallback) {
         this.gyroIO = gyroIO;
         this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
+        this.visionResetCallback = visionResetCallback;
 
         // Initialize Modules.
         modules[0] = new Module(flModuleIO, 0, FrontLeft);
@@ -296,6 +300,7 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
     public void setPose(Pose2d pose) {
         resetSimulationPoseCallBack.accept(pose);
         poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+        visionResetCallback.accept(new Pose3d(pose));
     }
 
     /** Resets the gyro angle to zero. */
