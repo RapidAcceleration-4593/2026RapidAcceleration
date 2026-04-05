@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 
 import edu.wpi.first.math.Matrix;
@@ -15,8 +16,11 @@ import org.littletonrobotics.junction.Logger;
 
 public class QuestNavSubsystem extends SubsystemBase {
 
-    private static final Transform3d kRobotToQuest =
-            new Transform3d(Inches.zero(), Inches.zero(), Inches.zero(), new Rotation3d());
+    private static final Transform3d kRobotToQuest = new Transform3d(
+            Inches.of(-12.25),
+            Inches.of(-11.25),
+            Inches.of(12.85),
+            new Rotation3d(Degrees.of(90), Degrees.zero(), Degrees.of(180)));
     private static final Matrix<N3, N1> kStateSTDDevs = VecBuilder.fill(0.02, 0.02, 0.035);
 
     private final QuestNavIO io;
