@@ -8,6 +8,8 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.FeedForwardConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -29,11 +31,21 @@ public class IndexerIOReal implements IndexerIO {
                 .smartCurrentLimit(20)
                 .voltageCompensation(12.0);
 
+        ClosedLoopConfig spindexerCLCConfig = new ClosedLoopConfig()
+                .apply(new FeedForwardConfig().kV(kSpindexerV))
+                .p(kSpindexerP);
+        spindexerConfig.apply(spindexerCLCConfig);
+
         SparkBaseConfig feederConfig = new SparkMaxConfig()
                 .inverted(kInvertFeederMotor)
                 .idleMode(IdleMode.kCoast)
                 .smartCurrentLimit(40)
                 .voltageCompensation(12.0);
+
+        ClosedLoopConfig feederCLCConfig = new ClosedLoopConfig()
+                .apply(new FeedForwardConfig().kV(kFeederV))
+                .p(kSpindexerP);
+        feederConfig.apply(feederCLCConfig);
 
         spindexerMotor = new SparkMax(kSpindexerMotorID, MotorType.kBrushless);
         spindexerMotor.configure(spindexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -48,6 +60,10 @@ public class IndexerIOReal implements IndexerIO {
     public void updateInputs(IndexerInputs inputs) {
         inputs.spindexerVelocity = RPM.of(spindexerMotor.getEncoder().getVelocity());
         inputs.feederVelocity = RPM.of(feederMotor.getEncoder().getVelocity());
+        inputs.targetSpindexerVelocity =
+                RPM.of(spindexerMotor.getClosedLoopController().getSetpoint());
+        inputs.targetFeederVelocity =
+                RPM.of(feederMotor.getClosedLoopController().getSetpoint());
 
         inputs.isFuelDetected = sensor.get() ^ kInvertSensor;
 

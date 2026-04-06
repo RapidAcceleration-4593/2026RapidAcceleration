@@ -15,13 +15,15 @@ public final class IndexerConstants {
 
     public static final int kSensorChannel = 2;
 
-    public static final double kSpindexerP = 0.0025;
-    public static final double kSpindexerI = 0.00;
-    public static final double kSpindexerD = 0.00;
+    public static final double kSpindexerP = 0.0; // 0.0001
+    public static final double kSpindexerS = 0.0;
+    public static final double kSpindexerV = 0.00105;
+    public static final double kSpindexerA = 0.0; // 0.001
 
-    public static final double kFeederP = 0.0025;
-    public static final double kFeederI = 0.00;
-    public static final double kFeederD = 0.00;
+    public static final double kFeederP = 0.0; // 0.0001
+    public static final double kFeederS = 0.0;
+    public static final double kFeederV = 0.00215;
+    public static final double kFeederA = 0.0; // 0.001
 
     public static final boolean kInvertSpindexerMotor = false;
     public static final boolean kInvertFeederMotor = false;
@@ -30,8 +32,8 @@ public final class IndexerConstants {
     public static final Voltage kSpindexerVolts = Volts.of(12.0);
     public static final Voltage kFeederVolts = Volts.of(12.0);
 
-    public static final AngularVelocity kSpindexerVelocity = RPM.of(4000);
-    public static final AngularVelocity kFeederVelocity = RPM.of(4000);
+    public static final AngularVelocity kSpindexerVelocity = RPM.of(7000);
+    public static final AngularVelocity kFeederVelocity = RPM.of(7000);
 
     public static final double kSpindexerGearing = (5.0 * 3.0 * 3.0);
     public static final double kFeederGearing = (3.0);

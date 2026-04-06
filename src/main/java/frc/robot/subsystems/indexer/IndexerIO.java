@@ -13,6 +13,8 @@ public interface IndexerIO {
     public static class IndexerInputs {
         public AngularVelocity spindexerVelocity = RPM.zero();
         public AngularVelocity feederVelocity = RPM.zero();
+        public AngularVelocity targetSpindexerVelocity = RPM.zero();
+        public AngularVelocity targetFeederVelocity = RPM.zero();
 
         public boolean isFuelDetected = false;
 
