@@ -21,7 +21,7 @@ public class QuestNavSubsystem extends SubsystemBase {
             Inches.of(-12.0),
             Inches.of(14.0),
             new Rotation3d(Degrees.of(90), Degrees.zero(), Degrees.of(180)));
-    private static final Matrix<N3, N1> kStateSTDDevs = VecBuilder.fill(0.02, 0.02, 0.035);
+    private static final Matrix<N3, N1> kStateSTDDevs = VecBuilder.fill(0.04, 0.04, 0.07);
 
     private final QuestNavIO io;
     private final QuestNavInputsAutoLogged inputs;

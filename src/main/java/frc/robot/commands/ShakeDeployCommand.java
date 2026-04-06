@@ -13,7 +13,7 @@ public class ShakeDeployCommand extends ParallelCommandGroup {
         addCommands(
                 Commands.repeatingSequence(
                         deploy.goToDistanceCommand(kMaximumDistance, false).withTimeout(0.5),
-                        deploy.goToDistanceCommand(kAgitationDistance, false).withTimeout(0.5)),
+                        deploy.goToDistanceCommand(kAgitationDistance, true).withTimeout(1.5)),
                 intake.runCommand());
     }
 }

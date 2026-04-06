@@ -5,13 +5,12 @@ import static frc.robot.subsystems.indexer.IndexerConstants.*;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -64,20 +63,20 @@ public class IndexerIOReal implements IndexerIO {
         spindexerMotor.setVoltage(volts);
     }
 
-	@Override
-	public void setSpindexerVelocity(AngularVelocity velocity) {
-		spindexerMotor.getClosedLoopController().setSetpoint(velocity.in(RPM), ControlType.kVelocity);
-	}
+    @Override
+    public void setSpindexerVelocity(AngularVelocity velocity) {
+        spindexerMotor.getClosedLoopController().setSetpoint(velocity.in(RPM), ControlType.kVelocity);
+    }
 
     @Override
     public void setFeederVoltage(Voltage volts) {
         feederMotor.setVoltage(volts);
     }
 
-	@Override
-	public void setFeederVelocity(AngularVelocity velocity) {
-		feederMotor.getClosedLoopController().setSetpoint(velocity.in(RPM), ControlType.kVelocity);
-	}
+    @Override
+    public void setFeederVelocity(AngularVelocity velocity) {
+        feederMotor.getClosedLoopController().setSetpoint(velocity.in(RPM), ControlType.kVelocity);
+    }
 
     @Override
     public void stopSpindexer() {
