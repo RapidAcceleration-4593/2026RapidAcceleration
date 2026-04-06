@@ -29,8 +29,12 @@ public interface IndexerIO {
     /** Sets the voltage of the spindexer motor. */
     public default void setSpindexerVoltage(Voltage volts) {}
 
+    public default void setSpindexerVelocity(AngularVelocity velocity) {}
+
     /** Sets the voltage of the feeder motor. */
     public default void setFeederVoltage(Voltage volts) {}
+
+    public default void setFeederVelocity(AngularVelocity velocity) {}
 
     /** Stops the spindexer motor immediately. */
     public default void stopSpindexer() {}
