@@ -10,21 +10,9 @@ public final class IndexerFactory {
 
     public static IndexerSubsystem initialize() {
         return switch (kCurrentMode) {
-            case REAL -> initializeReal();
-            case SIM -> initializeSim();
-            case REPLAY -> initializeReplay();
+            case REAL -> new IndexerSubsystem(new IndexerIOReal());
+            case SIM -> new IndexerSubsystem(new IndexerIOSim());
+            case REPLAY -> new IndexerSubsystem(new IndexerIO() {});
         };
-    }
-
-    private static IndexerSubsystem initializeReal() {
-        return new IndexerSubsystem(new IndexerIOReal());
-    }
-
-    private static IndexerSubsystem initializeSim() {
-        return new IndexerSubsystem(new IndexerIOSim());
-    }
-
-    private static IndexerSubsystem initializeReplay() {
-        return new IndexerSubsystem(new IndexerIO() {});
     }
 }

@@ -10,21 +10,9 @@ public final class DeployFactory {
 
     public static DeploySubsystem initialize() {
         return switch (kCurrentMode) {
-            case REAL -> initializeReal();
-            case SIM -> initializeSim();
-            case REPLAY -> initializeReplay();
+            case REAL -> new DeploySubsystem(new DeployIOReal());
+            case SIM -> new DeploySubsystem(new DeployIOSim());
+            case REPLAY -> new DeploySubsystem(new DeployIO() {});
         };
-    }
-
-    private static DeploySubsystem initializeReal() {
-        return new DeploySubsystem(new DeployIOReal());
-    }
-
-    private static DeploySubsystem initializeSim() {
-        return new DeploySubsystem(new DeployIOSim());
-    }
-
-    private static DeploySubsystem initializeReplay() {
-        return new DeploySubsystem(new DeployIO() {});
     }
 }

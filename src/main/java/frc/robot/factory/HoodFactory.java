@@ -10,21 +10,9 @@ public final class HoodFactory {
 
     public static HoodSubsystem initialize() {
         return switch (kCurrentMode) {
-            case REAL -> initializeReal();
-            case SIM -> initializeSim();
-            case REPLAY -> initializeReplay();
+            case REAL -> new HoodSubsystem(new HoodIOReal());
+            case SIM -> new HoodSubsystem(new HoodIOSim());
+            case REPLAY -> new HoodSubsystem(new HoodIO() {});
         };
-    }
-
-    private static HoodSubsystem initializeReal() {
-        return new HoodSubsystem(new HoodIOReal());
-    }
-
-    private static HoodSubsystem initializeSim() {
-        return new HoodSubsystem(new HoodIOSim());
-    }
-
-    private static HoodSubsystem initializeReplay() {
-        return new HoodSubsystem(new HoodIO() {});
     }
 }

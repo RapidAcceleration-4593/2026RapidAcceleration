@@ -10,21 +10,9 @@ public final class TurretFactory {
 
     public static TurretSubsystem initialize() {
         return switch (kCurrentMode) {
-            case REAL -> initializeReal();
-            case SIM -> initializeSim();
-            case REPLAY -> initializeReplay();
+            case REAL -> new TurretSubsystem(new TurretIOReal());
+            case SIM -> new TurretSubsystem(new TurretIOSim());
+            case REPLAY -> new TurretSubsystem(new TurretIO() {});
         };
-    }
-
-    private static TurretSubsystem initializeReal() {
-        return new TurretSubsystem(new TurretIOReal());
-    }
-
-    private static TurretSubsystem initializeSim() {
-        return new TurretSubsystem(new TurretIOSim());
-    }
-
-    private static TurretSubsystem initializeReplay() {
-        return new TurretSubsystem(new TurretIO() {});
     }
 }

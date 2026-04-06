@@ -55,8 +55,8 @@ public class IndexerSubsystem extends SubsystemBase {
     public Command runCommand() {
         return runEnd(
                 () -> {
-                    io.setSpindexerVoltage(kSpindexerVolts);
-                    io.setFeederVoltage(kFeederVolts);
+                    io.setSpindexerVelocity(kSpindexerVelocity);
+                    io.setFeederVelocity(kFeederVelocity);
                 },
                 () -> {
                     io.stopSpindexer();
