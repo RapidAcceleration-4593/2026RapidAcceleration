@@ -137,6 +137,9 @@ public class RobotContainer {
         operatorController.x().whileTrue(deploy.setVoltageCommand(Volts.of(5.0)));
         operatorController.b().whileTrue(deploy.setVoltageCommand(Volts.of(-5.0)));
 
+		operatorController.povUp().whileTrue(hood.setVoltageCommand(Volts.of(4.0)));
+		operatorController.povDown().whileTrue(hood.setVoltageCommand(Volts.of(-4.0)));
+
         operatorController.start().onTrue(turret.runOnce(() -> turret.setDefaultCommand(turret.idle())));
         operatorController
                 .back()
