@@ -153,7 +153,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         latestLaunchSpeed = requiredLaunchSpeed;
 
         double exitFactor =
-                ProjectilePhysicsCalibration.kDefault.getInterrelationalExitFactor(requiredLaunchSpeed, turretAngle);
+                ProjectilePhysicsCalibration.kDefault.getHarmonicExitFactor(requiredLaunchSpeed, turretAngle);
         return RadiansPerSecond.of(requiredLaunchSpeed.in(MetersPerSecond) / (kWheelRadius.in(Meters) * exitFactor));
     }
 
