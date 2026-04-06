@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -22,7 +23,6 @@ import frc.robot.subsystems.turret.TurretConstants;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.shooting.ProjectilePhysics;
 import frc.robot.util.shooting.ProjectilePhysicsCalibration;
-
 import java.util.function.Supplier;
 
 public class ShotCalculatorSubsystem extends SubsystemBase {
@@ -113,11 +113,11 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
                 ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeedsSupplier.get(), currentPose.getRotation());
 
         // Latency compensation.
-        // currentPose = currentPose.plus(new Transform2d(
-        //                 robotVelocity.vxMetersPerSecond,
-        //                 robotVelocity.vyMetersPerSecond,
-        //                 new Rotation2d(robotVelocity.omegaRadiansPerSecond))
-        //         .times(kSystemLatency.in(Seconds)));
+        currentPose = currentPose.plus(new Transform2d(
+                        robotVelocity.vxMetersPerSecond,
+                        robotVelocity.vyMetersPerSecond,
+                        new Rotation2d(robotVelocity.omegaRadiansPerSecond))
+                .times(kSystemLatency.in(Seconds)));
 
         Pose2d shooterPose = currentPose.transformBy(kPhysicalOffset);
 
