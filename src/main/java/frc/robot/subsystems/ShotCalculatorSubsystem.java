@@ -30,7 +30,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
     public static final int kCalculationIterations = 4;
     public static final double kConvergenceEpsilon = 3e-4;
     public static final double kTwistCompensationFactor = 0.1;
-    public static final Time kSystemLatency = Milliseconds.of(80.0);
+    public static final Time kSystemLatency = Milliseconds.of(100.0);
 
     private final Supplier<Pose2d> poseSupplier;
     private final Supplier<ChassisSpeeds> chassisSpeedsSupplier;

@@ -65,7 +65,7 @@ public class SwerveCommands {
         return Commands.run(
                 () -> {
                     // Get linear velocity.
-                    double multiplier = slowSupplier.getAsBoolean() ? 0.7 : 1.0;
+                    double multiplier = slowSupplier.getAsBoolean() ? 0.65 : 1.0;
                     Translation2d linear = getLinearVelocityFromJoysticks(
                             -xSupplier.getAsDouble() * multiplier, -ySupplier.getAsDouble() * multiplier);
 

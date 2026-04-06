@@ -80,7 +80,6 @@ public class RobotContainer {
         autonManager.warmup();
 
         networkTableInstance = NetworkTableInstance.getDefault();
-
         FieldUtil.setPoseSupplier(swerve::getPose);
 
         registerCommands();

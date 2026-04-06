@@ -15,15 +15,8 @@ public final class IndexerConstants {
 
     public static final int kSensorChannel = 2;
 
-    public static final double kSpindexerP = 0.0; // 0.0001
-    public static final double kSpindexerS = 0.0;
-    public static final double kSpindexerV = 0.00105;
-    public static final double kSpindexerA = 0.0; // 0.001
-
-    public static final double kFeederP = 0.0; // 0.0001
-    public static final double kFeederS = 0.0;
-    public static final double kFeederV = 0.00215;
-    public static final double kFeederA = 0.0; // 0.001
+    public static final double kVSpindexer = 0.00105;
+    public static final double kVFeeder = 0.00215;
 
     public static final boolean kInvertSpindexerMotor = false;
     public static final boolean kInvertFeederMotor = false;

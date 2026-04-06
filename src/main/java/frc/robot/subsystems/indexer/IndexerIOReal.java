@@ -6,6 +6,7 @@ import static frc.robot.subsystems.indexer.IndexerConstants.*;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
@@ -21,8 +22,10 @@ public class IndexerIOReal implements IndexerIO {
 
     protected final SparkMax spindexerMotor;
     protected final SparkMax feederMotor;
-
     protected final DigitalInput sensor;
+
+    private final SparkClosedLoopController spindexerController;
+    private final SparkClosedLoopController feederController;
 
     public IndexerIOReal() {
         SparkBaseConfig spindexerConfig = new SparkMaxConfig()
@@ -31,9 +34,7 @@ public class IndexerIOReal implements IndexerIO {
                 .smartCurrentLimit(20)
                 .voltageCompensation(12.0);
 
-        ClosedLoopConfig spindexerCLCConfig = new ClosedLoopConfig()
-                .apply(new FeedForwardConfig().kV(kSpindexerV))
-                .p(kSpindexerP);
+        ClosedLoopConfig spindexerCLCConfig = new ClosedLoopConfig().apply(new FeedForwardConfig().kV(kVSpindexer));
         spindexerConfig.apply(spindexerCLCConfig);
 
         SparkBaseConfig feederConfig = new SparkMaxConfig()
@@ -42,9 +43,7 @@ public class IndexerIOReal implements IndexerIO {
                 .smartCurrentLimit(40)
                 .voltageCompensation(12.0);
 
-        ClosedLoopConfig feederCLCConfig = new ClosedLoopConfig()
-                .apply(new FeedForwardConfig().kV(kFeederV))
-                .p(kSpindexerP);
+        ClosedLoopConfig feederCLCConfig = new ClosedLoopConfig().apply(new FeedForwardConfig().kV(kVFeeder));
         feederConfig.apply(feederCLCConfig);
 
         spindexerMotor = new SparkMax(kSpindexerMotorID, MotorType.kBrushless);
@@ -52,18 +51,18 @@ public class IndexerIOReal implements IndexerIO {
 
         feederMotor = new SparkMax(kFeederMotorID, MotorType.kBrushless);
         feederMotor.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
         sensor = new DigitalInput(kSensorChannel);
+
+        spindexerController = spindexerMotor.getClosedLoopController();
+        feederController = feederMotor.getClosedLoopController();
     }
 
     @Override
     public void updateInputs(IndexerInputs inputs) {
         inputs.spindexerVelocity = RPM.of(spindexerMotor.getEncoder().getVelocity());
         inputs.feederVelocity = RPM.of(feederMotor.getEncoder().getVelocity());
-        inputs.targetSpindexerVelocity =
-                RPM.of(spindexerMotor.getClosedLoopController().getSetpoint());
-        inputs.targetFeederVelocity =
-                RPM.of(feederMotor.getClosedLoopController().getSetpoint());
+        inputs.spindexerTargetVelocity = RPM.of(spindexerController.getSetpoint());
+        inputs.feederTargetVelocity = RPM.of(feederController.getSetpoint());
 
         inputs.isFuelDetected = sensor.get() ^ kInvertSensor;
 
@@ -81,7 +80,7 @@ public class IndexerIOReal implements IndexerIO {
 
     @Override
     public void setSpindexerVelocity(AngularVelocity velocity) {
-        spindexerMotor.getClosedLoopController().setSetpoint(velocity.in(RPM), ControlType.kVelocity);
+        spindexerController.setSetpoint(velocity.in(RPM), ControlType.kVelocity);
     }
 
     @Override
@@ -91,7 +90,7 @@ public class IndexerIOReal implements IndexerIO {
 
     @Override
     public void setFeederVelocity(AngularVelocity velocity) {
-        feederMotor.getClosedLoopController().setSetpoint(velocity.in(RPM), ControlType.kVelocity);
+        feederController.setSetpoint(velocity.in(RPM), ControlType.kVelocity);
     }
 
     @Override

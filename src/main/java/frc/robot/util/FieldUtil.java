@@ -61,6 +61,8 @@ public final class FieldUtil {
     }
 
     public static Pose3d getTargetPose() {
+        if (DriverStation.isAutonomous()) return getTargetHubPose();
+
         boolean isInAllianceZone = isInAllianceZone();
         return isInAllianceZone ? getTargetHubPose() : getCrossFieldFeedPose();
     }
