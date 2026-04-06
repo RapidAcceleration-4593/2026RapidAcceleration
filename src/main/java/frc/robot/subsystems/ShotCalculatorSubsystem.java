@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.turret.TurretConstants;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.shooting.ProjectilePhysics;
-import frc.robot.util.shooting.ProjectilePhysicsCalibration;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -166,7 +165,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         LinearVelocity requiredLaunchSpeed =
                 ProjectilePhysics.calculateLaunchSpeed(hoodAngle, horizontalDistance, verticalDistance);
         latestLaunchSpeed = requiredLaunchSpeed;
-		double exitFactor = networkExitFactor.get();
+        double exitFactor = networkExitFactor.get();
         return RadiansPerSecond.of(requiredLaunchSpeed.in(MetersPerSecond) / (kWheelRadius.in(Meters) * exitFactor));
     }
 

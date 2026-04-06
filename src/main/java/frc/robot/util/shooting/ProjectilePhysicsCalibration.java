@@ -46,7 +46,21 @@ public class ProjectilePhysicsCalibration {
         {8.5502, 1.62621, 0.390},
         {8.5458, 1.89361, 0.375},
         {7.9235, -1.0960, 0.365},
-        {7.0622, -1.1685, 0.385}
+        {7.0622, -1.1685, 0.385},
+        {9.0211, 2.37619, 0.360},
+        {8.1086, -1.3939, 0.360},
+        {7.2104, -0.0595, 0.390},
+        {8.3016, -2.2050, 0.35},
+        {7.9962, -1.8766, 0.345},
+        {8.1041, -1.2753, 0.365},
+        {8.0736, 1.75879, 0.365},
+        {8.0611, 1.13120, 0.365},
+        {8.4669, 1.22317, 0.3675},
+        {8.6246, 3.08061, 0.360},
+        {8.8230, -0.6208, 0.350},
+        {8.5174, 1.04572, 0.370},
+        {6.9971, -3.0165, 0.380},
+        {6.8192, -1.5612, 0.380}
     };
 
     public static final ProjectilePhysicsCalibration kDefault = new ProjectilePhysicsCalibration(kExitFactorData);
@@ -151,15 +165,43 @@ public class ProjectilePhysicsCalibration {
         double cos2A = Math.cos(2 * y);
         double sin2A = Math.sin(2 * y);
 
-        double exitFactor = -0.145568
-                + (0.147044 * x)
-                + (-0.010168 * x * x)
-                + (0.049946 * cosA)
-                + (-0.006980 * sinA)
-                + (-0.004910 * x * cosA)
-                + (0.002995 * x * sinA)
-                + (0.002020 * cos2A)
-                + (-0.005352 * sin2A);
+        double exitFactor = -0.081824
+                + (0.130601 * x)
+                + (-0.009162 * x * x)
+                + (0.028281 * cosA)
+                + (-0.055456 * sinA)
+                + (-0.002500 * x * cosA)
+                + (0.008522 * x * sinA)
+                + (0.004287 * cos2A)
+                + (-0.005829 * sin2A);
+
         return MathUtil.clamp(exitFactor, 0.20, 0.45);
+    }
+
+    public void runTests() {
+        runTest(7.2157, -0.0358, 0.400);
+        runTest(9.0211, 2.37619, 0.360);
+        runTest(6.7053, -0.7293, 0.400);
+    }
+
+    public static void main(String[] args) {
+        ProjectilePhysicsCalibration calibration = new ProjectilePhysicsCalibration(kExitFactorData);
+        calibration.runTests();
+    }
+
+    private void runTest(double v, double a, double e) {
+        LinearVelocity launchSpeed = MetersPerSecond.of(v);
+        Angle turretAngle = Radians.of(a);
+        double expectedExitFactor = e;
+
+        double cubicExitFactor = getCubicExitFactor(launchSpeed, turretAngle);
+        double interrelationalExitFactor = getInterrelationalExitFactor(launchSpeed, turretAngle);
+        double harmonicExitFactor = getHarmonicExitFactor(launchSpeed, turretAngle);
+
+        System.out.printf("Test: v=%.2f m/s, a=%.2f rad\n", v, a);
+        System.out.printf("Expected Exit Factor: %.4f\n", expectedExitFactor);
+        System.out.printf("Cubic Exit Factor: %.4f\n", cubicExitFactor);
+        System.out.printf("Interrelational Exit Factor: %.4f\n", interrelationalExitFactor);
+        System.out.printf("Harmonic Exit Factor: %.4f\n", harmonicExitFactor);
     }
 }
