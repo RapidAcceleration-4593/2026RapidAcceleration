@@ -32,7 +32,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
-import frc.robot.subsystems.vision.quest.QuestNavSubsystem;
+import frc.robot.subsystems.vision.VisionConsumer;
 import frc.robot.util.CommandLogger;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.LocalADStarAK;
@@ -42,7 +42,7 @@ import java.util.function.Consumer;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class SwerveSubsystem extends SubsystemBase implements QuestNavSubsystem.VisionConsumer {
+public class SwerveSubsystem extends SubsystemBase implements VisionConsumer {
 
     // Locks & Alerts.
     public static final Lock odometryLock = new ReentrantLock();

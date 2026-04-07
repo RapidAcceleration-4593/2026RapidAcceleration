@@ -5,15 +5,13 @@ import static edu.wpi.first.units.Units.Inches;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.vision.QuestNavInputsAutoLogged;
-
+import frc.robot.subsystems.vision.VisionConsumer;
 import org.littletonrobotics.junction.Logger;
 
 public class QuestNavSubsystem extends SubsystemBase {
@@ -54,10 +52,5 @@ public class QuestNavSubsystem extends SubsystemBase {
     public void resetPose(Pose3d robotPose) {
         Pose3d questPose = robotPose.transformBy(kRobotToQuest);
         io.setPose(questPose);
-    }
-
-    @FunctionalInterface
-    public interface VisionConsumer {
-        void accept(Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs);
     }
 }
