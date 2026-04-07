@@ -5,24 +5,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.leds.LEDLayer;
 import frc.robot.subsystems.leds.LEDSubsystem;
 
-public class RunIntakeLEDPatternCommand extends Command {
+public class RunShootIntakeLEDLayer extends Command {
 
     private final LEDSubsystem subsystem;
 
-    private LEDLayer layer;
+    private final LEDLayer layer;
 
-    public RunIntakeLEDPatternCommand(LEDSubsystem subsystem) {
+    public RunShootIntakeLEDLayer(LEDSubsystem subsystem) {
         this.subsystem = subsystem;
+
+        layer = new LEDLayer(3.0, 2, Color.kLightGreen, Color.kBlack, false, 5.0);
     }
 
     @Override
     public void initialize() {
-        layer = subsystem.addLayer(1.0);
-        layer.useAllianceColor = false;
-        layer.baseColor = Color.kOrangeRed;
-        layer.gradientColor = Color.kBlack;
-        layer.patternIndex = 2;
-        layer.speedFactor = -1.0;
+        subsystem.addLayer(layer);
     }
 
     @Override

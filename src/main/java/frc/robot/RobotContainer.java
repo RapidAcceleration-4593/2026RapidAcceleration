@@ -106,22 +106,19 @@ public class RobotContainer {
                 .rightTrigger(0.5)
                 .whileTrue(new ShootCommand(shooter, turret, hood, indexer, calculator)
                         .alongWith(new ShakeDeployCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs))
-                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
+                        .alongWith(new RunShooterLEDLayer(LEDs))
+                        .alongWith(new RunWarningLEDLayer(LEDs)
                                 .onlyWhile(() -> !turret.atTargetAngle())
                                 .repeatedly()));
         driverController
                 .rightBumper()
                 .whileTrue(new ShootCommand(shooter, turret, hood, indexer, calculator)
                         .alongWith(new IntakeCommand(intake, deploy))
-                        .alongWith(new RunShootIntakeLEDPattern(LEDs))
-                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(() -> !turret.atTargetAngle())
-                                .repeatedly()));
+                        .alongWith(new RunShooterLEDLayer(LEDs)));
 
         driverController
                 .leftTrigger(0.5)
-                .whileTrue(new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
+                .whileTrue(new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
 
         driverController.leftBumper().whileTrue(new PathfindCommands().pathfindUnderNearestTrench(swerve));
 
@@ -157,14 +154,9 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand(
                 "ShootCommand",
-                new ShootCommand(shooter, turret, hood, indexer, calculator)
-                        .alongWith(new ShakeDeployCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs))
-                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
-                                .onlyWhile(() -> !turret.atTargetAngle())
-                                .repeatedly()));
+                new ShootCommand(shooter, turret, hood, indexer, calculator).alongWith(new RunShooterLEDLayer(LEDs)));
         NamedCommands.registerCommand(
-                "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
+                "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
     }
 
     /** Increments the Fuel counter based on the robot's current field pose. */

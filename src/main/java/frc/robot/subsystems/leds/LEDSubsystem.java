@@ -41,6 +41,7 @@ public class LEDSubsystem extends SubsystemBase {
     private int currentPatternIndex = 0;
 
     private List<LEDLayer> layers = new ArrayList<>();
+    private final LEDLayer defaultLayer = new LEDLayer(-1.0, 0, Color.kBlack, Color.kBlack, true, 1.0);
 
     public LEDSubsystem() {
         redAllianceTopic = NetworkTableInstance.getDefault().getBooleanTopic("/FMSInfo/IsRedAlliance");
@@ -53,28 +54,13 @@ public class LEDSubsystem extends SubsystemBase {
         led.setData(buffer);
         led.start();
 
-        LEDLayer layer = addLayer(-1.0);
-        layer.useAllianceColor = true;
-        layer.patternIndex = 0;
-        layer.speedFactor = 1;
-
-        currentPattern = patterns.get(currentPatternIndex);
+        addLayer(defaultLayer);
+        updateLayers();
     }
 
     @Override
     public void periodic() {
         fillLEDs(Color.kBlack);
-
-        if (layers.size() < 1) {
-            updateLEDs();
-            return;
-        }
-
-        LEDLayer layer = layers.get(0);
-        setPattern(layer.patternIndex);
-        setColor(layer.baseColor, layer.gradientColor);
-        setUseAllianceColor(layer.useAllianceColor);
-        setSpeed(layer.speedFactor);
 
         if (useAllianceColor) {
             baseColor = getAllianceColor();
@@ -140,20 +126,26 @@ public class LEDSubsystem extends SubsystemBase {
         }
     }
 
-    public LEDLayer addLayer(double priority) {
-        LEDLayer layer = new LEDLayer();
-        layer.priority = priority;
+    public void addLayer(LEDLayer layer) {
         layers.add(layer);
-        sortLayers();
-        return layer;
+        updateLayers();
     }
 
     public void removeLayer(LEDLayer layer) {
         layers.remove(layer);
-        sortLayers();
+        updateLayers();
     }
 
-    private void sortLayers() {
-        layers.sort((a, b) -> Double.compare(b.priority, a.priority));
+    /**
+     * Sorts layer list based on priority and sets all LED subsystem properties to highest priority layer properties.
+     */
+    private void updateLayers() {
+        layers.sort((a, b) -> Double.compare(b.getPriority(), a.getPriority()));
+
+        LEDLayer layer = layers.get(0);
+        setPattern(layer.getPatternIndex());
+        setColor(layer.getBaseColor(), layer.getGradientcColor());
+        setUseAllianceColor(layer.getUseAllianceColor());
+        setSpeed(layer.getSpeedFactor());
     }
 }
