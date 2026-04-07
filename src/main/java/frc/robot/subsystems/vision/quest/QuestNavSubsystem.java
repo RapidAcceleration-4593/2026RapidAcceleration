@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision.quest;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -13,8 +14,11 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionConsumer;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkString;
 
 public class QuestNavSubsystem extends SubsystemBase {
+
+    private final LoggedNetworkString selectedVisionSystem = new LoggedNetworkString(kSelectedVisionNTAddress);
 
     private static final Transform3d kRobotToQuest = new Transform3d(
             Inches.of(-13.0),
@@ -42,8 +46,9 @@ public class QuestNavSubsystem extends SubsystemBase {
             if (frame.isTracking()) {
                 Pose3d robotPose = frame.questPose().transformBy(kRobotToQuest.inverse());
 
-                visionConsumer.accept(robotPose.toPose2d(), frame.timestamp(), kStateSTDDevs);
-
+                if (selectedVisionSystem.get().equals(VisionSystems.Quest.name) || selectedVisionSystem.get().isBlank()) {
+                    visionConsumer.accept(robotPose.toPose2d(), frame.timestamp(), kStateSTDDevs);
+                }
                 Logger.recordOutput("QuestNav/RobotPose", robotPose);
             }
         }

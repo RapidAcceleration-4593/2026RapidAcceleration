@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision.apriltag;
 
+import static frc.robot.subsystems.vision.VisionConstants.*;
 import static frc.robot.subsystems.vision.apriltag.AprilTagConstants.*;
 
 import edu.wpi.first.math.VecBuilder;
@@ -12,9 +13,11 @@ import frc.robot.subsystems.vision.VisionConsumer;
 import java.util.LinkedList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkString;
 
 public class AprilTagSubsystem extends SubsystemBase {
 
+    private final LoggedNetworkString selectedVisionSystem = new LoggedNetworkString(kSelectedVisionNTAddress);
     private final VisionConsumer consumer;
     private final VisionInputsAutoLogged[] inputs;
     private final Alert[] disconnectedAlerts;
@@ -113,11 +116,13 @@ public class AprilTagSubsystem extends SubsystemBase {
                 linearStdDev *= cameraStdDevFactor;
                 angularStdDev *= cameraStdDevFactor;
 
-                // Send Vision Observation.
-                consumer.accept(
-                        observation.pose().toPose2d(),
-                        observation.timestamp(),
-                        VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+                // If this is the selected vision system, send pose observation
+                if (selectedVisionSystem.get().equals(VisionSystems.Apriltag.name)) {
+                    consumer.accept(
+                            observation.pose().toPose2d(),
+                            observation.timestamp(),
+                            VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+                }
             }
 
             String cameraName = kCameras[cameraIndex].name();
