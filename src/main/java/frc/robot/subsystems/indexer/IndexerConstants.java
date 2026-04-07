@@ -25,8 +25,8 @@ public final class IndexerConstants {
     public static final Voltage kSpindexerVolts = Volts.of(12.0);
     public static final Voltage kFeederVolts = Volts.of(12.0);
 
-    public static final AngularVelocity kSpindexerVelocity = RPM.of(7000);
-    public static final AngularVelocity kFeederVelocity = RPM.of(7000);
+    public static final AngularVelocity kSpindexerVelocity = RPM.of(10000);
+    public static final AngularVelocity kFeederVelocity = RPM.of(10000);
 
     public static final double kSpindexerGearing = (5.0 * 3.0 * 3.0);
     public static final double kFeederGearing = (3.0);
