@@ -32,7 +32,6 @@ public final class SimulationManager {
     private final IntakeSimulation intakeSim;
     private final Arena2026Rebuilt arena = (Arena2026Rebuilt) SimulatedArena.getInstance();
     private final List<IPhysicsSim> components;
-
     private final VisionSystemSim visionSim;
 
     private boolean intakeExtended;
