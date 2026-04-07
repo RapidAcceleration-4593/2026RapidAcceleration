@@ -3,6 +3,9 @@ package frc.robot.factory;
 import static frc.robot.Constants.*;
 
 import frc.robot.subsystems.vision.*;
+import frc.robot.subsystems.vision.quest.QuestNavIO;
+import frc.robot.subsystems.vision.quest.QuestNavIOReal;
+import frc.robot.subsystems.vision.quest.QuestNavSubsystem;
 
 public final class QuestNavFactory {
 
