@@ -46,7 +46,8 @@ public class QuestNavSubsystem extends SubsystemBase {
             if (frame.isTracking()) {
                 Pose3d robotPose = frame.questPose().transformBy(kRobotToQuest.inverse());
 
-                if (selectedVisionSystem.get().equals(VisionSystems.Quest.name) || selectedVisionSystem.get().isBlank()) {
+                if (selectedVisionSystem.get().equals(VisionSystems.Quest.name)
+                        || selectedVisionSystem.get().isBlank()) {
                     visionConsumer.accept(robotPose.toPose2d(), frame.timestamp(), kStateSTDDevs);
                 }
                 Logger.recordOutput("QuestNav/RobotPose", robotPose);

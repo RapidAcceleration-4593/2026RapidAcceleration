@@ -12,10 +12,7 @@ public interface IndexerIO {
     @AutoLog
     public static class IndexerInputs {
         public AngularVelocity spindexerVelocity = RPM.zero();
-        public AngularVelocity spindexerTargetVelocity = RPM.zero();
-
         public AngularVelocity feederVelocity = RPM.zero();
-        public AngularVelocity feederTargetVelocity = RPM.zero();
 
         public boolean isFuelDetected = false;
 
@@ -32,14 +29,8 @@ public interface IndexerIO {
     /** Sets the voltage of the spindexer motor. */
     public default void setSpindexerVoltage(Voltage volts) {}
 
-    /** Sets the velocity of the spindexer motor. */
-    public default void setSpindexerVelocity(AngularVelocity velocity) {}
-
     /** Sets the voltage of the feeder motor. */
     public default void setFeederVoltage(Voltage volts) {}
-
-    /** Sets the velocity of the feeder motor. */
-    public default void setFeederVelocity(AngularVelocity velocity) {}
 
     /** Stops the spindexer motor immediately. */
     public default void stopSpindexer() {}

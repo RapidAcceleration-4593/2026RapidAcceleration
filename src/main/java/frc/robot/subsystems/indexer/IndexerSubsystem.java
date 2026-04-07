@@ -56,7 +56,6 @@ public class IndexerSubsystem extends SubsystemBase {
         return runEnd(
                 () -> {
                     io.setSpindexerVoltage(kSpindexerVolts);
-                    ;
                     io.setFeederVoltage(kFeederVolts);
                 },
                 () -> {
