@@ -20,6 +20,7 @@ import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
+import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.simulation.VisionSystemSim;
@@ -30,7 +31,7 @@ public final class SimulationManager {
 
     private final SwerveDriveSimulation swerveSim;
     private final IntakeSimulation intakeSim;
-    private final SimulatedArena arena = SimulatedArena.getInstance();
+    private final Arena2026Rebuilt arena = (Arena2026Rebuilt) SimulatedArena.getInstance();
     private final List<IPhysicsSim> components;
 
     private final VisionSystemSim visionSim;
@@ -41,11 +42,12 @@ public final class SimulationManager {
     private SimulationManager() {
         swerveSim = new SwerveDriveSimulation(kMapleSimConfig, new Pose2d());
         arena.addDriveTrainSimulation(swerveSim);
+        arena.setEfficiencyMode(false);
         components = new ArrayList<>();
         visionSim = new VisionSystemSim("main");
         visionSim.addAprilTags(kFieldLayout);
         intakeSim = IntakeSimulation.OverTheBumperIntake(
-                "Fuel", swerveSim, Inches.of(26.5), Inches.of(8), IntakeSimulation.IntakeSide.FRONT, kHopperCapacity);
+                "Fuel", swerveSim, Inches.of(24), Inches.of(8), IntakeSimulation.IntakeSide.FRONT, kHopperCapacity);
     }
 
     /** Retrieves the SimulationManager instance during simulation. */

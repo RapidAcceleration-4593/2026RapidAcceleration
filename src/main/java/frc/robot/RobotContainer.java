@@ -77,7 +77,10 @@ public class RobotContainer {
 
         autonManager = new AutonManager(swerve);
         autonManager.warmup();
+
         networkTableInstance = NetworkTableInstance.getDefault();
+
+        FieldUtil.setPoseSupplier(swerve::getPose);
 
         registerCommands();
         configureBindings();
@@ -90,7 +93,7 @@ public class RobotContainer {
                 driverController::getLeftY,
                 driverController::getLeftX,
                 driverController::getRightX,
-                () -> FieldUtil.isInAllianceZone(swerve.getPose())
+                () -> FieldUtil.isInAllianceZone()
                         && shooter.getTargetVelocity().gt(RPM.zero())));
         turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle));
 
@@ -102,7 +105,11 @@ public class RobotContainer {
         driverController
                 .rightTrigger(0.5)
                 .whileTrue(new ShootCommand(shooter, turret, hood, indexer, calculator)
-                        .alongWith(new RunShooterLEDLayer(LEDs)));
+						.alongWith(new ShakeDeployCommand(intake, deploy))
+                        .alongWith(new RunShooterLEDLayer(LEDs))
+                        .alongWith(new RunWarningLEDPatternCommand(LEDs)
+                                .onlyWhile(() -> !turret.atTargetAngle())
+                                .repeatedly()));
         driverController
                 .rightBumper()
                 .whileTrue(new ShootCommand(shooter, turret, hood, indexer, calculator)
@@ -125,7 +132,6 @@ public class RobotContainer {
         operatorController.a().whileTrue(intake.setVoltageCommand(Volts.of(-6.0)));
         operatorController.x().whileTrue(deploy.setVoltageCommand(Volts.of(5.0)));
         operatorController.b().whileTrue(deploy.setVoltageCommand(Volts.of(-5.0)));
-        operatorController.y().whileTrue(new ShakeDeployCommand(intake, deploy));
 
         operatorController.start().onTrue(turret.runOnce(() -> turret.setDefaultCommand(turret.idle())));
         operatorController
@@ -153,7 +159,7 @@ public class RobotContainer {
     /** Increments the Fuel counter based on the robot's current field pose. */
     private Trigger setupIndexerSensor() {
         return new Trigger(indexer::getShotDetected).onTrue(Commands.runOnce(() -> {
-            if (FieldUtil.isInAllianceZone(swerve.getPose())) {
+            if (FieldUtil.isInAllianceZone()) {
                 indexer.addHubShot();
             } else {
                 indexer.addFeedingShot();

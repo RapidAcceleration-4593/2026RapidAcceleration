@@ -102,7 +102,6 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
                 calculateShooter(Meters.of(targetVector.getNorm()), verticalDistance, hoodAngle, turretAngle);
         if (Double.isNaN(shooterVelocity.in(RadiansPerSecond))) {
             latestIsValid = false;
-            return ShotResult.invalid();
         }
         return new ShotResult(turretAngle, hoodAngle, shooterVelocity, latestIsValid);
     }
@@ -134,7 +133,7 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
                 shooterRobotVelocity.getY() + robotVelocity.vyMetersPerSecond,
                 robotVelocity.omegaRadiansPerSecond);
 
-        Pose3d realTarget3d = FieldUtil.getTargetPose(currentPose);
+        Pose3d realTarget3d = FieldUtil.getTargetPose();
         latestResult = calculateMovingShot(shooterPose, shooterSpeeds, realTarget3d.getTranslation());
     }
 
