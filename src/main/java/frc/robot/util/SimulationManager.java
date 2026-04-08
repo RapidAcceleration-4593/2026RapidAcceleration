@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.Constants.Mode;
+import frc.robot.subsystems.vision.apriltag.AprilTagConstants;
 import java.util.ArrayList;
 import java.util.List;
 import org.ironmaple.simulation.IntakeSimulation;
@@ -43,6 +44,7 @@ public final class SimulationManager {
         arena.setEfficiencyMode(false);
         components = new ArrayList<>();
         visionSim = new VisionSystemSim("main");
+        visionSim.addAprilTags(AprilTagConstants.kFieldLayout);
         intakeSim = IntakeSimulation.OverTheBumperIntake(
                 "Fuel", swerveSim, Inches.of(24), Inches.of(8), IntakeSimulation.IntakeSide.FRONT, kHopperCapacity);
     }
