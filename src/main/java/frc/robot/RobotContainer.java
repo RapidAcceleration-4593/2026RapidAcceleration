@@ -163,6 +163,7 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "ExtendDeployCommand",
                 new ExtendDeployCommand(deploy).withTimeout(1.25).alongWith(new RunIntakeLEDLayer(LEDs)));
+        NamedCommands.registerCommand("ShakeDeployCommand", new ShakeDeployCommand(intake, deploy));
     }
 
     /** Increments the Fuel counter based on the robot's current field pose. */

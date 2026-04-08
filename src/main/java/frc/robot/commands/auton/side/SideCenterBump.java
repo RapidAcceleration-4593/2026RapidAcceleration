@@ -10,15 +10,15 @@ import java.util.List;
 public class SideCenterBump extends AutonCommand {
 
     public SideCenterBump(AutonUtil util, boolean isFlipped) {
-        super(util, isFlipped, List.of("SideCenterBump-1", "SideCenterBump-2"));
+        super(util, isFlipped, List.of("SideCenterBump-1"));
 
         addCommands(
                 Commands.race(
                         AutoBuilder.followPath(paths.get(0)),
                         NamedCommands.getCommand("ExtendDeployCommand")
                                 .andThen(NamedCommands.getCommand("IntakeCommand"))),
-                NamedCommands.getCommand("ShootCommand").withTimeout(8.0),
-                NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(1))),
-                NamedCommands.getCommand("ShootCommand"));
+                Commands.parallel(
+                        NamedCommands.getCommand("ShootCommand"),
+                        Commands.waitSeconds(6.0).andThen(NamedCommands.getCommand("ShakeDeployCommand"))));
     }
 }

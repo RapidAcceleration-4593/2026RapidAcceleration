@@ -19,8 +19,8 @@ import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 public final class SwerveConstants {
 
     // Robot Physical Properties.
-    public static final Mass kRobotMass = Pounds.of(120.0);
-    public static final MomentOfInertia kRobotMOI = KilogramSquareMeters.of(6.47);
+    public static final Mass kRobotMass = Pounds.of(125.0);
+    public static final MomentOfInertia kRobotMOI = KilogramSquareMeters.of(6.690);
 
     private static final Distance kWheelRadius = Inches.of(2.0);
     public static final double kWheelCOF = 1.2;
@@ -32,8 +32,8 @@ public final class SwerveConstants {
     public static final LinearVelocity kMaxVelocity = MetersPerSecond.of(5.5);
 
     // Currently only used for PathPlanner.
-    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(2.0);
-    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(2.5);
+    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(3.0);
+    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(3.0);
     public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(540.0);
     public static final AngularAcceleration kAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
 
