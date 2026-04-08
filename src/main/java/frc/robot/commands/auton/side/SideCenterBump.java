@@ -18,7 +18,8 @@ public class SideCenterBump extends AutonCommand {
                         NamedCommands.getCommand("ExtendDeployCommand")
                                 .andThen(NamedCommands.getCommand("IntakeCommand"))),
                 Commands.parallel(
-                        NamedCommands.getCommand("ShootCommand"),
-                        Commands.waitSeconds(6.0).andThen(NamedCommands.getCommand("ShakeDeployCommand"))));
+                                NamedCommands.getCommand("ShootCommand"),
+                                Commands.waitSeconds(6.0).andThen(NamedCommands.getCommand("ShakeDeployCommand")))
+                        .withTimeout(10.0));
     }
 }

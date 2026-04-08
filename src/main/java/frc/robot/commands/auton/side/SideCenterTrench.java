@@ -10,7 +10,7 @@ import java.util.List;
 public class SideCenterTrench extends AutonCommand {
 
     public SideCenterTrench(AutonUtil util, boolean isFlipped) {
-        super(util, isFlipped, List.of("SideCenterTrench-1"));
+        super(util, isFlipped, List.of("SideCenterTrench-1", "SideCenterTrench-2"));
 
         addCommands(
                 Commands.race(
@@ -18,7 +18,10 @@ public class SideCenterTrench extends AutonCommand {
                         NamedCommands.getCommand("ExtendDeployCommand")
                                 .andThen(NamedCommands.getCommand("IntakeCommand"))),
                 Commands.parallel(
-                        NamedCommands.getCommand("ShootCommand"),
-                        Commands.waitSeconds(6.0).andThen(NamedCommands.getCommand("ShakeDeployCommand"))));
+                                NamedCommands.getCommand("ShootCommand"),
+                                Commands.waitSeconds(6.0).andThen(NamedCommands.getCommand("ShakeDeployCommand")))
+                        .withTimeout(10.0),
+                NamedCommands.getCommand("ShootCommand").withTimeout(10.0),
+                NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(1))));
     }
 }
