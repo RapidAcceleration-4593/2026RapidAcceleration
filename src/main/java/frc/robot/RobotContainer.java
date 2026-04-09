@@ -6,8 +6,6 @@ import static frc.robot.Constants.Controllers.*;
 import static frc.robot.Constants.kCurrentMode;
 
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -32,6 +30,7 @@ import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import frc.robot.subsystems.vision.quest.QuestNavSubsystem;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.SimulationManager;
+import org.littletonrobotics.junction.networktables.LoggedNetworkString;
 
 public class RobotContainer {
 
@@ -57,7 +56,7 @@ public class RobotContainer {
 
     // Autonomous Selector
     private final AutonManager autonManager;
-    private final NetworkTableInstance networkTableInstance;
+    private final LoggedNetworkString networkAutoSelector;
 
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
@@ -82,7 +81,7 @@ public class RobotContainer {
         autonManager = new AutonManager(swerve);
         autonManager.warmup();
 
-        networkTableInstance = NetworkTableInstance.getDefault();
+        networkAutoSelector = new LoggedNetworkString("/AccelerationStation/SelectedAuto", "DoNothing");
         FieldUtil.setPoseSupplier(swerve::getPose);
 
         registerCommands();
@@ -149,9 +148,7 @@ public class RobotContainer {
 
     /** Select the command to run in Autonomous. */
     public Command getAutonomousCommand() {
-        NetworkTableEntry entry =
-                networkTableInstance.getTable("AccelerationStation").getEntry("SelectedAuto");
-        return autonManager.getAuton(entry.getString("DoNothing"));
+        return autonManager.getAuton(networkAutoSelector.get());
     }
 
     /** Register NamedCommands for Autonomous. */
