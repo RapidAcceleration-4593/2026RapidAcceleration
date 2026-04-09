@@ -17,20 +17,19 @@ public class IndexerIOReal implements IndexerIO {
 
     protected final SparkMax spindexerMotor;
     protected final SparkMax feederMotor;
-
     protected final DigitalInput sensor;
 
     public IndexerIOReal() {
         SparkBaseConfig spindexerConfig = new SparkMaxConfig()
                 .inverted(kInvertSpindexerMotor)
                 .idleMode(IdleMode.kCoast)
-                .smartCurrentLimit(30)
+                .smartCurrentLimit(20)
                 .voltageCompensation(12.0);
 
         SparkBaseConfig feederConfig = new SparkMaxConfig()
                 .inverted(kInvertFeederMotor)
                 .idleMode(IdleMode.kCoast)
-                .smartCurrentLimit(60)
+                .smartCurrentLimit(40)
                 .voltageCompensation(12.0);
 
         spindexerMotor = new SparkMax(kSpindexerMotorID, MotorType.kBrushless);
@@ -38,7 +37,6 @@ public class IndexerIOReal implements IndexerIO {
 
         feederMotor = new SparkMax(kFeederMotorID, MotorType.kBrushless);
         feederMotor.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
         sensor = new DigitalInput(kSensorChannel);
     }
 

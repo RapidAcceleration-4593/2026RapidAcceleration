@@ -19,21 +19,21 @@ import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 public final class SwerveConstants {
 
     // Robot Physical Properties.
-    public static final Mass kRobotMass = Pounds.of(115.0);
-    public static final MomentOfInertia kRobotMOI = KilogramSquareMeters.of(6.490);
+    public static final Mass kRobotMass = Pounds.of(125.0);
+    public static final MomentOfInertia kRobotMOI = KilogramSquareMeters.of(6.690);
 
-    private static final Distance kWheelRadius = Inches.of(1.91);
+    private static final Distance kWheelRadius = Inches.of(2.0);
     public static final double kWheelCOF = 1.2;
 
     /** Current at which the wheels start to slip. */
-    private static final Current kSlipCurrent = Amps.of(120.0);
+    private static final Current kSlipCurrent = Amps.of(60.0);
 
     /** Theoretical Maximum Speed at 12V. */
     public static final LinearVelocity kMaxVelocity = MetersPerSecond.of(5.5);
 
     // Currently only used for PathPlanner.
-    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(2.0);
-    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(2.5);
+    public static final LinearVelocity kLinearVelocity = MetersPerSecond.of(3.0);
+    public static final LinearAcceleration kLinearAcceleration = MetersPerSecondPerSecond.of(3.0);
     public static final AngularVelocity kAngularVelocity = DegreesPerSecond.of(540.0);
     public static final AngularAcceleration kAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
 
@@ -50,7 +50,7 @@ public final class SwerveConstants {
     private static final double kSteerGearRatio = 18.75;
 
     /** How much the drive motor unintentionally turns when you rotate steering (azimuth). */
-    private static final double kCoupleRatio = 0.0;
+    private static final double kCoupleRatio = 0.0; // (Drive Rotations) / (Steer Rotations)
 
     private static final boolean kInvertLeftSide = false;
     private static final boolean kInvertRightSide = true;
@@ -79,7 +79,7 @@ public final class SwerveConstants {
     private static final TalonFXConfiguration kSteerInitialConfigs = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                     // Help avoid brownouts without impacting performance.
-                    .withStatorCurrentLimit(Amps.of(60))
+                    .withStatorCurrentLimit(Amps.of(25))
                     .withStatorCurrentLimitEnable(true));
 
     private static final CANcoderConfiguration kEncoderInitialConfigs = new CANcoderConfiguration();
@@ -126,7 +126,7 @@ public final class SwerveConstants {
     private static final int kFrontLeftDriveMotorId = 6;
     private static final int kFrontLeftSteerMotorId = 7;
     private static final int kFrontLeftEncoderId = 1;
-    private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.328125);
+    private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.330078125);
     private static final boolean kFrontLeftSteerMotorInverted = true;
     private static final boolean kFrontLeftEncoderInverted = false;
 
@@ -137,7 +137,7 @@ public final class SwerveConstants {
     private static final int kFrontRightDriveMotorId = 8;
     private static final int kFrontRightSteerMotorId = 9;
     private static final int kFrontRightEncoderId = 2;
-    private static final Angle kFrontRightEncoderOffset = Rotations.of(0.2275390625);
+    private static final Angle kFrontRightEncoderOffset = Rotations.of(0.225830078125);
     private static final boolean kFrontRightSteerMotorInverted = true;
     private static final boolean kFrontRightEncoderInverted = false;
 
@@ -148,7 +148,7 @@ public final class SwerveConstants {
     private static final int kBackLeftDriveMotorId = 10;
     private static final int kBackLeftSteerMotorId = 11;
     private static final int kBackLeftEncoderId = 3;
-    private static final Angle kBackLeftEncoderOffset = Rotations.of(0.18115234375);
+    private static final Angle kBackLeftEncoderOffset = Rotations.of(0.168212890625);
     private static final boolean kBackLeftSteerMotorInverted = true;
     private static final boolean kBackLeftEncoderInverted = false;
 
@@ -159,7 +159,7 @@ public final class SwerveConstants {
     private static final int kBackRightDriveMotorId = 12;
     private static final int kBackRightSteerMotorId = 13;
     private static final int kBackRightEncoderId = 4;
-    private static final Angle kBackRightEncoderOffset = Rotations.of(-0.1455078125);
+    private static final Angle kBackRightEncoderOffset = Rotations.of(-0.150390625);
     private static final boolean kBackRightSteerMotorInverted = true;
     private static final boolean kBackRightEncoderInverted = false;
 

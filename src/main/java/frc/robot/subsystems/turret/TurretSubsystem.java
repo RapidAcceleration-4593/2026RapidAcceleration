@@ -32,7 +32,6 @@ public class TurretSubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Turret", inputs);
-        targetAngle = inputs.targetAngle;
         turret3D.setAngle(inputs.angle);
 
         CommandLogger.logSubsystemCommand(this);
@@ -78,7 +77,7 @@ public class TurretSubsystem extends SubsystemBase {
      * @return A command to run the motor to an angle without stopping.
      */
     public Command runToAngleCommand(Supplier<Angle> angleSupplier) {
-        return run(() -> setPosition(() -> calculateSafeAngle(angleSupplier.get())));
+        return runEnd(() -> setPosition(() -> calculateSafeAngle(angleSupplier.get())), io::stop);
     }
 
     /**
@@ -97,18 +96,15 @@ public class TurretSubsystem extends SubsystemBase {
      */
     private Angle calculateSafeAngle(Angle targetAngle) {
         Angle current = getCurrentAngle();
-        double targetDeg = targetAngle.in(Degrees);
-        double currentDeg = current.in(Degrees);
-
         Angle error =
                 Degrees.of(MathUtil.inputModulus(targetAngle.minus(current).in(Degrees), -180.0, 180.0));
         Angle candidate = current.plus(error);
 
-        if (candidate.lt(kMinimumAngle) || candidate.gt(kMaximumAngle)) {
-            return Degrees.of(
-                    MathUtil.clamp(targetAngle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
+        if (candidate.lt(kMinimumAngle.minus(kWrapMargin))) {
+            candidate = candidate.plus(Degrees.of(360.0));
+        } else if (candidate.gt(kMaximumAngle.plus(kWrapMargin))) {
+            candidate = candidate.minus(Degrees.of(360.0));
         }
-
         return Degrees.of(MathUtil.clamp(candidate.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
     }
 
@@ -121,7 +117,7 @@ public class TurretSubsystem extends SubsystemBase {
         Angle angle = angleSupplier.get();
         Angle clampedAngle =
                 Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
-        targetAngle = clampedAngle;
+        this.targetAngle = clampedAngle;
         io.setPosition(clampedAngle);
     }
 }

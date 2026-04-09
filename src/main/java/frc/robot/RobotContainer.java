@@ -1,7 +1,9 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Controllers.*;
+import static frc.robot.Constants.kCurrentMode;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -10,19 +12,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.ClimbCommand;
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.RetractIntakeCommand;
-import frc.robot.commands.ShakeDeployCommand;
-import frc.robot.commands.ShootCommand;
+import frc.robot.Constants.Mode;
+import frc.robot.commands.*;
 import frc.robot.commands.auton.AutonManager;
-import frc.robot.commands.leds.RunIntakeLEDPatternCommand;
-import frc.robot.commands.leds.RunShooterLEDPatternCommand;
+import frc.robot.commands.leds.*;
 import frc.robot.commands.swerve.PathfindCommands;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
 import frc.robot.subsystems.ShotCalculatorSubsystem;
-import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.deploy.DeploySubsystem;
 import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
@@ -32,13 +29,16 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
+import frc.robot.subsystems.vision.quest.QuestNavSubsystem;
 import frc.robot.util.FieldUtil;
+import frc.robot.util.SimulationManager;
 
 public class RobotContainer {
 
     // Subsystem(s)
     public final SwerveSubsystem swerve;
-    public final AprilTagSubsystem apriltag;
+    public final QuestNavSubsystem questNav;
+    public final AprilTagSubsystem aprilTag;
 
     public final ShooterSubsystem shooter;
     public final TurretSubsystem turret;
@@ -47,9 +47,8 @@ public class RobotContainer {
 
     public final IntakeSubsystem intake;
     public final DeploySubsystem deploy;
-    public final ClimberSubsystem climber;
-    public final LEDSubsystem LEDs;
 
+    public final LEDSubsystem LEDs;
     public final ShotCalculatorSubsystem calculator;
 
     // Controller(s)
@@ -62,7 +61,9 @@ public class RobotContainer {
 
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
-        apriltag = AprilTagFactory.initialize(swerve);
+        questNav = QuestNavFactory.initialize(swerve);
+        aprilTag = AprilTagFactory.initialize(swerve);
+        swerve.setVisionResetCallback(questNav::resetPose);
 
         shooter = ShooterFactory.initialize();
         hood = HoodFactory.initialize();
@@ -71,9 +72,8 @@ public class RobotContainer {
 
         intake = IntakeFactory.initialize();
         deploy = DeployFactory.initialize();
-        climber = ClimberFactory.initialize();
-        LEDs = new LEDSubsystem();
 
+        LEDs = new LEDSubsystem();
         calculator = new ShotCalculatorSubsystem(swerve::getPose, swerve::getChassisSpeeds);
 
         driverController = new CommandXboxController(kDriverControllerPort);
@@ -81,93 +81,106 @@ public class RobotContainer {
 
         autonManager = new AutonManager(swerve);
         autonManager.warmup();
+
         networkTableInstance = NetworkTableInstance.getDefault();
+        FieldUtil.setPoseSupplier(swerve::getPose);
 
         registerCommands();
         configureBindings();
+        setupIndexerSensor();
     }
 
     private void configureBindings() {
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
-                swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
+                swerve,
+                driverController::getLeftY,
+                driverController::getLeftX,
+                driverController::getRightX,
+                () -> FieldUtil.isInAllianceZone()
+                        && shooter.getTargetVelocity().gt(RPM.zero())));
         turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle));
 
         // <------- Driver Controller ------->
         driverController.start().onTrue(swerve.resetGyroCommand());
+        driverController.a().onTrue(swerve.resetPoseCommand());
+        driverController.x().onTrue(swerve.stopXCommand());
+        driverController.y().whileTrue(new RetractDeployCommand(deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
 
         driverController
                 .rightTrigger(0.5)
-                .whileTrue(new ShootCommand(shooter, hood, indexer, calculator)
+                .whileTrue(new ShootCommand(shooter, turret, hood, indexer, calculator)
                         .alongWith(new ShakeDeployCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
+                        .alongWith(new RunShooterLEDLayer(LEDs))
+                        .alongWith(new RunWarningLEDLayer(LEDs)
+                                .onlyWhile(() -> !turret.atTargetAngle())
+                                .repeatedly()));
         driverController
                 .rightBumper()
-                .whileTrue(new IntakeCommand(intake, deploy)
-                        .alongWith(new ShootCommand(shooter, hood, indexer, calculator))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
+                .whileTrue(new ShootCommand(shooter, turret, hood, indexer, calculator)
+                        .alongWith(new IntakeCommand(intake, deploy))
+                        .alongWith(new RunShooterLEDLayer(LEDs)));
 
         driverController
                 .leftTrigger(0.5)
-                .whileTrue(new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
+                .whileTrue(new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
+
         driverController.leftBumper().whileTrue(new PathfindCommands().pathfindUnderNearestTrench(swerve));
 
-        driverController.y().onTrue(new RetractIntakeCommand(intake, deploy));
-
         // <------- Operator Controller ------->
-        operatorController.rightTrigger(0.5).whileTrue(shooter.setVoltageCommand(Volts.of(6.0)));
+        operatorController.rightTrigger(0.5).whileTrue(new ManualShootCommand(shooter, hood, indexer));
         operatorController.leftTrigger(0.5).whileTrue(intake.runCommand());
 
         operatorController.leftBumper().whileTrue(turret.setVoltageCommand(Volts.of(-4.0)));
         operatorController.rightBumper().whileTrue(turret.setVoltageCommand(Volts.of(4.0)));
 
+        operatorController.a().whileTrue(intake.setVoltageCommand(Volts.of(-6.0)));
         operatorController.x().whileTrue(deploy.setVoltageCommand(Volts.of(5.0)));
         operatorController.b().whileTrue(deploy.setVoltageCommand(Volts.of(-5.0)));
 
-        operatorController.y().whileTrue(indexer.runCommand());
-        operatorController.a().whileTrue(intake.setVoltageCommand(Volts.of(-6.0)));
-
-        operatorController.povUp().whileTrue(climber.setVoltageCommand(Volts.of(12.0)));
-        operatorController.povDown().whileTrue(climber.setVoltageCommand(Volts.of(-12.0)));
+        operatorController.povUp().whileTrue(hood.setVoltageCommand(Volts.of(4.0)));
+        operatorController.povDown().whileTrue(hood.setVoltageCommand(Volts.of(-4.0)));
 
         operatorController.start().onTrue(turret.runOnce(() -> turret.setDefaultCommand(turret.idle())));
-
         operatorController
                 .back()
                 .onTrue(turret.runOnce(
                         () -> turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle))));
-
-        new Trigger(indexer::getShotDetected).onTrue(Commands.runOnce(() -> {
-            if (FieldUtil.isInAllianceZone(swerve.getPose())) {
-                indexer.addHubShot();
-            } else {
-                indexer.addFeedingShot();
-            }
-        }));
     }
 
     /** Select the command to run in Autonomous. */
     public Command getAutonomousCommand() {
         NetworkTableEntry entry =
                 networkTableInstance.getTable("AccelerationStation").getEntry("SelectedAuto");
-        String name = entry.getString("DoNothing");
-        return autonManager.getAuton(name);
+        return autonManager.getAuton(entry.getString("DoNothing"));
     }
 
     /** Register NamedCommands for Autonomous. */
     private void registerCommands() {
         NamedCommands.registerCommand(
                 "ShootCommand",
-                new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs))); // .until(indexer::isFuelDetected)
+                new ShootCommand(shooter, turret, hood, indexer, calculator).alongWith(new RunShooterLEDLayer(LEDs)));
         NamedCommands.registerCommand(
-                "ShootShakeCommand",
-                new ShootCommand(shooter, hood, indexer, calculator)
-                        .alongWith(new ShakeDeployCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDPatternCommand(LEDs)));
+                "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
         NamedCommands.registerCommand(
-                "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDPatternCommand(LEDs)));
+                "ExtendDeployCommand",
+                new ExtendDeployCommand(deploy).withTimeout(1.25).alongWith(new RunIntakeLEDLayer(LEDs)));
         NamedCommands.registerCommand("ShakeDeployCommand", new ShakeDeployCommand(intake, deploy));
-        NamedCommands.registerCommand("ClimbCommand", new ClimbCommand(climber));
-        NamedCommands.registerCommand("ClimberRaiseArmCommand", Commands.none());
+    }
+
+    /** Increments the Fuel counter based on the robot's current field pose. */
+    private Trigger setupIndexerSensor() {
+        return new Trigger(indexer::getShotDetected).onTrue(Commands.runOnce(() -> {
+            if (FieldUtil.isInAllianceZone()) {
+                indexer.addHubShot();
+            } else {
+                indexer.addFeedingShot();
+            }
+
+            if (kCurrentMode == Mode.SIM) {
+                SimulationManager.getInstance()
+                        .launchProjectile(
+                                calculator.getTurretAngle(), calculator.getHoodAngle(), calculator.getLaunchSpeed());
+            }
+        }));
     }
 }

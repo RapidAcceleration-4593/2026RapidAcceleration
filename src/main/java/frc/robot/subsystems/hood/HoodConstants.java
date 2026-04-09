@@ -8,13 +8,13 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 public final class HoodConstants {
 
     public static final int kMotorID = 7;
-    public static final int kLSChannel = 0;
+    public static final int kLSChannel = 3;
 
     public static final boolean kInvertMotor = true;
     public static final boolean kInvertEncoder = true;
-    public static final boolean kInvertLS = true;
+    public static final boolean kInvertLS = false;
 
-    public static final double kP = 0.26;
+    public static final double kP = 0.24;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double kS = 0.135;
@@ -24,7 +24,7 @@ public final class HoodConstants {
     public static final Angle kAngleTolerance = Degrees.of(0.1);
 
     public static final int kCountsPerRotation = 8192;
-    public static final double kMotorToEncoderGearing = (5.0 * 4.0 * 3.0) * (32.0 / 34.0);
+    public static final double kMotorToEncoderGearing = (5.0 * 4.0 * 3.0) * (30.0 / 34.0);
     public static final double kEncoderToHoodGearing = (296.0 / 18.0);
     public static final double kMotorToHoodGearing = kMotorToEncoderGearing * kEncoderToHoodGearing;
 

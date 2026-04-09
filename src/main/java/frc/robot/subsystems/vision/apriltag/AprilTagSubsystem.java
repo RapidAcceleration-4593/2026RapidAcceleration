@@ -1,23 +1,23 @@
 package frc.robot.subsystems.vision.apriltag;
 
+import static frc.robot.subsystems.vision.VisionConstants.*;
 import static frc.robot.subsystems.vision.apriltag.AprilTagConstants.*;
 
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.vision.VisionConsumer;
 import java.util.LinkedList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkString;
 
 public class AprilTagSubsystem extends SubsystemBase {
 
+    private final LoggedNetworkString selectedVisionSystem = new LoggedNetworkString(kSelectedVisionNTAddress);
     private final VisionConsumer consumer;
     private final VisionInputsAutoLogged[] inputs;
     private final Alert[] disconnectedAlerts;
@@ -116,11 +116,13 @@ public class AprilTagSubsystem extends SubsystemBase {
                 linearStdDev *= cameraStdDevFactor;
                 angularStdDev *= cameraStdDevFactor;
 
-                // Send Vision Observation.
-                consumer.accept(
-                        observation.pose().toPose2d(),
-                        observation.timestamp(),
-                        VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+                // If this is the selected vision system, send pose observation
+                if (selectedVisionSystem.get().equals(VisionSystems.Apriltag.name)) {
+                    consumer.accept(
+                            observation.pose().toPose2d(),
+                            observation.timestamp(),
+                            VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+                }
             }
 
             String cameraName = kCameras[cameraIndex].name();
@@ -151,10 +153,5 @@ public class AprilTagSubsystem extends SubsystemBase {
         Logger.recordOutput(
                 "Vision/Summary/RobotPosesRejected",
                 allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
-    }
-
-    @FunctionalInterface
-    public interface VisionConsumer {
-        void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs);
     }
 }

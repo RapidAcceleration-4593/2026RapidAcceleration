@@ -3,8 +3,7 @@ package frc.robot.commands.auton;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.auton.center.*;
-import frc.robot.commands.auton.left.*;
-import frc.robot.commands.auton.right.*;
+import frc.robot.commands.auton.side.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,21 +21,20 @@ public class AutonManager {
     }
 
     private void registerAutons() {
-        autonMap.put("LeftCenterNoClimb", () -> new LeftCenterNoClimb(util));
-        autonMap.put("LeftNoPickupNoClimb", () -> new LeftNoPickupNoClimb(util));
+        autonMap.put("DoNothing", Commands::none);
 
-        autonMap.put("CenterNoPickupNoClimb", () -> new CenterNoPickupNoClimb(util));
+        autonMap.put("LeftCenterTrench", () -> new SideCenterTrench(util, true));
+        autonMap.put("LeftCenterBump", () -> new SideCenterBump(util, true));
+        autonMap.put("LeftNoPickupNoTraversal", () -> new SideNoPickupNoTraversal(util, true));
 
-        autonMap.put("RightCenterNoClimb", () -> new RightCenterNoClimb(util));
-        autonMap.put("RightNoPickupNoClimb", () -> new RightNoPickupNoClimb(util));
-        autonMap.put("RightOutpostNoClimb", () -> new RightOutpostNoClimb(util));
+        autonMap.put("CenterNoPickupNoTraversal", () -> new CenterNoPickupNoTraversal(util));
 
-        autonMap.put("DoNothing", () -> Commands.none());
-        autonMap.put("Left2xCenterNoClimb", () -> new Left2xCenterNoClimb(util));
-        autonMap.put("Right2xCenterNoClimb", () -> new Right2xCenterNoClimb(util));
-        autonMap.put("RightCenterOutpost", () -> new RightCenterOutpost(util));
+        autonMap.put("RightCenterTrench", () -> new SideCenterTrench(util, false));
+        autonMap.put("RightCenterBump", () -> new SideCenterBump(util, false));
+        autonMap.put("RightNoPickupNoTraversal", () -> new SideNoPickupNoTraversal(util, false));
 
-        autonMap.put("RightCenterLoop", () -> new RightCenterLoop(util));
+        autonMap.put("Left2xCenterTrench", () -> new Side2xCenterTrench(util, true));
+        autonMap.put("Right2xCenterTrench", () -> new Side2xCenterTrench(util, false));
     }
 
     /** Loads all PathPlanner paths into the cache. */
@@ -51,7 +49,7 @@ public class AutonManager {
         Supplier<Command> supplier = autonMap.get(name);
         if (supplier == null) {
             System.err.println("Unknown autonomous routine: " + name + ". Defaulting.");
-            supplier = autonMap.get("RightCenterOutpost");
+            supplier = autonMap.get("DoNothing");
         }
         return supplier.get();
     }

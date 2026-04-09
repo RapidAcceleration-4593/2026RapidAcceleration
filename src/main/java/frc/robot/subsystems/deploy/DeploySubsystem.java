@@ -15,6 +15,7 @@ import frc.robot.util.CommandLogger;
 import frc.robot.util.mechanism.LengthMechanism3D;
 import org.littletonrobotics.junction.Logger;
 
+/** This subsystem manages the extendible hopper of the robot. */
 public class DeploySubsystem extends SubsystemBase {
 
     private final DeployIO io;
@@ -29,7 +30,6 @@ public class DeploySubsystem extends SubsystemBase {
 
         Trigger lsTrigger = new Trigger(() -> inputs.retractedLS);
         lsTrigger.onTrue(Commands.runOnce(io::resetPosition));
-
         deploy3D = fLengthMechanism3D.find("Deploy");
     }
 
@@ -37,24 +37,22 @@ public class DeploySubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Deploy", inputs);
-        targetDistance = inputs.targetDistance;
 
         deploy3D.setLength(inputs.distance);
         CommandLogger.logSubsystemCommand(this);
-
-        if (inputs.retractedLS) {
-            io.resetPosition();
-        }
     }
 
+    /** @return The distance that the mechanism is currently extended from the robot. */
     public Distance getCurrentDistance() {
         return inputs.distance;
     }
 
+    /** @return The extension setpoint that the mechanism is currently attempting to reach. */
     public Distance getTargetDistance() {
         return inputs.targetDistance;
     }
 
+    /** @return True if the actual extension is within tolerance of the extension setpoint, false otherwise. */
     public boolean atTargetDistance() {
         return inputs.distance.isNear(targetDistance, kDistanceTolerance);
     }
@@ -70,20 +68,15 @@ public class DeploySubsystem extends SubsystemBase {
         return startEnd(() -> setVoltage(volts), io::stop).until(this::drivingIntoLimit);
     }
 
-    /** @return True if limit switch is pressed or max distance is exceeded, false if not */
-    public boolean drivingIntoLimit() {
-        return (inputs.retractedLS && inputs.appliedVolts.lt(Volts.zero()))
-                || (inputs.distance.gt(kMaximumDistance) && inputs.appliedVolts.gt(Volts.zero()));
-    }
-
     /**
      * Constructs a command to run the deploy to a set distance.
      *
      * @param distance The distance to apply to the closed-loop PID control.
+     * @param isConstrained Whether to apply velocity constraints.
      * @return A command to run the motor to a distance and stop when complete.
      */
-    public Command goToDistanceCommand(Distance distance) {
-        return runEnd(() -> setPosition(distance), io::stop).until(this::atTargetDistance);
+    public Command goToDistanceCommand(Distance distance, boolean isConstrained) {
+        return startEnd(() -> setPosition(distance, isConstrained), io::stop).until(this::atTargetDistance);
     }
 
     /**
@@ -100,15 +93,16 @@ public class DeploySubsystem extends SubsystemBase {
      *
      * @param distance The distance to set as the deploy position.
      */
-    private void setPosition(Distance distance) {
-        if (inputs.retractedLS && distance.lte(kMinimumDistance)) {
-            distance = kMinimumDistance;
-        }
-
+    private void setPosition(Distance distance, boolean isConstrained) {
         Distance clampedDistance = Inches.of(
                 MathUtil.clamp(distance.in(Inches), kMinimumDistance.in(Inches), kMaximumDistance.in(Inches)));
-        targetDistance = clampedDistance;
-        io.setPosition(distance);
+        this.targetDistance = clampedDistance;
+
+        if (isConstrained) {
+            io.setPositionConstrained(clampedDistance);
+        } else {
+            io.setPosition(clampedDistance);
+        }
     }
 
     /**
@@ -122,5 +116,11 @@ public class DeploySubsystem extends SubsystemBase {
         } else {
             io.setVoltage(volts);
         }
+    }
+
+    /** Whether the limit switch is pressed or maximum distance is exceeded. */
+    private boolean drivingIntoLimit() {
+        return (inputs.retractedLS && inputs.appliedVolts.lt(Volts.zero()))
+                || (inputs.distance.gt(kMaximumDistance) && inputs.appliedVolts.gt(Volts.zero()));
     }
 }

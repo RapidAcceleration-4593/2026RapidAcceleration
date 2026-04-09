@@ -19,7 +19,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
-import org.littletonrobotics.junction.Logger;
 
 public class TurretIOReal implements TurretIO {
 
@@ -35,7 +34,7 @@ public class TurretIOReal implements TurretIO {
         SparkBaseConfig baseConfig = new SparkMaxConfig()
                 .inverted(kInvertMotor)
                 .idleMode(IdleMode.kBrake)
-                .smartCurrentLimit(30)
+                .smartCurrentLimit(20)
                 .voltageCompensation(12.0);
 
         AlternateEncoderConfig altEncoderConfig = new AlternateEncoderConfig()
@@ -74,9 +73,7 @@ public class TurretIOReal implements TurretIO {
 
     @Override
     public void setPosition(Angle angle) {
-        Logger.recordOutput("RealTargetAngle", angle.in(Degrees));
         controller.setSetpoint(angle.in(Degrees), ControlType.kPosition);
-        Logger.recordOutput("RealSetpoint", controller.getSetpoint());
     }
 
     @Override

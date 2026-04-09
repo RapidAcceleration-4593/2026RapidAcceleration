@@ -15,6 +15,7 @@ import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -27,10 +28,11 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
-import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
+import frc.robot.subsystems.vision.VisionConsumer;
 import frc.robot.util.CommandLogger;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.LocalADStarAK;
@@ -40,7 +42,7 @@ import java.util.function.Consumer;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.VisionConsumer {
+public class SwerveSubsystem extends SubsystemBase implements VisionConsumer {
 
     // Locks & Alerts.
     public static final Lock odometryLock = new ReentrantLock();
@@ -60,6 +62,7 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
     // Utilities & Callbacks.
     private final SysIdRoutine sysId;
     private final Consumer<Pose2d> resetSimulationPoseCallBack;
+    private Consumer<Pose3d> visionResetCallback;
 
     public SwerveSubsystem(
             GyroIO gyroIO,
@@ -67,9 +70,11 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
             ModuleIO frModuleIO,
             ModuleIO blModuleIO,
             ModuleIO brModuleIO,
-            Consumer<Pose2d> resetSimulationPoseCallBack) {
+            Consumer<Pose2d> resetSimulationPoseCallBack,
+            Consumer<Pose3d> visionResetCallback) {
         this.gyroIO = gyroIO;
         this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
+        this.visionResetCallback = visionResetCallback;
 
         // Initialize Modules.
         modules[0] = new Module(flModuleIO, 0, FrontLeft);
@@ -216,13 +221,15 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
      * Stops the drive and turns the modules to an X arrangement to resist movement. The modules will return to their
      * normal orientations the next time a nonzero velocity is requested.
      */
-    public void stopWithX() {
-        Rotation2d[] headings = new Rotation2d[4];
-        for (int i = 0; i < 4; i++) {
-            headings[i] = getModuleTranslations()[i].getAngle();
-        }
-        kinematics.resetHeadings(headings);
-        stop();
+    public Command stopXCommand() {
+        return Commands.runOnce(() -> {
+            Rotation2d[] headings = new Rotation2d[4];
+            for (int i = 0; i < 4; i++) {
+                headings[i] = getModuleTranslations()[i].getAngle();
+            }
+            kinematics.resetHeadings(headings);
+            stop();
+        });
     }
 
     /** Returns a command to run a quasistatic test in the specified direction. */
@@ -293,17 +300,26 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
     public void setPose(Pose2d pose) {
         resetSimulationPoseCallBack.accept(pose);
         poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+
+        if (visionResetCallback != null) {
+            visionResetCallback.accept(new Pose3d(pose));
+        }
     }
 
-    /** Resets the gyro angle to zero. */
-    public Command resetGyroCommand() {
-        return runOnce(gyroIO::resetGyro);
+    /** Updates the callback used to reset vision sensor origins. */
+    public void setVisionResetCallback(Consumer<Pose3d> callback) {
+        this.visionResetCallback = callback;
     }
 
     /** Adds a new timestamped vision measurement. */
     @Override
     public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
         poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    }
+
+    /** Resets the gyro angle to zero. */
+    public Command resetGyroCommand() {
+        return runOnce(gyroIO::resetGyro);
     }
 
     /** Returns the maximum linear speed in meters per second. */
@@ -314,5 +330,10 @@ public class SwerveSubsystem extends SubsystemBase implements AprilTagSubsystem.
     /** Returns the maximum angular speed in radians per second. */
     public double getMaxAngularSpeedRadPerSec() {
         return getMaxLinearSpeedMetersPerSec() / kDriveBaseRadius;
+    }
+
+    /** Manually resets the current odometry pose in front of the Hub. */
+    public Command resetPoseCommand() {
+        return Commands.runOnce(() -> setPose(FieldUtil.getInitialPose()));
     }
 }

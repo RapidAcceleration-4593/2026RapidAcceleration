@@ -2,7 +2,7 @@ plugins {
 	id "java"
 	id "edu.wpi.first.GradleRIO" version "2026.2.1"
 	id "com.peterabeles.gversion" version "1.10"
-	id "com.diffplug.spotless" version "8.1.0"
+	id "com.diffplug.spotless" version "8.4.0"
 }
 
 java {
@@ -27,8 +27,18 @@ deploy {
 			artifacts {
 				// First part is artifact name, 2nd is artifact type
 				// getTargetTypeClass is a shortcut to get the class type using a string
-
 				frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
+					final MAX_JAVA_HEAP_SIZE_MB = 100;
+					jvmArgs.add("-XX:+UnlockExperimentalVMOptions")
+
+					// Set the minimum heap size to the maximum heap size to avoid resizing
+					// May improve performance, but only use on the RoboRIO 2.0
+					jvmArgs.add("-Xmx" + MAX_JAVA_HEAP_SIZE_MB + "M")
+					jvmArgs.add("-Xms" + MAX_JAVA_HEAP_SIZE_MB + "M")
+					jvmArgs.add("-XX:GCTimeRatio=5")
+					jvmArgs.add("-XX:+UseSerialGC")
+					jvmArgs.add("-XX:MaxGCPauseMillis=50")
+					jvmArgs.add("-XX:+AlwaysPreTouch")
 				}
 
 				// Static files artifact
@@ -69,6 +79,8 @@ dependencies {
 	annotationProcessor wpi.java.deps.wpilibAnnotations()
 	implementation wpi.java.deps.wpilib()
 	implementation wpi.java.vendor.java()
+	implementation 'org.tinfour:TinfourCore:2.1.9'
+	implementation 'org.apache.commons:commons-math3:3.6.1'
 
 	roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
 	roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)

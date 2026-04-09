@@ -4,7 +4,10 @@ import static frc.robot.Constants.*;
 import static frc.robot.subsystems.vision.apriltag.AprilTagConstants.*;
 
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-import frc.robot.subsystems.vision.apriltag.*;
+import frc.robot.subsystems.vision.apriltag.AprilTagIO;
+import frc.robot.subsystems.vision.apriltag.AprilTagIOReal;
+import frc.robot.subsystems.vision.apriltag.AprilTagIOSim;
+import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import frc.robot.util.SimulationManager;
 import java.util.Arrays;
 

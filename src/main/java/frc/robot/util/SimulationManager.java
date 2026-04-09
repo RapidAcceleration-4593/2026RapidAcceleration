@@ -2,26 +2,25 @@ package frc.robot.util;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.*;
+import static frc.robot.subsystems.deploy.DeployConstants.kHopperCapacity;
 import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
+import static frc.robot.subsystems.shooter.ShooterConstants.kShooterHeight;
 import static frc.robot.subsystems.swerve.SwerveConstants.kMapleSimConfig;
-import static frc.robot.subsystems.vision.apriltag.AprilTagConstants.kFieldLayout;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.Mode;
+import frc.robot.subsystems.vision.apriltag.AprilTagConstants;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
+import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.simulation.VisionSystemSim;
@@ -31,19 +30,23 @@ public final class SimulationManager {
     private static SimulationManager instance;
 
     private final SwerveDriveSimulation swerveSim;
-    private final SimulatedArena arena = SimulatedArena.getInstance();
+    private final IntakeSimulation intakeSim;
+    private final Arena2026Rebuilt arena = (Arena2026Rebuilt) SimulatedArena.getInstance();
     private final List<IPhysicsSim> components;
-
     private final VisionSystemSim visionSim;
 
     private boolean intakeExtended;
+    private boolean intakeSpinning;
 
     private SimulationManager() {
         swerveSim = new SwerveDriveSimulation(kMapleSimConfig, new Pose2d());
         arena.addDriveTrainSimulation(swerveSim);
+        arena.setEfficiencyMode(false);
         components = new ArrayList<>();
         visionSim = new VisionSystemSim("main");
-        visionSim.addAprilTags(kFieldLayout);
+        visionSim.addAprilTags(AprilTagConstants.kFieldLayout);
+        intakeSim = IntakeSimulation.OverTheBumperIntake(
+                "Fuel", swerveSim, Inches.of(24), Inches.of(8), IntakeSimulation.IntakeSide.FRONT, kHopperCapacity);
     }
 
     /** Retrieves the SimulationManager instance during simulation. */
@@ -81,27 +84,20 @@ public final class SimulationManager {
     }
 
     /** Simulates an object being launched from the shooter mechanism. */
-    private void launchProjectile(Angle turretAngle, Angle hoodAngle, AngularVelocity velocity) {
-        Distance wheelRadius = Inches.of(2.0);
-        LinearVelocity linearVelocity = MetersPerSecond.of(velocity.in(RadiansPerSecond) * wheelRadius.in(Meters));
+    public void launchProjectile(Angle turretAngle, Angle hoodAngle, LinearVelocity launchVelocity) {
+        if (!intakeSim.obtainGamePieceFromIntake()) {
+            return;
+        }
         Rotation2d turretRotation = Rotation2d.fromRadians(turretAngle.in(Radians));
-
         RebuiltFuelOnFly projectile = new RebuiltFuelOnFly(
                 getPose().getTranslation(),
-                kPhysicalOffset.getTranslation(),
+                kPhysicalOffset.getTranslation().rotateBy(turretRotation),
                 getChassisSpeeds(),
-                getPose().getRotation().plus(turretRotation),
-                Inches.of(20.5),
-                linearVelocity,
+                getPose().getRotation().minus(turretRotation),
+                kShooterHeight,
+                launchVelocity,
                 Degrees.of(90.0).minus(hoodAngle));
-
         arena.addGamePieceProjectile(projectile);
-    }
-
-    public Command launchProjectileCommand(
-            Supplier<Angle> turretAngle, Supplier<Angle> hoodAngle, Supplier<AngularVelocity> velocity) {
-        return Commands.runOnce(() -> launchProjectile(turretAngle.get(), hoodAngle.get(), velocity.get()))
-                .withTimeout(Seconds.of(0.4));
     }
 
     /** Run periodically during simulation. */
@@ -116,6 +112,8 @@ public final class SimulationManager {
         for (var component : components) {
             component.updateIOSim();
         }
+
+        updateIntakeSim();
 
         Logger.recordOutput("FieldSimulation/RobotPosition", getPose());
         Logger.recordOutput("FieldSimulation/Fuel", arena.getGamePiecesArrayByType("Fuel"));
@@ -132,6 +130,14 @@ public final class SimulationManager {
         return swerveSim;
     }
 
+    public void setIntakeSpinning(boolean spinning) {
+        intakeSpinning = spinning;
+    }
+
+    public boolean isIntakeSpinning() {
+        return intakeSpinning;
+    }
+
     public boolean isIntakeExtended() {
         return intakeExtended;
     }
@@ -142,5 +148,13 @@ public final class SimulationManager {
 
     public VisionSystemSim getVisionSim() {
         return visionSim;
+    }
+
+    private void updateIntakeSim() {
+        if (isIntakeExtended() && isIntakeSpinning()) {
+            intakeSim.startIntake();
+        } else {
+            intakeSim.stopIntake();
+        }
     }
 }

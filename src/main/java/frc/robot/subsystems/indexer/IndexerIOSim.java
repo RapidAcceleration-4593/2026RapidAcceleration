@@ -7,6 +7,7 @@ import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.util.IPhysicsSim;
 import frc.robot.util.SimulationManager;
@@ -16,6 +17,7 @@ public class IndexerIOSim extends IndexerIOReal implements IPhysicsSim {
 
     private final SparkMaxSim spindexerMotorSim;
     private final SparkMaxSim feederMotorSim;
+    private final DIOSim sensorSim;
 
     private final FlywheelSim spindexerSim;
     private final FlywheelSim feederSim;
@@ -34,6 +36,7 @@ public class IndexerIOSim extends IndexerIOReal implements IPhysicsSim {
 
         spindexerMotorSim = new SparkMaxSim(spindexerMotor, spindexerGearbox);
         feederMotorSim = new SparkMaxSim(feederMotor, feederGearbox);
+        sensorSim = new DIOSim(sensor);
 
         SimulationManager.getInstance().addSimulatable(this);
     }
@@ -44,22 +47,27 @@ public class IndexerIOSim extends IndexerIOReal implements IPhysicsSim {
                 * SimulatedBattery.getBatteryVoltage().in(Volts));
         feederSim.setInput(feederMotorSim.getAppliedOutput()
                 * SimulatedBattery.getBatteryVoltage().in(Volts));
+        spindexerSim.update(0.02);
+        feederSim.update(0.02);
     }
 
     @Override
     public Current getCurrentDraw() {
-        return Amps.of(spindexerSim.getCurrentDrawAmps() + feederSim.getCurrentDrawAmps());
+        return Amps.of(spindexerMotorSim.getMotorCurrent() + feederMotorSim.getMotorCurrent());
     }
 
     @Override
     public void updateIOSim() {
         spindexerMotorSim.iterate(
-                spindexerSim.getAngularVelocityRPM() * kSpindexerGearing,
+                spindexerSim.getAngularVelocityRPM(),
                 SimulatedBattery.getBatteryVoltage().in(Volts),
                 0.02);
+
         feederMotorSim.iterate(
-                feederSim.getAngularVelocityRPM() * kFeederGearing,
+                feederSim.getAngularVelocityRPM(),
                 SimulatedBattery.getBatteryVoltage().in(Volts),
                 0.02);
+
+        sensorSim.setValue((Math.abs(spindexerMotor.getEncoder().getPosition()) * 4) % 1.0 < 0.1);
     }
 }

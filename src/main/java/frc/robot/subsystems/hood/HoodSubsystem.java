@@ -37,14 +37,9 @@ public class HoodSubsystem extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Hood", inputs);
-        targetAngle = inputs.targetAngle;
 
         hood3D.setAngle(inputs.angle);
         CommandLogger.logSubsystemCommand(this);
-
-        if (inputs.bottomLS) {
-            io.resetPosition();
-        }
     }
 
     public Angle getCurrentAngle() {
@@ -66,7 +61,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @return A command to set the motor voltage and stop when complete.
      */
     public Command setVoltageCommand(Voltage volts) {
-        return startEnd(() -> io.setVoltage(volts), io::stop);
+        return runEnd(() -> setVoltage(volts), io::stop);
     }
 
     /**
@@ -98,6 +93,14 @@ public class HoodSubsystem extends SubsystemBase {
         return runOnce(io::stop);
     }
 
+    private void setVoltage(Voltage volts) {
+        if (inputs.bottomLS && volts.lt(Volts.zero())) {
+            io.stop();
+        } else {
+            io.setVoltage(volts);
+        }
+    }
+
     /**
      * Sets the angle of the closed-loop PID controller.
      *
@@ -107,7 +110,7 @@ public class HoodSubsystem extends SubsystemBase {
         Angle angle = angleSupplier.get();
         Angle clampedAngle =
                 Degrees.of(MathUtil.clamp(angle.in(Degrees), kMinimumAngle.in(Degrees), kMaximumAngle.in(Degrees)));
-        targetAngle = clampedAngle;
+        this.targetAngle = clampedAngle;
         io.setPosition(clampedAngle);
     }
 }
