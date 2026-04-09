@@ -8,6 +8,6 @@ import frc.robot.subsystems.deploy.DeploySubsystem;
 public class RetractDeployCommand extends SequentialCommandGroup {
 
     public RetractDeployCommand(DeploySubsystem deploy) {
-        addCommands(deploy.goToDistanceCommand(kMinimumDistance, true));
+        addCommands(deploy.goToDistanceCommand(kMinimumDistance, false));
     }
 }

@@ -104,6 +104,7 @@ public class RobotContainer {
         driverController.start().onTrue(swerve.resetGyroCommand());
         driverController.a().onTrue(swerve.resetPoseCommand());
         driverController.x().onTrue(swerve.stopXCommand());
+        driverController.y().whileTrue(new RetractDeployCommand(deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
 
         driverController
                 .rightTrigger(0.5)
