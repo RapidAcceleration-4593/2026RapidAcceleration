@@ -12,7 +12,7 @@ public final class HoodConstants {
 
     public static final boolean kInvertMotor = true;
     public static final boolean kInvertEncoder = true;
-    public static final boolean kInvertLS = false;
+    public static final boolean kInvertLS = true;
 
     public static final double kP = 0.24;
     public static final double kI = 0.0;
