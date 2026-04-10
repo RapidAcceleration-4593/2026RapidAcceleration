@@ -163,7 +163,14 @@ public class RobotContainer {
                 "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
         NamedCommands.registerCommand(
                 "ExtendDeployCommand",
-                new ExtendDeployCommand(deploy).withTimeout(1.25).alongWith(new RunIntakeLEDLayer(LEDs)));
+                new ExtendDeployCommand(deploy)
+                        .alongWith(new RunIntakeLEDLayer(LEDs))
+                        .withTimeout(0.25));
+        NamedCommands.registerCommand(
+                "RetractDeployCommand",
+                new RetractDeployCommand(deploy)
+                        .alongWith(new RunIntakeLEDLayer(LEDs))
+                        .withTimeout(0.5));
         NamedCommands.registerCommand("ShakeDeployCommand", new ShakeDeployCommand(intake, deploy));
     }
 
