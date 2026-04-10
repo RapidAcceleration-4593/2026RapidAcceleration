@@ -20,7 +20,7 @@ public class Side2xCenterTrench extends AutonCommand {
                                 AutoBuilder.followPath(paths.get(0)),
                                 NamedCommands.getCommand("ExtendDeployCommand")
                                         .andThen(NamedCommands.getCommand("RetractDeployCommand"))
-                                        .andThen(NamedCommands.getCommand("IntakeCommand"))),
+                                        .andThen(NamedCommands.getCommand("IntakeCommand")).until(shootTrigger)),
                         Commands.waitUntil(shootTrigger)
                                 .andThen(Commands.parallel(
                                         Commands.waitSeconds(2.5)
