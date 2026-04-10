@@ -117,7 +117,10 @@ public class RobotContainer {
                 .rightBumper()
                 .whileTrue(new ShootCommand(shooter, turret, hood, indexer, calculator)
                         .alongWith(new IntakeCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDLayer(LEDs)));
+                        .alongWith(new RunShooterLEDLayer(LEDs))
+                        .alongWith(new RunWarningLEDLayer(LEDs)
+                                .onlyWhile(() -> !turret.atTargetAngle())
+                                .repeatedly()));
 
         driverController
                 .leftTrigger(0.5)
