@@ -8,7 +8,7 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 public final class HoodConstants {
 
     public static final int kMotorID = 7;
-    public static final int kLSChannel = 3;
+    public static final int kLSChannel = 0;
 
     public static final boolean kInvertMotor = true;
     public static final boolean kInvertEncoder = true;
