@@ -165,7 +165,7 @@ public class RobotContainer {
                 "ExtendDeployCommand",
                 new ExtendDeployCommand(deploy)
                         .alongWith(new RunIntakeLEDLayer(LEDs))
-                        .withTimeout(0.4));
+                        .withTimeout(0.5));
         NamedCommands.registerCommand(
                 "RetractDeployCommand",
                 new RetractDeployCommand(deploy)
