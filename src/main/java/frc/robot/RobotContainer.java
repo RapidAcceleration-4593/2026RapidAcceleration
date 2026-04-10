@@ -170,7 +170,7 @@ public class RobotContainer {
                 "RetractDeployCommand",
                 new RetractDeployCommand(deploy)
                         .alongWith(new RunIntakeLEDLayer(LEDs))
-                        .withTimeout(0.5));
+                        .withTimeout(0.8));
         NamedCommands.registerCommand("ShakeDeployCommand", new ShakeDeployCommand(intake, deploy));
     }
 
