@@ -160,11 +160,6 @@ public class RobotContainer {
                 "ShootCommand",
                 new ShootCommand(shooter, turret, hood, indexer, calculator).alongWith(new RunShooterLEDLayer(LEDs)));
         NamedCommands.registerCommand(
-                "ShootShakeCommand",
-                new ShootCommand(shooter, turret, hood, indexer, calculator)
-                        .alongWith(new ShakeDeployCommand(intake, deploy))
-                        .withTimeout(5.0));
-        NamedCommands.registerCommand(
                 "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
         NamedCommands.registerCommand("ShakeDeployCommand", new ShakeDeployCommand(intake, deploy));
         NamedCommands.registerCommand(
