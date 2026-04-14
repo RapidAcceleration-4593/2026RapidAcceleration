@@ -6,8 +6,6 @@ import static frc.robot.Constants.Controllers.*;
 import static frc.robot.Constants.kCurrentMode;
 
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -32,6 +30,7 @@ import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import frc.robot.subsystems.vision.quest.QuestNavSubsystem;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.SimulationManager;
+import org.littletonrobotics.junction.networktables.LoggedNetworkString;
 
 public class RobotContainer {
 
@@ -57,7 +56,7 @@ public class RobotContainer {
 
     // Autonomous Selector
     private final AutonManager autonManager;
-    private final NetworkTableInstance networkTableInstance;
+    private final LoggedNetworkString networkAutoSelector;
 
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
@@ -82,7 +81,7 @@ public class RobotContainer {
         autonManager = new AutonManager(swerve);
         autonManager.warmup();
 
-        networkTableInstance = NetworkTableInstance.getDefault();
+        networkAutoSelector = new LoggedNetworkString("/AccelerationStation/SelectedAuto", "DoNothing");
         FieldUtil.setPoseSupplier(swerve::getPose);
 
         registerCommands();
@@ -118,7 +117,10 @@ public class RobotContainer {
                 .rightBumper()
                 .whileTrue(new ShootCommand(shooter, turret, hood, indexer, calculator)
                         .alongWith(new IntakeCommand(intake, deploy))
-                        .alongWith(new RunShooterLEDLayer(LEDs)));
+                        .alongWith(new RunShooterLEDLayer(LEDs))
+                        .alongWith(new RunWarningLEDLayer(LEDs)
+                                .onlyWhile(() -> !turret.atTargetAngle())
+                                .repeatedly()));
 
         driverController
                 .leftTrigger(0.5)
@@ -149,9 +151,7 @@ public class RobotContainer {
 
     /** Select the command to run in Autonomous. */
     public Command getAutonomousCommand() {
-        NetworkTableEntry entry =
-                networkTableInstance.getTable("AccelerationStation").getEntry("SelectedAuto");
-        return autonManager.getAuton(entry.getString("DoNothing"));
+        return autonManager.getAuton(networkAutoSelector.get());
     }
 
     /** Register NamedCommands for Autonomous. */
@@ -161,9 +161,17 @@ public class RobotContainer {
                 new ShootCommand(shooter, turret, hood, indexer, calculator).alongWith(new RunShooterLEDLayer(LEDs)));
         NamedCommands.registerCommand(
                 "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
+        NamedCommands.registerCommand("ShakeDeployCommand", new ShakeDeployCommand(intake, deploy));
         NamedCommands.registerCommand(
                 "ExtendDeployCommand",
-                new ExtendDeployCommand(deploy).withTimeout(1.25).alongWith(new RunIntakeLEDLayer(LEDs)));
+                new ExtendDeployCommand(deploy)
+                        .alongWith(new RunIntakeLEDLayer(LEDs))
+                        .withTimeout(0.5));
+        NamedCommands.registerCommand(
+                "RetractDeployCommand",
+                new RetractDeployCommand(deploy)
+                        .alongWith(new RunIntakeLEDLayer(LEDs))
+                        .withTimeout(0.8));
         NamedCommands.registerCommand("ShakeDeployCommand", new ShakeDeployCommand(intake, deploy));
     }
 

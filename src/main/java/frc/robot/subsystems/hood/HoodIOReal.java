@@ -54,7 +54,7 @@ public class HoodIOReal implements HoodIO {
 
         SoftLimitConfig limitConfig = new SoftLimitConfig()
                 .reverseSoftLimit(kMinimumAngle.in(Degrees))
-                .reverseSoftLimitEnabled(true)
+                .reverseSoftLimitEnabled(false)
                 .forwardSoftLimit(kMaximumAngle.in(Degrees))
                 .forwardSoftLimitEnabled(true);
 
