@@ -9,7 +9,7 @@ public final class DeployConstants {
 
     public static final int kLeftMotorID = 6;
     public static final int kRightMotorID = 2;
-    public static final int kRetractedLSChannel = 1;
+    public static final int kRetractedLSChannel = 3;
 
     public static final boolean kInvertMotor = true;
     public static final boolean kInvertEncoder = false;

@@ -19,9 +19,9 @@ public final class AprilTagConstants {
         new CameraConfig(
                 "OV9782_1",
                 new Transform3d(
-                        Inches.of(-13.25),
-                        Inches.of(12.6),
-                        Inches.of(9.5),
+                        Inches.of(-14.5),
+                        Inches.of(12.5),
+                        Inches.of(9.0),
                         new Rotation3d(Degrees.zero(), Degrees.of(-15.0), Degrees.of(140.0))),
                 1.0),
         // Back Right Camera
