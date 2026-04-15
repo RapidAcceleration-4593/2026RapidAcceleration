@@ -126,7 +126,8 @@ public class RobotContainer {
                 .leftTrigger(0.5)
                 .whileTrue(new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
 
-        driverController.leftBumper().whileTrue(new PathfindCommands().pathfindUnderNearestTrench(swerve));
+        driverController.leftBumper().whileTrue(new PathfindCommands().pathfindNearestTrench(swerve));
+        // driverController.leftBumper().whileTrue(new PathfindCommands().pathfindNearestBump(swerve));
 
         // <------- Operator Controller ------->
         operatorController.rightTrigger(0.5).whileTrue(new ManualShootCommand(shooter, hood, indexer));

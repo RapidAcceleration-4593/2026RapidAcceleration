@@ -20,13 +20,9 @@ public final class PathfindCommands {
     private static final PathConstraints kConstraints =
             new PathConstraints(kLinearVelocity, kLinearAcceleration, kAngularVelocity, kAngularAcceleration);
 
-    private static final PathConstraints kClimbConstants = new PathConstraints(
-            MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(1.0), kAngularVelocity, kAngularAcceleration);
-
     private record Trench(Pose2d allianceSide, Pose2d neutralSide) {}
 
-    private static final Pose2d kLeftClimb = new Pose2d(Meters.of(0.92), Meters.of(3.0), new Rotation2d());
-    private static final Pose2d kRightClimb = new Pose2d(Meters.of(1.2), Meters.of(0.45), new Rotation2d());
+    private record Bump(Pose2d allianceSide, Pose2d neutralSide) {}
 
     private static final List<Trench> kTrenches = List.of(
             new Trench(
@@ -36,11 +32,15 @@ public final class PathfindCommands {
                     new Pose2d(Meters.of(3.25), Meters.of(0.65), new Rotation2d()),
                     new Pose2d(Meters.of(6.0), Meters.of(0.65), new Rotation2d())));
 
-    private Pose2d fieldPose(Pose2d bluePose) {
-        return FieldUtil.isRedAlliance() ? FlippingUtil.flipFieldPose(bluePose) : bluePose;
-    }
+    private static final List<Bump> kBumps = List.of(
+            new Bump(
+                    new Pose2d(Meters.of(3.0), Meters.of(2.5), new Rotation2d()),
+                    new Pose2d(Meter.of(6.0), Meters.of(2.5), new Rotation2d())),
+            new Bump(
+                    new Pose2d(Meters.of(3.0), Meters.of(5.5), new Rotation2d()),
+                    new Pose2d(Meter.of(6.0), Meters.of(5.5), new Rotation2d())));
 
-    public Command pathfindUnderNearestTrench(SwerveSubsystem swerve) {
+    public Command pathfindNearestTrench(SwerveSubsystem swerve) {
         return Commands.defer(
                 () -> {
                     Pose2d robotPose = swerve.getPose();
@@ -54,26 +54,43 @@ public final class PathfindCommands {
                     Pose2d exitWithRotation = new Pose2d(exit.getTranslation(), snapped);
 
                     return Commands.sequence(
-                            AutoBuilder.pathfindToPose(entranceWithRotation, kConstraints, 1.0),
+                            AutoBuilder.pathfindToPose(entranceWithRotation, kConstraints, 2.0),
                             AutoBuilder.pathfindToPose(exitWithRotation, kConstraints, 0.0));
                 },
                 Set.of(swerve));
     }
 
-    public Command pathfindLeftClimb(SwerveSubsystem swerve) {
+    public Command pathfindNearestBump(SwerveSubsystem swerve) {
         return Commands.defer(
-                () -> AutoBuilder.pathfindToPose(fieldPose(kLeftClimb), kClimbConstants, 0.0), Set.of(swerve));
-    }
+                () -> {
+                    Pose2d robotPose = swerve.getPose();
+                    Bump bump = findClosestBump(robotPose);
 
-    public Command pathfindRightClimb(SwerveSubsystem swerve) {
-        return Commands.defer(
-                () -> AutoBuilder.pathfindToPose(fieldPose(kRightClimb), kClimbConstants, 0.0), Set.of(swerve));
+                    Pose2d entrance = getEntrance(robotPose, bump);
+                    Pose2d exit = getExit(entrance, bump);
+
+                    Rotation2d snapped = snapRotation(robotPose.getRotation());
+                    Pose2d entranceWithRotation = new Pose2d(entrance.getTranslation(), snapped);
+                    Pose2d exitWithRotation = new Pose2d(exit.getTranslation(), snapped);
+
+                    return Commands.sequence(
+                            AutoBuilder.pathfindToPose(entranceWithRotation, kConstraints, 2.0),
+                            new SimplePathCommand(swerve, exitWithRotation));
+                },
+                Set.of(swerve));
     }
 
     private Trench findClosestTrench(Pose2d robotPose) {
         return kTrenches.stream()
                 .map(this::getCorrectTrench)
-                .min((a, b) -> Double.compare(minDistance(robotPose, a), minDistance(robotPose, b)))
+                .min((a, b) -> Double.compare(minDistanceTrench(robotPose, a), minDistanceTrench(robotPose, b)))
+                .orElseThrow();
+    }
+
+    private Bump findClosestBump(Pose2d robotPose) {
+        return kBumps.stream()
+                .map(this::getCorrectBump)
+                .min((a, b) -> Double.compare(minDistanceBump(robotPose, a), minDistanceBump(robotPose, b)))
                 .orElseThrow();
     }
 
@@ -86,9 +103,24 @@ public final class PathfindCommands {
         return blueTrench;
     }
 
-    private double minDistance(Pose2d robotPose, Trench trench) {
+    private Bump getCorrectBump(Bump blueBump) {
+        if (FieldUtil.isRedAlliance()) {
+            return new Bump(
+                    FlippingUtil.flipFieldPose(blueBump.allianceSide()),
+                    FlippingUtil.flipFieldPose(blueBump.neutralSide()));
+        }
+        return blueBump;
+    }
+
+    private double minDistanceTrench(Pose2d robotPose, Trench trench) {
         double d1 = robotPose.getTranslation().getDistance(trench.allianceSide().getTranslation());
         double d2 = robotPose.getTranslation().getDistance(trench.neutralSide().getTranslation());
+        return Math.min(d1, d2);
+    }
+
+    private double minDistanceBump(Pose2d robotPose, Bump bump) {
+        double d1 = robotPose.getTranslation().getDistance(bump.allianceSide().getTranslation());
+        double d2 = robotPose.getTranslation().getDistance(bump.neutralSide().getTranslation());
         return Math.min(d1, d2);
     }
 
@@ -96,8 +128,16 @@ public final class PathfindCommands {
         return robotPose.nearest(List.of(trench.allianceSide(), trench.neutralSide()));
     }
 
+    private Pose2d getEntrance(Pose2d robotPose, Bump bump) {
+        return robotPose.nearest(List.of(bump.allianceSide(), bump.neutralSide()));
+    }
+
     private Pose2d getExit(Pose2d entrance, Trench trench) {
         return entrance.equals(trench.allianceSide()) ? trench.neutralSide() : trench.allianceSide();
+    }
+
+    private Pose2d getExit(Pose2d entrance, Bump bump) {
+        return entrance.equals(bump.allianceSide()) ? bump.neutralSide() : bump.allianceSide();
     }
 
     private Rotation2d snapRotation(Rotation2d robotRotation) {
