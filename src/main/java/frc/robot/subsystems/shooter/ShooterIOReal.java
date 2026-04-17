@@ -37,7 +37,7 @@ public class ShooterIOReal implements ShooterIO {
                 .withInverted(kInvertMotor ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive)
                 .withNeutralMode(NeutralModeValue.Coast);
         config.CurrentLimits =
-                new CurrentLimitsConfigs().withSupplyCurrentLimit(60.0).withSupplyCurrentLimitEnable(true);
+                new CurrentLimitsConfigs().withSupplyCurrentLimit(80.0).withSupplyCurrentLimitEnable(true);
         config.Slot0 = new Slot0Configs().withKS(kS).withKV(kV).withKA(kA);
 
         motor.getConfigurator().apply(config);

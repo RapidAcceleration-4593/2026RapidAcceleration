@@ -16,20 +16,19 @@ public class Side2xCenterTrench extends AutonCommand {
 
         addCommands(
                 Commands.parallel(
-                                AutoBuilder.followPath(paths.get(0)),
-                                Commands.deadline(
-                                        Commands.waitUntil(shootTrigger),
-                                        NamedCommands.getCommand("ExtendDeployCommand")
-                                                .andThen(NamedCommands.getCommand("RetractDeployCommand"))
-                                                .andThen(NamedCommands.getCommand("IntakeCommand"))),
-                                Commands.waitUntil(shootTrigger)
-                                        .andThen(Commands.race(
-                                                        NamedCommands.getCommand("ShootCommand"),
-                                                        Commands.waitSeconds(2.0)
-                                                                .andThen(
-                                                                        NamedCommands.getCommand("ShakeDeployCommand")))
-                                                .withTimeout(5.0)
-                                                .asProxy())),
+                        AutoBuilder.followPath(paths.get(0)),
+                        Commands.deadline(
+                                Commands.waitUntil(shootTrigger),
+                                NamedCommands.getCommand("ExtendDeployCommand")
+                                        .andThen(NamedCommands.getCommand("RetractDeployCommand"))
+                                        .andThen(NamedCommands.getCommand("IntakeCommand"))),
+                        Commands.waitUntil(shootTrigger)
+                                .andThen(Commands.race(
+                                                NamedCommands.getCommand("ShootCommand"),
+                                                Commands.waitSeconds(2.0)
+                                                        .andThen(NamedCommands.getCommand("ShakeDeployCommand")))
+                                        .withTimeout(5.0)
+                                        .asProxy())),
                 NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(1))),
                 Commands.parallel(
                         AutoBuilder.followPath(paths.get(2)),

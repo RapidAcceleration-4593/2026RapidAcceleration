@@ -133,7 +133,11 @@ public class RobotContainer {
         operatorController.leftBumper().whileTrue(turret.setVoltageCommand(Volts.of(-4.0)));
         operatorController.rightBumper().whileTrue(turret.setVoltageCommand(Volts.of(4.0)));
 
-        operatorController.a().whileTrue(intake.setVoltageCommand(Volts.of(-6.0)));
+        operatorController
+                .a()
+                .whileTrue(new OuttakeCommand(intake, deploy)
+                        .alongWith(new ShootCommand(shooter, turret, hood, indexer, calculator))
+                        .alongWith(new RunIntakeLEDLayer(LEDs)));
         operatorController.x().whileTrue(deploy.setVoltageCommand(Volts.of(5.0)));
         operatorController.b().whileTrue(deploy.setVoltageCommand(Volts.of(-5.0)));
 
