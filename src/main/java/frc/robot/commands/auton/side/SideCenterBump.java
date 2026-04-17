@@ -12,7 +12,7 @@ public class SideCenterBump extends AutonCommand {
 
     public SideCenterBump(AutonUtil util, boolean isFlipped) {
         super(util, isFlipped, List.of("SideCenterBump-1"));
-        EventTrigger shootTrigger = new EventTrigger("Shoot");
+        EventTrigger shootTrigger = new EventTrigger("StartShooter");
 
         addCommands(Commands.parallel(
                 Commands.race(

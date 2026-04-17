@@ -12,7 +12,7 @@ public class SideCenterTrench extends AutonCommand {
 
     public SideCenterTrench(AutonUtil util, boolean isFlipped) {
         super(util, isFlipped, List.of("SideCenterTrench-1", "SideCenterTrench-2"));
-        EventTrigger shootTrigger = new EventTrigger("Shoot");
+        EventTrigger shootTrigger = new EventTrigger("StartShooter");
 
         addCommands(
                 Commands.parallel(
