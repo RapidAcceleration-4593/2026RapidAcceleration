@@ -18,12 +18,15 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.turret.TurretConstants;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.shooting.ProjectilePhysics;
 import frc.robot.util.shooting.ProjectilePhysicsCalibration;
 import java.util.function.Supplier;
+
+import org.ironmaple.utils.FieldMirroringUtils;
 
 public class ShotCalculatorSubsystem extends SubsystemBase {
 
@@ -135,7 +138,12 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
                 robotVelocity.omegaRadiansPerSecond);
 
         Pose3d realTarget3d = FieldUtil.getTargetPose();
-        latestResult = calculateMovingShot(shooterPose, shooterSpeeds, realTarget3d.getTranslation());
+
+		if (FieldUtil.isUnderTrench() && DriverStation.isTeleop()) {
+			latestResult = ShotResult.invalid();
+		} else {
+			latestResult = calculateMovingShot(shooterPose, shooterSpeeds, realTarget3d.getTranslation());
+		}
     }
 
     private Angle calculateHood(Distance distance) {
@@ -186,6 +194,10 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
     public boolean isInvalid() {
         return !latestResult.valid();
     }
+
+	public ShotResult getLatestResult() {
+		return latestResult;
+	}
 
     public record ShotResult(Angle turretAngle, Angle hoodAngle, AngularVelocity shooterVelocity, boolean valid) {
         public static ShotResult invalid() {
