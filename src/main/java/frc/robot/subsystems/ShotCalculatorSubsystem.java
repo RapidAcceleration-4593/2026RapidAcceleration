@@ -20,13 +20,12 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.turret.TurretConstants;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.shooting.ProjectilePhysics;
 import frc.robot.util.shooting.ProjectilePhysicsCalibration;
 import java.util.function.Supplier;
 
-import org.ironmaple.utils.FieldMirroringUtils;
+import org.littletonrobotics.junction.Logger;
 
 public class ShotCalculatorSubsystem extends SubsystemBase {
 
@@ -97,9 +96,6 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         Rotation2d angleToTarget = new Rotation2d(targetVector.getX(), targetVector.getY());
 
         Angle turretAngle = calculateTurret(shooterPose, angleToTarget);
-        if (turretAngle.lt(TurretConstants.kMinimumAngle) || turretAngle.gt(TurretConstants.kMaximumAngle)) {
-            latestIsValid = false;
-        }
 
         // Final Validity Check.
         AngularVelocity shooterVelocity =
@@ -107,10 +103,12 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         if (Double.isNaN(shooterVelocity.in(RadiansPerSecond))) {
             latestIsValid = false;
         }
+		Logger.recordOutput("TargetTurretAngle", turretAngle);
         return new ShotResult(turretAngle, hoodAngle, shooterVelocity, latestIsValid);
     }
 
     private void calculate() {
+		Logger.recordOutput("ShotValid", latestResult.valid);
         Pose2d currentPose = poseSupplier.get();
         ChassisSpeeds robotVelocity =
                 ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeedsSupplier.get(), currentPose.getRotation());
@@ -139,11 +137,11 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
 
         Pose3d realTarget3d = FieldUtil.getTargetPose();
 
-		if (FieldUtil.isUnderTrench() && DriverStation.isTeleop()) {
-			latestResult = ShotResult.invalid();
-		} else {
-			latestResult = calculateMovingShot(shooterPose, shooterSpeeds, realTarget3d.getTranslation());
-		}
+        if (FieldUtil.isUnderTrench() && DriverStation.isTeleop()) {
+            latestResult = ShotResult.invalid();
+        } else {
+            latestResult = calculateMovingShot(shooterPose, shooterSpeeds, realTarget3d.getTranslation());
+        }
     }
 
     private Angle calculateHood(Distance distance) {
@@ -195,9 +193,9 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         return !latestResult.valid();
     }
 
-	public ShotResult getLatestResult() {
-		return latestResult;
-	}
+    public ShotResult getLatestResult() {
+        return latestResult;
+    }
 
     public record ShotResult(Angle turretAngle, Angle hoodAngle, AngularVelocity shooterVelocity, boolean valid) {
         public static ShotResult invalid() {

@@ -22,7 +22,7 @@ public class ShootCommand extends ParallelCommandGroup {
                 hood.runToAngleCommand(calculator::getHoodAngle),
                 Commands.waitSeconds(0.3)
                         .andThen(indexer.runCommand()
-                                .onlyWhile(turret::atTargetAngle)
+                                .onlyWhile(() -> turret.atTargetAngle() && calculator.isValid())
                                 .repeatedly()));
     }
 }
