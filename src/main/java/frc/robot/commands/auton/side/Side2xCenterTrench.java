@@ -31,8 +31,7 @@ public class Side2xCenterTrench extends AutonCommand {
                 Commands.parallel(
                         AutoBuilder.followPath(paths.get(2)),
                         Commands.waitUntil(shootTrigger)
-                                .andThen(Commands.deadline(
-                                        Commands.waitSeconds(5.0),
+                                .andThen(Commands.parallel(
                                         NamedCommands.getCommand("ShootCommand"),
                                         Commands.sequence(
                                                 Commands.waitSeconds(2.0),

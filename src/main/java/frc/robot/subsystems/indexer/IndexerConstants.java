@@ -13,15 +13,12 @@ public final class IndexerConstants {
 
     public static final int kSensorChannel = 2;
 
-    public static final double kVSpindexer = 0.00105;
-    public static final double kVFeeder = 0.00215;
-
     public static final boolean kInvertSpindexerMotor = false;
     public static final boolean kInvertFeederMotor = false;
     public static final boolean kInvertSensor = false;
 
     public static final Voltage kSpindexerVolts = Volts.of(12.0);
-    public static final Voltage kFeederVolts = Volts.of(9.0);
+    public static final Voltage kFeederVolts = Volts.of(12.0);
 
     public static final double kSpindexerGearing = (5.0 * 4.0);
     public static final double kFeederGearing = (3.0);

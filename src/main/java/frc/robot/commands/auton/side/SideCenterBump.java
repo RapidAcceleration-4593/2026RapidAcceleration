@@ -15,15 +15,15 @@ public class SideCenterBump extends AutonCommand {
         EventTrigger shootTrigger = new EventTrigger("StartShooter");
 
         addCommands(Commands.parallel(
-                Commands.race(
-                        AutoBuilder.followPath(paths.get(0)),
-                        NamedCommands.getCommand("ExtendDeployCommand")
-                                .andThen(NamedCommands.getCommand("RetractDeployCommand"))
-                                .andThen(NamedCommands.getCommand("IntakeCommand"))),
-                Commands.waitUntil(shootTrigger)
-                        .andThen(Commands.parallel(
+                AutoBuilder.followPath(paths.get(0)),
+                Commands.sequence(
+                        NamedCommands.getCommand("ExtendDeployCommand"),
+                        NamedCommands.getCommand("RetractDeployCommand"),
+                        NamedCommands.getCommand("IntakeCommand").until(shootTrigger),
+                        Commands.deadline(
+                                Commands.waitSeconds(10.0),
                                 NamedCommands.getCommand("ShootCommand"),
-                                Commands.waitSeconds(6.0).andThen(NamedCommands.getCommand("ShakeDeployCommand"))))
-                        .withTimeout(10.0)));
+                                Commands.sequence(
+                                        Commands.waitSeconds(4.0), NamedCommands.getCommand("ShakeDeployCommand"))))));
     }
 }
