@@ -20,7 +20,7 @@ public class QuestNavSubsystem extends SubsystemBase {
 
     private final LoggedNetworkString selectedVisionSystem = new LoggedNetworkString(kSelectedVisionNTAddress);
 
-    private static final Transform3d kRobotToQuest = new Transform3d(
+    public static final Transform3d kRobotToQuest = new Transform3d(
             Inches.of(-13.0),
             Inches.of(-12.0),
             Inches.of(14.0),
