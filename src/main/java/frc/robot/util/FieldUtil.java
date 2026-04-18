@@ -1,11 +1,14 @@
 package frc.robot.util;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.shooter.ShooterConstants.kPhysicalOffset;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -24,6 +27,15 @@ public final class FieldUtil {
             new Pose2d(kFieldLength.times(0.22), kFieldWidth.div(2), Rotation2d.kZero);
     private static final Pose2d kRedInitialPose =
             new Pose2d(kFieldLength.times(0.78), kFieldWidth.div(2), Rotation2d.k180deg);
+
+    private static final Rectangle2d kBlueRightTrench =
+            new Rectangle2d(new Translation2d(158.6, 0), new Translation2d(158.6 + 47, 67.65));
+    private static final Rectangle2d kBlueLeftTrench =
+            new Rectangle2d(new Translation2d(158.6, 317.7), new Translation2d(158.6 + 47, 317.7 - 67.65));
+    private static final Rectangle2d kRedLeftTrench =
+            new Rectangle2d(new Translation2d(651.2 - 158.6, 0), new Translation2d(651.2 - 158.6 - 47, 67.65));
+    private static final Rectangle2d kRedRightTrench = new Rectangle2d(
+            new Translation2d(651.2 - 158.6, 317.7), new Translation2d(651.2 - 158.6 - 47, 317.7 - 67.65));
 
     public enum FieldZones {
         Neutral_Zone,
@@ -79,6 +91,14 @@ public final class FieldUtil {
         Alliance alliance = getCurrentAlliance();
         return (alliance == Alliance.Red && zone == FieldZones.Red_Zone)
                 || (alliance == Alliance.Blue && zone == FieldZones.Blue_Zone);
+    }
+
+    public static boolean isUnderTrench() {
+        Translation2d shooterPos = getPose().transformBy(kPhysicalOffset).getTranslation();
+        return kBlueLeftTrench.contains(shooterPos)
+                || kBlueRightTrench.contains(shooterPos)
+                || kRedRightTrench.contains(shooterPos)
+                || kRedLeftTrench.contains(shooterPos);
     }
 
     public static Pose2d getInitialPose() {
