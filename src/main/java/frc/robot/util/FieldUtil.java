@@ -28,14 +28,14 @@ public final class FieldUtil {
     private static final Pose2d kRedInitialPose =
             new Pose2d(kFieldLength.times(0.78), kFieldWidth.div(2), Rotation2d.k180deg);
 
-    private static final Rectangle2d kBlueRightTrench =
-            new Rectangle2d(new Translation2d(4.028, 0), new Translation2d(5.222, 1.718));
-    private static final Rectangle2d kBlueLeftTrench =
-            new Rectangle2d(new Translation2d(4.028, 8.070), new Translation2d(5.222, 6.351));
-    private static final Rectangle2d kRedLeftTrench =
-            new Rectangle2d(new Translation2d(12.512, 0), new Translation2d(11.318, 1.718));
-    private static final Rectangle2d kRedRightTrench =
-            new Rectangle2d(new Translation2d(12.512, 8.070), new Translation2d(11.318, 6.351));
+    private static final Rectangle2d kBlueRightTrench = new Rectangle2d(
+            new Translation2d(Meters.of(4.25), Meters.zero()), new Translation2d(Meters.of(5.0), Meters.of(1.3)));
+    private static final Rectangle2d kBlueLeftTrench = new Rectangle2d(
+            new Translation2d(Meters.of(4.25), kFieldWidth), new Translation2d(Meters.of(5.0), Meters.of(6.8)));
+    private static final Rectangle2d kRedLeftTrench = new Rectangle2d(
+            new Translation2d(Meters.of(12.25), Meters.zero()), new Translation2d(Meters.of(11.5), Meters.of(1.3)));
+    private static final Rectangle2d kRedRightTrench = new Rectangle2d(
+            new Translation2d(Meters.of(12.25), kFieldWidth), new Translation2d(Meters.of(11.5), Meters.of(6.8)));
 
     public enum FieldZones {
         Neutral_Zone,

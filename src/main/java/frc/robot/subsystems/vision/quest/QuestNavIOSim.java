@@ -9,8 +9,9 @@ import edu.wpi.first.wpilibj.Timer;
 import java.util.function.Supplier;
 
 public class QuestNavIOSim implements QuestNavIO {
-    Supplier<Pose2d> robotPoseSupplier;
-    Transform3d zeroingOffset = QuestNavSubsystem.kRobotToQuest;
+
+    private final Supplier<Pose2d> robotPoseSupplier;
+    private Transform3d zeroingOffset = QuestNavSubsystem.kRobotToQuest;
 
     public QuestNavIOSim(Supplier<Pose2d> robotPoseSupplier) {
         this.robotPoseSupplier = robotPoseSupplier;
@@ -25,7 +26,6 @@ public class QuestNavIOSim implements QuestNavIO {
         inputs.trackingLostCount = 0;
 
         Pose3d questPose = new Pose3d(robotPoseSupplier.get()).transformBy(zeroingOffset);
-
         inputs.unreadFrames = new PoseFrameLog[] {new PoseFrameLog(questPose, Timer.getFPGATimestamp(), true)};
     }
 

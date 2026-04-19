@@ -24,7 +24,6 @@ import frc.robot.util.FieldUtil;
 import frc.robot.util.shooting.ProjectilePhysics;
 import frc.robot.util.shooting.ProjectilePhysicsCalibration;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 public class ShotCalculatorSubsystem extends SubsystemBase {
@@ -103,12 +102,12 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         if (Double.isNaN(shooterVelocity.in(RadiansPerSecond))) {
             latestIsValid = false;
         }
-		Logger.recordOutput("TargetTurretAngle", turretAngle);
+        Logger.recordOutput("TargetTurretAngle", turretAngle);
         return new ShotResult(turretAngle, hoodAngle, shooterVelocity, latestIsValid);
     }
 
     private void calculate() {
-		Logger.recordOutput("ShotValid", latestResult.valid);
+        Logger.recordOutput("ShotValid", latestResult.valid);
         Pose2d currentPose = poseSupplier.get();
         ChassisSpeeds robotVelocity =
                 ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeedsSupplier.get(), currentPose.getRotation());
