@@ -1,7 +1,10 @@
 package frc.robot.subsystems.intake;
 
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.intake.IntakeConstants.kIntakeVolts;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,13 +39,12 @@ public class IntakeSubsystem extends SubsystemBase {
         return startEnd(() -> io.setVoltage(volts), io::stop);
     }
 
-    /**
-     * Constructs a command to run the intake motor.
-     *
-     * @return A command to run the intake motor and stop when complete.
-     */
     public Command runCommand() {
-        return startEnd(() -> io.setVoltage(kIntakeVolts), io::stop);
+        return run(() -> io.setVoltage(kIntakeVolts))
+                .until(this::isJamming)
+                .andThen(setVoltageCommand(kIntakeVolts.unaryMinus()).withTimeout(0.5))
+                .repeatedly()
+                .finallyDo(io::stop);
     }
 
     /**
@@ -52,5 +54,12 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public Command stopCommand() {
         return runOnce(io::stop);
+    }
+
+    private boolean isJamming() {
+        Voltage currentVoltage = inputs.appliedVolts;
+        AngularVelocity currentVelocity = inputs.intakeVelocity;
+
+        return currentVoltage.abs(Volts) > 6.0 && currentVelocity.abs(RPM) < 120;
     }
 }

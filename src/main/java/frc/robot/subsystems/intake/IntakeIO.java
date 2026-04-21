@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
@@ -12,6 +13,7 @@ public interface IntakeIO {
     public static class IntakeInputs {
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();
+        public AngularVelocity intakeVelocity = RPM.zero();
     }
 
     /** Fetches updates from sensors through the IO interface. */
