@@ -19,7 +19,8 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 public class QuestNavSubsystem extends SubsystemBase {
 
-    private final LoggedNetworkBoolean questEnabled = new LoggedNetworkBoolean("/AccelerationStation/QuestEnabled");
+    private final LoggedNetworkBoolean questEnabled =
+            new LoggedNetworkBoolean("/AccelerationStation/QuestEnabled", true);
 
     public static final Transform3d kRobotToQuest = new Transform3d(
             Inches.of(-13.0),
@@ -47,7 +48,7 @@ public class QuestNavSubsystem extends SubsystemBase {
             if (frame.isTracking()) {
                 Pose3d robotPose = frame.questPose().transformBy(kRobotToQuest.inverse());
                 if (shouldReject(robotPose)) return;
-                if (questEnabled.get() || questEnabled == null) {
+                if (questEnabled.get()) {
                     visionConsumer.accept(robotPose.toPose2d(), frame.timestamp(), kStateSTDDevs);
                 }
             }

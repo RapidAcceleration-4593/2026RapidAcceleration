@@ -93,6 +93,10 @@ public final class FieldUtil {
                 || (alliance == Alliance.Blue && zone == FieldZones.Blue_Zone);
     }
 
+    public static boolean isInNeutralZone() {
+        return getCurrentZone() == FieldZones.Neutral_Zone;
+    }
+
     public static boolean isUnderTrench() {
         Translation2d shooterPos = getPose().transformBy(kPhysicalOffset).getTranslation();
         return kBlueLeftTrench.contains(shooterPos)
