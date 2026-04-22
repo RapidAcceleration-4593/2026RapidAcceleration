@@ -19,8 +19,6 @@ public final class ShooterConstants {
     public static final double kV = 0.1175;
     public static final double kA = 0.05;
 
-    public static final AngularVelocity kZeroVelocity = RPM.zero();
-    public static final AngularVelocity kShootVelocity = RPM.of(3500);
     public static final AngularVelocity kVelocityTolerance = RPM.of(300);
 
     public static final double kShooterGearing = (15.0 / 14.0);

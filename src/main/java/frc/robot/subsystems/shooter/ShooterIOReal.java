@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.RPM;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import com.ctre.phoenix6.StatusSignal;
@@ -27,7 +28,7 @@ public class ShooterIOReal implements ShooterIO {
     private final StatusSignal<Voltage> voltageSignal;
     private final StatusSignal<Current> currentSignal;
 
-    private AngularVelocity targetVelocity = kZeroVelocity;
+    private AngularVelocity targetVelocity = RPM.zero();
 
     public ShooterIOReal() {
         motor = new TalonFX(kMotorID);
@@ -79,7 +80,7 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void stop() {
-        targetVelocity = kZeroVelocity;
+        targetVelocity = RPM.zero();
         motor.stopMotor();
     }
 }

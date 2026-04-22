@@ -49,7 +49,7 @@ public class IntakeIOSim extends IntakeIOReal implements IPhysicsSim {
                 SimulatedBattery.getBatteryVoltage().in(Volts),
                 0.02);
 
-        if (flywheelSim.getAngularVelocityRPM() > kMinimumIntakeRPM) {
+        if (flywheelSim.getAngularVelocity().gt(RPM.of(500))) {
             SimulationManager.getInstance().setIntakeSpinning(true);
         } else {
             SimulationManager.getInstance().setIntakeSpinning(false);

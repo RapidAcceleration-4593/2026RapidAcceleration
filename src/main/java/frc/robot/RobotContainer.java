@@ -153,7 +153,7 @@ public class RobotContainer {
 
     /** Select the command to run in Autonomous. */
     public Command getAutonomousCommand() {
-        return autonManager.getAuton(networkAutoSelector.get());
+        return questNav.cancelOnDisconnect(autonManager.getAuton(networkAutoSelector.get()));
     }
 
     /** Register NamedCommands for Autonomous. */
