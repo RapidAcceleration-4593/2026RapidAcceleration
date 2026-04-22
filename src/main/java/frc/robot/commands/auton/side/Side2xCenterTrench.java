@@ -11,7 +11,7 @@ import java.util.List;
 public class Side2xCenterTrench extends AutonCommand {
 
     public Side2xCenterTrench(AutonUtil util, boolean isFlipped) {
-        super(util, isFlipped, List.of("SideCenterTrench-1", "SideCenterTrench-2", "SideCenterTrench-3"));
+        super(util, isFlipped, List.of("SideCenterTrench-1", "SideCenterTrench-2"));
         EventTrigger shootTrigger = new EventTrigger("StartShooter");
 
         addCommands(
@@ -27,11 +27,11 @@ public class Side2xCenterTrench extends AutonCommand {
                                         Commands.sequence(
                                                 Commands.waitSeconds(2.0),
                                                 NamedCommands.getCommand("ShakeDeployCommand"))))),
-                NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(1))),
                 Commands.parallel(
-                        AutoBuilder.followPath(paths.get(2)),
-                        Commands.waitUntil(shootTrigger)
-                                .andThen(Commands.parallel(
+                        AutoBuilder.followPath(paths.get(1)),
+                        Commands.sequence(
+                                NamedCommands.getCommand("IntakeCommand").until(shootTrigger),
+                                Commands.parallel(
                                         NamedCommands.getCommand("ShootCommand"),
                                         Commands.sequence(
                                                 Commands.waitSeconds(2.0),
