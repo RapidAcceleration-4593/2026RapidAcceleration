@@ -16,11 +16,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionConsumer;
 import frc.robot.util.FieldUtil;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkString;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 public class QuestNavSubsystem extends SubsystemBase {
 
-    private final LoggedNetworkString selectedVisionSystem = new LoggedNetworkString(kSelectedVisionNTAddress);
+    private final LoggedNetworkBoolean questEnabled = new LoggedNetworkBoolean(kQuestEnabledNTAddress);
 
     public static final Transform3d kRobotToQuest = new Transform3d(
             Inches.of(-13.0),
@@ -49,8 +49,7 @@ public class QuestNavSubsystem extends SubsystemBase {
                 Pose3d robotPose = frame.questPose().transformBy(kRobotToQuest.inverse());
                 if (shouldReject(robotPose)) return;
 
-                if (selectedVisionSystem.get().equals(VisionSystems.Quest.name)
-                        || selectedVisionSystem.get().isBlank()) {
+                if (questEnabled.get()) {
                     visionConsumer.accept(robotPose.toPose2d(), frame.timestamp(), kStateSTDDevs);
                 }
             }
