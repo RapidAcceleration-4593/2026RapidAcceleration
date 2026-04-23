@@ -136,8 +136,7 @@ public class RobotContainer {
         operatorController
                 .a()
                 .whileTrue(new OuttakeCommand(intake, deploy)
-                        .alongWith(new ShootCommand(shooter, turret, hood, indexer, calculator)
-                                .onlyWhile(FieldUtil::isInNeutralZone))
+                        .alongWith(new ShootCommand(shooter, turret, hood, indexer, calculator))
                         .alongWith(new RunIntakeLEDLayer(LEDs)));
         operatorController.x().whileTrue(deploy.setVoltageCommand(Volts.of(5.0)));
         operatorController.b().whileTrue(deploy.setVoltageCommand(Volts.of(-5.0)));
@@ -169,12 +168,12 @@ public class RobotContainer {
                 "ExtendDeployCommand",
                 new ExtendDeployCommand(deploy)
                         .alongWith(new RunIntakeLEDLayer(LEDs))
-                        .withTimeout(0.5));
+                        .withTimeout(0.4));
         NamedCommands.registerCommand(
                 "RetractDeployCommand",
                 new RetractDeployCommand(deploy)
                         .alongWith(new RunIntakeLEDLayer(LEDs))
-                        .withTimeout(0.8));
+                        .withTimeout(0.6));
         NamedCommands.registerCommand("ShakeDeployCommand", new ShakeDeployCommand(intake, deploy));
     }
 
