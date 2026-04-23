@@ -11,7 +11,7 @@ import java.util.List;
 public class SideDepotCustom extends AutonCommand {
 
     public SideDepotCustom(AutonUtil util, boolean isFlipped) {
-        super(util, isFlipped, List.of("SideCustom-1"));
+        super(util, isFlipped, List.of("SideDepotCustom-1"));
         EventTrigger shootTrigger = new EventTrigger("StartShooter");
 
         addCommands(

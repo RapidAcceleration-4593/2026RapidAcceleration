@@ -102,7 +102,6 @@ public class ShotCalculatorSubsystem extends SubsystemBase {
         if (Double.isNaN(shooterVelocity.in(RadiansPerSecond))) {
             latestIsValid = false;
         }
-        Logger.recordOutput("TargetTurretAngle", turretAngle);
         return new ShotResult(turretAngle, hoodAngle, shooterVelocity, latestIsValid);
     }
 

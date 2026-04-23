@@ -136,7 +136,9 @@ public class RobotContainer {
         operatorController
                 .a()
                 .whileTrue(new OuttakeCommand(intake, deploy)
-                        .alongWith(new ShootCommand(shooter, turret, hood, indexer, calculator))
+                        .alongWith(new OuttakeShootCommand(shooter, turret, hood, indexer, calculator))
+                        .onlyWhile(FieldUtil::isInNeutralZone)
+                        .repeatedly()
                         .alongWith(new RunIntakeLEDLayer(LEDs)));
         operatorController.x().whileTrue(deploy.setVoltageCommand(Volts.of(5.0)));
         operatorController.b().whileTrue(deploy.setVoltageCommand(Volts.of(-5.0)));
