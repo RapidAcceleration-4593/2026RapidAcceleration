@@ -1,7 +1,6 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Controllers.*;
 import static frc.robot.Constants.kCurrentMode;
 
@@ -101,6 +100,7 @@ public class RobotContainer {
         driverController.a().onTrue(swerve.resetPoseCommand());
         driverController.x().onTrue(swerve.stopXCommand());
         driverController.y().whileTrue(new RetractDeployCommand(deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
+        driverController.povDown().whileTrue(indexer.runReverseCommand());
 
         driverController
                 .rightTrigger(0.5)
