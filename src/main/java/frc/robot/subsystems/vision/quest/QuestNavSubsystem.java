@@ -69,7 +69,7 @@ public class QuestNavSubsystem extends SubsystemBase {
     public Command cancelOnDisconnect(Command command) {
         return run(() -> {
             CommandScheduler.getInstance().schedule(command);
-            if (inputs.trackingLostCount > 0 || !inputs.connected || !inputs.tracking) command.cancel();
+            if (inputs.trackingLostCount > 0) command.cancel();
         });
     }
 }
