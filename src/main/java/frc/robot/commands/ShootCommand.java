@@ -20,7 +20,7 @@ public class ShootCommand extends ParallelCommandGroup {
         addCommands(
                 shooter.runAtVelocityCommand(calculator::getShooterVelocity),
                 hood.runToAngleCommand(calculator::getHoodAngle),
-                Commands.waitSeconds(0.3)
+                Commands.waitSeconds(0.25)
                         .andThen(indexer.runCommand()
                                 .onlyWhile(() -> turret.atTargetAngle() && calculator.isValid())
                                 .repeatedly()));
