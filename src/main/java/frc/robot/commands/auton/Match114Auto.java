@@ -11,22 +11,15 @@ public class Match114Auto extends AutonCommand {
         super(util, isFlipped, List.of("Match114-1", "Match114-2"));
 
         addCommands(
-			Commands.deadline(
-				Commands.waitSeconds(6.0),
-				NamedCommands.getCommand("ShootCommand"),
-				Commands.sequence(
-					NamedCommands.getCommand("ExtendDeployCommand"),
-					NamedCommands.getCommand("RetractDeployCommand")
-				)
-			),
-			Commands.race(
-				AutoBuilder.followPath(paths.get(0)),
-				NamedCommands.getCommand("IntakeCommand")
-			),
-			AutoBuilder.followPath(paths.get(1)),
-			Commands.parallel(
-				NamedCommands.getCommand("ShootCommand"),
-				NamedCommands.getCommand("ShakeDeployCommand")
-			));
+                Commands.deadline(
+                        Commands.waitSeconds(5.5),
+                        NamedCommands.getCommand("ShootCommand"),
+                        Commands.sequence(
+                                NamedCommands.getCommand("ExtendDeployCommand"),
+                                NamedCommands.getCommand("RetractDeployCommand"))),
+                Commands.race(AutoBuilder.followPath(paths.get(0)), NamedCommands.getCommand("IntakeCommand")),
+                AutoBuilder.followPath(paths.get(1)),
+                Commands.parallel(
+                        NamedCommands.getCommand("ShootCommand"), NamedCommands.getCommand("ShakeDeployCommand")));
     }
 }
