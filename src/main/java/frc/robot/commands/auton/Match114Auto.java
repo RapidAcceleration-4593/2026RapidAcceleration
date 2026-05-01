@@ -14,7 +14,7 @@ public class Match114Auto extends AutonCommand {
                 Commands.deadline(
                         Commands.waitSeconds(5.5),
                         NamedCommands.getCommand("ShootCommand"),
-                        Commands.sequence(
+                        Commands.parallel(
                                 NamedCommands.getCommand("ExtendDeployCommand"),
                                 NamedCommands.getCommand("RetractDeployCommand"))),
                 Commands.race(AutoBuilder.followPath(paths.get(0)), NamedCommands.getCommand("IntakeCommand")),
