@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class DeployIOReal implements DeployIO {
 
     protected final SparkMax motor;
-    protected final SparkMax followerMotor;
+    // protected final SparkMax followerMotor;
 
     protected final RelativeEncoder encoder;
     protected final DigitalInput retractedLS;
@@ -33,7 +33,7 @@ public class DeployIOReal implements DeployIO {
 
     public DeployIOReal() {
         motor = new SparkMax(kLeftMotorID, MotorType.kBrushless);
-        followerMotor = new SparkMax(kRightMotorID, MotorType.kBrushless);
+        // followerMotor = new SparkMax(kRightMotorID, MotorType.kBrushless);
         encoder = motor.getAlternateEncoder();
         retractedLS = new DigitalInput(kRetractedLSChannel);
 
@@ -66,7 +66,7 @@ public class DeployIOReal implements DeployIO {
         config.apply(controlConfig);
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        followerMotor.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        // followerMotor.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = motor.getClosedLoopController();
     }
 
