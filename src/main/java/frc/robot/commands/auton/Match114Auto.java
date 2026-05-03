@@ -16,10 +16,7 @@ public class Match114Auto extends AutonCommand {
                         NamedCommands.getCommand("ShootCommand")
                                 .alongWith(NamedCommands.getCommand("ShakeDeployCommand"))),
                 Commands.race(AutoBuilder.followPath(paths.get(0)), NamedCommands.getCommand("IntakeCommand")),
-                Commands.race(
-					AutoBuilder.followPath(paths.get(1)),
-					NamedCommands.getCommand("IntakeCommand")
-				),
+                Commands.race(AutoBuilder.followPath(paths.get(1)), NamedCommands.getCommand("IntakeCommand")),
                 Commands.parallel(
                         NamedCommands.getCommand("ShootCommand"), NamedCommands.getCommand("ShakeDeployCommand")));
     }
