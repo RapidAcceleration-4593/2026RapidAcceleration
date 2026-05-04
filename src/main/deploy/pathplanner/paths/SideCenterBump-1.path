@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 4.4,
-        "y": 0.5
+        "y": 0.6
       },
       "prevControl": null,
       "nextControl": {
         "x": 4.9,
-        "y": 0.5
+        "y": 0.6
       },
       "isLocked": false,
       "linkedName": null
@@ -48,15 +48,15 @@
     },
     {
       "anchor": {
-        "x": 5.75,
+        "x": 5.85,
         "y": 2.5
       },
       "prevControl": {
-        "x": 6.5,
+        "x": 6.6,
         "y": 2.5
       },
       "nextControl": {
-        "x": 5.25,
+        "x": 5.35,
         "y": 2.5
       },
       "isLocked": false,
@@ -64,11 +64,11 @@
     },
     {
       "anchor": {
-        "x": 3.0,
+        "x": 3.25,
         "y": 2.5
       },
       "prevControl": {
-        "x": 3.25,
+        "x": 3.5,
         "y": 2.5
       },
       "nextControl": null,
@@ -87,7 +87,7 @@
     },
     {
       "waypointRelativePos": 3,
-      "rotationDegrees": 0.0
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [
@@ -96,8 +96,21 @@
       "minWaypointRelativePos": 1.0,
       "maxWaypointRelativePos": 2.0,
       "constraints": {
-        "maxVelocity": 1.25,
+        "maxVelocity": 1.745,
         "maxAcceleration": 2.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 3.0,
+      "maxWaypointRelativePos": 4.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -108,8 +121,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Shoot",
-      "waypointRelativePos": 3.5,
+      "name": "StartShooter",
+      "waypointRelativePos": 3.65,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -124,7 +137,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "SideCenterBump",

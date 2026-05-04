@@ -15,5 +15,4 @@ public final class IntakeConstants {
     public static final double kMotorToIntakeGearing = 4.0 * (16.0 / 16.0);
 
     public static final MomentOfInertia kIntakeMOI = KilogramSquareMeters.of(0.0004);
-    public static final double kMinimumIntakeRPM = 500;
 }

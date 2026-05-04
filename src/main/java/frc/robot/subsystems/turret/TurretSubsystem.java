@@ -46,7 +46,6 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     public boolean atTargetAngle() {
-        // Should be if the current angle is within tolerance of the true target angle, not the safe wrapped angle.
         return inputs.angle.isNear(targetAngle, kAngleTolerance);
     }
 

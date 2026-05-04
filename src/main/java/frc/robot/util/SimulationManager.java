@@ -13,7 +13,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.Constants.Mode;
-import frc.robot.subsystems.vision.apriltag.AprilTagConstants;
 import java.util.ArrayList;
 import java.util.List;
 import org.ironmaple.simulation.IntakeSimulation;
@@ -23,7 +22,6 @@ import org.ironmaple.simulation.motorsims.SimulatedBattery;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.simulation.VisionSystemSim;
 
 public final class SimulationManager {
 
@@ -33,7 +31,6 @@ public final class SimulationManager {
     private final IntakeSimulation intakeSim;
     private final Arena2026Rebuilt arena = (Arena2026Rebuilt) SimulatedArena.getInstance();
     private final List<IPhysicsSim> components;
-    private final VisionSystemSim visionSim;
 
     private boolean intakeExtended;
     private boolean intakeSpinning;
@@ -43,8 +40,6 @@ public final class SimulationManager {
         arena.addDriveTrainSimulation(swerveSim);
         arena.setEfficiencyMode(false);
         components = new ArrayList<>();
-        visionSim = new VisionSystemSim("main");
-        visionSim.addAprilTags(AprilTagConstants.kFieldLayout);
         intakeSim = IntakeSimulation.OverTheBumperIntake(
                 "Fuel", swerveSim, Inches.of(24), Inches.of(8), IntakeSimulation.IntakeSide.FRONT, kHopperCapacity);
     }
@@ -105,9 +100,7 @@ public final class SimulationManager {
         for (var component : components) {
             component.updatePlantSim();
         }
-
         arena.simulationPeriodic();
-        visionSim.update(swerveSim.getSimulatedDriveTrainPose());
 
         for (var component : components) {
             component.updateIOSim();
@@ -144,10 +137,6 @@ public final class SimulationManager {
 
     public void setIntakeExtended(boolean extended) {
         intakeExtended = extended;
-    }
-
-    public VisionSystemSim getVisionSim() {
-        return visionSim;
     }
 
     private void updateIntakeSim() {

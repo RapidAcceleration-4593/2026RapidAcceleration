@@ -39,10 +39,10 @@ public class IntakeSubsystem extends SubsystemBase {
     /**
      * Constructs a command to run the intake motor.
      *
-     * @return A command to run the intake motor and stop when complete.
+     * @return A command to run the intake motor.
      */
     public Command runCommand() {
-        return startEnd(() -> io.setVoltage(kIntakeVolts), io::stop);
+        return runEnd(() -> io.setVoltage(kIntakeVolts), io::stop);
     }
 
     /**

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.RPM;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -15,7 +16,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final ShooterIO io;
     private final ShooterInputsAutoLogged inputs;
 
-    private AngularVelocity targetVelocity = kZeroVelocity;
+    private AngularVelocity targetVelocity = RPM.zero();
 
     public ShooterSubsystem(ShooterIO io) {
         this.io = io;

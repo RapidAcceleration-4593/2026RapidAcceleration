@@ -11,22 +11,30 @@ import java.util.List;
 public class Side2xCenterTrench extends AutonCommand {
 
     public Side2xCenterTrench(AutonUtil util, boolean isFlipped) {
-        super(util, isFlipped, List.of("SideCenterTrench-1", "SideCenterTrench-2", "SideCenterTrench-3"));
-        EventTrigger shootTrigger = new EventTrigger("Shoot");
+        super(util, isFlipped, List.of("SideCenterTrench-1", "SideCenterTrench-2"));
+        EventTrigger shootTrigger = new EventTrigger("StartShooter");
 
         addCommands(
                 Commands.parallel(
-                        Commands.race(
-                                AutoBuilder.followPath(paths.get(0)),
-                                NamedCommands.getCommand("ExtendDeployCommand")
-                                        .andThen(NamedCommands.getCommand("RetractDeployCommand"))
-                                        .andThen(NamedCommands.getCommand("IntakeCommand"))),
-                        Commands.waitUntil(shootTrigger)
-                                .andThen(
-                                        NamedCommands.getCommand("ShootCommand").withTimeout(5.0))),
-                NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(1))),
+                        AutoBuilder.followPath(paths.get(0)),
+                        Commands.sequence(
+                                NamedCommands.getCommand("ExtendDeployCommand"),
+                                NamedCommands.getCommand("RetractDeployCommand"),
+                                NamedCommands.getCommand("IntakeCommand").until(shootTrigger),
+                                Commands.deadline(
+                                        Commands.waitSeconds(5.0),
+                                        NamedCommands.getCommand("ShootCommand"),
+                                        Commands.sequence(
+                                                Commands.waitSeconds(2.0),
+                                                NamedCommands.getCommand("ShakeDeployCommand"))))),
                 Commands.parallel(
-                        AutoBuilder.followPath(paths.get(2)),
-                        Commands.waitUntil(shootTrigger).andThen(NamedCommands.getCommand("ShootCommand"))));
+                        AutoBuilder.followPath(paths.get(1)),
+                        Commands.sequence(
+                                NamedCommands.getCommand("IntakeCommand").until(shootTrigger),
+                                Commands.parallel(
+                                        NamedCommands.getCommand("ShootCommand"),
+                                        Commands.sequence(
+                                                Commands.waitSeconds(2.0),
+                                                NamedCommands.getCommand("ShakeDeployCommand"))))));
     }
 }

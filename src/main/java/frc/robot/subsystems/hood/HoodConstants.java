@@ -20,7 +20,7 @@ public final class HoodConstants {
     public static final double kS = 0.135;
 
     public static final Angle kMinimumAngle = Degrees.of(12.5);
-    public static final Angle kMaximumAngle = Degrees.of(30);
+    public static final Angle kMaximumAngle = Degrees.of(30.0);
     public static final Angle kAngleTolerance = Degrees.of(0.1);
 
     public static final int kCountsPerRotation = 8192;

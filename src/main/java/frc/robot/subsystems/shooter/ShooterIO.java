@@ -1,7 +1,6 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.shooter.ShooterConstants.kZeroVelocity;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -12,8 +11,8 @@ public interface ShooterIO {
 
     @AutoLog
     public static class ShooterInputs {
-        public AngularVelocity velocity = kZeroVelocity;
-        public AngularVelocity targetVelocity = kZeroVelocity;
+        public AngularVelocity velocity = RPM.zero();
+        public AngularVelocity targetVelocity = RPM.zero();
 
         public Voltage appliedVolts = Volts.zero();
         public Current outputCurrent = Amps.zero();

@@ -1,7 +1,6 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Controllers.*;
 import static frc.robot.Constants.kCurrentMode;
 
@@ -26,7 +25,6 @@ import frc.robot.subsystems.leds.LEDSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
-import frc.robot.subsystems.vision.apriltag.AprilTagSubsystem;
 import frc.robot.subsystems.vision.quest.QuestNavSubsystem;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.SimulationManager;
@@ -37,7 +35,6 @@ public class RobotContainer {
     // Subsystem(s)
     public final SwerveSubsystem swerve;
     public final QuestNavSubsystem questNav;
-    public final AprilTagSubsystem aprilTag;
 
     public final ShooterSubsystem shooter;
     public final TurretSubsystem turret;
@@ -61,7 +58,6 @@ public class RobotContainer {
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
         questNav = QuestNavFactory.initialize(swerve);
-        aprilTag = AprilTagFactory.initialize(swerve);
         swerve.setVisionResetCallback(questNav::resetPose);
 
         shooter = ShooterFactory.initialize();
@@ -104,6 +100,7 @@ public class RobotContainer {
         driverController.a().onTrue(swerve.resetPoseCommand());
         driverController.x().onTrue(swerve.stopXCommand());
         driverController.y().whileTrue(new RetractDeployCommand(deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
+        driverController.povDown().whileTrue(indexer.runReverseCommand());
 
         driverController
                 .rightTrigger(0.5)
@@ -126,7 +123,8 @@ public class RobotContainer {
                 .leftTrigger(0.5)
                 .whileTrue(new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
 
-        driverController.leftBumper().whileTrue(new PathfindCommands().pathfindUnderNearestTrench(swerve));
+        driverController.leftBumper().whileTrue(new PathfindCommands().pathfindNearestTrench(swerve));
+        driverController.b().whileTrue(new PathfindCommands().pathfindNearestBump(swerve));
 
         // <------- Operator Controller ------->
         operatorController.rightTrigger(0.5).whileTrue(new ManualShootCommand(shooter, hood, indexer));
@@ -135,7 +133,12 @@ public class RobotContainer {
         operatorController.leftBumper().whileTrue(turret.setVoltageCommand(Volts.of(-4.0)));
         operatorController.rightBumper().whileTrue(turret.setVoltageCommand(Volts.of(4.0)));
 
-        operatorController.a().whileTrue(intake.setVoltageCommand(Volts.of(-6.0)));
+        operatorController
+                .a()
+                .whileTrue(new OuttakeCommand(intake, deploy)
+                        .alongWith(new OuttakeShootCommand(shooter, turret, hood, indexer, calculator)
+                                .onlyWhile(FieldUtil::isInNeutralZone))
+                        .alongWith(new RunIntakeLEDLayer(LEDs)));
         operatorController.x().whileTrue(deploy.setVoltageCommand(Volts.of(5.0)));
         operatorController.b().whileTrue(deploy.setVoltageCommand(Volts.of(-5.0)));
 
@@ -151,7 +154,7 @@ public class RobotContainer {
 
     /** Select the command to run in Autonomous. */
     public Command getAutonomousCommand() {
-        return autonManager.getAuton(networkAutoSelector.get());
+        return questNav.cancelOnDisconnect(autonManager.getAuton(networkAutoSelector.get()));
     }
 
     /** Register NamedCommands for Autonomous. */
@@ -166,12 +169,12 @@ public class RobotContainer {
                 "ExtendDeployCommand",
                 new ExtendDeployCommand(deploy)
                         .alongWith(new RunIntakeLEDLayer(LEDs))
-                        .withTimeout(0.5));
+                        .withTimeout(0.4));
         NamedCommands.registerCommand(
                 "RetractDeployCommand",
                 new RetractDeployCommand(deploy)
                         .alongWith(new RunIntakeLEDLayer(LEDs))
-                        .withTimeout(0.8));
+                        .withTimeout(0.6));
         NamedCommands.registerCommand("ShakeDeployCommand", new ShakeDeployCommand(intake, deploy));
     }
 

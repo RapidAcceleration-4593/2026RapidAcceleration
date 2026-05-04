@@ -8,25 +8,22 @@ import frc.robot.commands.auton.AutonCommand;
 import frc.robot.commands.auton.AutonUtil;
 import java.util.List;
 
-public class SideCenterTrench extends AutonCommand {
+public class SideDepotCustom extends AutonCommand {
 
-    public SideCenterTrench(AutonUtil util, boolean isFlipped) {
-        super(util, isFlipped, List.of("SideCenterTrench-1", "SideCenterTrench-2"));
+    public SideDepotCustom(AutonUtil util, boolean isFlipped) {
+        super(util, isFlipped, List.of("SideDepotCustom-1"));
         EventTrigger shootTrigger = new EventTrigger("StartShooter");
 
         addCommands(
+                NamedCommands.getCommand("ShootCommand").withTimeout(3.0),
                 Commands.parallel(
                         AutoBuilder.followPath(paths.get(0)),
                         Commands.sequence(
                                 NamedCommands.getCommand("ExtendDeployCommand"),
                                 NamedCommands.getCommand("RetractDeployCommand"),
                                 NamedCommands.getCommand("IntakeCommand").until(shootTrigger),
-                                Commands.deadline(
-                                        Commands.waitSeconds(8.0),
+                                Commands.parallel(
                                         NamedCommands.getCommand("ShootCommand"),
-                                        Commands.sequence(
-                                                Commands.waitSeconds(3.0),
-                                                NamedCommands.getCommand("ShakeDeployCommand"))))),
-                NamedCommands.getCommand("IntakeCommand").withDeadline(AutoBuilder.followPath(paths.get(1))));
+                                        NamedCommands.getCommand("IntakeCommand")))));
     }
 }
