@@ -22,7 +22,7 @@ public class AutonManager {
 
     private void registerAutons() {
         autonMap.put("DoNothing", Commands::none);
-        autonMap.put("Custom", () -> new Match114Auto(util, false)); // TODO: Must be flipped manually.
+        autonMap.put("Custom", () -> new SideCenterCustom(util, true)); // TODO: Must be flipped manually.
 
         autonMap.put("LeftCenterTrench", () -> new SideCenterTrench(util, true));
         autonMap.put("LeftCenterBump", () -> new SideCenterBump(util, true));
