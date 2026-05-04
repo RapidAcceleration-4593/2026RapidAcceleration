@@ -157,7 +157,7 @@ public class ProjectilePhysicsCalibration {
     }
 
     public double getHarmonicExitFactor(LinearVelocity launchSpeed, Angle turretAngle) {
-        double x = launchSpeed.in(MetersPerSecond) * 1.15;
+        double x = launchSpeed.in(MetersPerSecond);
         double y = turretAngle.in(Radians);
 
         double cosA = Math.cos(y);
