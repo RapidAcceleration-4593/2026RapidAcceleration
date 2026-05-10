@@ -1,14 +1,11 @@
 package frc.robot.util.shooting;
 
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
-import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 public class ProjectilePhysicsCalibration {
 
@@ -63,100 +60,7 @@ public class ProjectilePhysicsCalibration {
         {6.8192, -1.5612, 0.380}
     };
 
-    public static final ProjectilePhysicsCalibration kDefault = new ProjectilePhysicsCalibration(kExitFactorData);
-
-    private int[][] kTriangles;
-    private double offset, speedMult, angleMult;
-
-    public ProjectilePhysicsCalibration(double[][] exitFactorData) {
-        kTriangles = DelaunayTriangulation.triangulate(exitFactorData);
-        OLSMultipleLinearRegression ols = new OLSMultipleLinearRegression();
-        double[] y = new double[exitFactorData.length];
-        double[][] x = new double[exitFactorData.length][2];
-
-        for (int i = 0; i < exitFactorData.length; i++) {
-            x[i][0] = exitFactorData[i][0];
-            x[i][1] = exitFactorData[i][1];
-            y[i] = exitFactorData[i][2];
-        }
-        ols.newSampleData(y, x);
-
-        double[] params = ols.estimateRegressionParameters();
-        this.offset = params[0];
-        this.speedMult = params[1];
-        this.angleMult = params[2];
-    }
-
-    public double getBarycentricExitFactor(Distance distance, Angle turretAngle) {
-        double x = distance.in(Meters);
-        double y = turretAngle.in(Radians);
-
-        for (int[] tri : kTriangles) {
-            double[] p1 = kExitFactorData[tri[0]];
-            double[] p2 = kExitFactorData[tri[1]];
-            double[] p3 = kExitFactorData[tri[2]];
-
-            double x1 = p1[0], y1 = p1[1], z1 = p1[2];
-            double x2 = p2[0], y2 = p2[1], z2 = p2[2];
-            double x3 = p3[0], y3 = p3[1], z3 = p3[2];
-
-            double denom = (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3);
-
-            if (Math.abs(denom) < 1e-9) continue;
-
-            double w1 = ((y2 - y3) * (x - x3) + (x3 - x2) * (y - y3)) / denom;
-            double w2 = ((y3 - y1) * (x - x3) + (x1 - x3) * (y - y3)) / denom;
-            double w3 = 1.0 - w1 - w2;
-
-            if (w1 >= 0 && w2 >= 0 && w3 >= 0) {
-                double exitFactor = w1 * z1 + w2 * z2 + w3 * z3;
-                return MathUtil.clamp(exitFactor, 0.20, 0.45);
-            }
-        }
-        return kExitFactorData[0][2];
-    }
-
-    public double getLinearExitFactor(LinearVelocity launchSpeed, Angle turretAngle) {
-        double exitFactor = offset + speedMult * launchSpeed.in(MetersPerSecond) + angleMult * turretAngle.in(Radians);
-        return MathUtil.clamp(exitFactor, 0.20, 0.45);
-    }
-
-    public double getQuadraticExitFactor(LinearVelocity launchSpeed, Angle turretAngle) {
-        double x = launchSpeed.in(MetersPerSecond);
-        double y = turretAngle.in(Radians);
-        double exitFactor =
-                -0.00924813 * Math.pow(x, 2) - 0.00326423 * Math.pow(y, 2) + 0.132669 * x + 0.00673983 * y - 0.07958;
-        return MathUtil.clamp(exitFactor, 0.20, 0.45);
-    }
-
-    public double getCubicExitFactor(LinearVelocity launchSpeed, Angle turretAngle) {
-        double x = launchSpeed.in(MetersPerSecond);
-        double y = turretAngle.in(Radians);
-        double exitFactor = -0.000848441 * Math.pow(x, 3)
-                - 0.00120982 * Math.pow(y, 3)
-                + 0.0110914 * Math.pow(x, 2)
-                - 0.00285624 * Math.pow(y, 2)
-                - 0.0312852 * x
-                + 0.0134458 * y
-                + 0.364219;
-        return MathUtil.clamp(exitFactor, 0.20, 0.45);
-    }
-
-    public double getInterrelationalExitFactor(LinearVelocity launchSpeed, Angle turretAngle) {
-        double x = launchSpeed.in(MetersPerSecond);
-        double y = turretAngle.in(Radians);
-        double exitFactor = -0.00761085 * Math.pow(x, 3)
-                - 0.00107918 * Math.pow(y, 3)
-                + 0.171929 * Math.pow(x, 2)
-                - 0.00267933 * Math.pow(y, 2)
-                + 0.00417471 * x * y
-                - 1.29963 * x
-                - 0.0215811 * y
-                + 3.67785;
-        return MathUtil.clamp(exitFactor, 0.20, 0.45);
-    }
-
-    public double getHarmonicExitFactor(LinearVelocity launchSpeed, Angle turretAngle) {
+    public static double getHarmonicExitFactor(LinearVelocity launchSpeed, Angle turretAngle) {
         double x = launchSpeed.in(MetersPerSecond);
         double y = turretAngle.in(Radians);
 
@@ -176,32 +80,5 @@ public class ProjectilePhysicsCalibration {
                 + (-0.005829 * sin2A);
 
         return MathUtil.clamp(exitFactor, 0.15, 0.50);
-    }
-
-    public void runTests() {
-        runTest(7.2157, -0.0358, 0.400);
-        runTest(9.0211, 2.37619, 0.360);
-        runTest(6.7053, -0.7293, 0.400);
-    }
-
-    public static void main(String[] args) {
-        ProjectilePhysicsCalibration calibration = new ProjectilePhysicsCalibration(kExitFactorData);
-        calibration.runTests();
-    }
-
-    private void runTest(double v, double a, double e) {
-        LinearVelocity launchSpeed = MetersPerSecond.of(v);
-        Angle turretAngle = Radians.of(a);
-        double expectedExitFactor = e;
-
-        double cubicExitFactor = getCubicExitFactor(launchSpeed, turretAngle);
-        double interrelationalExitFactor = getInterrelationalExitFactor(launchSpeed, turretAngle);
-        double harmonicExitFactor = getHarmonicExitFactor(launchSpeed, turretAngle);
-
-        System.out.printf("Test: v=%.2f m/s, a=%.2f rad\n", v, a);
-        System.out.printf("Expected Exit Factor: %.4f\n", expectedExitFactor);
-        System.out.printf("Cubic Exit Factor: %.4f\n", cubicExitFactor);
-        System.out.printf("Interrelational Exit Factor: %.4f\n", interrelationalExitFactor);
-        System.out.printf("Harmonic Exit Factor: %.4f\n", harmonicExitFactor);
     }
 }

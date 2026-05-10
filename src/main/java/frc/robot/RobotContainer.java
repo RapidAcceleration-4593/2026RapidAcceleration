@@ -2,18 +2,12 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Controllers.*;
-import static frc.robot.Constants.kCurrentMode;
 
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.Mode;
 import frc.robot.commands.*;
-import frc.robot.commands.auton.AutonManager;
 import frc.robot.commands.leds.*;
-import frc.robot.commands.swerve.PathfindCommands;
 import frc.robot.commands.swerve.SwerveCommands;
 import frc.robot.factory.*;
 import frc.robot.subsystems.ShotCalculatorSubsystem;
@@ -27,8 +21,6 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.quest.QuestNavSubsystem;
 import frc.robot.util.FieldUtil;
-import frc.robot.util.SimulationManager;
-import org.littletonrobotics.junction.networktables.LoggedNetworkString;
 
 public class RobotContainer {
 
@@ -51,10 +43,6 @@ public class RobotContainer {
     private final CommandXboxController driverController;
     private final CommandXboxController operatorController;
 
-    // Autonomous Selector
-    private final AutonManager autonManager;
-    private final LoggedNetworkString networkAutoSelector;
-
     public RobotContainer() {
         swerve = SwerveFactory.initialize();
         questNav = QuestNavFactory.initialize(swerve);
@@ -74,15 +62,9 @@ public class RobotContainer {
         driverController = new CommandXboxController(kDriverControllerPort);
         operatorController = new CommandXboxController(kOperatorControllerPort);
 
-        autonManager = new AutonManager(swerve);
-        autonManager.warmup();
-
-        networkAutoSelector = new LoggedNetworkString("/AccelerationStation/SelectedAuto", "DoNothing");
         FieldUtil.setPoseSupplier(swerve::getPose);
 
-        registerCommands();
         configureBindings();
-        setupIndexerSensor();
     }
 
     private void configureBindings() {
@@ -123,9 +105,6 @@ public class RobotContainer {
                 .leftTrigger(0.5)
                 .whileTrue(new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
 
-        driverController.leftBumper().whileTrue(new PathfindCommands().pathfindNearestTrench(swerve));
-        driverController.b().whileTrue(new PathfindCommands().pathfindNearestBump(swerve));
-
         // <------- Operator Controller ------->
         operatorController.rightTrigger(0.5).whileTrue(new ManualShootCommand(shooter, hood, indexer));
         operatorController.leftTrigger(0.5).whileTrue(intake.runCommand());
@@ -154,44 +133,6 @@ public class RobotContainer {
 
     /** Select the command to run in Autonomous. */
     public Command getAutonomousCommand() {
-        return questNav.cancelOnDisconnect(autonManager.getAuton(networkAutoSelector.get()));
-    }
-
-    /** Register NamedCommands for Autonomous. */
-    private void registerCommands() {
-        NamedCommands.registerCommand(
-                "ShootCommand",
-                new ShootCommand(shooter, turret, hood, indexer, calculator).alongWith(new RunShooterLEDLayer(LEDs)));
-        NamedCommands.registerCommand(
-                "IntakeCommand", new IntakeCommand(intake, deploy).alongWith(new RunIntakeLEDLayer(LEDs)));
-        NamedCommands.registerCommand("ShakeDeployCommand", new ShakeDeployCommand(intake, deploy));
-        NamedCommands.registerCommand(
-                "ExtendDeployCommand",
-                new ExtendDeployCommand(deploy)
-                        .alongWith(new RunIntakeLEDLayer(LEDs))
-                        .withTimeout(0.4));
-        NamedCommands.registerCommand(
-                "RetractDeployCommand",
-                new RetractDeployCommand(deploy)
-                        .alongWith(new RunIntakeLEDLayer(LEDs))
-                        .withTimeout(0.6));
-        NamedCommands.registerCommand("ShakeDeployCommand", new ShakeDeployCommand(intake, deploy));
-    }
-
-    /** Increments the Fuel counter based on the robot's current field pose. */
-    private Trigger setupIndexerSensor() {
-        return new Trigger(indexer::getShotDetected).onTrue(Commands.runOnce(() -> {
-            if (FieldUtil.isInAllianceZone()) {
-                indexer.addHubShot();
-            } else {
-                indexer.addFeedingShot();
-            }
-
-            if (kCurrentMode == Mode.SIM) {
-                SimulationManager.getInstance()
-                        .launchProjectile(
-                                calculator.getTurretAngle(), calculator.getHoodAngle(), calculator.getLaunchSpeed());
-            }
-        }));
+        return Commands.none();
     }
 }
