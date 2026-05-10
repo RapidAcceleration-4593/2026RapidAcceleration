@@ -3,13 +3,10 @@ package frc.robot.commands.swerve;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,17 +17,11 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class SwerveCommands {
 
     private static final double DEADBAND = 0.1;
-    private static final double ANGLE_KP = 5.0;
-    private static final double ANGLE_KD = 0.4;
-    private static final double ANGLE_MAX_VELOCITY = 8.0;
-    private static final double ANGLE_MAX_ACCELERATION = 20.0;
     private static final double FF_START_DELAY = 2.0; // Seconds.
     private static final double FF_RAMP_RATE = 0.1; // Volts per Second.
     private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Radians per Second.
@@ -57,17 +48,12 @@ public class SwerveCommands {
 
     /** Field relative drive command using two joysticks (controlling linear and angular velocities). */
     public static Command joystickDrive(
-            SwerveSubsystem swerve,
-            DoubleSupplier xSupplier,
-            DoubleSupplier ySupplier,
-            DoubleSupplier omegaSupplier,
-            BooleanSupplier slowSupplier) {
+            SwerveSubsystem swerve, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
         return Commands.run(
                 () -> {
                     // Get linear velocity.
-                    double multiplier = slowSupplier.getAsBoolean() ? 0.65 : 1.0;
-                    Translation2d linear = getLinearVelocityFromJoysticks(
-                            -xSupplier.getAsDouble() * multiplier, -ySupplier.getAsDouble() * multiplier);
+                    Translation2d linear =
+                            getLinearVelocityFromJoysticks(-xSupplier.getAsDouble(), -ySupplier.getAsDouble());
 
                     // Apply rotation deadband. Square rotation value for more precise control.
                     double omega = MathUtil.applyDeadband(-omegaSupplier.getAsDouble(), DEADBAND);
@@ -77,39 +63,6 @@ public class SwerveCommands {
                     swerve.runVelocity(fieldRelativeSpeeds(swerve, linear, omega));
                 },
                 swerve);
-    }
-
-    /**
-     * Drive field-oriented with left joystick controlling translation, but the robot automatically rotates to face a
-     * fixed target rotation.
-     */
-    public static Command joystickDrivePointToHub(
-            SwerveSubsystem swerve, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
-        ProfiledPIDController angleController = new ProfiledPIDController(
-                ANGLE_KP, 0.0, ANGLE_KD, new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
-        angleController.enableContinuousInput(-Math.PI, Math.PI);
-
-        return Commands.defer(
-                () -> {
-                    Pose2d targetPose = FieldUtil.getTargetHubPose().toPose2d();
-                    angleController.reset(swerve.getRotation().getRadians());
-
-                    return Commands.run(
-                            () -> {
-                                Translation2d linear = getLinearVelocityFromJoysticks(
-                                        -xSupplier.getAsDouble(), -ySupplier.getAsDouble());
-                                Rotation2d toTarget = targetPose
-                                        .getTranslation()
-                                        .minus(swerve.getPose().getTranslation())
-                                        .getAngle();
-
-                                double omega = angleController.calculate(
-                                        swerve.getRotation().getRadians(), toTarget.getRadians());
-                                swerve.runVelocity(fieldRelativeSpeeds(swerve, linear, omega));
-                            },
-                            swerve);
-                },
-                Set.of(swerve));
     }
 
     /**

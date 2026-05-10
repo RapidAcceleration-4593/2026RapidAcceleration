@@ -20,7 +20,6 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.quest.QuestNavSubsystem;
-import frc.robot.util.FieldUtil;
 
 public class RobotContainer {
 
@@ -62,19 +61,12 @@ public class RobotContainer {
         driverController = new CommandXboxController(kDriverControllerPort);
         operatorController = new CommandXboxController(kOperatorControllerPort);
 
-        FieldUtil.setPoseSupplier(swerve::getPose);
-
         configureBindings();
     }
 
     private void configureBindings() {
         swerve.setDefaultCommand(SwerveCommands.joystickDrive(
-                swerve,
-                driverController::getLeftY,
-                driverController::getLeftX,
-                driverController::getRightX,
-                () -> FieldUtil.isInAllianceZone()
-                        && shooter.getTargetVelocity().gt(RPM.zero())));
+                swerve, driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
         turret.setDefaultCommand(turret.runToAngleCommand(calculator::getTurretAngle));
 
         // <------- Driver Controller ------->
@@ -112,12 +104,6 @@ public class RobotContainer {
         operatorController.leftBumper().whileTrue(turret.setVoltageCommand(Volts.of(-4.0)));
         operatorController.rightBumper().whileTrue(turret.setVoltageCommand(Volts.of(4.0)));
 
-        operatorController
-                .a()
-                .whileTrue(new OuttakeCommand(intake, deploy)
-                        .alongWith(new OuttakeShootCommand(shooter, turret, hood, indexer, calculator)
-                                .onlyWhile(FieldUtil::isInNeutralZone))
-                        .alongWith(new RunIntakeLEDLayer(LEDs)));
         operatorController.x().whileTrue(deploy.setVoltageCommand(Volts.of(5.0)));
         operatorController.b().whileTrue(deploy.setVoltageCommand(Volts.of(-5.0)));
 
