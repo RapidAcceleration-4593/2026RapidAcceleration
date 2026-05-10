@@ -7,8 +7,6 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
-import com.pathplanner.lib.config.ModuleConfig;
-import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.*;
@@ -234,19 +232,7 @@ public final class SwerveConstants {
         };
     }
 
-    // PathPlanner & Simulation Configurations.
-    public static final RobotConfig kPathPlannerConfig = new RobotConfig(
-            kRobotMass,
-            kRobotMOI,
-            new ModuleConfig(
-                    kWheelRadius,
-                    kMaxVelocity,
-                    kWheelCOF,
-                    DCMotor.getKrakenX60(1).withReduction(kDriveGearRatio),
-                    kSlipCurrent,
-                    1),
-            getModuleTranslations());
-
+    // Simulation Configurations.
     public static final DriveTrainSimulationConfig kMapleSimConfig = DriveTrainSimulationConfig.Default()
             .withRobotMass(kRobotMass)
             .withCustomModuleTranslations(getModuleTranslations())
