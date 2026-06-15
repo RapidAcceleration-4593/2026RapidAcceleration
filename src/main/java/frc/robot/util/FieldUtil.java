@@ -16,9 +16,9 @@ public final class FieldUtil {
     public static final Distance kFieldWidth = Inches.of(317.7);
 
     private static final Pose3d kBlueHubPose =
-            new Pose3d(Inches.of(182.1), kFieldWidth.div(2), Inches.of(72.0), Rotation3d.kZero);
+            new Pose3d(Inches.of(182.1), kFieldWidth.div(2), Feet.of(10.0), Rotation3d.kZero);
     private static final Pose3d kRedHubPose =
-            new Pose3d(Inches.of(469.1), kFieldWidth.div(2), Inches.of(72.0), Rotation3d.kZero);
+            new Pose3d(Inches.of(469.1), kFieldWidth.div(2), Feet.of(10.0), Rotation3d.kZero);
     private static final Pose2d kBlueInitialPose =
             new Pose2d(kFieldLength.times(0.22), kFieldWidth.div(2), Rotation2d.kZero);
     private static final Pose2d kRedInitialPose =
